@@ -52,6 +52,7 @@ Not applicable - initial requirements.
 | A2 | 2026-06-17 | User request to research using real GitHub repositories when only a technology stack is known. | Adds | R1-R16 | R17-R22 | None. | None. | Problem Frame, Requirements, Acceptance Examples, Research Requirements, Sources. | `decisions/0003-sample-real-repositories-before-stack-only-concern-selection.md` | Add repository sampling implementation unit. | Add GitHub CLI research and verification mappings. | Add audit rows for repository sampling requirements. |
 | A3 | 2026-06-17 | User request to keep the term `concern`, define it clearly, and add research on fine-grained GitHub repository concern inference. | Adds | R1-R22 | R23-R30 | None. | None. | Problem Frame, Scope Preservation, Requirements, Acceptance Examples, Research Requirements, Sources. | `decisions/0004-define-concern-as-development-guidance-target.md` | Add terminology and fine-grained inference implementation unit. | Add terminology and GitHub code-evidence mappings. | Add audit rows for concern definition and detailed inference requirements. |
 | A4 | 2026-06-17 | User request to add alternatives when `gh` is unavailable and to make repository/stack non-dependence explicit. | Adds | R1-R30 | R31-R35 | None. | None. | Summary, Problem Frame, Scope Preservation, Requirements, Acceptance Examples, Research Requirements, Sources. | `decisions/0005-keep-github-evidence-and-templates-portable.md` | Add fallback evidence and portability implementation unit. | Add fallback and portability mappings. | Add audit rows for fallback and portability requirements. |
+| A5 | 2026-06-17 | User request to reflect unresolved question choices and assistant recommendations in the design package and plan. | Adds | R1-R35 | R36-R40 | None. | None. | Requirements, Open Questions, Required Artifacts, Traceability Requirements, Completion Audit Requirements, Sources. | None; these remain pre-implementation open questions. | Add implementation decision checkpoint. | Add open-question mappings. | Add audit rows for open-question preservation. |
 
 ## Key Decisions
 
@@ -62,6 +63,7 @@ Not applicable - initial requirements.
 - **Sample real repositories for stack-only inputs:** When a user provides only a technology stack, future implementation should use GitHub CLI or equivalent GitHub evidence to inspect multiple active, non-fork, non-archived public repositories before proposing concern candidates.
 - **Keep `concern`, but define it precisely:** Future implementation should explicitly define `concern` as a development guidance target and require GitHub-derived concerns to be backed by direct evidence, confidence, and local applicability review.
 - **Do not depend on `gh`, one repository, or one stack:** Future implementation should prefer `gh` when available, but must define equivalent GitHub evidence fallbacks and keep all templates repository-neutral and stack-neutral.
+- **Preserve unresolved choices before implementation:** The design package should keep terminology, sample count, fallback evidence scope, future-pattern ownership, and example placement as explicit open questions with recommended defaults instead of silently deciding them during template edits.
 
 ## Requirements
 
@@ -119,6 +121,14 @@ Not applicable - initial requirements.
 - R34. Fallback evidence must preserve the same guardrails as `gh` evidence: no sampled external repository may be cloned or vendored into this repository without a separate decision, and sampled evidence must not become a current rule without target repository evidence.
 - R35. Future `docs/dev` template improvements must remain repository-neutral and stack-neutral: they may include optional examples and sampled evidence, but must not require this repository, a sampled public repository, React, Next.js, TypeScript, TanStack Query, React Hook Form, FSD, or any other named stack as a default baseline.
 
+**Open Questions Before Implementation**
+
+- R36. Before implementing `docs/dev` template changes, the team should confirm the preferred global English display phrase for `concern`; the recommended default is `development guidance target` with `concern` optionally retained in parentheses.
+- R37. Before implementing stack-only repository sampling, the team should confirm the default public repository sample count; the recommended default is at least five repositories, with a documented reduction to at least three only when justified.
+- R38. Before implementing fallback GitHub evidence instructions, the team should confirm the official fallback scope; the recommended default is GitHub Web UI, GitHub REST API through an approved HTTP client, and installed GitHub MCP or connector output, while temporary archive or clone inspection requires a separate decision.
+- R39. Before implementing `Recommended Future Pattern` routing, the team should confirm ownership between repository evidence and topical guide folders; the recommended default is to keep evidence and classification in `repository` while placing interpretation and application guidance in the owning topical folder.
+- R40. Before adding named stack examples to templates, the team should confirm placement; the recommended default is to keep core templates minimally stack-neutral and place longer examples in separate example or research sections.
+
 **Evidence, Traceability, And Audit**
 
 - R10. The design package must record cross-validated research using at least local repository evidence and external public examples for documentation management, golden paths, scorecards/conformance, and library-level anti-pattern prevention.
@@ -143,6 +153,7 @@ Not applicable - initial requirements.
 - AE15. **Given** `gh` is not installed or cannot authenticate, **when** stack-only repository sampling is needed, **then** the agent uses an approved fallback such as GitHub web pages, GitHub REST API, a GitHub connector, or stable file URLs and records the fallback method and limitations.
 - AE16. **Given** sampled fallback evidence comes from a specific public repository, **when** future templates are updated, **then** the repository remains an example or evidence source and does not become the required template baseline.
 - AE17. **Given** a future template mentions React, Next.js, TypeScript, TanStack Query, React Hook Form, or FSD, **when** a reviewer checks portability, **then** the mention is clearly optional/example-labeled or removed.
+- AE18. **Given** implementation starts before the team answers the open questions, **when** the implementer prepares the first docs/dev diff, **then** the implementer uses the recommended defaults or records an explicit decision to choose another option.
 
 ## Success Criteria
 
@@ -155,21 +166,23 @@ Not applicable - initial requirements.
 - A future agent can infer fine-grained concerns from GitHub repositories by tracing evidence from stack signals to actual usage sites, official API contracts, confidence, and local applicability.
 - A future agent can continue repository sampling when `gh` is unavailable by using documented equivalent GitHub evidence with recorded limitations.
 - A future reviewer can verify that docs/dev template improvements do not depend on any specific repository, sampled repository, organization, or named technology stack.
+- A future implementer can see the unresolved choices, available options, and recommended defaults before editing `docs/dev`.
 - The design package itself is tracked, self-contained, and does not depend on session memory.
 
 ## Required Artifacts And Persistence
 
 | Artifact | Required For | Expected Persistence | Completion Proof | Decision Needed |
 | --- | --- | --- | --- | --- |
-| `docs/designs/docs-dev-template-governance-20260617-q7m2/requirements.md` | R1-R35 | Tracked | `git status --porcelain` shows the package as normal tracked-ready files. | None |
+| `docs/designs/docs-dev-template-governance-20260617-q7m2/requirements.md` | R1-R40 | Tracked | `git status --porcelain` shows the package as normal tracked-ready files. | None |
+| `docs/designs/docs-dev-template-governance-20260617-q7m2/open-questions.md` | R36-R40 | Tracked | File exists and records options, trade-offs, and recommended defaults. | Required only when choosing a non-recommended option or closing a question. |
 | `docs/designs/docs-dev-template-governance-20260617-q7m2/research/README.md` | R10, R12-R35 | Tracked | File exists and indexes research records. | None |
 | `docs/designs/docs-dev-template-governance-20260617-q7m2/research/0001-cross-validated-guidance-management.md` | R10 | Tracked | Research record contains local and external evidence. | None |
 | `docs/designs/docs-dev-template-governance-20260617-q7m2/research/0002-concern-discovery-from-stack-and-topic.md` | R12-R16 | Tracked | Research record contains stack, topic, and operational concern discovery evidence. | None |
 | `docs/designs/docs-dev-template-governance-20260617-q7m2/research/0003-stack-only-concern-discovery-from-public-repositories.md` | R17-R22 | Tracked | Research record contains GitHub CLI and public repository sampling evidence. | None |
 | `docs/designs/docs-dev-template-governance-20260617-q7m2/research/0004-concern-terminology-and-fine-grained-github-inference.md` | R23-R30 | Tracked | Research record contains concern terminology and detailed GitHub inference evidence. | None |
-| `docs/designs/docs-dev-template-governance-20260617-q7m2/plan.md` | R1-R35 | Tracked | Plan maps requirements to implementation units. | None |
-| `docs/designs/docs-dev-template-governance-20260617-q7m2/traceability.md` | R1-R35 | Tracked | Traceability maps requirements to research, decision, plan, verification, and audit. | None |
-| `docs/designs/docs-dev-template-governance-20260617-q7m2/completion-audit.md` | R1-R35 | Tracked | Audit records requirement-level evidence for this design package. | None |
+| `docs/designs/docs-dev-template-governance-20260617-q7m2/plan.md` | R1-R40 | Tracked | Plan maps requirements to implementation units. | None |
+| `docs/designs/docs-dev-template-governance-20260617-q7m2/traceability.md` | R1-R40 | Tracked | Traceability maps requirements to research, decision, plan, verification, and audit. | None |
+| `docs/designs/docs-dev-template-governance-20260617-q7m2/completion-audit.md` | R1-R40 | Tracked | Audit records requirement-level evidence for this design package. | None |
 | `docs/designs/docs-dev-template-governance-20260617-q7m2/decisions/README.md` | R4-R9, R12-R35 | Tracked | Decision index links all accepted decisions. | None |
 | `docs/designs/docs-dev-template-governance-20260617-q7m2/decisions/0001-classify-missing-guidance-without-stack-coupling.md` | R4-R9 | Tracked | Decision record explains classification and stack-neutrality. | None |
 | `docs/designs/docs-dev-template-governance-20260617-q7m2/decisions/0002-use-evidence-first-concern-discovery.md` | R12-R16 | Tracked | Decision record explains how concerns are collected without stack coupling. | None |
@@ -190,6 +203,7 @@ Not applicable - initial requirements.
 - Implementing the `concern` definition directly in `docs/dev/README.md`.
 - Implementing fine-grained GitHub concern inference instructions directly in `docs/dev/_templates/**`.
 - Implementing fallback GitHub evidence instructions directly in `docs/dev/README.md` or templates.
+- Closing the unresolved implementation choices without team confirmation or an explicit decision record.
 
 **Out Of Scope**
 
@@ -218,9 +232,13 @@ Not applicable - initial requirements.
 
 Create `traceability.md` because the request spans multiple artifacts, includes cross-validation, and must preserve a stack-neutral constraint across future implementation.
 
+Traceability must include open-question mappings for R36-R40 so future implementers can distinguish accepted requirements from unresolved choices with recommended defaults.
+
 ## Completion Audit Requirements
 
 Create `completion-audit.md` and audit the design package itself. The target implementation files should remain unchanged in this package.
+
+The completion audit must verify that unresolved choices are preserved in a dedicated open-question artifact and reflected in the implementation plan.
 
 ## Sources
 
@@ -247,3 +265,4 @@ Create `completion-audit.md` and audit the design package itself. The target imp
 - GitHub web UI, GitHub REST API, approved HTTP clients, GitHub MCP or connector tooling, and stable GitHub file URLs are acceptable fallback evidence paths when `gh` is unavailable, as long as limitations and source URLs are recorded.
 - Context7-backed React Hook Form, TanStack Query, and Next.js documentation: official APIs confirm detailed concern shapes such as async default values and reset behavior, query invalidation and query keys, and server/client module boundaries.
 - Public repository samples inspected with `gh`: `Oluwashina/NextJs-TanstackQuery`, `Onddrej/inqool-interview-app`, and `rafahbrito/pizza-shop-dashboard` show how dependency coexistence, code usage, and conflicting README or manifest evidence affect concern confidence.
+- Assistant/user review on 2026-06-17: unresolved implementation choices should be retained as explicit questions with options and recommended defaults before modifying `docs/dev`.
