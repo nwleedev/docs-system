@@ -14,6 +14,7 @@
 | A2 | Adds | R1-R16 | R17-R22 | Extends baseline with stack-only public repository sampling. | `decisions/0003-sample-real-repositories-before-stack-only-concern-selection.md` | U1-U6 | U7 | V7 added. | Audit rows added for R17-R22. | Adds GitHub CLI sampling method. |
 | A3 | Adds | R1-R22 | R23-R30 | Extends baseline with explicit concern definition and fine-grained GitHub inference. | `decisions/0004-define-concern-as-development-guidance-target.md` | U1-U7 | U8 | V8 added. | Audit rows added for R23-R30. | Keeps `concern` term but narrows it to development guidance targets. |
 | A4 | Adds | R1-R30 | R31-R35 | Extends baseline with GitHub evidence fallback and explicit repository/stack neutrality. | `decisions/0005-keep-github-evidence-and-templates-portable.md` | U1-U8 | U9 | V9 added. | Audit rows added for R31-R35. | Avoids making `gh`, a sampled repository, or a named stack mandatory. |
+| A5 | Adds | R1-R35 | R36-R40 | Extends baseline with explicit open questions and recommended defaults before implementation. | None; open questions remain unresolved. | U1-U9 | U10 | V10 added. | Audit rows added for R36-R40. | Prevents silent implementation choices. |
 
 ## Requirement To Research
 
@@ -54,6 +55,11 @@
 | R33 | A4 | `research/0004-concern-terminology-and-fine-grained-github-inference.md` | F21, F23 | Full | Fallback evidence recording fields added. |
 | R34 | A4 | `research/0003-stack-only-concern-discovery-from-public-repositories.md`, `research/0004-concern-terminology-and-fine-grained-github-inference.md` | F16, F17, F25 | Full | Fallback guardrails reuse no-clone and target-evidence rules. |
 | R35 | A4 | `research/0001-cross-validated-guidance-management.md`, `research/0004-concern-terminology-and-fine-grained-github-inference.md` | F3, F4, F19 | Full | Repository-neutral and stack-neutral template improvement requirement added. |
+| R36 | A5 | `open-questions.md` | OQ1 | Full | Global English display phrase options and recommended default recorded. |
+| R37 | A5 | `open-questions.md` | OQ2 | Full | Repository sample count options and recommended default recorded. |
+| R38 | A5 | `open-questions.md` | OQ3 | Full | Non-`gh` fallback scope options and recommended default recorded. |
+| R39 | A5 | `open-questions.md` | OQ4 | Full | `Recommended Future Pattern` ownership options and recommended default recorded. |
+| R40 | A5 | `open-questions.md` | OQ5 | Full | Named stack example placement options and recommended default recorded. |
 
 ## Requirement To Decision
 
@@ -89,6 +95,11 @@
 | R33 | A4 | Keep GitHub evidence and templates portable | `decisions/0005-keep-github-evidence-and-templates-portable.md` | Accepted | Adds fallback evidence recording contract. |
 | R34 | A4 | Keep GitHub evidence and templates portable | `decisions/0005-keep-github-evidence-and-templates-portable.md` | Accepted | Preserves no-clone and target-evidence guardrails. |
 | R35 | A4 | Keep GitHub evidence and templates portable | `decisions/0005-keep-github-evidence-and-templates-portable.md` | Accepted | Prevents examples and sampled repositories from becoming defaults. |
+| R36 | A5 | Confirm global English display phrase before implementation | `open-questions.md` | Open | Recommended default is `development guidance target` with optional `concern` parenthetical. |
+| R37 | A5 | Confirm repository sampling count before implementation | `open-questions.md` | Open | Recommended default is at least five repositories, reducible to at least three with justification. |
+| R38 | A5 | Confirm fallback evidence scope before implementation | `open-questions.md` | Open | Recommended default excludes archive or clone inspection unless separately decided. |
+| R39 | A5 | Confirm future-pattern ownership before implementation | `open-questions.md` | Open | Recommended default splits repository evidence from topical interpretation. |
+| R40 | A5 | Confirm named stack example placement before implementation | `open-questions.md` | Open | Recommended default keeps core templates stack-neutral and moves longer examples elsewhere. |
 
 ## Requirement To Plan Unit
 
@@ -129,18 +140,24 @@
 | R33 | A4 | U9 | Planned | Full | Fallback evidence recording fields. |
 | R34 | A4 | U9 | Planned | Full | No-clone and target-evidence guardrails for fallback evidence. |
 | R35 | A4 | U9 | Planned | Full | Repository-neutral and stack-neutral template improvements. |
+| R36 | A5 | U10 | Planned | Full | Open question for global English display phrase. |
+| R37 | A5 | U10 | Planned | Full | Open question for stack-only repository sample count. |
+| R38 | A5 | U10 | Planned | Full | Open question for fallback evidence scope. |
+| R39 | A5 | U10 | Planned | Full | Open question for `Recommended Future Pattern` ownership. |
+| R40 | A5 | U10 | Planned | Full | Open question for named stack example placement. |
 
 ## Requirement To Artifact Persistence
 
 | Requirement | Artifact | Expected Persistence | Actual Persistence | Decision Record | Notes |
 | --- | --- | --- | --- | --- | --- |
-| R1-R35 | `docs/designs/docs-dev-template-governance-20260617-q7m2/**` | Tracked | Tracked-ready new files | None | Verified by completion audit. |
+| R1-R40 | `docs/designs/docs-dev-template-governance-20260617-q7m2/**` | Tracked | Tracked-ready new files | None | Verified by completion audit. |
 | R1 | `docs/dev/README.md` | Tracked | Unchanged in this package | None | Future implementation target. |
 | R2 | `docs/dev/_templates/**` | Tracked | Unchanged in this package | None | Future implementation target. |
 | R12-R16 | `docs/dev/_templates/repository/_template.md` | Tracked | Unchanged in this package | None | Future implementation target for concern discovery fields. |
 | R17-R22 | `docs/dev/README.md` and `docs/dev/_templates/**` | Tracked | Unchanged in this package | None | Future implementation targets for stack-only sampling instructions. |
 | R23-R30 | `docs/dev/README.md` and `docs/dev/_templates/**` | Tracked | Unchanged in this package | None | Future implementation targets for concern definition and fine-grained inference instructions. |
 | R31-R35 | `docs/dev/README.md` and `docs/dev/_templates/**` | Tracked | Unchanged in this package | None | Future implementation targets for fallback evidence and portability instructions. |
+| R36-R40 | `docs/designs/docs-dev-template-governance-20260617-q7m2/open-questions.md` | Tracked | New file in this package | None | Future implementation checkpoint for unresolved choices. |
 
 ## Requirement To Verification
 
@@ -181,6 +198,11 @@
 | R33 | A4 | V9 | Future diff review | Full | Yes | Applies during implementation. |
 | R34 | A4 | V9 | Future diff review | Full | Yes | Applies during implementation. |
 | R35 | A4 | V9 | Future diff review | Full | Yes | Applies during implementation. |
+| R36 | A5 | V10 | Open-question and implementation-note review | Full | Yes | Applies before or during implementation. |
+| R37 | A5 | V10 | Open-question and implementation-note review | Full | Yes | Applies before or during implementation. |
+| R38 | A5 | V10 | Open-question and implementation-note review | Full | Yes | Applies before or during implementation. |
+| R39 | A5 | V10 | Open-question and implementation-note review | Full | Yes | Applies before or during implementation. |
+| R40 | A5 | V10 | Open-question and implementation-note review | Full | Yes | Applies before or during implementation. |
 
 ## Requirement To Completion Evidence
 
@@ -221,6 +243,11 @@
 | R33 | `completion-audit.md#requirement-audit` | Pass | Fallback evidence recording contract recorded. |
 | R34 | `completion-audit.md#requirement-audit` | Pass | Fallback no-clone and target-evidence guardrails recorded. |
 | R35 | `completion-audit.md#requirement-audit` | Pass | Repository-neutral and stack-neutral template improvement requirement recorded. |
+| R36 | `completion-audit.md#requirement-audit` | Pass | Global English display phrase open question recorded. |
+| R37 | `completion-audit.md#requirement-audit` | Pass | Repository sample count open question recorded. |
+| R38 | `completion-audit.md#requirement-audit` | Pass | Fallback evidence scope open question recorded. |
+| R39 | `completion-audit.md#requirement-audit` | Pass | Future-pattern ownership open question recorded. |
+| R40 | `completion-audit.md#requirement-audit` | Pass | Named stack example placement open question recorded. |
 
 ## Coverage Gaps
 
@@ -233,3 +260,4 @@
 | Stack-only sampling instructions not implemented. | R17-R22 | Future templates do not yet guide this workflow. | Implement U7 in the next docs/dev update. |
 | Concern definition and fine-grained inference instructions not implemented. | R23-R30 | Future docs do not yet define the term or detailed GitHub inference method. | Implement U8 in the next docs/dev update. |
 | Fallback evidence and explicit portability instructions not implemented. | R31-R35 | Future docs do not yet describe non-`gh` GitHub evidence paths or portability checks. | Implement U9 in the next docs/dev update. |
+| Open questions not closed. | R36-R40 | Future implementers still need to answer or intentionally apply recommended defaults. | Review `open-questions.md` at P0 and record any non-default choice. |

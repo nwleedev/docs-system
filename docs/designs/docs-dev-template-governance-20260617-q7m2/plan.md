@@ -12,7 +12,7 @@ origin: docs/designs/docs-dev-template-governance-20260617-q7m2/requirements.md
 
 Future implementation should update `docs/dev/README.md` and `docs/dev/_templates/**` to add a stack-neutral guidance gap workflow. The implementation must preserve the current evidence-based rule promotion model while adding a way to record missing or recommended guidance before code exists.
 
-This plan is now aligned to the full design package through A4 / R35. The next implementation should keep the existing template-based system, then add a concern discovery layer, stack-only repository sampling instructions, `gh` fallback evidence paths, and repository-neutral / stack-neutral portability checks.
+This plan is now aligned to the full design package through A5 / R40. The next implementation should keep the existing template-based system, then add a concern discovery layer, stack-only repository sampling instructions, `gh` fallback evidence paths, repository-neutral / stack-neutral portability checks, and a pre-implementation open-question checkpoint.
 
 ## Problem Frame
 
@@ -57,6 +57,11 @@ The implementation should not rewrite the `docs/dev` architecture from scratch. 
 - R33. Require fallback evidence to record tool/interface, source URLs, steps, inspected pages/files, date, summary, limitations, and confidence impact.
 - R34. Preserve no-clone/no-vendor and target-evidence guardrails for fallback evidence.
 - R35. Make future docs/dev template improvements explicitly repository-neutral and stack-neutral, with named technologies only as optional examples.
+- R36. Confirm the global English display phrase for `concern`; recommended default is `development guidance target` with optional `concern` parenthetical.
+- R37. Confirm default stack-only public repository sample count; recommended default is at least five, reducible to at least three with recorded justification.
+- R38. Confirm official non-`gh` fallback evidence scope; recommended default is GitHub Web UI, REST API through an approved HTTP client, and installed GitHub MCP or connector output, with archive or clone inspection requiring a separate decision.
+- R39. Confirm `Recommended Future Pattern` ownership; recommended default is evidence and classification in `repository`, interpretation and application guidance in the topical owner folder.
+- R40. Confirm named stack example placement; recommended default is minimal stack-neutral core templates with longer examples in separate example or research sections.
 
 ## Plan Amendments
 
@@ -66,6 +71,7 @@ The implementation should not rewrite the `docs/dev` architecture from scratch. 
 | A2 | R17-R22 | U1-U6 | U7 | None | None | None | None | `decisions/0003-sample-real-repositories-before-stack-only-concern-selection.md` | Add V7. |
 | A3 | R23-R30 | U1-U7 | U8 | None | None | None | None | `decisions/0004-define-concern-as-development-guidance-target.md` | Add V8. |
 | A4 | R31-R35 | U1-U8 | U9 | None | None | None | None | `decisions/0005-keep-github-evidence-and-templates-portable.md` | Add V9. |
+| A5 | R36-R40 | U1-U9 | U10 | None | None | None | None | None; open questions only. | Add V10. |
 
 ## Key Technical Decisions
 
@@ -74,13 +80,15 @@ The implementation should not rewrite the `docs/dev` architecture from scratch. 
 - Stack-only inputs will trigger public repository sampling before concern candidate selection. See `decisions/0003-sample-real-repositories-before-stack-only-concern-selection.md`.
 - `Concern` will remain the term, but future docs must define it as a development guidance target and require fine-grained GitHub evidence before recommending library or framework patterns. See `decisions/0004-define-concern-as-development-guidance-target.md`.
 - GitHub evidence collection will prefer `gh`, but future docs must define equivalent fallback paths and keep all template improvements independent of any specific repository or named stack. See `decisions/0005-keep-github-evidence-and-templates-portable.md`.
+- Five implementation choices remain open by design: global English display phrase, repository sample count, fallback evidence scope, future-pattern ownership, and named-stack example placement. See `open-questions.md`.
 - Automation is deferred. The plan may describe scorecard-like review checks, but must not add scripts, CI, dependencies, or generated outputs without a new decision.
 
 ## Current Package State
 
 | Area | Current State | Implementation Meaning |
 | --- | --- | --- |
-| Design package | R1-R35, A0-A4, RS1-RS4, D1-D5, U1-U9, V1-V9 are recorded. | Future implementation can start from this package without reopening the original conversation. |
+| Design package | R1-R40, A0-A5, RS1-RS4, D1-D5, U1-U10, V1-V10 are recorded. | Future implementation can start from this package without reopening the original conversation. |
+| Open questions | `open-questions.md` records five unresolved choices with options, trade-offs, and recommended defaults. | Implementation can proceed with recommended defaults only if no explicit user/team choice is available, and should record any non-default choice. |
 | `docs/dev/README.md` | Unchanged in this design package. | Root governance still needs concern definition, concern inventory reading flow, stack-only sampling summary, fallback evidence summary, and portability guardrails. |
 | `docs/dev/_templates/**` | Unchanged in this design package. | Templates still need concern inventory fields, evidence ladder instructions, fallback evidence fields, and stack-neutral wording cleanup. |
 | Automation | Deferred. | Do not add scripts, CI, dependencies, or generated outputs unless a new decision record is accepted. |
@@ -99,25 +107,37 @@ The implementation should not rewrite the `docs/dev` architecture from scratch. 
 | `docs/dev/README.md` and `docs/dev/_templates/repository/_template.md` stack-only sampling sections | R17-R22 | Tracked | `git status --porcelain --ignored docs/dev/README.md docs/dev/_templates/repository/_template.md` | None |
 | `docs/dev/README.md` and relevant `docs/dev/_templates/**` concern definition and detailed inference sections | R23-R30 | Tracked | `git status --porcelain --ignored docs/dev/README.md docs/dev/_templates` | None |
 | `docs/dev/README.md` and relevant `docs/dev/_templates/**` fallback evidence and portability sections | R31-R35 | Tracked | `git status --porcelain --ignored docs/dev/README.md docs/dev/_templates` | None |
+| `docs/designs/docs-dev-template-governance-20260617-q7m2/open-questions.md` | R36-R40 | Tracked | `git status --porcelain --ignored docs/designs/docs-dev-template-governance-20260617-q7m2/open-questions.md` | None unless closing or overriding a recommended default. |
 
 ## Recommended Implementation Sequence
 
 | Phase | Units | Goal | Primary Files | Exit Criteria |
 | --- | --- | --- | --- | --- |
-| P0. Baseline audit | U5 | Reconfirm the target docs/dev state and keep this design package as implementation source of truth. | `docs/designs/docs-dev-template-governance-20260617-q7m2/**`, `docs/dev/**` | Current docs/dev files are inventoried; no implementation scope is narrowed. |
+| P0. Baseline audit and open-question checkpoint | U5, U10 | Reconfirm the target docs/dev state, keep this design package as implementation source of truth, and review unresolved choices before editing templates. | `docs/designs/docs-dev-template-governance-20260617-q7m2/**`, `docs/dev/**` | Current docs/dev files are inventoried; open questions are answered, deferred with recommended defaults, or escalated to a decision record. |
 | P1. Root governance | U1, U8, U9 | Add the portable root concepts: `concern` definition, classification states, reading flow, GitHub evidence fallback summary, and repository/stack neutrality rules. | `docs/dev/README.md` | Root README defines concerns before using concern inventory language and does not require any named stack or repository. |
 | P2. Template router | U2, U3 | Make `_templates/README.md` route concern categories to existing folder ownership without replacing the template system. | `docs/dev/_templates/README.md`, folder README files under `_templates/**` | Router explains where concern records, current rules, future patterns, and local evidence belong. |
 | P3. Repository evidence template | U4, U6, U7, U8, U9 | Add concern inventory, evidence lanes, stack-only sampling, detailed inference, fallback evidence, and confidence/applicability fields. | `docs/dev/_templates/repository/_template.md`, `docs/dev/_templates/_bootstrap-audit.md` | A new repo can record stack/topic/operational evidence, sampled GitHub evidence, fallback limitations, and concern status without inventing current rules. |
 | P4. Folder body templates | U3, U6, U8 | Ensure architecture, engineering, domain, evolution, ai, and decisions templates consume concern records consistently. | `docs/dev/_templates/*/_template.md`, `docs/dev/_templates/*/README.md` | Each folder template keeps its ownership boundary and links current rules to evidence-backed concerns. |
-| P5. Verification and cleanup | U1-U9 | Prove the implementation is portable, evidence-bound, and complete. | `docs/dev/README.md`, `docs/dev/_templates/**`, design package audit files if updated | V1-V9 pass; no named repository or named stack is required; template markers are removed. |
+| P5. Verification and cleanup | U1-U10 | Prove the implementation is portable, evidence-bound, and complete. | `docs/dev/README.md`, `docs/dev/_templates/**`, design package audit files if updated | V1-V10 pass; no named repository or named stack is required; template markers are removed. |
 
 ## Implementation Order Detail
 
-1. Update `docs/dev/README.md` first because every template depends on the portable definitions for `concern`, classification, rule promotion, and fallback evidence.
-2. Update `docs/dev/_templates/README.md` second so authors can route concern records to existing folders before editing individual templates.
-3. Update `docs/dev/_templates/repository/_template.md` and `_bootstrap-audit.md` third because they capture stack evidence, repository topic evidence, operational evidence, GitHub sampling, fallback evidence, confidence, and unresolved gaps.
-4. Update folder-specific README and body templates after the repository evidence flow is stable; these should consume concern records, not duplicate repository evidence ownership.
-5. Run the full verification table after all docs/dev template changes are complete; do not mark current rules as implemented unless target repository evidence exists.
+1. Review `open-questions.md` before editing implementation templates; if no explicit answer is available, use the recommended default and record that choice in implementation notes.
+2. Update `docs/dev/README.md` because every template depends on the portable definitions for `concern`, classification, rule promotion, and fallback evidence.
+3. Update `docs/dev/_templates/README.md` so authors can route concern records to existing folders before editing individual templates.
+4. Update `docs/dev/_templates/repository/_template.md` and `_bootstrap-audit.md` because they capture stack evidence, repository topic evidence, operational evidence, GitHub sampling, fallback evidence, confidence, and unresolved gaps.
+5. Update folder-specific README and body templates after the repository evidence flow is stable; these should consume concern records, not duplicate repository evidence ownership.
+6. Run the full verification table after all docs/dev template changes are complete; do not mark current rules as implemented unless target repository evidence exists.
+
+## Open-Question Defaults To Apply
+
+| Question | Recommended Default | Applies To |
+| --- | --- | --- |
+| Global English display phrase for `concern` | Use `development guidance target` and optionally write `concern` in parentheses on first use. | R23-R25, R36, U8, U10 |
+| Stack-only sample count | Sample at least five public repositories; reduce to at least three only with recorded justification. | R17-R22, R37, U7, U10 |
+| Non-`gh` fallback scope | Allow GitHub Web UI, GitHub REST API through approved HTTP clients, and installed GitHub MCP or connector output; require separate decision for archive or clone inspection. | R31-R34, R38, U9, U10 |
+| `Recommended Future Pattern` ownership | Keep evidence and classification in `repository`; put interpretation and application guidance in the topical owner folder. | R7-R9, R15, R39, U2, U4, U6, U10 |
+| Named stack examples | Keep core templates minimal and stack-neutral; place longer examples in separate example or research sections. | R4-R6, R35, R40, U3, U9, U10 |
 
 ## Concern Workflow To Implement
 
@@ -164,6 +184,7 @@ Fallback evidence must still obey the no-clone/no-vendor rule unless a separate 
 | U7 | Planned | R17-R22 | Add stack-only sampling guidance that uses GitHub CLI or equivalent evidence to select, inspect, summarize, and classify multiple real public repositories before applying concern candidates locally. | Tracked | V7 |
 | U8 | Planned | R23-R30 | Add an explicit `concern` definition and fine-grained GitHub inference guidance covering evidence ladder, direct file reads, official docs cross-validation, code-search limitations, confidence, grouping, and local applicability. | Tracked | V8 |
 | U9 | Planned | R31-R35 | Add `gh` fallback evidence guidance and explicit repository-neutral, stack-neutral portability checks for future docs/dev template updates. | Tracked | V9 |
+| U10 | Planned | R36-R40 | Preserve unresolved implementation choices, options, trade-offs, and recommended defaults before future docs/dev edits. | Tracked | V10 |
 
 ## Implementation-Time Decision Boundaries
 
@@ -182,6 +203,7 @@ Stop implementation and create or update a decision record when:
 - a future change makes `gh` mandatory instead of allowing equivalent GitHub evidence fallbacks;
 - a future change encodes this repository, sampled public repositories, an organization, or a named technology stack as the portable template baseline;
 - a future change removes existing `docs/dev` ownership boundaries instead of extending them.
+- a future change chooses a non-recommended answer for an open question without recording the reason in implementation notes or a decision record.
 
 ## Verification
 
@@ -196,6 +218,7 @@ Stop implementation and create or update a decision record when:
 | V7 | R17-R22, U7 | Review future stack-only sampling instructions and sample evidence table. | Instructions require multiple active public repositories, explicit selection filters, actual file/script/workflow inspection, common/divergent/repository-specific grouping, local applicability review, and reproducible GitHub evidence without cloning. |
 | V8 | R23-R30, U8 | Review future `docs/dev/README.md` and relevant template diffs plus sample concern records. | Docs define `concern` as a development guidance target, distinguish it from features/UI/dependency names, and require evidence ladder, direct file reads, official docs cross-validation, confidence, grouping, and local applicability. |
 | V9 | R31-R35, U9 | Review future fallback evidence instructions and named-repo/named-stack search results. | Docs state `gh` is preferred but optional, define fallback evidence fields, preserve no-clone/current-rule guardrails, and avoid making any specific repository or named stack the template baseline. |
+| V10 | R36-R40, U10 | Review `open-questions.md` and future implementation notes. | Five unresolved choices are visible with options, trade-offs, and recommended defaults; any non-default implementation choice records a reason. |
 
 ## Risks And Dependencies
 
@@ -220,6 +243,7 @@ Stop implementation and create or update a decision record when:
 - `decisions/0003-sample-real-repositories-before-stack-only-concern-selection.md`
 - `decisions/0004-define-concern-as-development-guidance-target.md`
 - `decisions/0005-keep-github-evidence-and-templates-portable.md`
+- `open-questions.md`
 - `docs/dev/README.md`
 - `docs/dev/_templates/README.md`
 - `docs/designs/README.md`

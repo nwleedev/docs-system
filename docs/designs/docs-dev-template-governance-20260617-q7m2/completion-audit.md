@@ -22,6 +22,7 @@
 | A2 | R17-R22 | Yes | Added GitHub CLI research, decision, plan, traceability, and audit rows. | Stack-only public repository sampling addition. |
 | A3 | R23-R30 | Yes | Added terminology and detailed GitHub inference research, decision, plan, traceability, and audit rows. | Concern definition and fine-grained inference addition. |
 | A4 | R31-R35 | Yes | Added fallback evidence and explicit portability requirements, plan, traceability, and audit rows. | `gh` fallback and repository/stack neutrality addition. |
+| A5 | R36-R40 | Yes | Added open questions, recommended defaults, plan checkpoint, traceability, and audit rows. | Unresolved implementation choice preservation. |
 
 ## Amendment Coverage
 
@@ -32,6 +33,7 @@
 | A2 | Adds | R1-R16 remain valid. | R17-R22 in `requirements.md`; RS3; D3; U7; V7. | None. | Yes | Audit stack-only sampling addition. |
 | A3 | Adds | R1-R22 remain valid. | R23-R30 in `requirements.md`; RS4; D4; U8; V8. | None. | Yes | Audit concern definition and fine-grained GitHub inference addition. |
 | A4 | Adds | R1-R30 remain valid. | R31-R35 in `requirements.md`; D5; U9; V9. | None. | Yes | Audit fallback evidence and portability addition. |
+| A5 | Adds | R1-R35 remain valid. | R36-R40 in `requirements.md`; `open-questions.md`; U10; V10. | None. | Yes | Audit open-question preservation. |
 
 ## Requirement Audit
 
@@ -72,6 +74,11 @@
 | R33 | A4 | Fallback evidence records reproducibility fields and limitations. | R33 in `requirements.md`, D5, U9/V9 in `plan.md`, traceability rows. | Pass | Future implementation must add exact fields. |
 | R34 | A4 | Fallback evidence preserves no-clone and target-evidence guardrails. | R34 in `requirements.md`, D5, U9/V9 in `plan.md`, traceability rows. | Pass | External sampled evidence remains non-current until local evidence exists. |
 | R35 | A4 | Template improvements remain repository-neutral and stack-neutral. | R35 in `requirements.md`, D5, U9/V9 in `plan.md`, traceability rows. | Pass | Future implementation must review named repository and named stack wording. |
+| R36 | A5 | Global English display phrase open question is preserved. | R36 in `requirements.md`, OQ1 in `open-questions.md`, U10/V10 in `plan.md`, traceability rows. | Pass | Recommended default is `development guidance target` with optional `concern` parenthetical. |
+| R37 | A5 | Repository sample count open question is preserved. | R37 in `requirements.md`, OQ2 in `open-questions.md`, U10/V10 in `plan.md`, traceability rows. | Pass | Recommended default is at least five, reducible to at least three with justification. |
+| R38 | A5 | Non-`gh` fallback evidence scope open question is preserved. | R38 in `requirements.md`, OQ3 in `open-questions.md`, U10/V10 in `plan.md`, traceability rows. | Pass | Archive or clone inspection needs a separate decision. |
+| R39 | A5 | `Recommended Future Pattern` ownership open question is preserved. | R39 in `requirements.md`, OQ4 in `open-questions.md`, U10/V10 in `plan.md`, traceability rows. | Pass | Recommended default splits repository evidence from topical interpretation. |
+| R40 | A5 | Named stack example placement open question is preserved. | R40 in `requirements.md`, OQ5 in `open-questions.md`, U10/V10 in `plan.md`, traceability rows. | Pass | Recommended default keeps core templates stack-neutral and longer examples separate. |
 
 ## Command And Review Evidence
 
@@ -85,6 +92,7 @@
 | E20 | GitHub CLI repository sampling research. | R17-R22 | A2 | Observed | Sources recorded in `research/0003-stack-only-concern-discovery-from-public-repositories.md`. |
 | E24 | Concern terminology and fine-grained GitHub inference research. | R23-R30 | A3 | Observed | Sources recorded in `research/0004-concern-terminology-and-fine-grained-github-inference.md`. |
 | E29 | Fallback evidence and portability requirement review. | R31-R35 | A4 | Observed | Requirements, plan, traceability, and audit rows added. |
+| E32 | Open-question and recommended-default review. | R36-R40 | A5 | Observed | Options and recommendations recorded in `open-questions.md` and reflected in `plan.md`. |
 
 ## Artifact Persistence Evidence
 
@@ -105,6 +113,7 @@
 | E25 | `docs/designs/docs-dev-template-governance-20260617-q7m2/research/0004-concern-terminology-and-fine-grained-github-inference.md` | Tracked | New package file created. | Pass | None |
 | E26 | `docs/designs/docs-dev-template-governance-20260617-q7m2/decisions/0004-define-concern-as-development-guidance-target.md` | Tracked | New package file created. | Pass | None |
 | E31 | `docs/designs/docs-dev-template-governance-20260617-q7m2/decisions/0005-keep-github-evidence-and-templates-portable.md` | Tracked | New package file created. | Pass | None |
+| E33 | `docs/designs/docs-dev-template-governance-20260617-q7m2/open-questions.md` | Tracked | New package file created. | Pass | None |
 
 ## Source And Artifact Evidence
 
@@ -118,6 +127,7 @@
 | E27 | `docs/dev/README.md` and relevant `docs/dev/_templates/**` concern definition sections | R23-R30 | Future implementation target for concern terminology and detailed inference instructions. |
 | E28 | GitHub CLI, GitHub code search, direct file reads, and Context7 official docs evidence | R23-R30 | External research evidence only; no external repository cloned. |
 | E30 | `docs/dev/README.md` and relevant `docs/dev/_templates/**` fallback evidence and portability sections | R31-R35 | Future implementation target for fallback evidence and repository/stack neutrality instructions. |
+| E34 | `open-questions.md` | R36-R40 | Future implementation checkpoint for unresolved global terminology, sampling, fallback, ownership, and example-placement choices. |
 
 ## Final Verdict
 
@@ -132,3 +142,4 @@ Verdict: Complete
 - Stack-only public repository sampling instructions remain future implementation work under U7.
 - Concern definition and fine-grained GitHub inference instructions remain future implementation work under U8.
 - Fallback GitHub evidence and explicit repository/stack portability instructions remain future implementation work under U9.
+- Open questions remain intentionally unresolved; future implementation should answer them, apply recommended defaults, or record a non-default decision under U10.
