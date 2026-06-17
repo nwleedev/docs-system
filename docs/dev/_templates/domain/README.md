@@ -15,7 +15,7 @@ Use this template for product vocabulary, state meaning, business rules, and inv
 
 ## Do Not Use For
 
-- TypeScript type mechanics or validation library usage. Use `engineering/`.
+- Static type mechanics or validation library usage. Use `engineering/`.
 - Feature import direction or module ownership. Use `architecture/`.
 - Unaccepted domain-model redesign. Use `evolution/`.
 - Long-lived decision rationale. Use `decisions/`.
@@ -24,9 +24,12 @@ Use this template for product vocabulary, state meaning, business rules, and inv
 
 Confirm the target repository's `docs/dev/domain/README.md` if it exists. If it does not exist, create only terms backed by repeated source, API, test, or product-document evidence.
 
+Check `docs/dev/repository/README.md` for repository topic evidence and development guidance targets. Domain owns interpretation rules; repository evidence owns discovery and confidence.
+
 ## Completion Check
 
 - The term or invariant is grounded in target-repository evidence.
+- Any linked development guidance target records decision point, risk, evidence, owner folder, classification, confidence, and follow-up.
 - Ambiguous meanings are classified as open questions instead of current rules.
 - Positive and negative examples explain user, state, or business impact.
 - Code examples are optional; interpretation examples are required when code is not the clearest form.

@@ -43,6 +43,12 @@ Describe the pressure that makes a durable decision necessary.
 | --- | --- | --- | --- |
 | <repo path or stable URL> | <claim> | <why this decision evidence applies to the target repository> | <tracked / recoverable / volatile> |
 
+## Linked Development Guidance Targets
+
+| Target | Decision Point | Risk | Repository Evidence | Classification | Confidence |
+| --- | --- | --- | --- | --- | --- |
+| <development guidance target> | <choice this decision accepts/defers/rejects> | <risk> | <repository evidence path or row> | <Current Rule / Recommended Future Pattern / Open Question / Local Constraint / Not Applicable> | <High / Medium / Low> |
+
 ## Classification
 
 - Decision status: <Proposed / Accepted / Deferred / Superseded / Rejected / Partially Superseded / Partially Restored>
@@ -93,6 +99,7 @@ If no option is accepted yet, state `No option is accepted yet` and keep the sta
 ## Completion Check
 
 - [ ] Status is explicit.
+- [ ] Linked development guidance targets are classified and grounded in repository evidence.
 - [ ] Options and trade-offs are recorded.
 - [ ] Consequences name affected `docs/dev` folders.
 - [ ] Supersession is explicit when prior guidance changes.

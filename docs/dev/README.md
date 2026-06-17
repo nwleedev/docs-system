@@ -10,6 +10,20 @@
 - current guidance, future proposal, local evidence, AI rule, decision record를 물리적으로 분리한다.
 - 대상 레포에 `docs/dev`가 없거나 부분적으로만 있을 때 bootstrap 순서를 제공한다.
 - best/anti-pattern 예시를 단순 코드 샘플이 아니라 의도, 실패 모드, 영향, 대안, 검증 방법을 설명하는 teaching artifact로 관리한다.
+- implementation 전에 누락된 development guidance target을 드러내고, current rule과 future proposal을 섞지 않게 한다.
+
+## Development Guidance Targets
+
+`development guidance target`은 `docs/dev`에 current rule, future proposal, local constraint, open question으로 기록할 수 있는 구체적인 개발 판단 지점이다. 짧게 `concern`이라고 부를 수 있지만, 사용자 기능, UI 화면, 제품 아이디어, dependency 이름, 넓은 기술 카테고리 그 자체를 뜻하지 않는다.
+
+대표적인 target은 다음과 같다.
+
+- library composition, state ownership, validation contract, generated artifact rule
+- client/server boundary, module boundary, import direction, public API ownership
+- verification obligation, release or maintenance risk, documentation ownership
+- domain vocabulary, state meaning, business invariant interpretation
+
+대상 레포의 evidence가 부족하면 current rule로 쓰지 않는다. 대신 `Open Question`, `Local Constraint`, `Recommended Future Pattern`, `Not Applicable` 중 하나로 분류하고, 필요한 follow-up을 남긴다.
 
 ## Folder Ownership
 
@@ -30,12 +44,13 @@
 
 1. 이 README에서 folder ownership과 repository evidence 위치를 확인한다.
 2. 대상 레포의 [repository](repository/README.md)를 읽고 기술스택, source layout, generated code, verification commands, local constraints를 확인한다.
-3. 구조 변경이나 import boundary가 있으면 [architecture](architecture/README.md)를 읽는다.
-4. 언어, framework, API, test, lint, build, generated-code 작업이면 [engineering](engineering/README.md)을 읽는다.
-5. 업무 용어와 상태 의미가 애매하면 [domain](domain/README.md)을 확인한다.
-6. 대안이나 migration 후보는 [evolution](evolution/README.md)에서 확인하되 current rule로 적용하지 않는다.
-7. AI와 함께 작업하면 [ai](ai/README.md)의 적용 순서와 불확실성 처리 기준을 따른다.
-8. 기존 결정과 충돌하거나 source-of-truth ownership이 바뀌면 [decisions](decisions/README.md)를 확인한다.
+3. `Development Guidance Target Inventory`가 있으면 작업 대상 target의 classification과 owner folder를 확인한다.
+4. 구조 변경이나 import boundary가 있으면 [architecture](architecture/README.md)를 읽는다.
+5. 언어, framework, API, test, lint, build, generated-code 작업이면 [engineering](engineering/README.md)을 읽는다.
+6. 업무 용어와 상태 의미가 애매하면 [domain](domain/README.md)을 확인한다.
+7. 대안이나 migration 후보는 [evolution](evolution/README.md)에서 확인하되 current rule로 적용하지 않는다.
+8. AI와 함께 작업하면 [ai](ai/README.md)의 적용 순서와 불확실성 처리 기준을 따른다.
+9. 기존 결정과 충돌하거나 source-of-truth ownership이 바뀌면 [decisions](decisions/README.md)를 확인한다.
 
 ### Before Creating Or Updating docs/dev
 
@@ -44,6 +59,47 @@
 3. [\_templates](./_templates/README.md)에서 folder-specific template을 고른다.
 4. 대상 `docs/dev/<folder>/README.md`의 Include, Exclude, Dynamic File Policy로 최종 배치를 확인한다.
 5. 새 구조를 만들거나 큰 갱신을 하면 [\_bootstrap-audit](./_templates/_bootstrap-audit.md) 또는 동등한 audit에 evidence와 unresolved gaps를 기록한다.
+
+## Development Guidance Target Inventory
+
+각 레포는 `repository/README.md` 또는 `repository/<topic>.md`에 target inventory를 둘 수 있다. 이 inventory는 current rule을 소유하지 않고, evidence와 classification을 top-level owner folder로 연결한다.
+
+| Field | Required Meaning |
+| --- | --- |
+| Target | 구체적인 development guidance target. Dependency 이름이나 기능 이름만 쓰지 않는다. |
+| Decision point | 구현자가 실제로 선택해야 하는 boundary, ownership, API, validation, verification, migration, documentation 판단. |
+| Risk | 잘못 처리했을 때 생기는 bug, coupling, review blind spot, user impact, maintenance cost. |
+| Evidence | repo-relative source/config/test/doc paths, official docs, stable public URLs, or recorded GitHub evidence. |
+| Owner folder | `architecture`, `engineering`, `domain`, `evolution`, `ai`, `decisions`, or `repository` evidence. |
+| Classification | `Current Rule`, `Recommended Future Pattern`, `Open Question`, `Local Constraint`, or `Not Applicable`. |
+| Confidence | `High`, `Medium`, or `Low`, with conflict and limitation notes. |
+| Follow-up | next evidence, decision, docs update, or verification needed. |
+
+`Recommended Future Pattern`은 target repository evidence가 아직 current rule 승격에 부족하지만, stack/config evidence와 official documentation 또는 public repository evidence가 future direction을 지지할 때 사용한다. Evidence와 classification은 `repository/`에 두고, 해석과 적용 방향은 해당 owner folder의 문서에 둔다.
+
+## Stack-Only Repository Sampling
+
+기술스택만 주어진 상태에서 target을 추정하지 않는다. 먼저 실제 public repositories를 여러 개 조사해 common, divergent, repository-specific target 후보를 분리한다.
+
+| Step | Rule |
+| --- | --- |
+| Select samples | active, non-archived, non-fork repositories를 우선하고, stack relevance와 adoption signal을 기록한다. 기본값은 5개이며 근거가 있으면 3개까지 줄일 수 있다. |
+| Inspect evidence | description만 보지 말고 manifests, lockfiles, scripts, workflows, source layout, docs, releases, maintenance signals를 확인한다. |
+| Group targets | `Shared Stack`, `Stack Plus Domain`, `Repository Specific`으로 분류한다. |
+| Review local applicability | sampled evidence는 discovery aid다. Target repository evidence 없이 current rule이 될 수 없다. |
+| Preserve evidence | commands, URLs, inspected paths, retrieved date, limitations, confidence impact를 기록한다. |
+
+## GitHub Evidence Fallbacks
+
+GitHub evidence 수집에는 `gh`를 선호하지만 필수로 만들지 않는다. `gh`가 없거나 인증, rate limit, 환경 정책 때문에 사용할 수 없으면 다음 fallback을 사용할 수 있다.
+
+| Preferred Path | Accepted Fallback | Required Recording |
+| --- | --- | --- |
+| `gh search repos`, `gh repo view`, `gh api`, `gh search code` | GitHub Web UI, GitHub REST API through an approved HTTP client, installed GitHub MCP or connector output, stable GitHub file URLs | tool/interface, source URLs, query or navigation steps, inspected files/pages, retrieved date, evidence summary, limitations, confidence impact |
+| Direct repository content reads | Stable blob/raw URLs, GitHub Web file view, REST API file endpoint | exact path, branch or commit context when available, relevant code/config summary, limitations |
+| Structured JSON output | Manual evidence table or connector summary | field names used, missing fields, confidence impact |
+
+Temporary archive or clone inspection is not a normal fallback. Use it only after a separate decision or explicit implementation note records the temporary location, cleanup rule, and no-vendor boundary.
 
 ## Target Repository Evidence
 
@@ -97,6 +153,19 @@
 - Local or restricted evidence must be summarized enough for a future reviewer to understand the obligation without private context.
 - Repo-specific paths, stacks, generated output names, and external checkout constraints belong in `repository/`, not in this portable README.
 - If evidence is missing, record `Open Question`, `Local Constraint`, or `Recommended Future Pattern` instead of inventing a current rule.
+- Code search and repository descriptions are discovery aids, not proof. Confirm important claims through manifests, direct file reads, workflows, tests, official docs, or target repository evidence.
+
+## Portability Checks
+
+Before committing a `docs/dev` template or root governance update, verify that portable docs still work without this repository, a sampled public repository, an organization, or a named technology stack.
+
+| Check | Fails If |
+| --- | --- |
+| Repository neutrality | A local or sampled repository becomes the required baseline. |
+| Stack neutrality | A named stack is required for the template system to work instead of being optional evidence or an example. |
+| Evidence ownership | `repository/` starts owning current rules, or top-level folders duplicate evidence tables. |
+| Rule promotion | External or sampled evidence becomes `Current Rule` without target repository evidence. |
+| Tool portability | GitHub evidence instructions have only one required tool path and no equivalent fallback. |
 
 ## Template Usage
 

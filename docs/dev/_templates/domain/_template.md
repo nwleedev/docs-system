@@ -28,6 +28,12 @@ Explain the vocabulary, state meaning, business rule, or invariant this document
 | --- | --- | --- |
 | <repo-relative path> | <term/state/rule observed> | <Current Rule / Local Constraint / Open Question> |
 
+## Linked Development Guidance Targets
+
+| Target | Decision Point | Risk | Repository Evidence | Classification | Confidence |
+| --- | --- | --- | --- | --- | --- |
+| <development guidance target> | <vocabulary/state/invariant interpretation choice> | <risk> | <repository evidence path or row> | <Current Rule / Recommended Future Pattern / Open Question / Local Constraint / Not Applicable> | <High / Medium / Low> |
+
 ## Source Evidence
 
 | Source | Claim Used | Local Applicability | Recoverability Caveat |
@@ -84,6 +90,7 @@ Explain the vocabulary, state meaning, business rule, or invariant this document
 ## Completion Check
 
 - [ ] Target Repository Evidence is complete or missing evidence is explicitly classified.
+- [ ] Linked development guidance targets are classified and grounded in repository evidence.
 - [ ] Scenario Coverage appears before examples.
 - [ ] Every scenario maps to a positive/negative example or no-code rationale.
 - [ ] Domain explanations are understandable without knowing the existing codebase.

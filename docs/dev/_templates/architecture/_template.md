@@ -28,6 +28,12 @@ Explain the structural rule this document teaches and why it is needed in this t
 | --- | --- | --- |
 | <repo-relative path> | <observed structure> | <Current Rule / Local Constraint / Open Question> |
 
+## Linked Development Guidance Targets
+
+| Target | Decision Point | Risk | Repository Evidence | Classification | Confidence |
+| --- | --- | --- | --- | --- | --- |
+| <development guidance target> | <boundary/ownership/runtime choice> | <risk> | <repository evidence path or row> | <Current Rule / Recommended Future Pattern / Open Question / Local Constraint / Not Applicable> | <High / Medium / Low> |
+
 ## Source Evidence
 
 | Source | Claim Used | Local Applicability | Recoverability Caveat |
@@ -85,6 +91,7 @@ Explain the structural rule this document teaches and why it is needed in this t
 ## Completion Check
 
 - [ ] Target Repository Evidence is complete or missing evidence is explicitly classified.
+- [ ] Linked development guidance targets are classified and grounded in repository evidence.
 - [ ] Scenario Coverage appears before examples.
 - [ ] Every scenario maps to an example pair or no-example rationale.
 - [ ] Best and anti-pattern explanations are understandable to a first-time reader.

@@ -24,9 +24,12 @@ Use this template for repo-tracked AI working rules: reading order, uncertainty 
 
 Confirm the target repository's `docs/dev/ai/README.md` and any root AI instruction files. This template must not require a specific skill, session state, local path, or model-specific workflow.
 
+Check `docs/dev/repository/README.md` for development guidance targets that affect AI behavior, uncertainty handling, fallback evidence, or rule promotion.
+
 ## Completion Check
 
 - Reading order and uncertainty behavior are explicit.
+- Any linked development guidance target records decision point, risk, evidence, owner folder, classification, confidence, and follow-up.
 - Future proposals are not applied as current rules.
 - Legacy cleanup remains scoped to user instructions.
 - Missing examples require local evidence and official or primary documentation instead of generic snippets.

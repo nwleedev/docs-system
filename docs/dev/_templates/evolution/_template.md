@@ -39,6 +39,12 @@ Describe the future pattern, migration, or alternative.
 | --- | --- | --- |
 | <repo-relative path or stable URL> | <finding> | <Recommended Future Pattern / Deferred / Open Question> |
 
+## Linked Development Guidance Targets
+
+| Target | Decision Point | Risk | Repository Evidence | Classification | Confidence |
+| --- | --- | --- | --- | --- | --- |
+| <development guidance target> | <future choice or migration decision> | <risk> | <repository evidence path or row> | <Recommended Future Pattern / Deferred / Open Question / Local Constraint> | <High / Medium / Low> |
+
 ## Source Evidence
 
 | Source | Claim Used | Local Applicability | Recoverability Caveat |
@@ -96,6 +102,7 @@ Describe the future pattern, migration, or alternative.
 ## Completion Check
 
 - [ ] The document visibly says it is not current rule.
+- [ ] Linked development guidance targets are classified and grounded in repository evidence.
 - [ ] Current constraint, proposed direction, migration risk, rollback, and promotion criteria are present.
 - [ ] Unsupported claims are open questions, not current rules.
 - [ ] Placeholder text has been removed.

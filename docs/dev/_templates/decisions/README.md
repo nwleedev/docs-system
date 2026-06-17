@@ -25,8 +25,11 @@ Use this template for long-lived technical, architectural, documentation, or pro
 
 Confirm the target repository's `docs/dev/decisions/README.md` and any existing decision records. Do not rewrite accepted decisions silently; create a new record or mark supersession explicitly.
 
+Check `docs/dev/repository/README.md` for development guidance targets that need accepted, deferred, superseded, or rejected decision status before they affect current guidance.
+
 ## Completion Check
 
 - Status, context, options, decision, consequences, and revisit trigger are present.
+- Any linked development guidance target records decision point, risk, evidence, owner folder, classification, confidence, and follow-up.
 - Preserved and superseded scope are explicit when changing prior guidance.
 - Decision consequences identify which `docs/dev` folders or templates need updates.

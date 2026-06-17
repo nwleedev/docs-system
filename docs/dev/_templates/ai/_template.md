@@ -34,6 +34,12 @@ Explain the AI behavior this document standardizes.
 | --- | --- | --- |
 | <repo-relative path> | <finding> | <how the agent should behave> |
 
+## Linked Development Guidance Targets
+
+| Target | Decision Point | Risk | Repository Evidence | Classification | Confidence |
+| --- | --- | --- | --- | --- | --- |
+| <development guidance target> | <AI behavior or uncertainty choice> | <risk> | <repository evidence path or row> | <Current AI Rule / Recommended Future Pattern / Open Question / Local Constraint / Not Applicable> | <High / Medium / Low> |
+
 ## Source Evidence
 
 | Source | Claim Used | Local Applicability | Recoverability Caveat |
@@ -80,6 +86,7 @@ Explain the AI behavior this document standardizes.
 ## Completion Check
 
 - [ ] The rule works from repo-tracked files without a specific skill.
+- [ ] Linked development guidance targets are classified and grounded in repository evidence.
 - [ ] No skill-local path, absolute user path, worktree name, or session state is required.
 - [ ] Scenario Coverage appears before behavior examples.
 - [ ] Incorrect behavior examples explain the failure mode and safer alternative.
