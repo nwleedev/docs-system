@@ -14,6 +14,7 @@ Use this checklist when an AI agent or contributor creates or substantially reor
 | Source layout evidence | <source paths checked> |
 | Verification command evidence | <scripts/config/test paths checked> |
 | Constraints | <legacy/generated/external/security/release constraints> |
+| Open-question defaults applied | <global display phrase / sample count / fallback scope / future-pattern ownership / example placement choices> |
 
 ## Created Or Updated Structure
 
@@ -34,6 +35,24 @@ Use this checklist when an AI agent or contributor creates or substantially reor
 | --- | --- | --- | --- |
 | <claim> | <repo-relative source/config/test/doc paths> | <Current Rule / Local Constraint / Recommended Future Pattern / Open Question> | <reason> |
 
+## Development Guidance Target Inventory
+
+| Target | Decision Point | Risk | Evidence | Owner Folder | Classification | Confidence | Follow-Up |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| <target> | <choice> | <risk> | <paths/URLs> | <folder> | <Current Rule / Recommended Future Pattern / Open Question / Local Constraint / Not Applicable> | <High / Medium / Low> | <next step> |
+
+## Stack-Only Sampling Evidence
+
+| Repository | Selection Criteria | Inspected Evidence | Candidate Targets | Grouping | Local Applicability | Limitations |
+| --- | --- | --- | --- | --- | --- | --- |
+| <owner/name or URL> | <activity/non-archived/non-fork/adoption/stack relevance> | <manifests/scripts/workflows/source/docs/releases> | <targets> | <Shared Stack / Stack Plus Domain / Repository Specific> | <applies/does not apply/unknown> | <limitations> |
+
+## GitHub Evidence Fallbacks
+
+| Preferred `gh` Evidence | Fallback Used | Source URLs | Steps | Inspected Files Or Pages | Retrieved Date | Limitations | Confidence Impact |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| <gh command or unavailable reason> | <GitHub Web UI / REST API / GitHub MCP or connector / stable file URL> | <URLs> | <query/navigation steps> | <paths/pages> | <YYYY-MM-DD> | <limitations> | <impact> |
+
 ## Missing Evidence
 
 | Missing Evidence | Checked Paths | Classification | Follow-Up |
@@ -51,6 +70,9 @@ Use this checklist when an AI agent or contributor creates or substantially reor
 | Current rules, future proposals, AI rules, and decisions are physically separated. | <Pass/Fail> | <paths> |
 | Repository evidence is under `docs/dev/repository/`, not same-named `profile/<folder>` folders. | <Pass/Fail> | <paths> |
 | `docs/dev/application/` was not created without a decision record. | <Pass/Fail> | <paths> |
+| GitHub evidence can use `gh` or an equivalent recorded fallback path. | <Pass/Fail> | <paths> |
+| Named stacks or sampled repositories are optional evidence/examples, not portable template baselines. | <Pass/Fail> | <paths> |
+| `Recommended Future Pattern` evidence remains separate from current rules until target evidence exists. | <Pass/Fail> | <paths> |
 
 ## Completion Decision
 

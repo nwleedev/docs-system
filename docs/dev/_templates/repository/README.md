@@ -10,6 +10,9 @@ Use this template for target-repository-specific evidence that explains what thi
 ## Use When
 
 - A repository's purpose, technology stack, source layout, generated output, verification commands, external checkouts, local constraints, baseline evidence, or audit history must be recorded.
+- Development guidance targets need evidence, classification, confidence, and owner-folder routing before implementation.
+- Only a technology stack is known and public repository sampling is needed before proposing target candidates.
+- GitHub evidence must be preserved even when `gh` is unavailable.
 - A current rule in `architecture`, `engineering`, `domain`, `ai`, `decisions`, or a proposal in `evolution` needs local repository evidence.
 - The root `docs/dev/README.md` would otherwise leak repo-specific assumptions into portable governance.
 
@@ -31,6 +34,9 @@ Do not recreate `docs/dev/profile/{architecture,engineering,domain,evolution,ai,
 ## Completion Check
 
 - Repository purpose, stack, source layout, generated output, verification commands, constraints, baseline evidence, and audit history are recorded or explicitly marked not found.
+- Development guidance targets record decision point, risk, evidence, owner folder, classification, confidence, and follow-up.
+- Stack-only sampling records multiple public repositories or a justified smaller sample.
+- GitHub fallback evidence records tool/interface, URLs, steps, inspected files/pages, date, limitations, and confidence impact.
 - Each evidence row links to the top-level current-rule folder it supports.
 - No current engineering, architecture, AI, domain, evolution, or decision rule is written as repository evidence.
 - Root README remains portable and links to `repository/` instead of embedding target-repository stack defaults.

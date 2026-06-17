@@ -6,6 +6,8 @@
 
 Root governance는 이 폴더가 아니라 [`../README.md`](../README.md)가 소유한다. 이 폴더는 folder-specific authoring router이며, `docs/dev/_templates/root-readme.md`는 만들지 않는다.
 
+`development guidance target`은 current rule, future proposal, local constraint, open question으로 기록할 수 있는 구체적인 개발 판단 지점이다. Dependency 이름, 사용자 기능, UI 화면, 넓은 product area만으로 target을 만들지 않는다.
+
 ## Reading Order
 
 1. 이 README에서 문서의 목적과 대상 폴더를 고른다.
@@ -14,6 +16,7 @@ Root governance는 이 폴더가 아니라 [`../README.md`](../README.md)가 소
 4. 대상 폴더의 `_template.md`를 복사 기준으로 삼아 문서를 작성한다.
 5. 대상 레포에 `docs/dev/<folder>/README.md`가 이미 있으면 Include, Exclude, Dynamic File Policy를 다시 확인한다.
 6. 대상 레포에 `docs/dev`가 없거나 새 구조를 세팅하는 경우 `_bootstrap-audit.md`로 근거와 누락 항목을 기록한다.
+7. 기술스택만 주어진 경우 public repository sampling 또는 동등한 GitHub evidence를 먼저 기록하고, target repository evidence 없이 current rule로 승격하지 않는다.
 
 ## Placement Router
 
@@ -26,6 +29,18 @@ Root governance는 이 폴더가 아니라 [`../README.md`](../README.md)가 소
 | AI reading order, uncertainty handling, agent behavior rule | `ai/README.md` | `ai/_template.md` | `docs/dev/ai/<topic>.md` or `docs/dev/ai/README.md` |
 | accepted/deferred/superseded long-lived decision | `decisions/README.md` | `decisions/_template.md` | `docs/dev/decisions/<number>-<topic>.md` |
 | repository purpose, stack, source layout, verification commands, local constraints, baseline evidence | `repository/README.md` | `repository/_template.md` | `docs/dev/repository/README.md` or `docs/dev/repository/<topic>.md` |
+
+## Development Guidance Target Router
+
+| Target Shape | Evidence Owner | Guidance Owner | Classification Rule |
+| --- | --- | --- | --- |
+| Stack evidence, source layout, public repository sampling, fallback evidence, local constraints | `repository/` | Linked owner folder | Evidence only; never a current rule by itself |
+| Module boundary, layer ownership, runtime flow, public API placement | `repository/` evidence table | `architecture/` | Current rule only with target repository evidence |
+| Library composition, validation contract, generated code, tests, build, lint, release tooling | `repository/` evidence table | `engineering/` | Current rule only with target manifests/config/source/test evidence |
+| Product vocabulary, state meaning, business invariant | `repository/` evidence table | `domain/` | Current rule only with repeated source/product/test evidence |
+| Better pattern that is not accepted yet | `repository/` evidence table | `evolution/` | `Recommended Future Pattern`, `Deferred`, or `Open Question` |
+| AI reading order, uncertainty behavior, generic snippet prevention | `repository/` evidence table | `ai/` | Current AI rule only with repo-tracked instruction evidence |
+| Accepted trade-off, supersession, dependency or process choice | `repository/` evidence table | `decisions/` | Accepted only through a decision record |
 
 ## Repository Evidence Routing
 
@@ -55,6 +70,36 @@ Root governance는 이 폴더가 아니라 [`../README.md`](../README.md)가 소
 
 If evidence is not found, write `Not found after checking <repo-relative paths>` and classify the missing item as `Open Question`, `Local Constraint`, or `Recommended Future Pattern`. Do not invent a current rule.
 
+## Evidence Collection Lanes
+
+| Lane | Inspect | Output |
+| --- | --- | --- |
+| Stack evidence | manifests, lockfiles, dependency metadata, framework config, generated-code config, build scripts, verification commands | Candidate engineering, architecture, generated artifact, verification, or release targets |
+| Repository topic evidence | README, product docs, package metadata, catalog metadata, source entrypoints, route/API surfaces, ownership, lifecycle, domain vocabulary | Candidate domain, architecture, or product-surface targets |
+| Operational quality evidence | tests, build, dependency updates, generated artifacts, security, maintenance, ownership, docs, packaging, release signals | Candidate verification, maintenance, release, or documentation targets |
+
+Cross-check important targets with at least two evidence types when practical. Conflicts stay `Open Question` or low confidence.
+
+## Stack-Only Sampling
+
+When only a technology stack is known, sample public repositories before proposing targets.
+
+| Step | Minimum Recording |
+| --- | --- |
+| Query and selection | search query, filters, activity, non-archived/non-fork status, adoption signal, stack relevance, sample role |
+| Inspection | manifests, scripts, workflows, source layout, docs, releases, maintenance signals |
+| Grouping | `Shared Stack`, `Stack Plus Domain`, `Repository Specific` |
+| Local applicability | why this candidate does or does not apply to the target repository |
+| Limitations | missing files, weak search results, stale docs, conflicts, confidence impact |
+
+Prefer at least five repositories. If the ecosystem is small or search quality is poor, at least three is acceptable when the reason is recorded.
+
+## GitHub Evidence Fallbacks
+
+Prefer `gh` for GitHub evidence, but do not require it. Accepted fallbacks are GitHub Web UI, GitHub REST API through an approved HTTP client, installed GitHub MCP or connector output, and stable GitHub file URLs. Record tool/interface, source URLs, query or navigation steps, inspected files/pages, retrieval date, evidence summary, limitations, and confidence impact.
+
+Temporary archive or clone inspection requires a separate decision or explicit implementation note and must not vendor sampled repositories into the target repository.
+
 ## Common Completion Rules
 
 - `Scenario Coverage` appears before examples.
@@ -63,6 +108,7 @@ If evidence is not found, write `Not found after checking <repo-relative paths>`
 - Anti-pattern examples explain failure mode, user or maintenance impact, safer alternative, and target-repository constraints.
 - Sources are repo-relative paths or stable public URLs. Skill-local paths, machine-specific paths, session IDs, and worktree names are not valid sources.
 - Placeholder text must be removed before a generated document is considered complete.
+- Named technologies in generated documents must be optional evidence or examples, not template prerequisites.
 
 ## Bootstrap Path For Repositories Without docs/dev
 

@@ -22,11 +22,14 @@ Use this template for current code-writing and verification rules tied to a targ
 
 ## Cross-Check
 
-Confirm the target repository's `docs/dev/engineering/README.md` Include, Exclude, and Dynamic File Policy. Do not assume this repository's React, TypeScript, TanStack Query, Tailwind, Orval, or Rust/rhwp guidance applies to another repository without target evidence.
+Confirm the target repository's `docs/dev/engineering/README.md` Include, Exclude, and Dynamic File Policy. Do not assume this repository's named language, framework, library, code generation, or external checkout guidance applies to another repository without target evidence.
+
+Check `docs/dev/repository/README.md` for stack evidence, public repository sampling, fallback evidence, and development guidance targets before writing current engineering rules.
 
 ## Completion Check
 
 - The target technology stack is recorded from manifests/configs.
+- Any linked development guidance target records decision point, risk, evidence, owner folder, classification, confidence, and follow-up.
 - `Scenario Coverage` precedes pattern examples.
 - Each best/anti-pattern explains why, when it applies, failure mode, impact, safer alternative, target constraints, and verification.
 - External API/library claims are checked against official or primary sources when relevant.
