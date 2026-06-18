@@ -1,116 +1,116 @@
 # Development Guide Governance
 
-이 문서는 여러 레포에 복제할 수 있는 `docs/dev` 개발 지침 거버넌스의 정본이다. 특정 레포의 기술스택, source list, baseline evidence, 외부 checkout, 로컬 제약은 이 문서에 기본 규칙처럼 넣지 않고 [repository](repository/README.md)에 둔다.
+This document is the canonical `docs/dev` development-guidance governance base that can be reused across repositories. Repository-specific technology stacks, source lists, baseline evidence, external checkouts, and local constraints belong in [repository](repository/README.md), not in this document as default rules.
 
-`docs/dev`는 `AGENTS.md`나 workflow skill을 대체하지 않는다. 이 폴더는 사람이 검토 가능한 장기 개발 지침, 현재 코드 작성 규칙, 근거, 미래 제안, AI 적용 규칙, 결정 이력을 Git 추적 문서로 보존한다. 관련 스킬은 선택적 보조 도구이며 source of truth가 아니다.
+`docs/dev` does not replace `AGENTS.md` or workflow skills. This folder preserves long-lived development guidance, current coding rules, evidence, future proposals, AI application rules, and decision history as human-reviewable, Git-tracked documents. Related skills are optional aids, not the source of truth.
 
 ## Purpose
 
-- 새 코드 작성 전에 적용할 current rule과 근거를 찾을 수 있게 한다.
-- current guidance, future proposal, local evidence, AI rule, decision record를 물리적으로 분리한다.
-- 대상 레포에 `docs/dev`가 없거나 부분적으로만 있을 때 bootstrap 순서를 제공한다.
-- best/anti-pattern 예시를 단순 코드 샘플이 아니라 의도, 실패 모드, 영향, 대안, 검증 방법을 설명하는 teaching artifact로 관리한다.
-- implementation 전에 누락된 development guidance target을 드러내고, current rule과 future proposal을 섞지 않게 한다.
+- Make applicable current rules and evidence discoverable before writing new code.
+- Physically separate current guidance, future proposals, local evidence, AI rules, and decision records.
+- Provide a bootstrap sequence when a target repository has no `docs/dev` folder or only a partial one.
+- Treat best/anti-pattern examples as teaching artifacts that explain intent, failure mode, impact, alternatives, and verification, not as simple code samples.
+- Surface missing development guidance targets before implementation and prevent current rules from being mixed with future proposals.
 
 ## Development Guidance Targets
 
-`development guidance target`은 `docs/dev`에 current rule, future proposal, local constraint, open question으로 기록할 수 있는 구체적인 개발 판단 지점이다. 짧게 `concern`이라고 부를 수 있지만, 사용자 기능, UI 화면, 제품 아이디어, dependency 이름, 넓은 기술 카테고리 그 자체를 뜻하지 않는다.
+`development guidance target` means a concrete development decision point that can be recorded in `docs/dev` as a current rule, future proposal, local constraint, or open question. It may be called a `concern` for short, but it does not mean a user feature, UI screen, product idea, dependency name, or broad technology category by itself.
 
-대표적인 target은 다음과 같다.
+Representative targets include:
 
 - library composition, state ownership, validation contract, generated artifact rule
 - client/server boundary, module boundary, import direction, public API ownership
 - verification obligation, release or maintenance risk, documentation ownership
 - domain vocabulary, state meaning, business invariant interpretation
 
-대상 레포의 evidence가 부족하면 current rule로 쓰지 않는다. 대신 `Open Question`, `Local Constraint`, `Recommended Future Pattern`, `Not Applicable` 중 하나로 분류하고, 필요한 follow-up을 남긴다.
+If target repository evidence is insufficient, do not write a current rule. Classify the item as `Open Question`, `Local Constraint`, `Recommended Future Pattern`, or `Not Applicable`, and record the required follow-up.
 
 ## Folder Ownership
 
 | Path            | Owns                                                                                                 | Does Not Own                                             |
 | --------------- | ---------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
-| `architecture/` | 현재 적용할 모듈 경계, public API, import direction, ownership, 런타임 흐름                          | 기술스택별 API 사용법, 테스트 작성법, 미래 아키텍처 제안 |
-| `engineering/`  | 현재 기술스택으로 코드를 작성하고 검증하는 규칙, 테스트, lint, generated-code rule                   | feature ownership, 업무 용어, 장기 migration proposal    |
-| `domain/`       | 제품/업무 용어, 상태 의미, 불변조건, 비즈니스 해석                                                   | UI/라이브러리 사용법, 모듈 import 규칙                   |
-| `evolution/`    | 현재 규칙이 아닌 개선 후보, 대안, migration 조건, technical debt                                     | 즉시 적용할 current rule                                 |
-| `ai/`           | AI가 `docs/dev`를 읽고 적용하는 순서, 불확실성 처리, legacy handling                                 | 사람이 검토해야 하는 current engineering rule 자체       |
-| `decisions/`    | accepted/deferred/superseded decision, rationale, consequences, revisit trigger                      | 단순 README index나 일회성 작업 메모                     |
-| `_templates/`   | 새 `docs/dev` 문서 작성용 folder-specific template과 bootstrap audit                                 | root governance, target repo의 current rule              |
-| `_commands/`    | 여러 레포에서 재사용할 수 있는 prompt/runbook command                                                | current rule, target repository evidence, source pack    |
-| `repository/`   | target-repository-specific stack, source layout, baseline evidence, audit history, local constraints | 여러 레포에 복제할 portable governance나 current rule    |
+| `architecture/` | Module boundaries, public APIs, import direction, ownership, and runtime flow that apply now | Stack-specific API usage, test authoring, future architecture proposals |
+| `engineering/`  | Rules for writing and verifying code with the current stack, tests, lint, and generated-code rules | Feature ownership, business vocabulary, long-term migration proposals |
+| `domain/`       | Product/business vocabulary, state meaning, invariants, and business interpretation | UI/library usage, module import rules |
+| `evolution/`    | Improvement candidates, alternatives, migration conditions, and technical debt that are not current rules | Current rules to apply immediately |
+| `ai/`           | How AI reads and applies `docs/dev`, uncertainty handling, and legacy handling | Current engineering rules that humans must review |
+| `decisions/`    | Accepted/deferred/superseded decisions, rationale, consequences, and revisit triggers | Simple README indexes or one-off work notes |
+| `_templates/`   | Folder-specific templates and bootstrap audits for authoring new `docs/dev` documents | Root governance or current rules for a target repository |
+| `_commands/`    | Prompt/runbook commands reusable across repositories | Current rules, target repository evidence, or source packs |
+| `repository/`   | Target-repository-specific stack, source layout, baseline evidence, audit history, and local constraints | Portable governance or current rules to copy across repositories |
 
 ## Target Decomposition
 
-`docs/dev`는 기술스택 이름을 문서화하는 시스템이 아니라, 기술스택을 충분히 세밀한 `development guidance target`으로 분해하고 근거 기반으로 문서화하는 시스템이다. `Next.js`, 특정 파일명, 특정 source list, 특정 항목 수는 portable baseline이 될 수 없다.
+`docs/dev` is not a system for documenting technology-stack names. It is a system for decomposing a technology stack into sufficiently granular `development guidance target`s and documenting them with evidence. `Next.js`, a specific file name, a specific source list, or a specific item count cannot be a portable baseline.
 
-기술스택이나 넓은 리서치 요청이 주어지면 먼저 다음 순서로 target을 도출한다.
+When a technology stack or broad research request is provided, derive targets in this order first.
 
 | Step | Rule |
 | --- | --- |
-| Input classify | 명시적 관심사 목록, 이슈, 회의 노트, 외부 문서, 기존 docs, 기술스택 이름, target repository evidence 중 무엇이 입력인지 구분한다. |
-| Target derive | dependency 이름이나 넓은 카테고리에서 멈추지 않고 boundary, ownership, API, validation, state, verification, migration, documentation 판단으로 분해한다. |
-| Evidence attach | 각 target에 repo evidence, official docs, public repository sampling, standards, existing decisions 중 적용 가능한 근거를 연결한다. |
-| Route owner | target을 `repository` evidence와 `architecture`, `engineering`, `domain`, `evolution`, `ai`, `decisions` 중 적용 문서로 나눈다. |
-| Classify | `Current Rule`, `Recommended Future Pattern`, `Open Question`, `Local Constraint`, `Not Applicable`로 분류한다. |
-| Pattern obligation | best pattern, anti-pattern, scenario coverage, verification, follow-up을 target 단위로 기록한다. |
+| Input classify | Identify whether the input is an explicit concern list, issue, meeting note, external document, existing docs, technology-stack name, or target repository evidence. |
+| Target derive | Do not stop at dependency names or broad categories; decompose the work into boundary, ownership, API, validation, state, verification, migration, and documentation decisions. |
+| Evidence attach | Attach applicable evidence to each target, such as repository evidence, official docs, public repository sampling, standards, or existing decisions. |
+| Route owner | Route each target to `repository` evidence or to the applicable owner document among `architecture`, `engineering`, `domain`, `evolution`, `ai`, and `decisions`. |
+| Classify | Classify the target as `Current Rule`, `Recommended Future Pattern`, `Open Question`, `Local Constraint`, or `Not Applicable`. |
+| Pattern obligation | Record best pattern, anti-pattern, scenario coverage, verification, and follow-up obligations per target. |
 
-명시적 관심사 목록이 있는 경우에는 모든 source item을 추적한다. 명시적 목록이 없는 경우에는 stack evidence와 공식 문서를 기반으로 target을 도출한다. 두 경우 모두 항목 수를 맞추는 것이 목표가 아니며, 구현자가 실제로 판단해야 하는 지점을 충분히 세밀하게 드러내는 것이 목표다.
+When an explicit concern list exists, track every source item. When there is no explicit list, derive targets from stack evidence and official documentation. In both cases, the goal is not to match an item count; the goal is to expose the decision points that implementers actually need to judge with enough granularity.
 
 ## Reading Order
 
 ### Before Implementation
 
-1. 이 README에서 folder ownership과 repository evidence 위치를 확인한다.
-2. 대상 레포의 [repository](repository/README.md)를 읽고 기술스택, source layout, generated code, verification commands, local constraints를 확인한다.
-3. `Development Guidance Target Inventory`가 있으면 작업 대상 target의 classification과 owner folder를 확인한다.
-4. 구조 변경이나 import boundary가 있으면 [architecture](architecture/README.md)를 읽는다.
-5. 언어, framework, API, test, lint, build, generated-code 작업이면 [engineering](engineering/README.md)을 읽는다.
-6. 업무 용어와 상태 의미가 애매하면 [domain](domain/README.md)을 확인한다.
-7. 대안이나 migration 후보는 [evolution](evolution/README.md)에서 확인하되 current rule로 적용하지 않는다.
-8. AI와 함께 작업하면 [ai](ai/README.md)의 적용 순서와 불확실성 처리 기준을 따른다.
-9. 기존 결정과 충돌하거나 source-of-truth ownership이 바뀌면 [decisions](decisions/README.md)를 확인한다.
+1. Use this README to confirm folder ownership and repository evidence locations.
+2. Read the target repository's [repository](repository/README.md) document to confirm the technology stack, source layout, generated code, verification commands, and local constraints.
+3. If a `Development Guidance Target Inventory` exists, check the classification and owner folder for the target you are working on.
+4. If the work changes structure or import boundaries, read [architecture](architecture/README.md).
+5. If the work involves language, framework, API, test, lint, build, or generated-code rules, read [engineering](engineering/README.md).
+6. If business vocabulary or state meaning is ambiguous, check [domain](domain/README.md).
+7. Check alternatives or migration candidates in [evolution](evolution/README.md), but do not apply them as current rules.
+8. When working with AI, follow the reading order and uncertainty-handling rules in [ai](ai/README.md).
+9. If the work conflicts with an existing decision or changes source-of-truth ownership, check [decisions](decisions/README.md).
 
 ### Before Creating Or Updating docs/dev
 
-1. 이 README에서 target output folder를 고른다.
-2. [repository](repository/README.md)에서 target repository evidence를 확인한다.
-3. [\_templates](./_templates/README.md)에서 folder-specific template을 고른다.
-4. 대상 `docs/dev/<folder>/README.md`의 Include, Exclude, Dynamic File Policy로 최종 배치를 확인한다.
-5. 새 구조를 만들거나 큰 갱신을 하면 [\_bootstrap-audit](./_templates/_bootstrap-audit.md) 또는 동등한 audit에 evidence와 unresolved gaps를 기록한다.
-6. 기술스택 전체나 넓은 예방 패턴 요청이면 `Target Decomposition` 절차로 먼저 target inventory를 만들고, 각 target을 evidence, owner folder, classification, pattern obligation으로 라우팅한다.
+1. Choose the target output folder from this README.
+2. Confirm target repository evidence in [repository](repository/README.md).
+3. Choose the folder-specific template from [\_templates](./_templates/README.md).
+4. Confirm final placement using the Include, Exclude, and Dynamic File Policy sections in the target `docs/dev/<folder>/README.md`.
+5. When creating a new structure or making a major update, record evidence and unresolved gaps in [\_bootstrap-audit](./_templates/_bootstrap-audit.md) or an equivalent audit.
+6. For a whole technology stack or broad prevention-pattern request, first create a target inventory through the `Target Decomposition` process, then route each target to evidence, owner folder, classification, and pattern obligation.
 
 ## Development Guidance Target Inventory
 
-각 레포는 `repository/README.md` 또는 `repository/<topic>.md`에 target inventory를 둘 수 있다. 이 inventory는 current rule을 소유하지 않고, evidence와 classification을 top-level owner folder로 연결한다.
+Each repository may keep a target inventory in `repository/README.md` or `repository/<topic>.md`. This inventory does not own current rules; it links evidence and classification to top-level owner folders.
 
 | Field | Required Meaning |
 | --- | --- |
-| Target | 구체적인 development guidance target. Dependency 이름이나 기능 이름만 쓰지 않는다. |
-| Decision point | 구현자가 실제로 선택해야 하는 boundary, ownership, API, validation, verification, migration, documentation 판단. |
-| Risk | 잘못 처리했을 때 생기는 bug, coupling, review blind spot, user impact, maintenance cost. |
+| Target | A concrete development guidance target. Do not use only a dependency name or feature name. |
+| Decision point | The boundary, ownership, API, validation, verification, migration, or documentation decision the implementer must actually make. |
+| Risk | The bug, coupling, review blind spot, user impact, or maintenance cost that appears when the target is handled incorrectly. |
 | Evidence | repo-relative source/config/test/doc paths, official docs, stable public URLs, or recorded GitHub evidence. |
 | Owner folder | `architecture`, `engineering`, `domain`, `evolution`, `ai`, `decisions`, or `repository` evidence. |
 | Classification | `Current Rule`, `Recommended Future Pattern`, `Open Question`, `Local Constraint`, or `Not Applicable`. |
 | Confidence | `High`, `Medium`, or `Low`, with conflict and limitation notes. |
 | Follow-up | next evidence, decision, docs update, or verification needed. |
 
-`Recommended Future Pattern`은 target repository evidence가 아직 current rule 승격에 부족하지만, stack/config evidence와 official documentation 또는 public repository evidence가 future direction을 지지할 때 사용한다. Evidence와 classification은 `repository/`에 두고, 해석과 적용 방향은 해당 owner folder의 문서에 둔다.
+Use `Recommended Future Pattern` when target repository evidence is not yet sufficient for promotion to a current rule, but stack/config evidence plus official documentation or public repository evidence supports a future direction. Keep evidence and classification in `repository/`, and keep interpretation and application direction in the relevant owner-folder document.
 
 ## Stack-Only Repository Sampling
 
-기술스택만 주어진 상태에서 target을 추정하지 않는다. 먼저 실제 public repositories를 여러 개 조사해 common, divergent, repository-specific target 후보를 분리한다.
+Do not infer targets from a technology-stack name alone. First inspect multiple real public repositories and separate common, divergent, and repository-specific target candidates.
 
 | Step | Rule |
 | --- | --- |
-| Select samples | active, non-archived, non-fork repositories를 우선하고, stack relevance와 adoption signal을 기록한다. 기본값은 5개이며 근거가 있으면 3개까지 줄일 수 있다. |
-| Inspect evidence | description만 보지 말고 manifests, lockfiles, scripts, workflows, source layout, docs, releases, maintenance signals를 확인한다. |
-| Group targets | `Shared Stack`, `Stack Plus Domain`, `Repository Specific`으로 분류한다. |
-| Review local applicability | sampled evidence는 discovery aid다. Target repository evidence 없이 current rule이 될 수 없다. |
-| Preserve evidence | commands, URLs, inspected paths, retrieved date, limitations, confidence impact를 기록한다. |
+| Select samples | Prefer active, non-archived, non-fork repositories, and record stack relevance plus adoption signals. The default is five repositories; this can be reduced to three when justified. |
+| Inspect evidence | Do not rely on descriptions alone; inspect manifests, lockfiles, scripts, workflows, source layout, docs, releases, and maintenance signals. |
+| Group targets | Classify candidates as `Shared Stack`, `Stack Plus Domain`, or `Repository Specific`. |
+| Review local applicability | Sampled evidence is a discovery aid. It cannot become a current rule without target repository evidence. |
+| Preserve evidence | Record commands, URLs, inspected paths, retrieved date, limitations, and confidence impact. |
 
 ## GitHub Evidence Fallbacks
 
-GitHub evidence 수집에는 `gh`를 선호하지만 필수로 만들지 않는다. `gh`가 없거나 인증, rate limit, 환경 정책 때문에 사용할 수 없으면 다음 fallback을 사용할 수 있다.
+Prefer `gh` for collecting GitHub evidence, but do not make it mandatory. If `gh` is unavailable because of installation, authentication, rate limits, or environment policy, the following fallbacks are acceptable.
 
 | Preferred Path | Accepted Fallback | Required Recording |
 | --- | --- | --- |
@@ -122,39 +122,39 @@ Temporary archive or clone inspection is not a normal fallback. Use it only afte
 
 ## Target Repository Evidence
 
-각 레포는 `docs/dev/repository/` 아래에 portable governance와 분리된 local evidence를 보존한다.
+Each repository preserves local evidence under `docs/dev/repository/`, separate from portable governance.
 
 | Repository Path        | Required Content                                                                                                                                                                                 |
 | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `repository/README.md` | repository purpose, technology stack, source layout, generated code, verification commands, external checkouts, local constraints, baseline evidence, audit history, linked current-rule folders |
 
-`repository/` 아래 문서는 current rule을 소유하지 않는다. current rule은 top-level `architecture/`, `engineering/`, `domain/`, `ai/`, `decisions/`가 소유하고, `repository/`는 그 규칙을 대상 레포에 적용할 근거와 제약을 보존한다.
+Documents under `repository/` do not own current rules. Current rules are owned by top-level `architecture/`, `engineering/`, `domain/`, `ai/`, and `decisions`; `repository/` preserves the evidence and constraints needed to apply those rules to the target repository.
 
-`docs/dev/profile/{architecture,engineering,domain,evolution,ai,decisions}/` 같은 same-named evidence taxonomy는 기본 생성하지 않는다. 폴더별 local evidence가 필요하면 `repository/README.md`의 evidence table에서 top-level current-rule folder로 링크한다.
+Do not create a same-named evidence taxonomy such as `docs/dev/profile/{architecture,engineering,domain,evolution,ai,decisions}/` by default. If folder-specific local evidence is needed, link from the evidence table in `repository/README.md` to the top-level current-rule folder.
 
-`docs/dev/application/` 같은 추가 scope axis는 기본 생성하지 않는다. 다중 앱, 다중 패키지, repository-wide evidence와 application-specific evidence 분리가 실제로 필요할 때에만 decision record로 ownership과 target output을 정한 뒤 추가한다.
+Do not create an additional scope axis such as `docs/dev/application/` by default. Add one only when multiple apps, multiple packages, or a real need to separate repository-wide evidence from application-specific evidence has been established through a decision record that defines ownership and target output.
 
 ## Bootstrap Flow
 
 ### Repository Without docs/dev
 
-1. 이 README를 `docs/dev/README.md`의 canonical governance base로 사용한다.
-2. target repository evidence를 수집해 `docs/dev/repository/README.md`를 만든다.
-3. 현재 근거가 있는 folder README만 만든다. 빈 상세 문서나 TODO 문서는 만들지 않는다.
-4. [\_templates](./_templates/README.md)에서 필요한 folder-specific template을 사용한다.
-5. `_bootstrap-audit.md` 또는 동등한 audit에 생성한 문서, source evidence, current rule 승격 근거, open question, leaked repo-specific assumption 여부를 기록한다.
+1. Use this README as the canonical governance base for `docs/dev/README.md`.
+2. Collect target repository evidence and create `docs/dev/repository/README.md`.
+3. Create only the folder READMEs that current evidence supports. Do not create empty detailed documents or TODO documents.
+4. Use the required folder-specific templates from [\_templates](./_templates/README.md).
+5. Record created documents, source evidence, current-rule promotion evidence, open questions, and leaked repository-specific assumptions in `_bootstrap-audit.md` or an equivalent audit.
 
 ### Repository With Existing Development Docs
 
-1. 기존 `docs/dev`, README, ADR, contributing docs, AGENTS-style guidance를 inventory한다.
-2. 기존 내용을 current rule, local evidence, future proposal, AI rule, decision, open question으로 분류한다.
-3. 제거하거나 대체하기 전에 accepted decision이나 명시적 사용자 지시가 필요한지 확인한다.
-4. portable root governance는 이 README에 정렬하고, repo-specific evidence는 `repository/`로 이동한다.
-5. 기존 링크와 reading flow가 깨지지 않았는지 감사한다.
+1. Inventory existing `docs/dev`, README, ADRs, contributing docs, and AGENTS-style guidance.
+2. Classify existing content as current rule, local evidence, future proposal, AI rule, decision, or open question.
+3. Before removing or replacing anything, check whether an accepted decision or explicit user instruction is required.
+4. Align portable root governance with this README and move repository-specific evidence to `repository/`.
+5. Audit that existing links and reading flow remain intact.
 
 ## Existing Docs Inventory
 
-큰 갱신을 시작할 때에는 다음 항목을 확인한다.
+Before starting a major update, inspect the following sources.
 
 | Source                            | What To Extract                                                                               |
 | --------------------------------- | --------------------------------------------------------------------------------------------- |
@@ -188,44 +188,44 @@ Before committing a `docs/dev` template or root governance update, verify that p
 
 ## Template Usage
 
-새 `docs/dev` 문서를 만들거나 크게 갱신할 때에는 [\_templates](./_templates/README.md)를 사용한다. `_templates`는 folder-specific authoring router이며 root README governance를 소유하지 않는다.
+When creating a new `docs/dev` document or making a major update, use [\_templates](./_templates/README.md). `_templates` is a folder-specific authoring router and does not own root README governance.
 
-반복 실행이 필요한 넓은 target decomposition 작업에는 [\_commands](./_commands/README.md)를 사용할 수 있다. `_commands`는 prompt/runbook만 소유하며 current rule이나 repository evidence를 소유하지 않는다.
+For broad target-decomposition work that needs repeatable execution, use [\_commands](./_commands/README.md). `_commands` owns only prompts/runbooks and does not own current rules or repository evidence.
 
-문서 예시는 다음 기준을 만족해야 한다.
+Document examples must meet the following criteria.
 
-- `Scenario Coverage`가 예시보다 먼저 나온다.
-- best pattern은 intent, applicability, impact, verification을 설명한다.
-- anti-pattern은 failure mode, user or maintenance impact, safer alternative, target-repository constraint를 설명한다.
-- code example이 필요 없는 AI rule이나 decision은 behavior example 또는 decision case로 대체할 수 있다.
+- `Scenario Coverage` appears before examples.
+- best patterns explain intent, applicability, impact, and verification.
+- anti-patterns explain failure mode, user or maintenance impact, safer alternative, and target-repository constraints.
+- AI rules or decisions that do not require code examples may use behavior examples or decision cases instead.
 
-대규모 또는 세밀한 target set에서 상세 문서를 만들 때에는 target 수와 문서 수를 일대일로 맞추지 않는다. 먼저 owner folder와 scenario coverage로 묶고, 하나의 문서가 여러 target을 다룰 때에도 각 target ID가 어떤 best/anti pattern, verification, open question으로 처리됐는지 traceability를 유지한다.
+When writing detailed documents for a large or granular target set, do not force a one-to-one match between target count and document count. Group targets by owner folder and scenario coverage first, and preserve traceability showing which best/anti pattern, verification, or open question handles each target ID even when one document covers multiple targets.
 
 ## Repository Evidence
 
-현재 레포의 repository evidence는 [repository](repository/README.md)에 있다. 다른 레포로 이 `docs/dev` 구조를 복제할 때에는 `repository/` 내용을 그대로 복사하지 말고 대상 레포의 source, config, test, existing docs, decisions로 다시 작성한다.
+The current repository evidence is in [repository](repository/README.md). When copying this `docs/dev` structure to another repository, do not copy the contents of `repository/` as-is; rewrite it from the target repository's source, config, tests, existing docs, and decisions.
 
 ## Decision Records
 
-다음 경우에는 [decisions](decisions/README.md)에 decision record가 필요하다.
+Create a decision record in [decisions](decisions/README.md) in the following cases.
 
-- source-of-truth ownership이 바뀐다.
-- accepted guidance를 삭제, 이동, supersede한다.
-- `docs/dev/application/` scope axis를 추가한다.
-- 기존 current rule과 충돌하는 새 규칙을 도입한다.
-- 새 dependency, script, CI, security exception, public API change가 docs/dev guidance에 영향을 준다.
+- Source-of-truth ownership changes.
+- Accepted guidance is deleted, moved, or superseded.
+- A `docs/dev/application/` scope axis is added.
+- A new rule conflicts with an existing current rule.
+- A new dependency, script, CI change, security exception, or public API change affects docs/dev guidance.
 
 ## Completion Audit
 
-`docs/dev` bootstrap 또는 major update는 다음을 검증해야 한다.
+Every `docs/dev` bootstrap or major update must verify the following.
 
-- root README가 repo-neutral governance로 남아 있다.
-- repo-specific stack, source list, baseline evidence, local constraints는 `repository/`에 있다.
-- current rules, future proposals, AI rules, decisions, repository evidence가 물리적으로 분리되어 있다.
-- `_templates/README.md`가 folder-specific authoring router로만 작동한다.
-- `docs/dev/_templates/root-readme.md`가 생성되지 않았다.
-- `docs/dev/application/`이 decision 없이 생성되지 않았다.
-- `docs/dev/profile/{architecture,engineering,domain,evolution,ai,decisions}/` 같은 same-named evidence taxonomy가 기본 구조에 남아 있지 않다.
+- The root README remains repository-neutral governance.
+- Repository-specific stack, source list, baseline evidence, and local constraints are in `repository/`.
+- Current rules, future proposals, AI rules, decisions, and repository evidence are physically separated.
+- `_templates/README.md` works only as a folder-specific authoring router.
+- `docs/dev/_templates/root-readme.md` was not created.
+- `docs/dev/application/` was not created without a decision.
+- A same-named evidence taxonomy such as `docs/dev/profile/{architecture,engineering,domain,evolution,ai,decisions}/` is not left in the default structure.
 - named stack, file name, source list, item count, sampled repository, or worked example is not required as a portable baseline.
 - broad technology-stack work is decomposed into evidence-backed development guidance targets before current rules are written.
 - all links are repo-relative and valid.

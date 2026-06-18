@@ -1,25 +1,25 @@
 # docs/dev Templates
 
-이 폴더는 AI와 팀원이 `docs/dev` 개발 지침을 새로 만들거나 크게 갱신할 때 사용하는 repo-tracked 템플릿이다. `maintain-dev-docs` 같은 워크플로우 스킬이 없어도 이 폴더만으로 위치 결정, 근거 수집, 문서 작성, 완료 감사를 진행할 수 있어야 한다.
+This folder contains repo-tracked templates used by AI agents and team members when creating or substantially updating `docs/dev` development guidance. Even without a workflow skill such as `maintain-dev-docs`, this folder should be enough to decide placement, collect evidence, write documents, and complete an audit.
 
-템플릿은 현재 레포의 기술스택을 다른 레포의 기본값으로 복사하지 않는다. 새 문서를 작성할 때에는 먼저 대상 레포의 source, config, test, existing docs, accepted decisions를 확인하고, 근거가 있는 항목만 current rule로 승격한다.
+Templates do not copy the current repository's technology stack as the default for other repositories. When writing a new document, first inspect the target repository's source, config, tests, existing docs, and accepted decisions, then promote only evidence-backed items to current rules.
 
-Root governance는 이 폴더가 아니라 [`../README.md`](../README.md)가 소유한다. 이 폴더는 folder-specific authoring router이며, `docs/dev/_templates/root-readme.md`는 만들지 않는다.
+Root governance is owned by [`../README.md`](../README.md), not by this folder. This folder is a folder-specific authoring router; do not create `docs/dev/_templates/root-readme.md`.
 
-`development guidance target`은 current rule, future proposal, local constraint, open question으로 기록할 수 있는 구체적인 개발 판단 지점이다. Dependency 이름, 사용자 기능, UI 화면, 넓은 product area만으로 target을 만들지 않는다.
+`development guidance target` means a concrete development decision point that can be recorded as a current rule, future proposal, local constraint, or open question. Do not create a target from only a dependency name, user feature, UI screen, or broad product area.
 
-템플릿은 `data.txt`, Next.js, 특정 항목 수, 특정 source list를 요구하지 않는다. 명시적 관심사 목록이 있으면 source item을 보존하고, 목록이 없으면 stack evidence와 공식 문서에서 target을 도출한다.
+Templates do not require `data.txt`, Next.js, a specific item count, or a specific source list. If an explicit concern list exists, preserve source items; otherwise derive targets from stack evidence and official documentation.
 
 ## Reading Order
 
-1. 이 README에서 문서의 목적과 대상 폴더를 고른다.
-2. root governance, repository evidence 위치, bootstrap 흐름은 [`../README.md`](../README.md)를 확인한다.
-3. 대상 폴더의 `_templates/<folder>/README.md`를 읽고 include/exclude와 target output을 확인한다.
-4. 대상 폴더의 `_template.md`를 복사 기준으로 삼아 문서를 작성한다.
-5. 대상 레포에 `docs/dev/<folder>/README.md`가 이미 있으면 Include, Exclude, Dynamic File Policy를 다시 확인한다.
-6. 대상 레포에 `docs/dev`가 없거나 새 구조를 세팅하는 경우 `_bootstrap-audit.md`로 근거와 누락 항목을 기록한다.
-7. 기술스택만 주어진 경우 public repository sampling 또는 동등한 GitHub evidence를 먼저 기록하고, target repository evidence 없이 current rule로 승격하지 않는다.
-8. 넓은 기술스택 요청이나 예방 패턴 요청이 있으면 `Development Guidance Target Router`와 repository template의 target inventory를 먼저 채우고, target coverage가 확인된 뒤 상세 문서를 작성한다.
+1. Choose the document purpose and target folder from this README.
+2. Check [`../README.md`](../README.md) for root governance, repository evidence location, and bootstrap flow.
+3. Read `_templates/<folder>/README.md` for the target folder and confirm include/exclude rules plus target output.
+4. Use the target folder's `_template.md` as the authoring baseline.
+5. If the target repository already has `docs/dev/<folder>/README.md`, re-check Include, Exclude, and Dynamic File Policy.
+6. If the target repository has no `docs/dev` folder or is setting up a new structure, record evidence and missing items in `_bootstrap-audit.md`.
+7. If only a technology stack is provided, record public repository sampling or equivalent GitHub evidence first, and do not promote anything to a current rule without target repository evidence.
+8. If a broad technology-stack request or prevention-pattern request is provided, fill the `Development Guidance Target Router` and the repository template's target inventory first, then write detailed documents after target coverage is confirmed.
 
 ## Placement Router
 
@@ -58,20 +58,20 @@ Do not reduce broad technology-stack work to a few familiar library topics. Grou
 
 ## Repository Evidence Routing
 
-`docs/dev/repository/`는 target-repository-specific evidence를 보존한다. 이 영역은 current rule을 소유하지 않고 top-level current-rule folders로 링크한다.
+`docs/dev/repository/` preserves target-repository-specific evidence. This area does not own current rules; it links to top-level current-rule folders.
 
 | Evidence Intent | Target Output | Rule |
 | --- | --- | --- |
-| repository purpose, stack, source layout, generated code, verification commands, local constraints | `docs/dev/repository/README.md` | current rule로 쓰지 않는다 |
-| local evidence for architecture guidance | `docs/dev/repository/README.md` evidence table or `docs/dev/repository/<topic>.md` | top-level `docs/dev/architecture/` current rule에 링크한다 |
-| local evidence for engineering guidance | `docs/dev/repository/README.md` evidence table or `docs/dev/repository/<topic>.md` | top-level `docs/dev/engineering/` current rule에 링크한다 |
-| local evidence for domain, evolution, AI, decisions | `docs/dev/repository/README.md` evidence table or `docs/dev/repository/<topic>.md` | current rule/proposal/decision 본문을 대체하지 않는다 |
+| repository purpose, stack, source layout, generated code, verification commands, local constraints | `docs/dev/repository/README.md` | Do not use as a current rule |
+| local evidence for architecture guidance | `docs/dev/repository/README.md` evidence table or `docs/dev/repository/<topic>.md` | Link to the top-level `docs/dev/architecture/` current rule |
+| local evidence for engineering guidance | `docs/dev/repository/README.md` evidence table or `docs/dev/repository/<topic>.md` | Link to the top-level `docs/dev/engineering/` current rule |
+| local evidence for domain, evolution, AI, decisions | `docs/dev/repository/README.md` evidence table or `docs/dev/repository/<topic>.md` | Do not replace the current rule, proposal, or decision body |
 
-`docs/dev/profile/{architecture,engineering,domain,evolution,ai,decisions}/` 같은 same-named evidence taxonomy는 기본 생성하지 않는다. `docs/dev/application/` scope axis는 기본 생성하지 않고, 다중 앱이나 application-specific evidence가 실제로 필요하면 먼저 decision record로 ownership과 target output을 정한다.
+Do not create a same-named evidence taxonomy such as `docs/dev/profile/{architecture,engineering,domain,evolution,ai,decisions}/` by default. Do not create a `docs/dev/application/` scope axis by default; if multiple apps or application-specific evidence are genuinely needed, first define ownership and target output through a decision record.
 
 ## Target Repository Evidence
 
-모든 `_template.md`는 current guidance를 쓰기 전에 다음 정보를 먼저 채운다.
+Every `_template.md` fills in the following information before writing current guidance.
 
 | Field | Required Evidence |
 | --- | --- |
