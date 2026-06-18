@@ -8,6 +8,8 @@ Root governance는 이 폴더가 아니라 [`../README.md`](../README.md)가 소
 
 `development guidance target`은 current rule, future proposal, local constraint, open question으로 기록할 수 있는 구체적인 개발 판단 지점이다. Dependency 이름, 사용자 기능, UI 화면, 넓은 product area만으로 target을 만들지 않는다.
 
+템플릿은 `data.txt`, Next.js, 특정 항목 수, 특정 source list를 요구하지 않는다. 명시적 관심사 목록이 있으면 source item을 보존하고, 목록이 없으면 stack evidence와 공식 문서에서 target을 도출한다.
+
 ## Reading Order
 
 1. 이 README에서 문서의 목적과 대상 폴더를 고른다.
@@ -17,6 +19,7 @@ Root governance는 이 폴더가 아니라 [`../README.md`](../README.md)가 소
 5. 대상 레포에 `docs/dev/<folder>/README.md`가 이미 있으면 Include, Exclude, Dynamic File Policy를 다시 확인한다.
 6. 대상 레포에 `docs/dev`가 없거나 새 구조를 세팅하는 경우 `_bootstrap-audit.md`로 근거와 누락 항목을 기록한다.
 7. 기술스택만 주어진 경우 public repository sampling 또는 동등한 GitHub evidence를 먼저 기록하고, target repository evidence 없이 current rule로 승격하지 않는다.
+8. 넓은 기술스택 요청이나 예방 패턴 요청이 있으면 `Development Guidance Target Router`와 repository template의 target inventory를 먼저 채우고, target coverage가 확인된 뒤 상세 문서를 작성한다.
 
 ## Placement Router
 
@@ -41,6 +44,17 @@ Root governance는 이 폴더가 아니라 [`../README.md`](../README.md)가 소
 | Better pattern that is not accepted yet | `repository/` evidence table | `evolution/` | `Recommended Future Pattern`, `Deferred`, or `Open Question` |
 | AI reading order, uncertainty behavior, generic snippet prevention | `repository/` evidence table | `ai/` | Current AI rule only with repo-tracked instruction evidence |
 | Accepted trade-off, supersession, dependency or process choice | `repository/` evidence table | `decisions/` | Accepted only through a decision record |
+
+## Broad Input Router
+
+| Input Shape | First Output | Follow-Up Output | Rule |
+| --- | --- | --- | --- |
+| Explicit concern list, issue, meeting note, uploaded/external/restricted source | `repository/<topic>.md` or design package inventory | Owner-folder docs after classification | Preserve each requirement-relevant source item with stable IDs before summarizing. |
+| Technology stack name only | `repository/README.md` stack evidence and sampling table | `evolution/` recommended patterns or owner-folder open questions | Derive targets from manifests, official docs, and sampled repositories before proposing current rules. |
+| Target repository evidence exists | `repository/README.md` target inventory | `architecture/`, `engineering/`, `domain/`, `ai`, `decisions` | Promote only evidence-backed targets to current rules. |
+| Product/UI visual research request | Research record or `repository/<topic>.md` evidence table | `domain/` guidance or `decisions/` record | Preserve URLs, screenshots, task context, accessibility notes, and limitations. |
+
+Do not reduce broad technology-stack work to a few familiar library topics. Group targets for authoring efficiency, but preserve target coverage through traceability.
 
 ## Repository Evidence Routing
 
@@ -80,6 +94,8 @@ If evidence is not found, write `Not found after checking <repo-relative paths>`
 
 Cross-check important targets with at least two evidence types when practical. Conflicts stay `Open Question` or low confidence.
 
+When an explicit source list contains many requested concerns, record source location, persistence state, optional item count, stable target ID or cluster range, and any reconstructed text needed for reviewers to audit coverage without reopening ignored or private files.
+
 ## Stack-Only Sampling
 
 When only a technology stack is known, sample public repositories before proposing targets.
@@ -109,6 +125,11 @@ Temporary archive or clone inspection requires a separate decision or explicit i
 - Sources are repo-relative paths or stable public URLs. Skill-local paths, machine-specific paths, session IDs, and worktree names are not valid sources.
 - Placeholder text must be removed before a generated document is considered complete.
 - Named technologies in generated documents must be optional evidence or examples, not template prerequisites.
+- Broad technology-stack requests are complete only when explicit source items or derived targets map to evidence, owner folder, classification, pattern coverage, and either a detailed guidance section, an accepted decision, or an explicit open question/follow-up.
+
+## Optional Commands
+
+Reusable prompt/runbook commands live in `docs/dev/_commands`. Commands can decompose broad work, but templates remain the normative output contract. Commands must not own current rules, target repository facts, accepted decisions, or source-of-truth evidence.
 
 ## Bootstrap Path For Repositories Without docs/dev
 

@@ -36,7 +36,25 @@
 | `ai/`           | AI가 `docs/dev`를 읽고 적용하는 순서, 불확실성 처리, legacy handling                                 | 사람이 검토해야 하는 current engineering rule 자체       |
 | `decisions/`    | accepted/deferred/superseded decision, rationale, consequences, revisit trigger                      | 단순 README index나 일회성 작업 메모                     |
 | `_templates/`   | 새 `docs/dev` 문서 작성용 folder-specific template과 bootstrap audit                                 | root governance, target repo의 current rule              |
+| `_commands/`    | 여러 레포에서 재사용할 수 있는 prompt/runbook command                                                | current rule, target repository evidence, source pack    |
 | `repository/`   | target-repository-specific stack, source layout, baseline evidence, audit history, local constraints | 여러 레포에 복제할 portable governance나 current rule    |
+
+## Target Decomposition
+
+`docs/dev`는 기술스택 이름을 문서화하는 시스템이 아니라, 기술스택을 충분히 세밀한 `development guidance target`으로 분해하고 근거 기반으로 문서화하는 시스템이다. `Next.js`, 특정 파일명, 특정 source list, 특정 항목 수는 portable baseline이 될 수 없다.
+
+기술스택이나 넓은 리서치 요청이 주어지면 먼저 다음 순서로 target을 도출한다.
+
+| Step | Rule |
+| --- | --- |
+| Input classify | 명시적 관심사 목록, 이슈, 회의 노트, 외부 문서, 기존 docs, 기술스택 이름, target repository evidence 중 무엇이 입력인지 구분한다. |
+| Target derive | dependency 이름이나 넓은 카테고리에서 멈추지 않고 boundary, ownership, API, validation, state, verification, migration, documentation 판단으로 분해한다. |
+| Evidence attach | 각 target에 repo evidence, official docs, public repository sampling, standards, existing decisions 중 적용 가능한 근거를 연결한다. |
+| Route owner | target을 `repository` evidence와 `architecture`, `engineering`, `domain`, `evolution`, `ai`, `decisions` 중 적용 문서로 나눈다. |
+| Classify | `Current Rule`, `Recommended Future Pattern`, `Open Question`, `Local Constraint`, `Not Applicable`로 분류한다. |
+| Pattern obligation | best pattern, anti-pattern, scenario coverage, verification, follow-up을 target 단위로 기록한다. |
+
+명시적 관심사 목록이 있는 경우에는 모든 source item을 추적한다. 명시적 목록이 없는 경우에는 stack evidence와 공식 문서를 기반으로 target을 도출한다. 두 경우 모두 항목 수를 맞추는 것이 목표가 아니며, 구현자가 실제로 판단해야 하는 지점을 충분히 세밀하게 드러내는 것이 목표다.
 
 ## Reading Order
 
@@ -59,6 +77,7 @@
 3. [\_templates](./_templates/README.md)에서 folder-specific template을 고른다.
 4. 대상 `docs/dev/<folder>/README.md`의 Include, Exclude, Dynamic File Policy로 최종 배치를 확인한다.
 5. 새 구조를 만들거나 큰 갱신을 하면 [\_bootstrap-audit](./_templates/_bootstrap-audit.md) 또는 동등한 audit에 evidence와 unresolved gaps를 기록한다.
+6. 기술스택 전체나 넓은 예방 패턴 요청이면 `Target Decomposition` 절차로 먼저 target inventory를 만들고, 각 target을 evidence, owner folder, classification, pattern obligation으로 라우팅한다.
 
 ## Development Guidance Target Inventory
 
@@ -171,12 +190,16 @@ Before committing a `docs/dev` template or root governance update, verify that p
 
 새 `docs/dev` 문서를 만들거나 크게 갱신할 때에는 [\_templates](./_templates/README.md)를 사용한다. `_templates`는 folder-specific authoring router이며 root README governance를 소유하지 않는다.
 
+반복 실행이 필요한 넓은 target decomposition 작업에는 [\_commands](./_commands/README.md)를 사용할 수 있다. `_commands`는 prompt/runbook만 소유하며 current rule이나 repository evidence를 소유하지 않는다.
+
 문서 예시는 다음 기준을 만족해야 한다.
 
 - `Scenario Coverage`가 예시보다 먼저 나온다.
 - best pattern은 intent, applicability, impact, verification을 설명한다.
 - anti-pattern은 failure mode, user or maintenance impact, safer alternative, target-repository constraint를 설명한다.
 - code example이 필요 없는 AI rule이나 decision은 behavior example 또는 decision case로 대체할 수 있다.
+
+대규모 또는 세밀한 target set에서 상세 문서를 만들 때에는 target 수와 문서 수를 일대일로 맞추지 않는다. 먼저 owner folder와 scenario coverage로 묶고, 하나의 문서가 여러 target을 다룰 때에도 각 target ID가 어떤 best/anti pattern, verification, open question으로 처리됐는지 traceability를 유지한다.
 
 ## Repository Evidence
 
@@ -203,4 +226,6 @@ Before committing a `docs/dev` template or root governance update, verify that p
 - `docs/dev/_templates/root-readme.md`가 생성되지 않았다.
 - `docs/dev/application/`이 decision 없이 생성되지 않았다.
 - `docs/dev/profile/{architecture,engineering,domain,evolution,ai,decisions}/` 같은 same-named evidence taxonomy가 기본 구조에 남아 있지 않다.
+- named stack, file name, source list, item count, sampled repository, or worked example is not required as a portable baseline.
+- broad technology-stack work is decomposed into evidence-backed development guidance targets before current rules are written.
 - all links are repo-relative and valid.
