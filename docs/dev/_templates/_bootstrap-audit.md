@@ -14,6 +14,7 @@ Use this checklist when an AI agent or contributor creates or substantially reor
 | Source layout evidence | <source paths checked> |
 | Verification command evidence | <scripts/config/test paths checked> |
 | Constraints | <legacy/generated/external/security/release constraints> |
+| Broad input / target decomposition | <none / explicit source / stack-only / mixed / reconstructed path / target range> |
 | Open-question defaults applied | <global display phrase / sample count / fallback scope / future-pattern ownership / example placement choices> |
 
 ## Created Or Updated Structure
@@ -40,6 +41,20 @@ Use this checklist when an AI agent or contributor creates or substantially reor
 | Target | Decision Point | Risk | Evidence | Owner Folder | Classification | Confidence | Follow-Up |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | <target> | <choice> | <risk> | <paths/URLs> | <folder> | <Current Rule / Recommended Future Pattern / Open Question / Local Constraint / Not Applicable> | <High / Medium / Low> | <next step> |
+
+## Target Decomposition Coverage
+
+Use this section when broad technology-stack work, explicit source items, or derived target clusters shaped the bootstrap.
+
+| Source Item Or Target ID | Claim Or Target | Owner Folder | Classification | Evidence | Best / Anti Pattern Coverage | Verification Or Follow-Up |
+| --- | --- | --- | --- | --- | --- | --- |
+| <C00 or T00> | <reconstructed source claim or derived target> | <folder> | <classification> | <paths/URLs> | <covered / planned / open question / no-example rationale> | <verification or next docs update> |
+
+## Pattern Coverage
+
+| Source Items Or Target IDs | Scenario Coverage | Best Pattern Example Status | Anti-Pattern Example Status | Verification Method | Target Output | Gap |
+| --- | --- | --- | --- | --- | --- | --- |
+| <C00-Cnn / T00-Tnn / cluster> | <scenarios covered by target docs> | <covered / planned / not applicable> | <covered / planned / not applicable> | <test/lint/typecheck/build/browser/review> | <docs/dev path / decision / open question> | <gap or none> |
 
 ## Stack-Only Sampling Evidence
 
@@ -72,6 +87,10 @@ Use this checklist when an AI agent or contributor creates or substantially reor
 | `docs/dev/application/` was not created without a decision record. | <Pass/Fail> | <paths> |
 | GitHub evidence can use `gh` or an equivalent recorded fallback path. | <Pass/Fail> | <paths> |
 | Named stacks or sampled repositories are optional evidence/examples, not portable template baselines. | <Pass/Fail> | <paths> |
+| Named file names, source lists, item counts, or worked examples are optional evidence/examples, not portable template baselines. | <Pass/Fail> | <paths> |
+| Broad technology-stack work was decomposed into evidence-backed development guidance targets before current rules were written. | <Pass/Fail/Not Applicable> | <paths> |
+| Every explicit source item or derived target is mapped or explicitly deferred; no broad target set was summarized by sampling only. | <Pass/Fail/Not Applicable> | <paths> |
+| Every explicit source item or derived target maps to best/anti pattern coverage or an explicit no-example rationale/open question. | <Pass/Fail/Not Applicable> | <paths> |
 | `Recommended Future Pattern` evidence remains separate from current rules until target evidence exists. | <Pass/Fail> | <paths> |
 
 ## Completion Decision
