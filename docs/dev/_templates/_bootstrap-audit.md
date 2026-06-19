@@ -14,7 +14,7 @@ Use this checklist when an AI agent or contributor creates or substantially reor
 | Source layout evidence | <source paths checked> |
 | Verification command evidence | <scripts/config/test paths checked> |
 | Constraints | <legacy/generated/external/security/release constraints> |
-| Broad input / target decomposition | <none / explicit source / stack-only / mixed / reconstructed path / target range> |
+| Broad input / target decomposition | <none / explicit source / stack request / mixed / reconstructed path / target range> |
 | Open-question defaults applied | <global display phrase / sample count / fallback scope / future-pattern ownership / example placement choices> |
 
 ## Created Or Updated Structure
@@ -56,11 +56,11 @@ Use this section when broad technology-stack work, explicit source items, or der
 | --- | --- | --- | --- | --- | --- | --- |
 | <C00-Cnn / T00-Tnn / cluster> | <scenarios covered by target docs> | <covered / planned / not applicable> | <covered / planned / not applicable> | <test/lint/typecheck/build/browser/review> | <docs/dev path / decision / open question> | <gap or none> |
 
-## Stack-Only Sampling Evidence
+## External Repository Cross-Validation Evidence
 
-| Repository | Selection Criteria | Inspected Evidence | Candidate Targets | Grouping | Local Applicability | Limitations |
-| --- | --- | --- | --- | --- | --- | --- |
-| <owner/name or URL> | <activity/non-archived/non-fork/adoption/stack relevance> | <manifests/scripts/workflows/source/docs/releases> | <targets> | <Shared Stack / Stack Plus Domain / Repository Specific> | <applies/does not apply/unknown> | <limitations> |
+| Repository | Selection Criteria | Inspected Evidence | Candidate Targets | Do Patterns | Don't / Anti-Patterns | Local Applicability | Limitations |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| <owner/name or URL> | <activity/non-archived/non-fork/adoption/stack relevance> | <manifests/scripts/workflows/source/docs/releases/source files> | <targets> | <recommended practice observed> | <failure-prone practice or avoided pattern> | <applies/does not apply/unknown> | <limitations> |
 
 ## GitHub Evidence Fallbacks
 
@@ -86,6 +86,7 @@ Use this section when broad technology-stack work, explicit source items, or der
 | Repository evidence is under `docs/dev/repository/`, not same-named `profile/<folder>` folders. | <Pass/Fail> | <paths> |
 | `docs/dev/application/` was not created without a decision record. | <Pass/Fail> | <paths> |
 | GitHub evidence can use `gh` or an equivalent recorded fallback path. | <Pass/Fail> | <paths> |
+| Local code was treated as current-state evidence, not best-practice authority. | <Pass/Fail> | <paths> |
 | Named stacks or sampled repositories are optional evidence/examples, not portable template baselines. | <Pass/Fail> | <paths> |
 | Named file names, source lists, item counts, or worked examples are optional evidence/examples, not portable template baselines. | <Pass/Fail> | <paths> |
 | Broad technology-stack work was decomposed into evidence-backed development guidance targets before current rules were written. | <Pass/Fail/Not Applicable> | <paths> |

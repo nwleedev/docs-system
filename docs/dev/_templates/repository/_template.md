@@ -24,7 +24,7 @@ Use this section when a broad technology-stack request, explicit concern list, i
 
 | Field | Value |
 | --- | --- |
-| Input shape | <explicit concern list / stack-only request / target repository evidence / external source / restricted source / mixed> |
+| Input shape | <explicit concern list / stack request / target repository evidence / external source / restricted source / mixed> |
 | Source location | <repo-relative path, external reference, user request summary, or not applicable> |
 | Persistence state | <Tracked / Ignored Local / External / Restricted / Reconstructed In This File / Design Package / Derived From Stack Evidence> |
 | Item count | <number if explicit and useful / not applicable> |
@@ -50,13 +50,13 @@ Use this section when a broad technology-stack request, explicit concern list, i
 | Repository topic evidence | <README, product docs, metadata, entrypoints, route/API surfaces, ownership, lifecycle, domain vocabulary> | <candidate targets> | <conflicts or not found> |
 | Operational quality evidence | <tests, build, dependency update, generated artifact, security, maintenance, docs, packaging, release evidence> | <candidate targets> | <conflicts or not found> |
 
-## Stack-Only Public Repository Sampling
+## External Repository Cross-Validation Evidence
 
-Use this section only when the target repository is not known yet or only the technology stack is known. Prefer at least five public repositories; use at least three only when the reason is recorded.
+Use this section for technology-stack guidance, architecture conventions, coding rules, testing practices, or best/anti patterns. Use it even when local code exists, because local code is current-state evidence, not best-practice authority. Prefer at least five public repositories; use at least three only when the reason is recorded.
 
-| Repository | Role | Selection Evidence | Inspected Evidence | Candidate Targets | Grouping | Limitations |
-| --- | --- | --- | --- | --- | --- | --- |
-| <owner/name or stable URL> | <product/library/example/platform/docs/etc.> | <query, non-archived/non-fork/activity/adoption/stack relevance> | <manifest/scripts/workflows/source/docs/releases> | <candidate targets> | <Shared Stack / Stack Plus Domain / Repository Specific> | <missing evidence/conflicts/confidence impact> |
+| Repository | Role | Selection Evidence | Inspected Evidence | Candidate Targets | Do Patterns | Don't / Anti-Patterns | Grouping | Limitations |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| <owner/name or stable URL> | <product/library/example/platform/docs/etc.> | <query, non-archived/non-fork/activity/adoption/stack relevance> | <manifest/scripts/workflows/source/docs/releases/source files> | <candidate targets> | <recommended practice observed> | <failure-prone practice or avoided pattern> | <Shared Stack / Stack Plus Domain / Repository Specific> | <missing evidence/conflicts/confidence impact> |
 
 ## GitHub Evidence Fallbacks
 
@@ -119,9 +119,10 @@ Use this table when `Broad Input And Target Decomposition` is present.
 - [ ] Future proposals remain in `evolution`.
 - [ ] Development guidance targets are classified and routed to owner folders.
 - [ ] Broad technology-stack requests are decomposed into sufficiently granular targets before current rules are written.
+- [ ] Local code was not treated as best-practice authority without external repository cross-validation.
 - [ ] Explicit source items or derived targets, when present, are mapped without silent omission.
 - [ ] Target pattern coverage maps every target to a best example, anti-pattern example, verification method, or explicit open question/no-example rationale.
-- [ ] Sampled public repository practices are not promoted to current rules without target repository evidence.
+- [ ] External repository practices are not promoted to current rules without target repository evidence.
 - [ ] Non-`gh` fallback evidence records limitations and confidence impact when used.
 - [ ] Every local evidence row links to a current rule, proposal, AI rule, decision, or open question.
 - [ ] No same-named `profile/{architecture,engineering,domain,evolution,ai,decisions}` evidence taxonomy is required.

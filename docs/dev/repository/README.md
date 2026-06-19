@@ -45,7 +45,7 @@ This document records repository-specific evidence for this `docs/dev` governanc
 | Question | Applied Default | Evidence |
 | --- | --- | --- |
 | Global display phrase | Use `development guidance target` and keep `concern` only as an optional short label. | `docs/designs/docs-dev-template-governance-20260617-q7m2/open-questions.md` |
-| Stack-only sample count | Use at least five public repositories by default; allow at least three only with recorded justification. | `docs/dev/README.md`, `docs/dev/_templates/README.md` |
+| External repository cross-validation sample count | Use at least five public repositories by default; allow at least three only with recorded justification. | `docs/dev/README.md`, `docs/dev/_templates/README.md` |
 | Non-`gh` fallback scope | Allow GitHub Web UI, REST API through an approved HTTP client, installed GitHub MCP or connector output, and stable file URLs. | `docs/dev/README.md`, `docs/dev/_templates/repository/_template.md` |
 | `Recommended Future Pattern` ownership | Keep evidence and classification in `repository`; keep interpretation and application guidance in topical owner folders. | `docs/dev/README.md`, `docs/dev/_templates/README.md` |
 | Named stack examples | Keep core templates stack-neutral; named technologies must be target evidence or optional examples. | `docs/dev/README.md`, `docs/dev/_templates/README.md` |
