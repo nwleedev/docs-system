@@ -35,7 +35,7 @@ Do not recreate `docs/dev/profile/{architecture,engineering,domain,evolution,ai,
 
 - Repository purpose, stack, source layout, generated output, verification commands, constraints, baseline evidence, and audit history are recorded or explicitly marked not found.
 - Development guidance targets record decision point, risk, evidence, owner folder, classification, confidence, and follow-up.
-- Stack-only sampling records multiple public repositories or a justified smaller sample.
+- External repository cross-validation records multiple public repositories or a justified smaller sample.
 - GitHub fallback evidence records tool/interface, URLs, steps, inspected files/pages, date, limitations, and confidence impact.
 - Each evidence row links to the top-level current-rule folder it supports.
 - No current engineering, architecture, AI, domain, evolution, or decision rule is written as repository evidence.

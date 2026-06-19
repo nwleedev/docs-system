@@ -1,3 +1,5 @@
+This file is a free-form example prompt for writing `docs/dev` guidance in a NextJS-based repository. Expand the concerns below in whatever structure best fits the target repository, but for each concern research and cross-validate external public repositories, official documentation, and the local repository baseline. Document what not to do, the required safer alternative, best-practice code patterns, anti-pattern examples across multiple code scenarios, verification methods, and ESLint enforcement options under `docs/dev`.
+
 When developing a NextJS-based application, research and cross-validate **how to write correct code, which design patterns to use, and how to structure the module architecture** for each item below, then document the findings under `docs/dev`. For every concern, also research and cross-validate **best-practice code pattern examples and anti-pattern examples** across multiple code scenarios, and document the code examples as well.
 
 NextJS App Router routing

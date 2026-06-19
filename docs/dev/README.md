@@ -36,7 +36,6 @@ If target repository evidence is insufficient, do not write a current rule. Clas
 | `ai/`           | How AI reads and applies `docs/dev`, uncertainty handling, and legacy handling | Current engineering rules that humans must review |
 | `decisions/`    | Accepted/deferred/superseded decisions, rationale, consequences, and revisit triggers | Simple README indexes or one-off work notes |
 | `_templates/`   | Folder-specific templates and bootstrap audits for authoring new `docs/dev` documents | Root governance or current rules for a target repository |
-| `_commands/`    | Prompt/runbook commands reusable across repositories | Current rules, target repository evidence, or source packs |
 | `repository/`   | Target-repository-specific stack, source layout, baseline evidence, audit history, and local constraints | Portable governance or current rules to copy across repositories |
 
 ## Target Decomposition
@@ -96,21 +95,26 @@ Each repository may keep a target inventory in `repository/README.md` or `reposi
 
 Use `Recommended Future Pattern` when target repository evidence is not yet sufficient for promotion to a current rule, but stack/config evidence plus official documentation or public repository evidence supports a future direction. Keep evidence and classification in `repository/`, and keep interpretation and application direction in the relevant owner-folder document.
 
-## Stack-Only Repository Sampling
+## External Repository Cross-Validation
 
-Do not infer targets from a technology-stack name alone. First inspect multiple real public repositories and separate common, divergent, and repository-specific target candidates.
+Do not infer development guidance targets from a technology-stack name, existing local code, or repository habits alone. Existing code is current-state evidence and applicability evidence, not proof of a recommended pattern.
+
+Run external repository cross-validation before writing guidance for a technology stack, architecture convention, coding rule, testing practice, or best/anti pattern. This applies when only a stack is known, when local code exists but may encode local anti-patterns, when guidance is missing or stale, or when broad development guidance is requested.
 
 | Step | Rule |
 | --- | --- |
+| Local baseline | Record local code as current-state evidence and identify possible local anti-patterns, missing guidance, and migration constraints. |
 | Select samples | Prefer active, non-archived, non-fork repositories, and record stack relevance plus adoption signals. The default is five repositories; this can be reduced to three when justified. |
-| Inspect evidence | Do not rely on descriptions alone; inspect manifests, lockfiles, scripts, workflows, source layout, docs, releases, and maintenance signals. |
+| Inspect evidence | Do not rely on descriptions or code search hits alone; inspect manifests, lockfiles, scripts, workflows, source layout, docs, releases, maintenance signals, and targeted source files when needed. |
+| Extract guidance | Extract concrete decision points, what-to-do patterns, what-not-to-do anti-patterns, verification signals, tooling constraints, and migration risks. |
 | Group targets | Classify candidates as `Shared Stack`, `Stack Plus Domain`, or `Repository Specific`. |
 | Review local applicability | Sampled evidence is a discovery aid. It cannot become a current rule without target repository evidence. |
+| Complete coverage | Guidance is incomplete if it relies only on local code, official docs alone, memory, or a single repository sample. |
 | Preserve evidence | Record commands, URLs, inspected paths, retrieved date, limitations, and confidence impact. |
 
 ## GitHub Evidence Fallbacks
 
-Prefer `gh` for collecting GitHub evidence, but do not make it mandatory. If `gh` is unavailable because of installation, authentication, rate limits, or environment policy, the following fallbacks are acceptable.
+Prefer `gh` for collecting GitHub evidence, but do not make it mandatory. If `gh` is unavailable because of installation, authentication, rate limits, or environment policy, the following fallbacks are acceptable. Fallback evidence must satisfy the same evidence contract as `gh` evidence; a fallback is not permission to skip external repository cross-validation.
 
 | Preferred Path | Accepted Fallback | Required Recording |
 | --- | --- | --- |
@@ -190,7 +194,7 @@ Before committing a `docs/dev` template or root governance update, verify that p
 
 When creating a new `docs/dev` document or making a major update, use [\_templates](./_templates/README.md). `_templates` is a folder-specific authoring router and does not own root README governance.
 
-For broad target-decomposition work that needs repeatable execution, use [\_commands](./_commands/README.md). `_commands` owns only prompts/runbooks and does not own current rules or repository evidence.
+For broad technology-stack work, use `External Repository Cross-Validation`, record target inventory and evidence under `repository/`, and use stack-specific free-form prompts from `examples/` when available. `examples/` provides repository-applicable prompt examples; it does not own current rules, repository evidence, or portable governance.
 
 Document examples must meet the following criteria.
 

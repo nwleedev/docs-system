@@ -1,6 +1,6 @@
 # docs/dev Templates
 
-This folder contains repo-tracked templates used by AI agents and team members when creating or substantially updating `docs/dev` development guidance. Even without a workflow skill such as `maintain-dev-docs`, this folder should be enough to decide placement, collect evidence, write documents, and complete an audit.
+This folder contains repo-tracked templates used by AI agents and team members when creating or substantially updating `docs/dev` development guidance. Even without a workflow skill, this folder should be enough to decide placement, collect evidence, write documents, and complete an audit.
 
 Templates do not copy the current repository's technology stack as the default for other repositories. When writing a new document, first inspect the target repository's source, config, tests, existing docs, and accepted decisions, then promote only evidence-backed items to current rules.
 
@@ -18,7 +18,7 @@ Templates do not require `data.txt`, Next.js, a specific item count, or a specif
 4. Use the target folder's `_template.md` as the authoring baseline.
 5. If the target repository already has `docs/dev/<folder>/README.md`, re-check Include, Exclude, and Dynamic File Policy.
 6. If the target repository has no `docs/dev` folder or is setting up a new structure, record evidence and missing items in `_bootstrap-audit.md`.
-7. If only a technology stack is provided, record public repository sampling or equivalent GitHub evidence first, and do not promote anything to a current rule without target repository evidence.
+7. For technology-stack guidance, architecture conventions, coding rules, testing practices, or best/anti patterns, record external repository cross-validation or equivalent GitHub evidence first, even when local code exists.
 8. If a broad technology-stack request or prevention-pattern request is provided, fill the `Development Guidance Target Router` and the repository template's target inventory first, then write detailed documents after target coverage is confirmed.
 
 ## Placement Router
@@ -37,7 +37,7 @@ Templates do not require `data.txt`, Next.js, a specific item count, or a specif
 
 | Target Shape | Evidence Owner | Guidance Owner | Classification Rule |
 | --- | --- | --- | --- |
-| Stack evidence, source layout, public repository sampling, fallback evidence, local constraints | `repository/` | Linked owner folder | Evidence only; never a current rule by itself |
+| Stack evidence, source layout, external repository cross-validation, fallback evidence, local constraints | `repository/` | Linked owner folder | Evidence only; never a current rule by itself |
 | Module boundary, layer ownership, runtime flow, public API placement | `repository/` evidence table | `architecture/` | Current rule only with target repository evidence |
 | Library composition, validation contract, generated code, tests, build, lint, release tooling | `repository/` evidence table | `engineering/` | Current rule only with target manifests/config/source/test evidence |
 | Product vocabulary, state meaning, business invariant | `repository/` evidence table | `domain/` | Current rule only with repeated source/product/test evidence |
@@ -50,7 +50,7 @@ Templates do not require `data.txt`, Next.js, a specific item count, or a specif
 | Input Shape | First Output | Follow-Up Output | Rule |
 | --- | --- | --- | --- |
 | Explicit concern list, issue, meeting note, uploaded/external/restricted source | `repository/<topic>.md` or design package inventory | Owner-folder docs after classification | Preserve each requirement-relevant source item with stable IDs before summarizing. |
-| Technology stack name only | `repository/README.md` stack evidence and sampling table | `evolution/` recommended patterns or owner-folder open questions | Derive targets from manifests, official docs, and sampled repositories before proposing current rules. |
+| Technology stack name, broad stack request, or untrusted local code | `repository/README.md` stack evidence and external validation table | `evolution/` recommended patterns or owner-folder open questions | Derive targets from manifests, official docs, and sampled repositories before proposing current rules. |
 | Target repository evidence exists | `repository/README.md` target inventory | `architecture/`, `engineering/`, `domain/`, `ai`, `decisions` | Promote only evidence-backed targets to current rules. |
 | Product/UI visual research request | Research record or `repository/<topic>.md` evidence table | `domain/` guidance or `decisions/` record | Preserve URLs, screenshots, task context, accessibility notes, and limitations. |
 
@@ -96,19 +96,21 @@ Cross-check important targets with at least two evidence types when practical. C
 
 When an explicit source list contains many requested concerns, record source location, persistence state, optional item count, stable target ID or cluster range, and any reconstructed text needed for reviewers to audit coverage without reopening ignored or private files.
 
-## Stack-Only Sampling
+## External Repository Cross-Validation
 
-When only a technology stack is known, sample public repositories before proposing targets.
+For technology-stack guidance, architecture conventions, coding rules, testing practices, or best/anti patterns, sample public repositories before proposing targets. Existing local code is current-state evidence, not best-practice authority.
 
 | Step | Minimum Recording |
 | --- | --- |
+| Local baseline | current local code evidence, suspected local anti-patterns, missing guidance, migration constraints |
 | Query and selection | search query, filters, activity, non-archived/non-fork status, adoption signal, stack relevance, sample role |
-| Inspection | manifests, scripts, workflows, source layout, docs, releases, maintenance signals |
+| Inspection | manifests, scripts, workflows, source layout, docs, releases, maintenance signals, targeted source files when needed |
+| Do and don't extraction | what-to-do patterns, what-not-to-do anti-patterns, verification signals, tooling constraints |
 | Grouping | `Shared Stack`, `Stack Plus Domain`, `Repository Specific` |
 | Local applicability | why this candidate does or does not apply to the target repository |
 | Limitations | missing files, weak search results, stale docs, conflicts, confidence impact |
 
-Prefer at least five repositories. If the ecosystem is small or search quality is poor, at least three is acceptable when the reason is recorded.
+Prefer at least five repositories. If the ecosystem is small or search quality is poor, at least three is acceptable when the reason is recorded. Guidance is incomplete if it relies only on local code, official docs alone, memory, or a single repository sample.
 
 ## GitHub Evidence Fallbacks
 
@@ -126,10 +128,6 @@ Temporary archive or clone inspection requires a separate decision or explicit i
 - Placeholder text must be removed before a generated document is considered complete.
 - Named technologies in generated documents must be optional evidence or examples, not template prerequisites.
 - Broad technology-stack requests are complete only when explicit source items or derived targets map to evidence, owner folder, classification, pattern coverage, and either a detailed guidance section, an accepted decision, or an explicit open question/follow-up.
-
-## Optional Commands
-
-Reusable prompt/runbook commands live in `docs/dev/_commands`. Commands can decompose broad work, but templates remain the normative output contract. Commands must not own current rules, target repository facts, accepted decisions, or source-of-truth evidence.
 
 ## Bootstrap Path For Repositories Without docs/dev
 
