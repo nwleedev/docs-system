@@ -98,6 +98,8 @@ Explain the coding or verification rule and the concrete review problem it preve
 - [ ] Linked development guidance targets are classified and grounded in repository evidence.
 - [ ] Scenario Coverage appears before examples.
 - [ ] Every scenario maps to an example pair or no-example rationale.
+- [ ] Test or verification guidance links behavior to an acceptance example, user regression, or public contract when applicable.
+- [ ] Test guidance covers weak assertions, snapshot-only checks, CSS selectors, and implementation-detail assertions as anti-patterns when applicable.
 - [ ] Best and anti-pattern explanations are understandable to a first-time reader.
 - [ ] External claims use official or primary sources where relevant.
 - [ ] Placeholder text has been removed.

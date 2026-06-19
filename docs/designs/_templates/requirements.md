@@ -92,7 +92,18 @@ When updating an existing package:
 
 Use examples to remove ambiguity from conditional or broad requirements.
 
-- AE1. **Given** <scope phrase such as "each document">, **when** <the work is audited>, **then** <the audit checks every target and records missing evidence instead of sampling silently>.
+Acceptance examples are the source of truth for user scenarios used by implementation and tests. Record the source or status of each example when authorship or approval matters.
+
+Allowed statuses:
+
+- `User Provided`: directly written by the user.
+- `User Approved`: drafted or refined by the team or AI and accepted by the user.
+- `AI Inferred - Needs Approval`: inferred from requirements or evidence, but not approved yet.
+- `Open Question`: blocked by missing product meaning or evidence.
+
+`AI Inferred - Needs Approval` and `Open Question` examples are not valid implementation, test, or completion criteria until they become `User Approved`.
+
+- AE1. **Given** <scope phrase such as "each document">, **when** <the work is audited>, **then** <the audit checks every target and records missing evidence instead of sampling silently>. `(Status: <User Provided / User Approved / AI Inferred - Needs Approval / Open Question>)`
 
 ## Success Criteria
 
