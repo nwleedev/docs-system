@@ -38,6 +38,8 @@ Each owner guidance document should include:
 | Verification | Commands, reviews, runtime checks, or code search needed to validate the guidance. |
 | Traceability | Source item IDs or derived target IDs covered by the document. |
 
+For test or verification guidance, the verification section must explain which acceptance example, user regression, or public contract the check protects.
+
 ## Coverage Gate
 
 Every routed target ID must map to one of:
@@ -47,6 +49,12 @@ Every routed target ID must map to one of:
 - A local constraint with verification.
 - An open question with a named blocker.
 - An explicit no-example rationale.
+
+For test guidance, every proposed verification must map to one of:
+
+- an approved acceptance example ID;
+- a user regression statement;
+- a public contract name for lower-level unit tests.
 
 ## Prohibited Shortcuts
 
@@ -62,3 +70,4 @@ Every routed target ID must map to one of:
 - Confirm every best pattern has a corresponding failure mode or anti-pattern.
 - Confirm every current rule has target repository evidence.
 - Confirm future patterns and open questions are not worded as accepted current rules.
+- Confirm test verification is tied to an acceptance example, user regression, or public contract instead of implementation shape alone.
