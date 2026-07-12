@@ -1,323 +1,200 @@
-# Design Document Governance
+# Design Documents
 
-This directory stores durable requirements, research, plans, decisions, traceability, and completion evidence for product and engineering work. Its purpose is to keep future work from silently shrinking the original request, losing research evidence, or claiming completion without requirement-level proof.
+This directory stores durable context for work that must remain understandable beyond a single conversation or pull request. A human owns `requirements.md`. When the file does not yet exist, AI may create a minimal initial version from the human's explicit request. AI may review, research, record human decisions, plan, and verify, but it must not invent or silently rewrite the requested outcome.
 
-## Core Rules
-
-- Preserve the user's requested scope until a documented decision changes it.
-- Do not replace "all", "each", "minimum", "must", or "cross-validated" with a narrower interpretation.
-- Separate requirements, research, decisions, plans, traceability, and completion evidence.
-- Use repo-relative paths in all documents.
-- Keep sensitive values, private URLs, and unsanitized logs out of committed documents.
-- Prefer the smallest artifact set that still proves the requirement can be planned, implemented, reviewed, and audited.
-- Distinguish a local draft from a committed deliverable. A file that is ignored, generated-only, external-only, or not reproducible is not completion evidence unless an accepted decision defines that delivery mechanism.
-- Treat an existing design package as a baseline. New requests amend, clarify, supersede, conflict with, or defer parts of that baseline; they do not replace it silently.
-
-## Recommended Package Layout
-
-Use this layout for new design packages when the work needs durable documentation.
+## Package Structure
 
 ```text
 docs/designs/
   README.md
-  _templates/
-  <topic>-<yyyymmdd>-<short-random>/
+  <topic>-<short-id>/
     requirements.md
-    research/
-      README.md
-      0001-record-research-topic.md
-    plan.md
-    traceability.md
-    completion-audit.md
+    references/
+      <research-topic>.md
     decisions/
-      README.md
-      0001-record-important-decision.md
+      <decision-topic>.md
+    plan.md
 ```
 
-The package does not need every file for every task. Add files when they carry evidence that another artifact should not own.
+Create a package only when its context must survive across sessions, contributors, or pull requests. `requirements.md` is required in every package. Create `references/`, `decisions/`, and `plan.md` only when their creation conditions below are met. Do not create empty directories or placeholder documents.
 
-| Artifact              | Owns                                                                                              | Does Not Own                                                      |
-| --------------------- | ------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
-| `requirements.md`     | What must be true, scope boundaries, success criteria, acceptance examples.                       | Implementation order, exhaustive source notes, completion claims. |
-| `research/README.md`  | Research index, statuses, supported requirements, links to research records.                      | Detailed evidence or final completion status.                     |
-| `research/*.md`       | One research question, evidence set, cross-validation result, finding, impact, and gaps.          | Multiple unrelated research questions.                            |
-| `plan.md`             | How requirements become implementation units and verification steps.                              | New product scope, unapproved scope cuts.                         |
-| `traceability.md`     | Links from requirements to sources, decisions, plan units, verification, and completion evidence. | Long explanations or raw logs.                                    |
-| `completion-audit.md` | Final requirement-by-requirement evidence and remaining gaps.                                     | Future plans or speculative improvements.                         |
-| `decisions/README.md` | Decision index, statuses, links, revisit triggers.                                                | Full rationale for large decisions.                               |
-| `decisions/*.md`      | One significant decision, its context, options, outcome, consequences, and supersession history.  | Multiple unrelated decisions.                                     |
+The short ID prevents name collisions. It does not replace a descriptive topic name.
 
-## Package Naming And Creation
+## Document Model
 
-Create application or product requirements under `docs/designs/<topic>-<yyyymmdd>-<short-random>/`. This README is the durable package governance source when an agent, contributor, or repository does not provide a separate `AGENTS.md` or equivalent instruction file.
+Documents are prose-first and do not use fixed templates. Authors may choose headings, section order, paragraphs, lists, quotations, and code blocks that fit the subject. A document is acceptable when it contains the required information for its type, excludes prohibited content, and passes the applicable checks below.
 
-Use this naming policy for every new design package:
+For every document type, this README should define
 
-- `<topic>` is a short, repo-neutral, kebab-case description of the product area or workstream. It should be specific enough to identify the requested scope without embedding private task IDs or implementation-only details.
-- `<yyyymmdd>` is the package creation date. Do not change it later to make a package look newer.
-- `<short-random>` is a short collision-avoidance suffix. Keep it stable once the package exists.
-- The full folder name is the package identifier. Do not rename or recreate a reviewed package silently; use amendments, supersession, or decision records when the scope changes.
+- Why and when the document exists
+- Information that must be present
+- Information required only in applicable cases
+- Content the document must not contain
+- Checks performed by repository tools, AI, and humans
 
-Start from `requirements.md` for new requirements work. Do not use package naming, a smaller template, or an external source reference as a reason to shrink the request. If the request is broad, create the supporting artifacts needed to preserve and audit the scope instead of compressing the requirements.
+## Presentation
 
-Do not attempt to complete a requirements package in one unreviewed pass when the request contains unresolved product, technical, security, data, dependency, API, or existing-behavior choices. Classify such choices before continuing:
+- Use one descriptive title and a logical heading hierarchy. Do not create empty headings or skip heading levels for visual styling.
+- Prefer prose and short lists. Use numbered lists only when order matters.
+- Use a table only when readers must compare genuinely two-dimensional data by rows and columns. Keep long explanations out of table cells.
+- Separate sourced facts, analysis, human decisions, proposals, and unresolved uncertainty so readers can distinguish them.
+- Link to the owning document instead of copying the same requirement, decision, evidence, or guidance into multiple files.
+- Do not add YAML, IDs, status fields, or other metadata unless a current tool or review process consumes them.
 
-- `Deferred Decision`: The choice does not change requirement meaning and is easy to revisit. Record the context, chosen default, alternatives, risk, and revisit trigger in the package.
-- `Blocking Decision`: The choice affects product behavior, security or permissions, data retention, public API, dependencies, technology stack, existing feature removal or replacement, or an accepted design. Stop before implementation and ask for an accepted direction.
+## `requirements.md`
 
-Keep requirement-specific decisions inside the same design package, normally in `decisions/README.md` and `decisions/*.md`. Do not move those records into shared development guidance such as `docs/dev`, because the rationale belongs to the requirement baseline that created it.
+### Purpose and ownership
 
-When a requirements package is created or materially changed, make it ready for normal Git review. A package that only exists as an ignored local draft, generated output, external document, or private note is not durable completion evidence unless an accepted decision defines that delivery mechanism.
+`requirements.md` states what the human wants. The human owns its wording and ordering and may create or rewrite the file at any time.
 
-## Artifact Persistence
+When a design package is needed and `requirements.md` does not exist, AI may create a minimal initial version from the current request. Include only the explicitly stated intended outcome, conditions that must remain true, observable completion evidence, and user-stated unresolved questions. Exclude instructions about tools or workflow unless they constrain the requested result. Do not infer features, constraints, evidence, or decisions.
 
-Requirements and plans must say how important artifacts survive after the session. Do not treat "the file exists locally" as enough when the requested outcome depends on future agents, reviewers, CI, or another repository seeing the artifact.
+Keep the initial version easy to revise. Omit unsupported sections instead of adding empty headings, placeholders, or guessed content. Review missing required information immediately after creation. Missing information blocks only the research, planning, or implementation that depends on it. Continue unaffected work when the explicit request provides a sufficient baseline.
 
-Use these persistence states when planning and auditing artifacts:
+After the initial version exists, AI may identify gaps and propose exact changes, but it may edit the file only when the human explicitly requests a change or approves the wording to apply.
 
-| State               | Meaning                                                                     | Completion Rule                                                                  |
-| ------------------- | --------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
-| `Tracked`           | The artifact is committed or ready to commit through normal Git tracking.   | Can prove completion when the content and verification match the requirement.    |
-| `Ignored Local`     | The artifact exists under a gitignored path.                                | Cannot prove completion unless an accepted decision defines a non-Git handoff.   |
-| `Generated`         | The artifact is produced from committed source or a documented command.     | Completion requires the source, command, and expected output contract.           |
-| `External`          | The artifact lives outside the repository, such as a service, package, doc. | Completion requires a stable reference, access expectation, and ownership model. |
-| `Not Created`       | The artifact is planned or required but absent.                             | Completion is missing or blocked.                                                |
-| `Decision Required` | The persistence state changes requirement meaning or repository policy.     | Stop implementation and create or update a decision record before proceeding.    |
+### Required information
 
-For any required artifact, record the expected persistence state in `requirements.md` or `plan.md`. Verify the actual state with current repository evidence such as `git status --porcelain`, `git status --porcelain --ignored`, `git check-ignore -v <path>`, generated-output commands, or external references.
+- The intended outcome
+- Conditions that must be true
+- Observable evidence that will show the work is complete
+- Unresolved questions that would change the requested behavior, if any.
 
-## Source Material Handling
+Include protected behavior, exclusions, inputs, environment, or product constraints only when they affect the work. A human may express this information in plain sentences without YAML, tables, IDs, formal scenarios, or technical terminology.
 
-When source material shapes requirements, classify how future reviewers can recover it before writing the requirements body. Do not let a requirement depend only on a source that may disappear, be ignored by Git, require private access, or be too broad to re-check quickly.
+An AI-created initial version may be incomplete because the request did not state every required item. Mark the missing criteria as `needs revision` or `needs human input`. Do not fill them by inference merely to make the document pass review.
 
-Use these source material classes:
+### Prohibited content
 
-| Source Class             | Examples                                                       | Required Handling                                                                                                                                                                      |
-| ------------------------ | -------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Tracked Source`         | Repo-tracked Markdown, fixtures, specs, exported evidence.     | Link the repo-relative path, summarize the claim used, and map source segments to requirements when the source creates coverage obligations.                                           |
-| `Local/Ephemeral Source` | Local PDFs, uploaded files, generated extracts, ignored files. | Reconstruct the requirement-relevant content in `requirements.md` or `research/`, record coverage by page/section/segment, and audit that the package works without the original file. |
-| `Restricted Source`      | Private docs, access-controlled systems, private tickets.      | Sanitize sensitive details, record the claim used and access expectation, and make the requirement self-contained enough for authorized reviewers to proceed.                          |
-| `Recoverable Web Source` | Public web URLs, official docs, public standards pages.        | Keep URL, publisher, accessed date, claim used, and quality notes. Do not copy full web pages into requirements; summarize only the claim needed for traceability.                     |
+- AI-inferred requirements presented as human requirements
+- Unverifiable completion language without observable evidence
+- Implementation choices presented as required outcomes when the human did not require that implementation
+- Instructions added only to make an existing implementation appear compliant.
 
-For `Local/Ephemeral Source` and `Restricted Source`, the design package must be self-contained enough that a planner can understand the requirement and a reviewer can audit source coverage without reopening the original source. This does not require copying every word; it requires reconstructing every requirement-relevant obligation, screen, flow, rule, data expectation, constraint, and exception that the source contributed.
+Requirement IDs are optional. Add them only after repeated exact quotations become unclear or error-prone. Until then, derived documents identify requirements with an exact excerpt and its section.
 
-For `Recoverable Web Source`, the source can remain external when the URL is public and reasonably stable. Still record the specific claim used, because web content can move, change, or become hard to preserve. If a web source is unstable, access-controlled, or used as the only evidence for a broad requirement, treat it like `Restricted Source` or record a decision explaining the handoff.
+### Review
 
-## Implementation-Time Decision Boundaries
+AI reads the entire file and checks for ambiguity, contradiction, missing completion evidence, unverifiable wording, and unanswered behavior-changing questions. Findings stay in the conversation unless preserving them serves a durable need. AI must not mark human intent as valid on the human's behalf.
 
-Implementation can reveal conflicts that were not visible during brainstorming or planning. Treat these as decision boundaries, not as ordinary audit gaps.
+Before research or planning continues, AI separates findings into blocking questions, optional suggestions, factual research questions, and decisions that require human judgment.
 
-Stop and create or update a decision record before continuing when any of these is true:
+## `references/*.md`
 
-- A planned artifact path is ignored, generated-only, outside the repository, or otherwise not commit-ready.
-- Satisfying the plan requires force-adding ignored files, changing `.gitignore`, adding a Git ignore exception, moving the source of truth, or creating a new delivery mechanism.
-- A verification command proves only a local draft, but the requirement asks for a durable or reusable deliverable.
-- The implementation needs a new dependency, script, hook, CI job, deployment step, security exception, or public API change that the requirements did not accept.
-- A completion claim would depend on a `Partial`, `Unverified`, local-only, or non-reproducible artifact.
+### Creation condition
 
-Record the decision as `Proposed` when no option has been accepted yet. Do not change the requirement, plan, or final verdict to make the unresolved option look accepted.
+Create a reference document when factual research or repository evidence will be reused after the current conversation. Keep a small fact check in the conversation when no durable handoff is needed.
 
-## Artifact Selection
+### Required information
 
-Start every durable requirements package from the same `requirements.md` template. Do not choose a reduced requirements template, because the label can become a reason to omit scope preservation.
+- The question being investigated
+- The exact requirement excerpt or work context that made the research necessary
+- Sources and the dates or revisions reviewed
+- Facts supported directly by those sources
+- Conclusions derived from comparing the evidence
+- Limitations, conflicts, and unresolved uncertainty
+- The effect on requirements, decisions, or planning.
 
-Add supporting artifacts when the request needs them.
+When external claims materially affect the work, prefer current official documents, standards, and source repositories, and cross-check the claims with independent primary sources. When external guidance differs from the current repository, describe the difference instead of presenting either one as automatically correct.
 
-| Condition                                                                                                   | Add                                                                                         |
-| ----------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
-| Sources shaped the requirement or need cross-validation.                                                    | `research/README.md` and one or more research records                                       |
-| Research evidence spans several source types.                                                               | Keep the evidence in the same research record and classify each source with a `Type` column |
-| The work needs implementation sequencing.                                                                   | `plan.md`                                                                                   |
-| Completion cannot be proven by reading one small diff.                                                      | `traceability.md`                                                                           |
-| The request contains "all", "each", "minimum N", "cross-validate", "audit", or "do not shrink" constraints. | `traceability.md` and `completion-audit.md`                                                 |
-| The work makes or changes a durable decision.                                                               | `decisions/README.md` and a decision record when needed                                     |
-| Required artifacts may be ignored, generated, external, or delivered outside normal Git tracking.           | `decisions/README.md`, a decision record, `traceability.md`, and `completion-audit.md`      |
+### Prohibited content
 
-## Scope Preservation
+- Unsupported claims presented as sourced facts
+- Analysis presented as a human decision
+- New requirements that the human did not approve
+- Source lists that do not show which claims they support.
 
-Before writing or changing a requirements document, identify the phrases that create coverage obligations. Examples include:
+## `decisions/*.md`
 
-- "all documents"
-- "each API"
-- "minimum five examples"
-- "research and cross-validate"
-- "do not arbitrarily narrow"
-- "new files only"
-- "existing behavior must remain"
+### Creation condition
 
-For each phrase, write a matching requirement and decide how completion will be proven. If the proof requires more than a simple review, create `traceability.md` and `completion-audit.md`.
+Create a decision record only for a choice that materially affects the work and must remain understandable later. A human decides. AI may prepare options and record the approved result.
 
-## Plan Organization
+### Required information
 
-Use `docs/designs/<topic>-<yyyymmdd>-<short-random>/plan.md` as the default and preferred home for implementation planning tied to a design package. Do not create a separate `docs/plans` entry for work that belongs to an existing design package.
+- The question that required a decision
+- The requirement excerpts the decision must satisfy
+- The material options actually considered
+- The human-approved decision and its reasoning
+- Expected consequences and plan impact
+- Conditions that would justify revisiting or superseding the decision.
 
-When planning grows, keep it in the same `plan.md` by using:
+A proposed option is not an accepted decision. If a decision changes the requested outcome, the human updates `requirements.md` before affected work resumes.
 
-- `Plan Amendments` to record new, modified, deferred, superseded, or removed plan scope.
-- `Implementation Units` to split work into independently reviewable units.
-- `Verification` rows to keep each unit tied to observable evidence.
-- `traceability.md` to connect requirements, plan units, verification, and completion evidence.
+### Prohibited content
 
-Use a separate plan location only when the plan is repo-wide, operational, or not owned by a specific design package. If a design package appears to require multiple independent plan files, first record why a single `plan.md` would lose traceability or become unreviewable, then add or update a decision record before creating a new plan structure.
+- AI recommendations presented as human approval
+- Invented approval evidence
+- A broader or narrower decision than the wording the human approved
+- A decision that silently overrides `requirements.md`.
 
-## Existing Package Updates
+## `plan.md`
 
-When updating an existing design package, do not start by rewriting the document body. First inspect the current package inventory and record how the new request affects the existing baseline.
+### Creation condition
 
-Check these artifacts when they exist:
+Create `plan.md` after behavior-changing ambiguities and required human decisions are resolved and the work needs an execution plan. Small research-only packages do not need a plan.
 
-- `requirements.md`: original scope, stable requirement IDs, amendments, deferred items, out-of-scope items, and required artifacts.
-- `plan.md`: active, completed, deferred, superseded, or removed plan units and their verification coverage.
-- `decisions/README.md` and `decisions/*.md`: accepted, proposed, deferred, superseded, partially superseded, and partially restored decisions.
-- `traceability.md`: requirement-to-research, requirement-to-decision, requirement-to-plan, requirement-to-verification, and requirement-to-audit mappings.
-- `completion-audit.md`: current verdicts, known gaps, and evidence that should remain valid after the update.
-- `research/` records: external documents, local evidence, runtime observations, standards, user constraints, and gaps that support the current scope.
+### Required information
 
-Classify the new request before changing requirements, plans, decisions, or audit claims:
+- The `requirements.md` revision used as the baseline
+- Exact requirement excerpts mapped to work units
+- Dependencies and execution order where order matters
+- Observable verification for each work unit
+- Unresolved blockers and explicit stop conditions
+- The specific applicable files under `docs/dev/` and the revision reviewed when later changes could alter execution.
 
-| Change Type  | Meaning                                                                                   | Required Handling                                                                                                   |
-| ------------ | ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| `Adds`       | Introduces new scope without changing earlier meaning.                                    | Add new requirement IDs, plan units, verification rows, and traceability rows while preserving existing IDs.        |
-| `Clarifies`  | Makes existing meaning more precise without changing obligation or behavior.              | Update wording carefully, record affected IDs, and verify that acceptance examples and audit evidence still match.  |
-| `Supersedes` | Replaces an earlier requirement, decision, plan unit, or verification expectation.        | Keep the earlier item visible, add or update a decision record, and link old and new items through traceability.    |
-| `Conflicts`  | Cannot coexist with accepted scope, decisions, persistence policy, or verification gates. | Stop before implementation, mark the decision as `Proposed`, and keep affected completion claims unresolved.        |
-| `Backlog`    | Captures valid future scope that is not part of the active plan.                          | Keep it visible in requirements and traceability, but exclude it from active completion gates with a recorded note. |
+The plan may choose implementation steps, but it must not invent product behavior. Every required outcome and protected behavior must be covered by work and verification or identified as blocked.
 
-Do not delete, renumber, or rewrite existing requirement IDs, plan units, decisions, research findings, or audit rows just because a newer request is easier to describe from scratch. If an item is no longer valid, mark it as superseded, deferred, rejected, or removed by decision and link the replacement.
+### Prohibited content
 
-## Requirement Amendments
+- New requirements disguised as implementation work
+- Assumptions presented as resolved facts
+- Vague completion statements such as "test it" or "review it" without naming the evidence
+- A completion claim based only on documents rather than the actual implementation and verification results.
 
-When a user adds requirements after a package already has a `requirements.md`, treat the update as an amendment, not as a silent rewrite. The purpose is to preserve earlier scope while making the new scope visible.
+## Validation
 
-Use this flow before editing the requirements body:
+Use the cheapest reliable check for each property.
 
-1. Identify the preserved requirements, decisions, plan units, verification rows, research records, and audit rows that must remain true.
-2. Classify the new request as `Adds`, `Clarifies`, `Supersedes`, `Conflicts`, or `Backlog`.
-3. Add a `Requirement Amendments` entry that records preserved IDs, new IDs, modified IDs, superseded IDs, affected sections, decision needs, plan impact, traceability impact, and audit impact.
-4. Update or add requirements without changing the historical meaning of reviewed text. If meaning changes, record a superseding decision instead of making the old text look as if it always meant the new thing.
-5. Update `plan.md` so existing plan units are preserved, modified, deferred, superseded, or removed by decision before adding new units.
-6. Update `traceability.md` so the new requirement set and preserved requirement set both map to research, decisions, plan units, verification, artifact persistence, and completion evidence.
-7. Update `completion-audit.md` so the audit covers preserved requirements and amendments, not only the latest request.
+- Repository checks, when implemented, verify file placement, required files, empty files or directories, unresolved placeholders, and repository-relative links.
+- AI checks required information, ambiguity, contradictions, evidence support, requirement coverage, and readability.
+- Humans confirm intended requirements, answer behavior-changing questions, approve decisions, and judge product meaning or trade-offs that tools cannot decide.
 
-Use a decision record when an amendment changes product behavior, security, data retention, public API, dependencies, testing strategy, documentation governance, or the meaning of an accepted requirement.
+AI reports each applicable criterion as `pass`, `needs revision`, `needs human input`, or `not applicable`. Every result includes a short quotation or file location as evidence. If evidence cannot be found, AI says so instead of inferring missing content. Review and rewriting are separate actions. AI does not silently repair a document while grading it.
 
-Do not use a reusable skill, script, or template update as the owner of this rule. The durable rule lives here and in `_templates`; tools may consume it but must not replace it.
+Documentation explains intent and evidence. It does not prove that an implementation complies. Use lint, type or schema checks, tests, runtime or browser checks, and human review for implementation verification.
 
-## Research And Evidence Management
+## Requirement Changes During Work
 
-Use `research/` records as the default home for collected evidence. A research record answers one primary question and can include external documents, local code, Git history, runtime evidence, standards, and user constraints in the same file.
+1. The human changes `requirements.md`. Chat-only changes are not durable requirements.
+2. AI compares the updated file with the baseline recorded in `plan.md`.
+3. AI identifies affected references, decisions, work units, and verification methods using exact excerpts.
+4. Affected work pauses. unaffected work may continue when it still satisfies the updated wording.
+5. AI updates derived documents and the recorded baseline before affected work resumes.
 
-```text
-research/
-  README.md
-  0001-record-research-topic.md
-  0002-record-research-topic.md
-```
+Do not restart all work automatically, and do not rewrite requirements to match work already completed.
 
-Record source entries with enough detail for another person or agent to re-check the claim.
+## When to Add More Structure
 
-| Source Type               | Record In                                    | Required Details                                                                                              |
-| ------------------------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| External web document     | `research/<record>.md`                       | URL, publisher, accessed date, claim used, quality notes, recoverability caveat when relevant.                |
-| Official library/API docs | `research/<record>.md`                       | Version or date when available, API or rule verified, migration caveat.                                       |
-| Local or ignored document | `requirements.md` and `research/<record>.md` | Repo-relative or described location, page/section coverage, claim used, and self-contained reconstruction.    |
-| Restricted source         | `requirements.md` and `research/<record>.md` | Sanitized source description, access expectation, claim used, and self-contained reconstruction.              |
-| Local code                | `research/<record>.md`                       | Repo-relative file path, symbol or behavior inspected, command used.                                          |
-| Git history               | `research/<record>.md`                       | Commit hash or range, command used, decision or pattern inferred.                                             |
-| Runtime evidence          | `research/<record>.md`                       | Environment, command, URL or route, observed behavior, screenshot/log location if sanitized.                  |
-| Test or lint output       | `completion-audit.md`                        | Command, result, scope covered, caveats. Link to research records when the test informed a finding.           |
-| User constraint           | `requirements.md` or `research/<record>.md`  | Source request, affected IDs, preserved scope, and whether the constraint is active, superseded, or deferred. |
+- Add requirement IDs when repeated exact quotations become unclear.
+- Add a references or decisions index when the directory is no longer easy to scan.
+- Add machine-readable metadata only when an active tool needs it.
+- Add a separate coverage or completion audit only when `plan.md` and the actual change cannot be reviewed reliably together.
 
-Do not use raw terminal dumps as proof when a concise observation is enough. Summarize the evidence and include the reproducible command.
+Do not add these artifacts in advance for every package.
 
-## Cross-Validation Standard
+## Repository Integration
 
-Research-backed requirements should use at least two independent evidence types when practical.
+- Link the design package from issues and pull requests instead of copying its contents.
+- Keep secrets, credentials, personal data, private URLs, and raw sensitive logs out of tracked documents.
+- Prefer repository-relative paths and stable public URLs.
+- Recheck a document when its requirements, sources, decisions, dependencies, or implementation evidence change.
 
-- External official documentation plus local code confirms whether a recommended pattern fits this project.
-- External standard guidance plus runtime evidence confirms whether a UX or accessibility requirement is measurable.
-- Local code plus tests confirms whether a behavior is already present before planning changes.
-- Decision records explain why a chosen path won over credible alternatives.
+## Design Basis
 
-When sources disagree, record the disagreement instead of silently choosing the convenient source.
-
-## Decisions
-
-Use `decisions/README.md` as the decision log for a package. Add a separate decision record when any of these is true:
-
-- The choice changes architecture, dependencies, security, data retention, public API, testing strategy, or documentation governance.
-- The choice changes artifact persistence, source of truth, commitability, generated-output ownership, or delivery mechanism.
-- The choice supersedes an earlier decision.
-- The choice resolves a blocking decision or a user-approved trade-off.
-- Future contributors will need the rationale, not just the outcome.
-
-Decision records are append-or-supersede artifacts. Do not rewrite an accepted decision to hide previous reasoning. Create a new record or mark the old one as superseded.
-
-Decision statuses must show the current relationship to the baseline:
-
-- `Proposed`: likely direction, not yet accepted.
-- `Accepted`: current source of truth.
-- `Deferred`: intentionally left for a later phase.
-- `Rejected`: considered and not selected.
-- `Superseded`: fully replaced by a later decision.
-- `Partially Superseded`: some scope was replaced, but preserved scope remains active.
-- `Partially Restored`: a later decision restored part of a previously superseded scope.
-
-## Traceability
-
-Create `traceability.md` when completion cannot be proven by reading one small diff. Traceability should map:
-
-- requirement to source evidence
-- requirement to decision
-- requirement to plan unit
-- requirement to artifact persistence
-- requirement to verification
-- requirement to completion evidence
-
-Traceability is not a substitute for good requirements. It is the table that prevents broad requirements from being satisfied by narrow checks.
-
-When an existing package is updated, traceability should show both sides of the change: what the new request adds or changes, and which earlier requirements, decisions, plan units, verification rows, and audit evidence remain valid.
-
-## Completion Audit
-
-Create `completion-audit.md` when the work has broad coverage, cross-validation, or explicit auditability needs. The audit must inspect current evidence, not intent or memory.
-
-For each requirement, record:
-
-- the exact requirement
-- expected evidence
-- inspected evidence
-- whether required artifacts are tracked, ignored, generated, external, missing, or covered by an accepted decision
-- verdict: `Pass`, `Fail`, `Partial`, `Unverified`, or `Not Applicable`
-- gaps and follow-up
-
-Only mark a package complete when every required item is `Pass` or a justified `Not Applicable`.
-
-## Template Selection
-
-Use the templates in `docs/designs/_templates/` as starting points.
-
-| Need                            | Template                            |
-| ------------------------------- | ----------------------------------- |
-| Requirements document           | `_templates/requirements.md`        |
-| Implementation plan             | `_templates/plan.md`                |
-| Research index                  | `_templates/research/README.md`     |
-| Research record                 | `_templates/research/_template.md`  |
-| Requirement traceability matrix | `_templates/traceability.md`        |
-| Completion evidence             | `_templates/completion-audit.md`    |
-| Decision index                  | `_templates/decisions/README.md`    |
-| Individual decision record      | `_templates/decisions/_template.md` |
-
-## Sources
-
-- Atlassian describes user stories as carrying the user perspective and acceptance criteria, which makes requirements testable: https://www.atlassian.com/agile/project-management/user-stories
-- Atlassian describes Definition of Done as a shared completion standard for product increments: https://www.atlassian.com/agile/project-management/definition-of-done
-- GitHub documents README files as a way to communicate important project information and expectations: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-readmes
-- GitHub documents issue and pull request templates as a way to standardize information contributors provide: https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/about-issue-and-pull-request-templates
-- ADR guidance defines decision records and decision logs for recording context and consequences: https://github.com/architecture-decision-record/architecture-decision-record
-- Diataxis separates documentation by user need, supporting the separation of requirements, guides, reference, and explanation: https://diataxis.fr/
-- Jama describes traceability as following requirements, design, code, tests, and defects across the lifecycle: https://www.jamasoftware.com/requirements-management-guide/requirements-traceability/what-is-traceability/
-- NASA describes requirements management as managing requirement baseline changes across the lifecycle while maintaining bidirectional traceability: https://www.nasa.gov/reference/6-2-requirements-management/
-- ISO/IEC/IEEE 29148:2018 is the requirements engineering standard for systems and software lifecycle processes: https://www.iso.org/standard/72089.html
-- Microsoft Architecture Center recommends append-only ADR history where changed decisions supersede earlier records instead of rewriting them: https://learn.microsoft.com/en-us/azure/well-architected/architect-role/architecture-decision-record
-- Microsoft Engineering Fundamentals Playbook describes common documentation failures such as hidden, incomplete, obsolete, and unrecorded decisions: https://microsoft.github.io/code-with-engineering-playbook/documentation/
+- [OpenAI: Harness engineering](https://openai.com/index/harness-engineering/) supports short entry points, repository-local knowledge, progressive loading, and mechanical checks for document structure and freshness.
+- [OpenAI: Evaluation best practices](https://developers.openai.com/api/docs/guides/evaluation-best-practices) recommends task-specific criteria, automated scoring where possible, and calibration with human judgment.
+- [Anthropic: Demystifying evals for AI agents](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents) recommends deterministic checks where possible, model review where necessary, and human calibration for subjective judgments.
+- [Anthropic: Agent Skills](https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills) recommends progressive disclosure and adding instructions from observed failures instead of anticipating every case.
+- [NASA: How to write a good requirement](https://www.nasa.gov/reference/appendix-c-how-to-write-a-good-requirement/) recommends necessary, consistent, implementation-free, and verifiable requirements.
+- [W3C: Headings](https://www.w3.org/WAI/tutorials/page-structure/headings/) and the [Google developer documentation style guide](https://developers.google.com/style/tables) support descriptive heading structure and reserving tables for genuinely tabular information.

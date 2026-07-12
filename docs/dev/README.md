@@ -1,235 +1,180 @@
-# Development Guide Governance
+# Development Guidance
 
-This document is the canonical `docs/dev` development-guidance governance base that can be reused across repositories. Repository-specific technology stacks, source lists, baseline evidence, external checkouts, and local constraints belong in [repository](repository/README.md), not in this document as default rules.
+This directory contains repository-specific development guidance that remains useful across multiple changes. It is a navigation layer for current rules and durable human decisions, not a replacement for tests, tooling, framework documentation, or task-specific design documents.
 
-`docs/dev` does not replace `AGENTS.md` or workflow skills. This folder preserves long-lived development guidance, current coding rules, evidence, future proposals, AI application rules, and decision history as human-reviewable, Git-tracked documents. Related skills are optional aids, not the source of truth.
+## Structure
 
-## Purpose
+Create topic directories from the repository's real responsibilities. Do not copy a fixed taxonomy into every project.
 
-- Make applicable current rules and evidence discoverable before writing new code.
-- Physically separate current guidance, future proposals, local evidence, AI rules, and decision records.
-- Provide a bootstrap sequence when a target repository has no `docs/dev` folder or only a partial one.
-- Treat best/anti-pattern examples as teaching artifacts that explain intent, failure mode, impact, alternatives, and verification, not as simple code samples.
-- Surface missing development guidance targets before implementation and prevent current rules from being mixed with future proposals.
+```text
+docs/dev/
+  README.md
+  <topic>/
+    <guidance>.md
+```
 
-## Development Guidance Targets
+Topic names are repository-specific. Prefer terms already used by the repository's code, product, operations, and existing documentation. Do not create empty topic directories or rename existing topics to match another repository.
 
-`development guidance target` means a concrete development decision point that can be recorded in `docs/dev` as a current rule, future proposal, local constraint, or open question. It may be called a `concern` for short, but it does not mean a user feature, UI screen, product idea, dependency name, or broad technology category by itself.
+Create a topic-level `README.md` only when readers cannot reliably find the right file from names and links alone. Do not move, rename, merge, split, or rewrite existing guidance solely to make the directory match this example.
 
-Representative targets include:
+## What Belongs Here
 
-- library composition, state ownership, validation contract, generated artifact rule
-- client/server boundary, module boundary, import direction, public API ownership
-- verification obligation, release or maintenance risk, documentation ownership
-- domain vocabulary, state meaning, business invariant interpretation
+Add guidance only when all of the following are true:
 
-If target repository evidence is insufficient, do not write a current rule. Classify the item as `Open Question`, `Local Constraint`, `Recommended Future Pattern`, or `Not Applicable`, and record the required follow-up.
+- It applies to more than one change
+- A future contributor would not reliably infer it from code or standard tooling
+- Current repository evidence or an accepted human decision supports it
+- There is a practical way to verify or review it.
 
-## Folder Ownership
+Do not place the following here:
 
-| Path            | Owns                                                                                                 | Does Not Own                                             |
-| --------------- | ---------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
-| `architecture/` | Module boundaries, public APIs, import direction, ownership, and runtime flow that apply now | Stack-specific API usage, test authoring, future architecture proposals |
-| `engineering/`  | Rules for writing and verifying code with the current stack, tests, lint, and generated-code rules | Feature ownership, business vocabulary, long-term migration proposals |
-| `domain/`       | Product/business vocabulary, state meaning, invariants, and business interpretation | UI/library usage, module import rules |
-| `evolution/`    | Improvement candidates, alternatives, migration conditions, and technical debt that are not current rules | Current rules to apply immediately |
-| `ai/`           | How AI reads and applies `docs/dev`, uncertainty handling, and legacy handling | Current engineering rules that humans must review |
-| `decisions/`    | Accepted/deferred/superseded decisions, rationale, consequences, and revisit triggers | Simple README indexes or one-off work notes |
-| `_templates/`   | Folder-specific templates and bootstrap audits for authoring new `docs/dev` documents | Root governance or current rules for a target repository |
-| `repository/`   | Target-repository-specific stack, source layout, baseline evidence, audit history, and local constraints | Portable governance or current rules to copy across repositories |
+- Task-specific requirements, research, decisions, or implementation plans
+- Generic framework documentation that can be linked from its official source
+- Speculative rules for technology the repository does not use
+- Generated facts that can be read directly from manifests, schemas, or tooling
+- Mandatory behavior that exists only as prose when it can be enforced mechanically.
 
-## Target Decomposition
+## Find Applicable Guidance
 
-`docs/dev` is not a system for documenting technology-stack names. It is a system for decomposing a technology stack into sufficiently granular `development guidance target`s and documenting them with evidence. `Next.js`, a specific file name, a specific source list, or a specific item count cannot be a portable baseline.
+Inspect the existing directories and files under `docs/dev/` before assuming which topics exist. Read the smallest set of documents whose stated scope matches the current work. Follow repository-local indexes and links when present, but do not require every repository to use the same topic names or nesting.
 
-When a technology stack or broad research request is provided, derive targets in this order first.
+Before applying guidance, compare it with current code, configuration, tests, generated artifacts, accepted human decisions, and dependency versions. Treat a document as evidence to review, not as proof that its claims are still current.
 
-| Step | Rule |
-| --- | --- |
-| Input classify | Identify whether the input is an explicit concern list, issue, meeting note, external document, existing docs, technology-stack name, or target repository evidence. |
-| Target derive | Do not stop at dependency names or broad categories; decompose the work into boundary, ownership, API, validation, state, verification, migration, and documentation decisions. |
-| Evidence attach | Attach applicable evidence to each target, such as repository evidence, official docs, public repository sampling, standards, or existing decisions. |
-| Route owner | Route each target to `repository` evidence or to the applicable owner document among `architecture`, `engineering`, `domain`, `evolution`, `ai`, and `decisions`. |
-| Classify | Classify the target as `Current Rule`, `Recommended Future Pattern`, `Open Question`, `Local Constraint`, or `Not Applicable`. |
-| Pattern obligation | Record best pattern, anti-pattern, scenario coverage, verification, and follow-up obligations per target. |
+Prefer an existing topic when its responsibility and intended readers match the guidance. Create a new topic only when the guidance meets the inclusion rules above and no existing topic can own it without becoming ambiguous.
 
-When an explicit concern list exists, track every source item. When there is no explicit list, derive targets from stack evidence and official documentation. In both cases, the goal is not to match an item count; the goal is to expose the decision points that implementers actually need to judge with enough granularity.
+## Existing Guidance
 
-## Reading Order
+Existing documents may predate this README or use a different structure. AI and human contributors still use them when their scope is relevant.
 
-### Before Implementation
+- Do not ignore a document because its path or headings differ from this README.
+- Do not reorganize or rewrite existing documents while only reviewing or applying their guidance.
+- Report stale claims, contradictions, unclear ownership, and missing evidence separately from the work that uses the documents.
+- Ask for human direction before a finding would change an accepted decision, document owner, or repository-wide rule.
+- Change existing guidance only when the requested work includes that documentation change.
 
-1. Use this README to confirm folder ownership and repository evidence locations.
-2. Read the target repository's [repository](repository/README.md) document to confirm the technology stack, source layout, generated code, verification commands, and local constraints.
-3. If a `Development Guidance Target Inventory` exists, check the classification and owner folder for the target you are working on.
-4. If the work changes structure or import boundaries, read [architecture](architecture/README.md).
-5. If the work involves language, framework, API, test, lint, build, or generated-code rules, read [engineering](engineering/README.md).
-6. If business vocabulary or state meaning is ambiguous, check [domain](domain/README.md).
-7. Check alternatives or migration candidates in [evolution](evolution/README.md), but do not apply them as current rules.
-8. When working with AI, follow the reading order and uncertainty-handling rules in [ai](ai/README.md).
-9. If the work conflicts with an existing decision or changes source-of-truth ownership, check [decisions](decisions/README.md).
+## Guidance Document Model
 
-### Before Creating Or Updating docs/dev
+Guidance documents are prose-first and do not use fixed templates. Authors may choose headings, section order, paragraphs, lists, quotations, diagrams, and code examples that fit the subject. Every guidance document must satisfy the requirements below.
 
-1. Choose the target output folder from this README.
-2. Confirm target repository evidence in [repository](repository/README.md).
-3. Choose the folder-specific template from [\_templates](./_templates/README.md).
-4. Confirm final placement using the Include, Exclude, and Dynamic File Policy sections in the target `docs/dev/<folder>/README.md`.
-5. When creating a new structure or making a major update, record evidence and unresolved gaps in [\_bootstrap-audit](./_templates/_bootstrap-audit.md) or an equivalent audit.
-6. For a whole technology stack or broad prevention-pattern request, first create a target inventory through the `Target Decomposition` process, then route each target to evidence, owner folder, classification, and pattern obligation.
+### Required information
 
-## Development Guidance Target Inventory
+- The work and repository area to which the guidance applies
+- Current repository evidence supporting the guidance
+- The rule, recommendation, or limitation a contributor must understand
+- Exceptions or conditions that change its application
+- An automated check or explicit human review method
+- External sources and relevant versions when external claims materially affect the guidance
+- Whether the guidance is current, proposed, or deprecated.
 
-Each repository may keep a target inventory in `repository/README.md` or `repository/<topic>.md`. This inventory does not own current rules; it links evidence and classification to top-level owner folders.
+Use examples only when they clarify a repository-specific rule that prose alone does not make clear. Keep examples consistent with the current stack and name the evidence they illustrate.
 
-| Field | Required Meaning |
-| --- | --- |
-| Target | A concrete development guidance target. Do not use only a dependency name or feature name. |
-| Decision point | The boundary, ownership, API, validation, verification, migration, or documentation decision the implementer must actually make. |
-| Risk | The bug, coupling, review blind spot, user impact, or maintenance cost that appears when the target is handled incorrectly. |
-| Evidence | repo-relative source/config/test/doc paths, official docs, stable public URLs, or recorded GitHub evidence. |
-| Owner folder | `architecture`, `engineering`, `domain`, `evolution`, `ai`, `decisions`, or `repository` evidence. |
-| Classification | `Current Rule`, `Recommended Future Pattern`, `Open Question`, `Local Constraint`, or `Not Applicable`. |
-| Confidence | `High`, `Medium`, or `Low`, with conflict and limitation notes. |
-| Follow-up | next evidence, decision, docs update, or verification needed. |
+### Prohibited content
 
-Use `Recommended Future Pattern` when target repository evidence is not yet sufficient for promotion to a current rule, but stack/config evidence plus official documentation or public repository evidence supports a future direction. Keep evidence and classification in `repository/`, and keep interpretation and application direction in the relevant owner-folder document.
+- Generic framework instructions copied from official documentation
+- Proposals presented as current repository practice
+- Repository claims that were not checked against current code, configuration, tests, or generated artifacts
+- Copied rules that already have an owning document
+- Vague instructions such as "follow best practices" without saying what to do and how to check it.
 
-## External Repository Cross-Validation
+## Presentation
 
-Do not infer development guidance targets from a technology-stack name, existing local code, or repository habits alone. Existing code is current-state evidence and applicability evidence, not proof of a recommended pattern.
+- Use one descriptive title and a logical heading hierarchy. Do not create empty headings or skip levels for visual styling.
+- Put the most important rule or conclusion before background detail.
+- Prefer prose and short lists. Use numbered lists only when order matters.
+- Use tables only for information that readers must compare by both rows and columns. Keep long explanations in prose.
+- Separate current evidence, external recommendations, proposals, accepted decisions, exceptions, and unresolved uncertainty.
+- Do not add YAML, repeated metadata, or fixed sections unless a current tool or review process consumes them.
 
-Run external repository cross-validation before writing guidance for a technology stack, architecture convention, coding rule, testing practice, or best/anti pattern. This applies when only a stack is known, when local code exists but may encode local anti-patterns, when guidance is missing or stale, or when broad development guidance is requested.
+## Guidance Status
 
-| Step | Rule |
-| --- | --- |
-| Local baseline | Record local code as current-state evidence and identify possible local anti-patterns, missing guidance, and migration constraints. |
-| Select samples | Prefer active, non-archived, non-fork repositories, and record stack relevance plus adoption signals. The default is five repositories; this can be reduced to three when justified. |
-| Inspect evidence | Do not rely on descriptions or code search hits alone; inspect manifests, lockfiles, scripts, workflows, source layout, docs, releases, maintenance signals, and targeted source files when needed. |
-| Extract guidance | Extract concrete decision points, what-to-do patterns, what-not-to-do anti-patterns, verification signals, tooling constraints, and migration risks. |
-| Group targets | Classify candidates as `Shared Stack`, `Stack Plus Domain`, or `Repository Specific`. |
-| Review local applicability | Sampled evidence is a discovery aid. It cannot become a current rule without target repository evidence. |
-| Complete coverage | Guidance is incomplete if it relies only on local code, official docs alone, memory, or a single repository sample. |
-| Preserve evidence | Record commands, URLs, inspected paths, retrieved date, limitations, and confidence impact. |
+- `current` guidance is supported by present repository evidence or an accepted human decision and applies now.
+- `proposed` guidance is a researched recommendation that has not been approved or adopted.
+- `deprecated` guidance no longer applies and points to its replacement or explains why it was retired.
 
-## GitHub Evidence Fallbacks
+Never present a proposed pattern as a current repository rule. Record a durable project-wide choice as accepted only after explicit human approval. Keep task-specific decisions under the applicable `docs/designs/` package.
 
-Prefer `gh` for collecting GitHub evidence, but do not make it mandatory. If `gh` is unavailable because of installation, authentication, rate limits, or environment policy, the following fallbacks are acceptable. Fallback evidence must satisfy the same evidence contract as `gh` evidence; a fallback is not permission to skip external repository cross-validation.
+## One Rule, One Owner
 
-| Preferred Path | Accepted Fallback | Required Recording |
-| --- | --- | --- |
-| `gh search repos`, `gh repo view`, `gh api`, `gh search code` | GitHub Web UI, GitHub REST API through an approved HTTP client, installed GitHub MCP or connector output, stable GitHub file URLs | tool/interface, source URLs, query or navigation steps, inspected files/pages, retrieved date, evidence summary, limitations, confidence impact |
-| Direct repository content reads | Stable blob/raw URLs, GitHub Web file view, REST API file endpoint | exact path, branch or commit context when available, relevant code/config summary, limitations |
-| Structured JSON output | Manual evidence table or connector summary | field names used, missing fields, confidence impact |
+Each rule has one owning document. Other documents link to it instead of copying it. When two files appear to own the same rule, choose one owner and replace duplicate text with a link, or merge the files when they serve the same audience and purpose.
 
-Temporary archive or clone inspection is not a normal fallback. Use it only after a separate decision or explicit implementation note records the temporary location, cleanup rule, and no-vendor boundary.
+## Validation
 
-## Target Repository Evidence
+Use the cheapest reliable method for each property.
 
-Each repository preserves local evidence under `docs/dev/repository/`, separate from portable governance.
+- Static analysis checks syntax, imports, dependency direction, naming, and detectable code shapes.
+- Type or schema checks verify data shapes, interfaces, and compatibility.
+- Automated tests verify observable behavior, failure handling, and integration.
+- Runtime or browser checks verify user workflows, rendering, performance, and operational signals.
+- Human review confirms product meaning, usability, visual quality, trade-offs, and approval.
 
-| Repository Path        | Required Content                                                                                                                                                                                 |
-| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `repository/README.md` | repository purpose, technology stack, source layout, generated code, verification commands, external checkouts, local constraints, baseline evidence, audit history, linked current-rule folders |
+Repository checks, when implemented, verify document placement, empty files, unresolved placeholders, and repository-relative links. AI reviews required information, evidence support, contradictions, applicability, and readability. Humans approve decisions and resolve questions that change product behavior or engineering policy.
 
-Documents under `repository/` do not own current rules. Current rules are owned by top-level `architecture/`, `engineering/`, `domain/`, `ai/`, and `decisions`; `repository/` preserves the evidence and constraints needed to apply those rules to the target repository.
+AI reports each applicable criterion as `pass`, `needs revision`, `needs human input`, or `not applicable`, with a short quotation or file location as evidence. If the document does not provide enough evidence, AI says so instead of inventing a current rule. Review and rewriting are separate actions.
 
-Do not create a same-named evidence taxonomy such as `docs/dev/profile/{architecture,engineering,domain,evolution,ai,decisions}/` by default. If folder-specific local evidence is needed, link from the evidence table in `repository/README.md` to the top-level current-rule folder.
+Documentation explains a rule. Tooling and review determine whether a change follows it.
 
-Do not create an additional scope axis such as `docs/dev/application/` by default. Add one only when multiple apps, multiple packages, or a real need to separate repository-wide evidence from application-specific evidence has been established through a decision record that defines ownership and target output.
+## Turn Repository Risks into Checks
 
-## Bootstrap Flow
+Run this process at each of the following points:
 
-### Repository Without docs/dev
+- After the primary language, framework, runtime, and major libraries are selected and before application code is written
+- Whenever a dependency is added, removed, replaced, or updated
+- When development-guidance research, validation setup, or a major guidance update is requested
+- When repeated review findings, incidents, or new high-impact surfaces reveal a risk that current checks do not cover.
 
-1. Use this README as the canonical governance base for `docs/dev/README.md`.
-2. Collect target repository evidence and create `docs/dev/repository/README.md`.
-3. Create only the folder READMEs that current evidence supports. Do not create empty detailed documents or TODO documents.
-4. Use the required folder-specific templates from [\_templates](./_templates/README.md).
-5. Record created documents, source evidence, current-rule promotion evidence, open questions, and leaked repository-specific assumptions in `_bootstrap-audit.md` or an equivalent audit.
+Apply the depth of review in proportion to the change, but do not skip the applicable checks.
 
-### Repository With Existing Development Docs
+### Before writing application code
 
-1. Inventory existing `docs/dev`, README, ADRs, contributing docs, and AGENTS-style guidance.
-2. Classify existing content as current rule, local evidence, future proposal, AI rule, decision, or open question.
-3. Before removing or replacing anything, check whether an accepted decision or explicit user instruction is required.
-4. Align portable root governance with this README and move repository-specific evidence to `repository/`.
-5. Audit that existing links and reading flow remain intact.
+Inspect existing manifests, configuration, scripts, tests, CI, development guidance, and accepted decisions without reorganizing them. Review current official guidance for the selected versions and establish the smallest applicable baseline for build or syntax checks, type or schema validation, recommended static analysis, dependency and security checks, and observable behavior testing.
 
-## Existing Docs Inventory
+Provide runnable commands for the selected baseline and run them once before writing application code. Do not start writing application code until the applicable checks pass or unresolved items that require judgment have been reported and explicitly accepted by a human. Do not attempt to prohibit every theoretical anti-pattern before development begins.
 
-Before starting a major update, inspect the following sources.
+### When dependencies change
 
-| Source                            | What To Extract                                                                               |
-| --------------------------------- | --------------------------------------------------------------------------------------------- |
-| `docs/dev/**`                     | current rules, folder contracts, existing decisions, AI rules                                 |
-| `docs/designs/**`                 | accepted requirements, research, plans, traceability, completion audit                        |
-| `AGENTS.md` or equivalent         | immediate working rules that should not be duplicated as long-form guidance without rewriting |
-| source/config/test files          | local evidence for stack, architecture, generated output, verification commands               |
-| Git history                       | why a rule or split was added, especially for docs/dev refinements                            |
-| public official docs or standards | external support for best/anti-pattern guidance                                               |
+Before completing a dependency change, verify its purpose, selected version, current official usage, runtime and peer compatibility, maintenance and security status, and license when relevant. Inspect the manifest, lockfile, configuration, types, generated artifacts, tests, and affected imports or public APIs. Update only the checks and guidance that the change actually affects, then run the applicable baseline and behavior checks.
 
-## Source Evidence Policy
+### When risks are found
 
-- Current rules need target repository evidence. Repeated local code alone is not enough if it conflicts with official guidance.
-- External evidence needs a specific claim used, not a broad link dump.
-- Local or restricted evidence must be summarized enough for a future reviewer to understand the obligation without private context.
-- Repo-specific paths, stacks, generated output names, and external checkout constraints belong in `repository/`, not in this portable README.
-- If evidence is missing, record `Open Question`, `Local Constraint`, or `Recommended Future Pattern` instead of inventing a current rule.
-- Code search and repository descriptions are discovery aids, not proof. Confirm important claims through manifests, direct file reads, workflows, tests, official docs, or target repository evidence.
+Inspect the current code, dependencies, configuration, tests, repeated review findings, and incident records for recurring failures and high-impact risks. Focus on cases relevant to the repository and current work. Do not attempt to enumerate every theoretical code case.
 
-## Portability Checks
+For each candidate:
 
-Before committing a `docs/dev` template or root governance update, verify that portable docs still work without this repository, a sampled public repository, an organization, or a named technology stack.
+- State the failure to prevent, the affected scope, and where the failure can be observed
+- Reuse existing compiler, type, schema, lint, test, and CI capabilities before proposing another tool
+- During authorized implementation, add or tighten a static rule only when it detects the intended violation with acceptable precision, has been checked with valid and invalid cases or equivalent evidence, and has proportionate execution and maintenance costs
+- When static analysis cannot prove the property reliably, use a type or schema check, automated test, runtime or browser check, or explicit human review that observes the relevant failure
+- Use code examples to explain a rule or test an automated rule, but do not treat non-executable examples as proof of compliance.
 
-| Check | Fails If |
-| --- | --- |
-| Repository neutrality | A local or sampled repository becomes the required baseline. |
-| Stack neutrality | A named stack is required for the template system to work instead of being optional evidence or an example. |
-| Evidence ownership | `repository/` starts owning current rules, or top-level folders duplicate evidence tables. |
-| Rule promotion | External or sampled evidence becomes `Current Rule` without target repository evidence. |
-| Tool portability | GitHub evidence instructions have only one required tool path and no equivalent fallback. |
+Research and review do not by themselves authorize dependency, tool, or configuration changes. Keep repository-specific cases, selected rules, commands, exceptions, and evidence in the applicable topic document or tool configuration rather than this root README.
 
-## Template Usage
+## Add or Update Guidance
 
-When creating a new `docs/dev` document or making a major update, use [\_templates](./_templates/README.md). `_templates` is a folder-specific authoring router and does not own root README governance.
+Using or reviewing guidance does not by itself authorize edits. When an update is explicitly requested:
 
-For broad technology-stack work, use `External Repository Cross-Validation`, record target inventory and evidence under `repository/`, and use stack-specific free-form prompts from `examples/` when available. `examples/` provides repository-applicable prompt examples; it does not own current rules, repository evidence, or portable governance.
+1. Inspect current code, configuration, tests, generated artifacts, related design decisions, and existing guidance.
+2. Decide whether the finding is a current rule, a local limitation, a proposal, or a task-specific concern that belongs under `docs/designs/`.
+3. Check material external claims against current official sources and the versions used by this repository.
+4. Give the rule one owning document and connect it to an automated check or explicit human review.
+5. Validate required information, evidence, links, applicability, and readability without silently rewriting the document.
+6. Remove copied framework material, placeholders, duplicate rules, and stale claims.
 
-Document examples must meet the following criteria.
+## Maintenance
 
-- `Scenario Coverage` appears before examples.
-- best patterns explain intent, applicability, impact, and verification.
-- anti-patterns explain failure mode, user or maintenance impact, safer alternative, and target-repository constraints.
-- AI rules or decisions that do not require code examples may use behavior examples or decision cases instead.
+- Recheck guidance when the relevant dependency, architecture, product behavior, or repository evidence changes.
+- Mark uncertain or unapproved guidance as proposed rather than current.
+- Promote frequently violated, mechanically detectable rules into lint, tests, schemas, hooks, or CI.
+- Delete guidance that only repeats code or official documentation without adding repository-specific meaning.
 
-When writing detailed documents for a large or granular target set, do not force a one-to-one match between target count and document count. Group targets by owner folder and scenario coverage first, and preserve traceability showing which best/anti pattern, verification, or open question handles each target ID even when one document covers multiple targets.
+## Design Basis
 
-## Repository Evidence
-
-The current repository evidence is in [repository](repository/README.md). When copying this `docs/dev` structure to another repository, do not copy the contents of `repository/` as-is; rewrite it from the target repository's source, config, tests, existing docs, and decisions.
-
-## Decision Records
-
-Create a decision record in [decisions](decisions/README.md) in the following cases.
-
-- Source-of-truth ownership changes.
-- Accepted guidance is deleted, moved, or superseded.
-- A `docs/dev/application/` scope axis is added.
-- A new rule conflicts with an existing current rule.
-- A new dependency, script, CI change, security exception, or public API change affects docs/dev guidance.
-
-## Completion Audit
-
-Every `docs/dev` bootstrap or major update must verify the following.
-
-- The root README remains repository-neutral governance.
-- Repository-specific stack, source list, baseline evidence, and local constraints are in `repository/`.
-- Current rules, future proposals, AI rules, decisions, and repository evidence are physically separated.
-- `_templates/README.md` works only as a folder-specific authoring router.
-- `docs/dev/_templates/root-readme.md` was not created.
-- `docs/dev/application/` was not created without a decision.
-- A same-named evidence taxonomy such as `docs/dev/profile/{architecture,engineering,domain,evolution,ai,decisions}/` is not left in the default structure.
-- named stack, file name, source list, item count, sampled repository, or worked example is not required as a portable baseline.
-- broad technology-stack work is decomposed into evidence-backed development guidance targets before current rules are written.
-- all links are repo-relative and valid.
+- [OpenAI: Harness engineering](https://openai.com/index/harness-engineering/) supports short routing documents, repository-local knowledge, and mechanical checks instead of relying on prose alone.
+- [OpenAI: Evaluation best practices](https://developers.openai.com/api/docs/guides/evaluation-best-practices) recommends task-specific criteria, automated checks where possible, and calibration with human judgment.
+- [Anthropic: Demystifying evals for AI agents](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents) recommends deterministic checks where possible, model review for open-ended results, and human calibration.
+- [Anthropic: Agent Skills](https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills) recommends progressive disclosure, deterministic code for repeatable operations, and adding guidance from observed failures.
+- [ESLint: Configure Rules](https://eslint.org/docs/latest/use/configure/rules) and [typescript-eslint: Custom Rules](https://typescript-eslint.io/developers/custom-rules/) support scoped rule configuration, explicit severity, and valid and invalid rule tests rather than enabling every available rule.
+- [typescript-eslint: Typed linting performance](https://typescript-eslint.io/troubleshooting/typed-linting/performance/) documents the execution cost of type-aware linting, which must be weighed against the value of the check.
+- [TypeScript: `strict`](https://www.typescriptlang.org/tsconfig/#strict) illustrates starting from the selected language's supported correctness checks instead of inventing repository rules first.
+- [GitHub: Code scanning default setup](https://docs.github.com/en/code-security/how-tos/find-and-fix-code-vulnerabilities/configure-code-scanning/configure-code-scanning) and [Dependency review](https://docs.github.com/en/code-security/concepts/supply-chain-security/dependency-review) support starting with an applicable baseline and reviewing dependency changes against repository evidence.
+- [Playwright: Best Practices](https://playwright.dev/docs/best-practices) supports testing user-visible behavior instead of relying on implementation details.
+- [W3C: Headings](https://www.w3.org/WAI/tutorials/page-structure/headings/) and the [Google developer documentation style guide](https://developers.google.com/style/tables) support descriptive heading structure and reserving tables for genuinely tabular information.
