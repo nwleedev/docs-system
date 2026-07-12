@@ -1,199 +1,219 @@
 # AGENTS.md
 
-## 언어
+## Language
 
-- 코드 작성과 파일명은 영어를 사용한다.
-- Git 커밋의 `type`과 `scope`는 영어를 사용하고, 제목의 `subject`와 본문은 한국어를 사용한다.
-- 사용자와 의사소통할 때에는 한국어를 사용한다.
-- 설계 문서, 작업 설명, 코드 설명용 주석은 한국어를 사용한다.
+- Write code and file names in English.
+- Write the Git commit `type` and `scope` in English, and write the title `subject` and body in Korean.
+- Communicate with the user in Korean.
+- Write design documents, work descriptions, and explanatory code comments in Korean.
 
-## 기본 원칙
+## Core Principles
 
-**컨텍스트 압축**
+**Context Compaction**
 
-컨텍스트가 압축되면 AGENTS.md, 특히 **기본 원칙**을 숙지하여 작업에 반영합니다.
+After context compaction, reread AGENTS.md, especially **Core Principles**, and apply it to the work.
 
-**올바른 작업 진행**
+**Doing the Work Correctly**
 
-- "코드 구현을 수행해라"라는 지시가 없으면 코드 구현을 하지 않습니다.
-- "테스트 코드 작성을 수행해라"라는 지시가 없으면 테스트 코드 작성을 하지 않습니다.
-- "TDD 작업을 수행해라"라는 지시가 없으면 TDD 작업을 하지 않습니다.
-- 작은 변경을 하지 않는다.
-- 작업의 범위를 임의로 변형시키지 않는다.
-- 안전한 작업을 하지 않는다. 올바른 작업을 한다.
-- 사용자는 다양한 분야의 작업을 동시에 안정적으로 진행하기 위해 워크트리 브랜치의 생성을 요구할 수 있다.
-- 이모지를 사용하지 않는다.
-- 주석을 사용하게 되면 주석의 설명과 코드의 동작이 일치하지 않을 수 있다. 코드가 각각 어떤 역할을 할 수 있을지 이해할 수 있을 정도로 작성한다.
-- 코드를 한번 작성하고 나서 끝내지 않는다. 유사한 코드가 있는지 확인하고 모듈화를 할 수 있는지 검토한다.
-- 에러를 해결하기 위해 타입 검사를 비활성화하지 않는다.
-- 설계에 명시된 요구사항이나 기능을 임의로 비활성화하지 않는다.
-- 테스트 실패를 숨기기 위해 테스트를 삭제하거나 약화하지 않는다.
+- Do not implement code unless the user explicitly asks you to implement code.
+- Do not write tests unless the user explicitly asks you to write tests.
+- Do not use TDD unless the user explicitly asks you to use TDD.
+- Do not make small changes.
+- Do not alter the scope of the work on your own.
+- Do not choose work merely because it is safe. Do the correct work.
+- The user may require a worktree branch so that work in different areas can proceed safely at the same time.
+- Do not use emoji.
+- When comments are used, their explanations may drift from the behavior of the code. Write code clearly enough that each part's role can be understood.
+- Do not stop after writing code once. Check for similar code and consider whether the code can be modularized.
+- Do not disable type checking to resolve an error.
+- Do not disable requirements or features stated in the design.
+- Do not delete or weaken tests to hide a test failure.
 
-**레거시 코드**
+**Writing Natural Korean**
 
-- 레포에 존재하는 모든 코드, 문서는 레거시일 가능성이 있다고 생각한다. 항상 의심한다.
-- 기존에 존재하는 기능의 경우 "제거하라", "대체하라"와 같은 명시적인 지시가 없으면 제거하지 않습니다.
-- 코드를 작성할 때마다 작성할 코드와 관련된 베스트 패턴, 아키텍처, 디자인 패턴을 지속적으로 리서치+교차검증한다.
-- 베스트 패턴 기반으로 작성할 때에도 최소한 "기존 레거시 코드"와 호환될 수 있도록 작성합니다.
-- 테스트는 코드가 레거시인지에 대한 여부 관계없이 관찰 가능한 동작을 검증해야 한다.
+- Do not write generic boilerplate that could be pasted into another project unchanged. Reflect the actual reader, repository, and decision at hand.
+- Every sentence must provide evidence, record a decision, state an action, or supply necessary context. Remove introductions, conclusions, summaries, and transitions that merely repeat nearby text.
+- When writing in Korean, avoid stock phrases and inflated modifiers that add no meaning, such as `본질적으로`, `다양한 측면에서`, `~라는 점에서 중요하다`, `효과적으로`, `원활하게`, `강력한`, `견고한`, `포괄적인`, and `핵심적인`.
+- Do not give every subsection paragraphs of the same length, force material into arbitrary groups of three, or repeat the same transitions. Let the content determine the structure.
+- Do not translate English word by word. Identify the referent, action, conditions, and responsible actor, then rewrite the sentence in natural Korean.
+  - If removing `~에 대해서`, `~에 의해서`, `~에 있어서`, or `~와의` preserves the meaning, use a suitable particle or restructure the sentence concisely.
+  - When a passive construction such as `~에 의해서` hides the actor, make the actual actor the subject.
+  - Replace `~하지 않으면 안 된다` with `~해야 한다`, and replace `회의를 가지다` with `회의하다` or `회의를 열다`.
+  - Avoid English-style inanimate subjects, strings of nouns, unnecessary passive constructions, and mixed forms such as `사용자-facing`.
+- Do not automatically map an English technical term to one fixed Korean word. Describe the actual action or condition in context.
+  - For `boundary`, choose the expression that matches the meaning, such as `구분`, `적용 범위`, `책임이 바뀌는 지점`, or `연결 지점`.
+  - For `contract`, state what must be honored with an expression such as `입출력 규칙`, `호출 조건`, `호환 조건`, or `합의한 내용`.
+  - For `narrow`, state what changes with an expression such as `검토 대상을 정하다`, `후보를 줄이다`, or `조건을 구체화하다`.
+  - Do not always translate `ensure`, `support`, and `address` as `보장하다`, `지원하다`, and `다루다`. Choose the verb that describes the actual action, such as `확인하다`, `허용하다`, `처리하다`, `해결하다`, or `설명하다`.
+  - Do not immediately translate `expose`, `capture`, `align`, and `surface` as `노출하다`, `포착하다`, `정렬하다`, and `표면화하다`. Choose a context-appropriate verb such as `공개하다`, `기록하다`, `맞추다`, or `드러내다`.
+  - Keep the established term when it is precise in the relevant field, as in a legal contract, a mathematical boundary, screen alignment, or the exposure of sensitive information.
+- Before publishing, review the text once as if reading it aloud. Rewrite expressions that a Korean speaker would not use in the same situation, sentences that sound polished but add no information, and literal translations that reveal the English source.
 
-**리서치**
+**Legacy Code**
 
-- 모든 프롬프트에 대해서는 다양한 방법으로 인터넷 자료를 조사해 교차 검증하여 정확성이나 최신성을 확보한다.
-- 블로그, 큐레이션 글 대신 공식 문서, 표준 문서, 원문, 실제 존재하는 소스 코드와 1차 자료(공식문서)를 최소 5개 이상 찾아서 교차검증한다.
-- 현재 시점 기준 최신 정보를 먼저 확인하고, 모든 답변에는 신뢰도 높은 출처를 함께 제시한다.
-- 시각적인 분야에 대한 리서치, 교차검증이 필요할 때에는 MCP를 사용합니다.
-- Github에 있는 레포 파일 및 이슈를 리서치할 때에는 gh cli를 사용한다.
-- 소스 코드는 공식 레포를 우선하고 개인 사용자 레포를 우선하지 않는다.
-- 리서치한 자료는 사용자가 진위 여부를 확인할 수 있게 출처와 허용 가능한 한도의 짧은 인용을 남긴다.
+- Treat every file and document in the repository as potentially legacy. Always verify it.
+- Do not remove existing behavior unless the user explicitly asks you to "remove" or "replace" it.
+- Whenever you write code, continuously research and cross-check the best practices, architecture, and design patterns relevant to that code.
+- Even when following best practices, keep the new code compatible with the existing legacy code at a minimum.
+- Tests must verify observable behavior regardless of whether the code is legacy.
 
-**애플리케이션 검증**
+**Research**
 
-- 브라우저를 사용해서 실제로 애플리케이션이 어떻게 작동하는지 확인하세요.
-- 명령어를 임의로 지어내지 않습니다. 프로젝트에 정의된 명령어로 애플리케이션을 실행시킨다.
-- 만약 명령어가 없다면 프로젝트의 컨벤션과 맞는 명령어를 추론하고 이를 답변에 포함시킵니다.
-- E2E 테스트를 진행하거나 실제 애플리케이션 동작을 확인할 때에는 개발 서버를 직접 실행하고 사용이 끝나면 종료한다.
+- For every prompt, research internet sources through multiple methods and cross-check them to ensure accuracy and currency.
+- Use at least five primary sources, such as official documentation, standards, original documents, and real source code, instead of blogs or curated articles.
+- Check the latest information first and include trustworthy sources in every response.
+- Use MCP when visual research or cross-checking is necessary.
+- Use the `gh` CLI when researching repository files and issues on GitHub.
+- Prefer an official source repository over a personal repository when researching source code.
+- Provide sources and short quotations within permitted limits so that the user can verify the research.
 
-## 서브에이전트 사용
+**Application Verification**
 
-- 단순한 작업, 하나의 문맥에서 끝나는 작업, 작업 분할 비용이 예상 절감 시간보다 큰 작업에는 서브에이전트를 사용하지 않는다.
-- 작업을 둘 이상의 독립적인 단위로 나눌 수 있고 예상 절감 시간이 작업 분배와 결과 종합 비용보다 크면, 메인 에이전트는 해당 작업을 서브에이전트에 분배한다.
-- 각 서브에이전트에는 적용할 요구사항 기준, 정확한 작업, 확인할 경로, 파일 변경 허용 범위, 중단 조건과 반환할 결과를 전달한다.
-- 사용자가 특정 Skill을 지정했거나 현재 실행 중인 Skill이 서브에이전트 사용 방법을 정의하면 해당 Skill의 절차를 따른다. 같은 역할을 중복 호출하거나 Skill 바깥에서 별도 검토 단계를 추가하지 않는다.
-- 메인 에이전트는 요구사항 기준, 작업 분배, 의존 관계, 결과 종합, 충돌 해결, 중단 판단과 최종 검증을 담당한다.
-- 서브에이전트의 작업 보고를 완료 증거로 간주하지 않는다. 메인 에이전트가 실제 파일, 변경사항과 검사 결과를 확인한다.
+- Use a browser to verify how the actual application works.
+- Do not invent commands. Run the application with commands defined by the project.
+- If the project does not define a command, infer one that matches the project's conventions and include it in the response.
+- When running E2E tests or verifying actual application behavior, start the development server yourself and stop it when the work is complete.
 
-### 병렬 실행
+## Subagent Use
 
-- 서로 다른 질문을 조사하는 리서치, 서로 다른 관점의 읽기 전용 검토, 독립적인 로그 및 테스트 결과 분석은 병렬로 실행할 수 있다.
-- 구현 작업은 수정 파일뿐 아니라 공용 인터페이스, 스키마, 생성 파일, 잠금 파일, 설정, 개발 서버, 데이터베이스와 테스트 데이터가 겹치지 않을 때만 병렬로 실행한다.
-- 작업 결과가 다른 작업의 입력이 되거나 영향 범위를 확신할 수 없으면 병렬로 실행하지 않는다.
-- 실행 환경의 동시 실행 한도를 넘기지 않고, 남은 작업은 대기시켰다가 자리가 생기면 실행한다.
+- Do not use subagents for simple work, work that fits in one context, or work whose coordination cost is greater than the expected time saved.
+- When work can be divided into at least two independent units and the expected time saved is greater than the cost of assigning and reconciling the work, the main agent delegates those units to subagents.
+- Give each subagent the applicable requirements, the exact task, the paths to inspect, the allowed file-change scope, stop conditions, and the expected result.
+- If the user names a specific Skill or the active Skill defines how to use subagents, follow that Skill. Do not duplicate the same role or add a separate review step outside the Skill.
+- The main agent is responsible for requirements, task allocation, dependencies, result reconciliation, conflict resolution, stop decisions, and final verification.
+- Do not treat a subagent's report as completion evidence. The main agent must inspect the actual files, changes, and check results.
 
-### 순차 실행
+### Parallel Execution
 
-- 요구사항의 동작을 바꿀 질문을 해결한 뒤 계획을 확정하고, 검토된 계획을 기준으로 구현을 시작한다.
-- 같은 파일이나 공용 상태를 변경하는 작업과 앞 작업의 결과에 의존하는 작업은 순차적으로 실행한다.
-- 검토 결과에 따른 수정과 재검토는 기존 검토가 끝난 뒤 순차적으로 실행한다.
-- 독립된 작업 단위의 구현이 완료되어 안정된 변경사항이나 커밋이 생겼다면, 다음 독립 작업의 구현과 해당 단위의 읽기 전용 검토를 겹쳐 실행할 수 있다.
+- Independent research questions, read-only reviews from different perspectives, and unrelated log or test-result analyses may run in parallel.
+- Run implementation work in parallel only when the tasks do not overlap in modified files, public interfaces, schemas, generated files, lockfiles, configuration, development servers, databases, or test data.
+- Do not run work in parallel when one result becomes another task's input or when the affected scope is uncertain.
+- Stay within the environment's concurrency limit and queue the remaining work.
 
-### 요구사항 변경
+### Sequential Execution
 
-- 요구사항이 변경되면 새로운 작업 분배를 잠시 멈추고 진행 중인 작업에 미치는 영향을 확인한다.
-- 영향을 받지 않는 작업만 계속하고, 영향을 받은 작업은 중단하거나 변경된 요구사항을 기준으로 다시 검증한다.
-- 영향 여부를 확신할 수 없거나 공통 전제와 성공 조건이 바뀌면 전체 관련 작업을 멈추고 사람에게 확인한다.
+- Resolve questions that can change requirement behavior before finalizing the plan, then start implementation against the reviewed plan.
+- Run tasks sequentially when they modify the same file or shared state, or when one task depends on another task's result.
+- Apply review findings and run the follow-up review only after the original review is complete.
+- After an independent work unit produces a stable change or commit, implementation of the next independent unit may overlap with read-only review of the completed unit.
 
-## 문서 작업
+### Requirement Changes
 
-### 설계 문서
+- When requirements change, pause new task assignments and assess the effect on work in progress.
+- Continue only unaffected work. Stop affected work or revalidate it against the changed requirements.
+- Stop all related work and ask a human when the effect is uncertain or when shared assumptions and completion criteria have changed.
 
-- `docs/designs/**`의 문서를 작성, 검토, 계획, 구현 또는 검증에 사용하기 전에 `docs/designs/README.md`를 읽는다.
-- 해당 작업의 `requirements.md`가 있으면 전체 확인하고, 현재 질문에 필요한 참고 자료, 결정사항, 계획과 저장소 근거만 추가로 읽는다.
-- 설계 문서 묶음이 필요하지만 `requirements.md`가 없으면, AI는 현재 요청에 명시된 결과, 조건, 완료 증거와 사용자가 직접 밝힌 질문만으로 수정하기 쉬운 최소 초안을 만들 수 있다. 명시되지 않은 내용을 추론해서 채우거나 빈 소제목과 임시 문구를 추가하지 않는다.
-- 사람은 `requirements.md`의 문구와 순서를 소유한다. 최소 초안을 만든 뒤에는 사람이 변경을 요청하거나 정확한 문구를 승인했을 때만 AI가 수정하며, 승인되지 않은 추론을 요구사항이나 결정사항으로 기록하지 않는다.
-- 설계 문서 묶음을 만들 필요가 없는 대화 안의 검토나 조사에서는 현재 요청을 작업 기준으로 사용할 수 있으며, `requirements.md`가 없다는 이유만으로 작업을 중단하거나 문서 묶음을 만들지 않는다.
-- 파생 문서는 고정 템플릿을 따르지 않는다. 대신 `docs/designs/README.md`에 정의된 필수 정보, 금지 사항, 검사 방법과 가독성 기준을 충족해야 한다.
-- 요구사항 원문과 해당 소제목을 인용해 참고 자료, 결정사항, 작업 단위와 검증 결과를 연결한다.
-- 작업이 끝나면 `docs/designs/README.md`의 검사 기준으로 문서와 실제 결과를 다시 확인한다.
+## Documentation Work
 
-### 개발 지침
+### Design Documents
 
-- 애플리케이션 변경을 계획, 구현, 검토, 리팩터링, 테스트 또는 문서화하기 전에 `docs/dev/README.md`를 읽는다.
-- 전체 `docs/dev`를 읽지 않고 현재 작업에 필요한 지침만 선택하며, 계획이나 이에 준하는 실행 입력에 선택한 파일과 확인한 리비전을 기록한다.
-- 개발 지침은 고정 템플릿을 따르지 않는다. 대신 `docs/dev/README.md`에 정의된 포함 조건, 필수 정보, 금지 사항, 검사 방법과 가독성 기준을 충족해야 한다.
-- 현재 코드, 설정, 테스트, 생성 산출물, 승인된 결정과 의존성 버전을 확인한 뒤 기존 지침을 현재 규칙으로 사용한다.
-- 자동으로 확인할 수 있는 규칙은 린트, 타입 또는 스키마 검사, 테스트, 훅, CI나 실행 결과로 확인하고, 제품 의미와 승인 여부는 사람이 확인한다.
-- 작업이 끝나면 선택한 개발 지침과 실제 변경사항이 일치하는지 다시 확인한다.
+- Read `docs/designs/README.md` before creating, reviewing, planning, implementing from, or validating documents under `docs/designs/**`.
+- If the target work has a `requirements.md`, read it in full, then read only the references, decisions, plan, and repository evidence needed for the current question.
+- If a design package is necessary but `requirements.md` does not exist, AI may create a small, easy-to-revise initial draft containing only the outcomes, conditions, completion evidence, and questions explicitly stated by the user. Do not infer unstated content or add empty headings and placeholders.
+- A human owns the wording and order of `requirements.md`. After the initial draft, AI may edit it only when the human requests a change or approves the exact wording. Do not record unapproved inferences as requirements or decisions.
+- For a conversation-only review or investigation that does not need a design package, use the current request as the work baseline. Do not stop or create a package solely because `requirements.md` is absent.
+- Derived documents do not follow fixed templates. They must satisfy the required information, prohibited content, validation methods, and readability criteria defined in `docs/designs/README.md`.
+- Connect references, decisions, work units, and verification results to exact requirement excerpts and their headings.
+- When the work is complete, check the documents and actual results again against the criteria in `docs/designs/README.md`.
 
-### 검사 원칙
+### Development Guidance
 
-- 문서의 제목과 구성은 내용에 맞게 선택할 수 있지만, 필수 정보가 실제로 존재하는지는 근거 위치와 함께 항목별로 검사한다.
-- AI는 검사 결과를 `통과`, `보완 필요`, `사람의 판단 필요`, `해당 없음`으로 구분하고, 근거를 찾지 못하면 추정하지 않는다.
-- 문서 검사와 문서 수정은 별도 작업으로 진행한다. 검사를 수행하면서 요구사항, 결정사항 또는 현재 지침을 자동으로 다시 작성하지 않는다.
-- 문서만으로 구현 준수를 증명하지 않는다. 저장소 검사와 명시적인 사람 검토를 함께 사용한다.
+- Read `docs/dev/README.md` before planning, implementing, reviewing, refactoring, testing, or documenting an application change.
+- Do not read all of `docs/dev`. Select only the guidance relevant to the current work, and record the selected files and reviewed revision in the plan or equivalent execution input.
+- Development guidance does not follow a fixed template. It must satisfy the inclusion conditions, required information, prohibited content, validation methods, and readability criteria defined in `docs/dev/README.md`.
+- Check the current code, configuration, tests, generated artifacts, approved decisions, and dependency versions before treating existing guidance as a current rule.
+- Verify mechanically checkable rules with lint, type or schema checks, tests, hooks, CI, or runtime evidence. Leave product meaning and approval to human review.
+- When the work is complete, confirm that the actual changes match the selected development guidance.
 
-## 환경변수 및 민감정보
+### Review Principles
 
-- 개인 민감정보, 보안 키, 내부 URL, 토큰, 크레덴셜은 Git에 커밋하지 않는다. 개인 PC 계정이 포함될 수 있는 절대 경로도 Git에 커밋하지 않는다.
-- Git에 커밋하면 안 되는 데이터는 `.env` 같은 환경변수 파일로 관리한다.
-- 테스트 코드도 민감한 목업 값을 직접 하드코딩하지 않고 테스트 전용 환경변수나 테스트 코드 내 fixture 작성 방식을 사용한다.
-- 변경사항을 커밋하기 전 `.env`, `.codex`, `.claude` raw internal URL, token, private implementation text가 포함되지 않았는지 확인한다.
+- Document titles and structure may fit their content, but check every required item separately and cite the supporting location.
+- Report each result as `pass`, `needs revision`, `needs human input`, or `not applicable`. Do not infer what cannot be supported by evidence.
+- Keep document review and document editing as separate tasks. Do not automatically rewrite requirements, decisions, or current guidance while reviewing them.
+- Documentation alone does not prove implementation compliance. Use repository checks and explicit human review together.
 
-## 임시 파일
+## Environment Variables and Sensitive Information
 
-- PC 루트 위치의 `/tmp` 같은 폴더를 사용하지 않는다.
-- 임시 파일은 프로젝트 최상위 `temps/<scope>-<nonce>/` 아래에 저장한다.
-- `scope`는 작업 범위, `nonce`는 충돌 방지용 짧은 식별자다.
-- Playwright MCP나 Chrome devtools MCP가 생성하는 스크린샷의 위치도 이 파일 규칙을 준수해야 한다.
+- Do not commit personal information, security keys, internal URLs, tokens, or credentials to Git. Do not commit absolute paths that may expose a personal computer account.
+- Manage data that must not be committed with environment files such as `.env`.
+- Do not hardcode sensitive mock values in tests. Use test-only environment variables or fixtures defined in the tests.
+- Before committing changes, check for `.env`, `.codex`, `.claude`, raw internal URLs, tokens, and private implementation text.
 
-## 외부로 공개되는 문서 작성
+## Temporary Files
 
-- 외부로 공유되는 항목은 우리만 아는 정보로 작성하지 않는다.
-- Git 커밋 제목과 본문에 설계 문서 ID를 그대로 쓰지 않는다.
-- Git 커밋 메시지와 소스 코드에는 `TASK-...`, `REQ-...`, `NFR-...`, `REV-...` 같은 내부 설계/작업 ID를 그대로 쓰지 않는다.
-- 내부 설계/작업 ID는 로컬 세션 기록에만 사용한다. 요구사항 문서,애플리케이션 코드,테스트 코드,사용자가 볼 수 있는 문구에서는 제품/동작 중심 이름으로 바꿔 쓴다.
-- 공개 스펙/플랜은 private 문서 참조만으로 이해되어서는 안 된다.
-- 웹 페이지의 문구는 내부 구현 설명이 아니라 사용자에게 제공하는 정보 중심이어야 한다.
-- 스펙/플랜 문서에는 내부 규칙보다 실제 요구와 공개 표면 문구를 중심으로 작성한다.
-- README, 웹 페이지, 공개 문서에는 에이전트 지시사항이나 작업 규칙을 그대로 옮기지 않는다. 필요한 경우 독자가 이해할 수 있는 제품 설명, 운영 안내, 공개 정책 문장으로 다시 작성한다.
+- Do not use a system-level directory such as `/tmp`.
+- Store temporary files under `temps/<scope>-<nonce>/` at the project root.
+- Use `scope` for the work area and a short collision-resistant identifier for `nonce`.
+- Store screenshots created by Playwright MCP or Chrome DevTools MCP under the same file-location rule.
 
-## 의존성
+## Writing Public Documents
 
-- 의존성을 리서치할 때 의존성의 이름 뿐만 아니라 제공하는 기능, 버전, 잠재적 이슈까지 같이 리서치해야 한다.
-- 의존성 리서치 또한 작업 설계 단계에서 진행되어야 한다.
-- 외부 의존성과 내부 구현 중에서 장단점을 구체적으로 비교하고 더 근본적인 선택지를 선택한다.
-- 외부 의존성을 도입한다면 의존성에 대해서 사용할 수 있는 정적 검사 도구, 베스트 패턴/아키텍처 + 디자인 패턴을 리서치하여 설계+하네스 문서에 반영해야 한다.
+- Do not write externally shared material using information known only to the team.
+- Do not copy design-document IDs into Git commit titles or bodies.
+- Do not copy internal design or task IDs such as `TASK-...`, `REQ-...`, `NFR-...`, or `REV-...` into commit messages or source code.
+- Use internal design and task IDs only in local session records. In requirements, application code, tests, and user-visible text, replace them with names based on product behavior.
+- A public specification or plan must remain understandable without access to private documents.
+- Write web-page text around the information provided to the user, not around internal implementation details.
+- Keep specifications and plans centered on actual requirements and public-facing text rather than internal rules.
+- Do not copy agent instructions or work rules into a README, web page, or public document. Rewrite necessary material as product documentation, operating guidance, or public policy that readers can understand.
 
-## 주석
+## Dependencies
 
-- 프로젝트의 기술스택에 대해서 주석 컨벤션을 리서치하여 설계에 반영한다.
-- 애플리케이션 코드의 함수·메서드·exported symbol 주석은 `/** ... */` JSDoc/TSDoc 문서 주석으로 작성하고, 구현 내부 사유는 `//` line comment로 분리한다.
-- 문서 주석은 처음 보는 사람도 호출 계약을 이해할 수 있도록 작성한다. 함수의 경우 요약 설명, `@param`, `@returns`를 기본으로 포함하고, side effect·SSR/client boundary·보안 제약·예외 전파처럼 호출자가 알아야 하는 내용은 `@remarks` 또는 `@throws`로 보강한다.
-- TypeScript 코드에서는 이미 타입 시그니처가 제공하는 타입 이름을 `@param {Type}`처럼 반복하지 않는다. 대신 값의 의미, 허용 범위, 기본값, 단위, 정규화 규칙, 반환값의 도메인 의미를 설명한다.
-- 이름과 타입만으로 의미가 충분한 private/local helper에는 불필요한 문서 주석을 추가하지 않는다. 단, public API, shared utility, Route Handler/BFF helper, chart/URL/parser/threshold 정책 함수에는 문서 주석을 작성한다.
-- "코드의 각 표현식마다 주석을 작성해라"라는 명시적인 요청이 있으면 **코드를 처음 보는 사람도 이해할 수 있을 정도의 주석을 각 표현식,선언문마다 1-2줄로 작성한다.**
+- When researching a dependency, investigate its provided features, version, and potential issues as well as its name.
+- Perform dependency research during the work-design phase.
+- Compare the concrete tradeoffs of an external dependency and an internal implementation, and choose the more fundamental option.
+- Before introducing an external dependency, research the applicable static-analysis tools, best practices, architecture, and design patterns, then reflect them in the design and harness documents.
+
+## Comments
+
+- Research the comment conventions for the project's technology stack and reflect them in the design.
+- Use `/** ... */` JSDoc or TSDoc documentation comments for application functions, methods, and exported symbols. Use `//` line comments for implementation reasoning.
+- Write documentation comments so that a first-time reader can understand how to call the code and what constraints apply. For functions, include a summary, `@param`, and `@returns` by default. Use `@remarks` or `@throws` for side effects, whether code runs on the server or client, security constraints, exception propagation, and other information callers need.
+- In TypeScript, do not repeat type names already present in the signature with forms such as `@param {Type}`. Explain the value's meaning, allowed range, default, unit, normalization rules, and the domain meaning of the return value instead.
+- Do not add unnecessary documentation comments to private or local helpers when their names and types already explain them. Do document public APIs, shared utilities, Route Handler or BFF helpers, and chart, URL, parser, or threshold policy functions.
+- If the user explicitly requests comments for every expression, write one or two lines for every expression and declaration so that a reader new to the code can understand it.
 
 ## Gitignore
 
-- `.gitignore`에 등록된 파일을 커밋하지 않는다.
-- 커밋 전 민감정보나 크레덴셜이 포함되지 않았는지 확인한다.
-- AGENTS.md 파일의 "환경변수 및 민감정보" 파트와 비슷한 내용이 있는지 확인하고 있으면 재참고한다.
+- Do not commit files matched by `.gitignore`.
+- Before committing, check for sensitive information and credentials.
+- Check whether the "Environment Variables and Sensitive Information" section of AGENTS.md contains related rules, and consult it again if it does.
 
-## Git 브랜치
+## Git Branches
 
-- 작업을 시작하기 전에 현재 Git 브랜치를 확인한다.
-- 여러 터미널을 사용할 수 있도록 워크트리 브랜치를 사용한다. 워크트리 브랜치 위치는 우리 레포 최상위에서 .worktrees 폴더 내 있어야 한다.
-- 작업이 더 이상 진행되지 않는 워크트리 브랜치에 대해서는 제거가 가능한지 교차검증하고 제안한다.
-- 사용자는 기존 워크트리 브랜치에서 계속 작업을 이어나가거나, 새로운 워크트리 브랜치 생성을 요구할 수 있다.
-- 워크트리 브랜치가 양산되는 것을 방지하기 위해 설계 작업과 구현 작업 모두 동일한 브랜치에서 진행한다. 이 때 docs 브랜치보다는 작업 성격에 맞는 type을 선택한다.
-- 현재 브랜치가 `main`, `master`, `develop`, `dev`, `release/*`이면 직접 수정하지 않고 새 작업 브랜치를 만든다.
-- `.codex`, `.claude` 폴더 내 에이전트 환경 설정은 브랜치를 변경하지 않고 진행할 수 있다.
-- 브랜치 이름은 `<type>/<short-description>` 형식을 사용한다.
+- Check the current Git branch before starting work.
+- Use worktree branches so that multiple terminals can work in parallel. Place worktree branches under `.worktrees/` at the repository root.
+- For worktree branches where work is no longer in progress, cross-check whether they can be removed and propose removal.
+- The user may ask to continue work on an existing worktree branch or to create a new one.
+- To avoid creating unnecessary worktree branches, use the same branch for both design and implementation. Choose a type that matches the work instead of defaulting to a `docs` branch.
+- Do not modify `main`, `master`, `develop`, `dev`, or `release/*` directly. Create a new work branch first.
+- Work on agent environment settings under `.codex` or `.claude` may proceed without changing branches.
+- Name branches using `<type>/<short-description>`.
 
-허용되는 `<type>`:
+Allowed `<type>` values:
 
 - `feature`
 - `fix`
 - `hotfix`
-  - 수정 작업이 아니라 핫픽스 작업일 때 사용
+  - Use `hotfix` only for actual hotfix work, not for ordinary fixes.
 - `refactor`
 - `test`
 - `docs`
 - `chore`
 
-## Git 커밋
+## Git Commits
 
-- 작업 단위가 커밋할 가치가 있는지 검토하고, 필요하면 커밋한다.
-- 커밋 형식은 제목, 본문, 푸터로 구성한다.
-- 제목 형식은 `<type>(<scope>): <subject>`를 사용한다.
-- 제목의 `type`은 `feat`, `fix`, `refactor`, `docs`, `test`, `chore`, `perf`, `ci`, `build` 중 하나를 사용한다.
-- 제목의 `scope`는 변경 대상 모듈이나 컴포넌트를 영어로 쓴다.
-- 제목의 `subject`는 한국어 명사형 요약으로 작성하고 마침표를 찍지 않는다.
-- 영어 커밋 제목은 Git 권장 관례에 따라 imperative mood를 사용할 수 있지만, 한국어 제목에는 `추가하라`, `수정하라` 같은 직접 명령형을 쓰지 않는다.
-- 본문은 WHY 중심으로 한국어로 작성하고, 무엇을 했는지는 diff에 맡긴다.
-- 필요 시 `BREAKING CHANGE:`, `Fixes #N`, `Closes #N`, `Co-Authored-By:` 푸터를 사용한다.
+- Decide whether a work unit is worth a commit and commit it when appropriate.
+- Structure a commit message as a title, body, and footer.
+- Format the title as `<type>(<scope>): <subject>`.
+- Use one of these values for `type`: `feat`, `fix`, `refactor`, `docs`, `test`, `chore`, `perf`, `ci`, or `build`.
+- Write `scope` in English for the affected module or component.
+- Write the title `subject` as a Korean noun phrase without a final period.
+- English commit titles may use the imperative mood following Git conventions, but do not write Korean titles as direct commands such as `추가하라` or `수정하라`.
+- Write the body in Korean and focus on why the change was necessary. Let the diff show what changed.
+- Use `BREAKING CHANGE:`, `Fixes #N`, `Closes #N`, or `Co-Authored-By:` footers when needed.
 
-## 금지 사항
+## Prohibited Actions
 
-- 사용자 승인 없이 변경사항을 제거하거나, 덮어씌우는 것과 같은 "돌이킬 수 없는 명령"을 실행하지 않는다.
-- 사용자가 만든 변경을 임의로 되돌리지 않는다.
+- Do not run irreversible commands that remove or overwrite changes without user approval.
+- Do not revert user-created changes on your own.
