@@ -2,7 +2,7 @@
 
 [한국어](./README.ko.md)
 
-`dev-docs` collects instructions and documentation practices for teams that work with coding agents. It is a research repository, not an application and not a universal template.
+`Docs System` collects instructions and documentation practices for teams that work with coding agents. It is a research repository, not an application and not a universal template.
 
 The files here are starting points. Select the sections that apply to the target repository, rewrite them around its actual tools and risks, and leave out rules that cannot be supported by its code, configuration, or team decisions.
 
