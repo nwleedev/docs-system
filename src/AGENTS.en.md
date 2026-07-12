@@ -56,6 +56,8 @@ After context compaction, reread AGENTS.md, especially **Core Principles**, and 
 - Use the `gh` CLI when researching repository files and issues on GitHub.
 - Prefer an official source repository over a personal repository when researching source code.
 - Provide sources and short quotations within permitted limits so that the user can verify the research.
+- Research requirements govern the agent's analysis and response. Do not copy citations, research notes, recommendations, or source wording into a target file unless the user requested them in that artifact and its intended readers need them.
+- Finding that the repository lacks a license, policy, check, document, or decision is not authorization to add one or to write a placeholder, warning, or maintainer instruction into the target artifact. Report the gap separately and obtain approval when it would change the requested result.
 
 **Application Verification**
 
@@ -121,13 +123,14 @@ After context compaction, reread AGENTS.md, especially **Core Principles**, and 
 - Report each result as `pass`, `needs revision`, `needs human input`, or `not applicable`. Do not infer what cannot be supported by evidence.
 - Keep document review and document editing as separate tasks. Do not automatically rewrite requirements, decisions, or current guidance while reviewing them.
 - Documentation alone does not prove implementation compliance. Use repository checks and explicit human review together.
+- Treat research and review findings as findings, not as permission to edit the requested artifact. When a finding requires a new decision, policy, section, or change of scope, report it separately and obtain approval before editing.
 
 ## Environment Variables and Sensitive Information
 
 - Do not commit personal information, security keys, internal URLs, tokens, or credentials to Git. Do not commit absolute paths that may expose a personal computer account.
 - Manage data that must not be committed with environment files such as `.env`.
 - Do not hardcode sensitive mock values in tests. Use test-only environment variables or fixtures defined in the tests.
-- Before committing changes, check for `.env`, `.codex`, `.claude`, raw internal URLs, tokens, and private implementation text.
+- Before committing, check for environment files, credentials, tokens, personal information, internal URLs, private repository references, and absolute paths that expose a personal account.
 
 ## Temporary Files
 
@@ -136,16 +139,24 @@ After context compaction, reread AGENTS.md, especially **Core Principles**, and 
 - Use `scope` for the work area and a short collision-resistant identifier for `nonce`.
 - Store screenshots created by Playwright MCP or Chrome DevTools MCP under the same file-location rule.
 
-## Writing Public Documents
+## Public Outputs
 
-- Do not write externally shared material using information known only to the team.
-- Do not copy design-document IDs into Git commit titles or bodies.
-- Do not copy internal design or task IDs such as `TASK-...`, `REQ-...`, `NFR-...`, or `REV-...` into commit messages or source code.
-- Use internal design and task IDs only in local session records. In requirements, application code, tests, and user-visible text, replace them with names based on product behavior.
-- A public specification or plan must remain understandable without access to private documents.
-- Write web-page text around the information provided to the user, not around internal implementation details.
-- Keep specifications and plans centered on actual requirements and public-facing text rather than internal rules.
-- Do not copy agent instructions or work rules into a README, web page, or public document. Rewrite necessary material as product documentation, operating guidance, or public policy that readers can understand.
+- Treat repository content that is committed or shared, including README files, documentation, source code and comments, commit and pull-request text, issue text, release notes, user-visible and assistive text, as public outputs unless the repository explicitly classifies it otherwise.
+- Base every public statement on verified repository evidence, an approved decision, or previously approved public wording. Do not use a user prompt, agent instruction, internal task description, work note, review criterion, rubric, output format, or workflow commentary as publishable source text.
+- Do not quote, copy, or lightly rewrite internal source text into a public output. When the underlying information is necessary, write it again as verified product behavior, usage guidance, or approved policy for the intended reader. If no public-safe source supports it, omit it and report the gap separately.
+- Keep internal identifiers, private document references, implementation-only names, maintainer reminders, unresolved decisions, review notes, and publication checklists out of public outputs. Do not insert `TODO`, `TBD`, or similar placeholders unless the status itself is approved information that readers need.
+- Do not infer unresolved ownership, support, security, compatibility, privacy, contribution, or licensing terms. Report the required decision separately and update the public output only after an approved source exists.
+- Write commit messages from the actual change and its reason. Write user-visible and assistive text from the task the user is performing, the purpose of the element, and the state the user needs to understand.
+- Keep public-output edits separate from repository-management work. Do not create an issue, planning item, policy file, or community file unless the user explicitly authorizes it.
+
+### Pre-publication Check
+
+1. List every changed public output, including the commit-message draft.
+2. Trace every added sentence or string to repository evidence, an approved decision, or approved public wording.
+3. Reject text derived from prompts, internal tasks, review criteria, output formats, or workflow commentary.
+4. Search the changed outputs for internal identifiers, private paths, distinctive prompt phrases, HTML comments, and unresolved markers such as `TODO`, `TBD`, and `FIXME`.
+5. Check claims about licensing, support, security, compatibility, ownership, and product behavior against their approved source.
+6. Read the rendered or final form as the intended reader. Do not publish or commit an output that still explains the agent's work rather than the project.
 
 ## Dependencies
 
@@ -194,6 +205,7 @@ Default `<type>` values:
 ## Git Commits
 
 - Decide whether a work unit is worth a commit and commit it when appropriate.
+- Apply the Public Outputs rules to the commit subject, body, and trailers. Describe the repository change and why it was needed. Do not mention the user prompt, agent instructions, internal task wording, review criteria, private references, or the agent's work process.
 - Use a subject line, followed by an optional body and optional trailers.
 - Follow the repository's existing commit convention. If none exists, format the subject as `<type>[optional scope][!]: <description>`.
 - When the repository does not define commit types, use `feat`, `fix`, `refactor`, `docs`, `test`, `chore`, `perf`, `ci`, or `build`.
