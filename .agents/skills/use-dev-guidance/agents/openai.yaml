@@ -1,0 +1,4 @@
+interface:
+  display_name: "Use Dev Guidance"
+  short_description: "Run the repository development-guidance workflow"
+  default_prompt: "Use $use-dev-guidance to select and complete all development-guidance operations required by this request."

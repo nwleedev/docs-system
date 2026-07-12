@@ -47,7 +47,8 @@ temps/
 .playwright-mcp/
 
 # Codex
-.agents/
+.agents/*
+!.agents/skills/
 .codex/
 
 # git worktrees

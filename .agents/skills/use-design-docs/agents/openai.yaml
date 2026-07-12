@@ -1,0 +1,4 @@
+interface:
+  display_name: "Use Design Docs"
+  short_description: "Learn, review, and manage repository design documents"
+  default_prompt: "Use $use-design-docs to guide requirement discovery and complete every applicable design-document operation for this request."
