@@ -18,10 +18,10 @@ After context compaction, reread AGENTS.md, especially **Core Principles**, and 
 - Do not implement code unless the user explicitly asks you to implement code.
 - Do not write tests unless the user explicitly asks you to write tests.
 - Do not use TDD unless the user explicitly asks you to use TDD.
-- Do not make small changes.
+- Do not reduce a requested change to a superficial patch that leaves the underlying problem unresolved.
 - Do not alter the scope of the work on your own.
-- Do not choose work merely because it is safe. Do the correct work.
-- The user may require a worktree branch so that work in different areas can proceed safely at the same time.
+- Choose work that correctly addresses the request. Do not avoid a necessary fix merely because it is harder, but obtain approval before taking destructive or high-impact actions.
+- The user may require a linked worktree so that work in different areas can proceed safely at the same time.
 - Do not use emoji.
 - When comments are used, their explanations may drift from the behavior of the code. Write code clearly enough that each part's role can be understood.
 - Do not stop after writing code once. Check for similar code and consider whether the code can be modularized.
@@ -29,12 +29,22 @@ After context compaction, reread AGENTS.md, especially **Core Principles**, and 
 - Do not disable requirements or features stated in the design.
 - Do not delete or weaken tests to hide a test failure.
 
+**Writing**
+
+- Do not produce generic, formulaic text that could be reused unchanged for another project. Write for the actual reader, repository, and decision at hand.
+- Make every sentence contribute evidence, a decision, an instruction, or necessary context. Remove introductions, conclusions, summaries, and transitions that only restate nearby text.
+- Prefer specific nouns and strong verbs over abstract nouns, hidden verbs, inflated claims, and decorative adjectives or adverbs.
+- Do not use words such as "pivotal," "crucial," "comprehensive," "seamless," "robust," or "delve" as decoration. Use them only when they express a precise, supported distinction.
+- Do not force every section into the same paragraph shape, repeated transition pattern, or arbitrary three-part list. Let the content determine the structure.
+- Use a natural, direct, and professional voice. Avoid promotional language, performative enthusiasm, fake quotations, and claims about what readers think or feel without evidence.
+- Before publishing text, read it once for meaning and remove any sentence that sounds polished but adds no information.
+
 **Legacy Code**
 
 - Treat every file and document in the repository as potentially legacy. Always verify it.
 - Do not remove existing behavior unless the user explicitly asks you to "remove" or "replace" it.
 - Whenever you write code, continuously research and cross-check the best practices, architecture, and design patterns relevant to that code.
-- Even when following best practices, keep the new code compatible with the existing legacy code at a minimum.
+- Apply better practices without breaking existing behavior unless the user has approved that behavior change.
 - Tests must verify observable behavior regardless of whether the code is legacy.
 
 **Research**
@@ -50,8 +60,8 @@ After context compaction, reread AGENTS.md, especially **Core Principles**, and 
 **Application Verification**
 
 - Use a browser to verify how the actual application works.
-- Do not invent commands. Run the application with commands defined by the project.
-- If the project does not define a command, infer one that matches the project's conventions and include it in the response.
+- Run the application with commands defined by the project.
+- If the project does not define a command, propose the command that best matches the project's conventions, identify it as an inference, and ask before running it.
 - When running E2E tests or verifying actual application behavior, start the development server yourself and stop it when the work is complete.
 
 ## Subagent Use
@@ -141,7 +151,7 @@ After context compaction, reread AGENTS.md, especially **Core Principles**, and 
 
 - When researching a dependency, investigate its provided features, version, and potential issues as well as its name.
 - Perform dependency research during the work-design phase.
-- Compare the concrete tradeoffs of an external dependency and an internal implementation, and choose the more fundamental option.
+- Compare the concrete tradeoffs of an external dependency and an internal implementation, then choose the option with the lowest complexity and maintenance cost that still meets the requirements.
 - Before introducing an external dependency, research the applicable static-analysis tools, best practices, architecture, and design patterns, then reflect them in the design and harness documents.
 
 ## Comments
@@ -162,15 +172,15 @@ After context compaction, reread AGENTS.md, especially **Core Principles**, and 
 ## Git Branches
 
 - Check the current Git branch before starting work.
-- Use worktree branches so that multiple terminals can work in parallel. Place worktree branches under `.worktrees/` at the repository root.
-- For worktree branches where work is no longer in progress, cross-check whether they can be removed and propose removal.
-- The user may ask to continue work on an existing worktree branch or to create a new one.
-- To avoid creating unnecessary worktree branches, use the same branch for both design and implementation. Choose a type that matches the work instead of defaulting to a `docs` branch.
-- Do not modify `main`, `master`, `develop`, `dev`, or `release/*` directly. Create a new work branch first.
+- Use linked worktrees so that multiple terminals can work in parallel. Place linked worktree directories under `.worktrees/` at the repository root.
+- For linked worktrees that are no longer in use, cross-check whether they can be removed and propose removal.
+- The user may ask to continue work in an existing linked worktree or to create a new one.
+- To avoid creating unnecessary linked worktrees, use the same branch for both design and implementation. Choose a type that matches the work instead of defaulting to a `docs` branch.
+- Do not modify the repository's default, integration, release, or protected branches directly unless the user explicitly asks you to work on the current branch. Create a new work branch first.
 - Work on agent environment settings under `.codex` or `.claude` may proceed without changing branches.
-- Name branches using `<type>/<short-description>`.
+- Follow the repository's existing branch-naming rules. If none exist, use `<type>/<short-description>`.
 
-Allowed `<type>` values:
+Default `<type>` values:
 
 - `feature`
 - `fix`
@@ -184,16 +194,17 @@ Allowed `<type>` values:
 ## Git Commits
 
 - Decide whether a work unit is worth a commit and commit it when appropriate.
-- Structure a commit message as a title, body, and footer.
-- Format the title as `<type>(<scope>): <subject>`.
-- Use one of these values for `type`: `feat`, `fix`, `refactor`, `docs`, `test`, `chore`, `perf`, `ci`, or `build`.
-- Write `scope` in English for the affected module or component.
-- Write the title `subject` as a English noun phrase without a final period.
-- English commit titles may use the imperative mood following Git conventions.
-- Write the body in English and focus on why the change was necessary. Let the diff show what changed.
-- Use `BREAKING CHANGE:`, `Fixes #N`, `Closes #N`, or `Co-Authored-By:` footers when needed.
+- Use a subject line, followed by an optional body and optional trailers.
+- Follow the repository's existing commit convention. If none exists, format the subject as `<type>[optional scope][!]: <description>`.
+- When the repository does not define commit types, use `feat`, `fix`, `refactor`, `docs`, `test`, `chore`, `perf`, `ci`, or `build`.
+- If a scope is useful, write it in English and name the affected module or component.
+- Write the description as a short imperative phrase without a final period.
+- When a body is needed, write it in English and explain why the change was necessary. Let the diff show what changed.
+- Use `BREAKING CHANGE: <description>` for a breaking change under Conventional Commits.
+- On GitHub, use `Fixes #N` or `Closes #N` only when the commit should close the issue after it reaches the default branch.
+- Use `Co-authored-by: Name <email>` to credit another author on GitHub.
 
 ## Prohibited Actions
 
-- Do not run irreversible commands that remove or overwrite changes without user approval.
+- Do not discard uncommitted changes, overwrite files, rewrite shared history, force-delete branches, or run similarly destructive commands without user approval.
 - Do not revert user-created changes on your own.
