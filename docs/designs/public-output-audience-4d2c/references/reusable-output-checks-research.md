@@ -189,10 +189,8 @@ CI는 같은 실행기를 깨끗한 환경에서 다시 호출한다. 패키지�
 | `skills/use-dev-guidance/SKILL.md` | `docs/dev/README.md`를 기준으로 저장소 증거, 외부 조사, 검사 선택과 개발 지침 작업을 연결한다. | 지금 바로 고칠 근거는 부족하다. 개발 지침에서 작업 지시를 근거로 쓰지 않는 규칙은 `docs/dev/README.md`가 먼저 소유해야 한다. 스킬에는 그 규칙을 되풀이하지 않는다. |
 | `docs/designs/README.md` | 사람이 소유하는 요구사항과 파생된 참고 자료·결정·계획의 책임, 근거, 검증 방법을 정한다. | 원문 보존 예외와 파생 문서의 출처·독자 검사를 포함한다. 후속 스킬은 이 규칙을 복사하지 말고 현재 저장소의 README를 검사 입력으로 사용해야 한다. |
 | `docs/dev/README.md` | 반복해서 사용할 저장소별 개발 지침의 근거, 상태, 소유 문서와 검사 방법을 정한다. | 작업 지시를 현재 규칙의 근거로 사용하지 않는 조건과 공개 전 검사를 포함한다. 후속 스킬은 개발 지침을 검토할 때 이 README를 적용해야 한다. |
-| `src/AGENTS.en.md` | 영어 사용자가 대상 저장소에 필요한 부분을 골라 쓸 수 있는 참고 지침이다. | 공개 산출물 검사 규칙은 이미 있다. 스킬이 완성되면 `Public Outputs`에 짧은 호출 조건을 추가할 수 있지만, 설치되지 않은 스킬을 전제하거나 판정 절차를 복사하면 안 된다. |
-| `src/AGENTS.ko.md` | 한국어 사용자가 대상 저장소에 필요한 부분을 골라 쓸 수 있는 참고 지침이다. | 영어 문서와 같은 역할의 호출 조건을 한국어 독자에게 맞게 작성할 수 있다. `올바른 글쓰기`의 핵심 원칙을 없애기 전에 상시 적용 규칙과 검토 예시를 구분해야 한다. |
 
-요구사항이 지정한 `src/AGENTS.en.md`와 `src/AGENTS.ko.md`는 모두 존재한다. 루트 [README](../../../../README.md)는 두 파일을 영어·한국어 참고 문서로 안내하며 서로 같은 규칙을 담는다고 가정하지 말라고 설명한다. 따라서 두 문서는 각각 검토하되, 공통 규칙을 맞추기 위해 내용을 자동으로 복사해서는 안 된다.
+현재 요구사항은 `src/AGENTS.en.md`와 `src/AGENTS.ko.md`를 검토·변경 대상으로 지정하지 않는다. 대상 저장소의 AGENTS에 스킬을 연결하는 방법은 `skills/use-words-review/README.md`가 소유하므로, 같은 안내를 두 참고 문서에 복사할 필요가 없다.
 
 ## 스킬 실행 파일과 사람용 안내 문서를 구분한다
 
@@ -205,9 +203,9 @@ CI는 같은 실행기를 깨끗한 환경에서 다시 호출한다. 패키지�
 - 의미 검토가 필요한 변경만 범용 서브에이전트에 전달한다.
 - 검사 결과와 사람이 판단해야 할 항목을 정해진 상태로 반환한다.
 
-반대로 `src/AGENTS.*.md`의 공개 전 검사 목록을 그대로 옮긴 스킬은 같은 규칙의 소유 문서를 늘릴 뿐이다. `AGENTS.md`에는 채택된 스킬을 언제 호출하는지만 남기는 구성이 [AGENTS.md 공개 형식](https://agents.md/)의 저장소 지침 역할과 OpenAI의 [짧은 진입 문서 사례](https://openai.com/index/harness-engineering/)에 맞는다.
+반대로 기존 AGENTS의 공개 전 검사 목록을 스킬 실행 절차에 그대로 옮기면 같은 규칙의 소유 문서가 늘어난다. 대상 저장소의 `AGENTS.md`에는 상시 적용할 작성·공개 원칙과 채택된 스킬의 호출 조건을 두고, 스킬 README는 사용자가 해당 지침을 자신의 AGENTS에 적용할 수 있는 기본 문구와 병합 방법을 안내하는 구성이 [AGENTS.md 공개 형식](https://agents.md/)의 저장소 지침 역할과 OpenAI의 [짧은 진입 문서 사례](https://openai.com/index/harness-engineering/)에 맞는다.
 
-[Agent Skills 명세](https://agentskills.io/specification), [Codex 스킬 문서](https://developers.openai.com/codex/skills), [Claude Code 스킬 문서](https://code.claude.com/docs/en/skills)는 모두 `SKILL.md`를 실행 진입점으로 사용한다. 자동 호출은 `SKILL.md`의 `description`을 기준으로 판단하며, 보조 자료는 `SKILL.md`가 필요할 때 읽도록 연결한다. 따라서 요구사항에 추가된 `README.md`는 AI가 실행할 규칙을 소유하지 않고, 사람이 스킬의 목적과 설치 방법, `AGENTS.md`에 추가할 짧은 호출 조건을 찾는 안내서로 써야 한다. `SKILL.md`는 README를 먼저 읽지 않아도 실행 가능해야 한다.
+[Agent Skills 명세](https://agentskills.io/specification), [Codex 스킬 문서](https://developers.openai.com/codex/skills), [Claude Code 스킬 문서](https://code.claude.com/docs/en/skills)는 모두 `SKILL.md`를 실행 진입점으로 사용한다. 자동 호출은 `SKILL.md`의 `description`을 기준으로 판단하며, 보조 자료는 `SKILL.md`가 필요할 때 읽도록 연결한다. 따라서 요구사항에 추가된 `README.md`는 스킬의 실행 절차가 아니라 사람을 위한 설치와 저장소 통합을 맡는다. 사용자가 별도 참고 문서를 찾아 조합하지 않아도 되도록 `Writing Natural Korean`, 공개 산출물의 독자·출처, 작업 지시 문구와 개인 경로의 제외, 공개 전 스킬 호출에 관한 완성된 AGENTS 기본안을 제공해야 한다. `SKILL.md`는 README를 먼저 읽지 않아도 실행 가능해야 한다.
 
 Superpowers 리비전 `d884ae0`과 Compound Engineering 리비전 `32fae6c`의 `skills/` 트리를 확인한 결과, 두 프로젝트는 각 스킬의 `SKILL.md`와 필요한 참고 자료를 실행 단위로 관리하며 스킬마다 README를 두지 않는다. 이는 이번 README가 실행 형식의 관례가 아니라 이 저장소가 여러 프로젝트에 배포하는 방법을 설명하기 위한 요구사항임을 뒷받침한다.
 

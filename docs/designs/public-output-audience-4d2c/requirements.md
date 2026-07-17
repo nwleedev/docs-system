@@ -91,8 +91,6 @@ AI가 프롬프트를 토대로 작업 지시자의 의도를 더 파악하고, 
 1. skills/use-dev-guidance/SKILL.md 파일에 변경이 필요할지 파악
 1. docs/designs/README.md 파일에 변경이 필요할지 파악
 1. docs/dev/README.md 파일에 변경이 필요할지 파악
-1. src/AGENTS.en.md 파일에 변경이 필요할지 파악
-1. src/AGENTS.ko.md 파일에 변경이 필요할지 파악
 
 그리고 이 문제에 대응하기 위해서 전용 스킬을 하나 더 세팅하는 것에 대해서도 리서치, 검토하세요.
 
