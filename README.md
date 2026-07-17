@@ -14,6 +14,7 @@ The files here are starting points. Select the sections that apply to the target
 - [`docs/designs/README.md`](./docs/designs/README.md) describes how to manage requirements, research, decisions, plans, and verification without forcing every project into one document template.
 - [`docs/dev/README.md`](./docs/dev/README.md) describes how to research, organize, apply, and check development guidance.
 - [`skills/use-design-docs`](./skills/use-design-docs/SKILL.md) and [`skills/use-dev-guidance`](./skills/use-dev-guidance/SKILL.md) are optional adapters for Codex and compatible skill runners. The skills route work; the linked READMEs remain the source of the rules.
+- [`skills/use-words-review`](./skills/use-words-review/README.md) explains how to install a read-only public-output review skill and add its audience, provenance, Korean-writing, and invocation rules to a target repository's `AGENTS.md`.
 - [`examples/nextjs-frontend.md`](./examples/nextjs-frontend.md) shows one stack-specific research prompt. It is an example, not a default for other projects.
 
 The two language documents under `src/` are maintained independently and are not guaranteed to contain equivalent rules. Compare the relevant sections before adopting either one.
