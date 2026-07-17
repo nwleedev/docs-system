@@ -117,12 +117,19 @@ references 폴더에 파일을 너무 많이 배치하면 각 파일의 정합�
 ```
 skills/
   use-words-review/
+    README.md
     SKILL.md
     references/
       examples.md
 ```
 
 examples.md 파일은 리뷰 에이전트가 참고할 수 있는 예시 파일을 의미합니다.
+
+- AGENTS.md 파일의 `**Writing Natural Korean**`의 경우 AGENTS.md 대신 examples.md 파일로 옮기는 것에 대해서 검토합니다.
+
+README.md 파일은 "스킬에 대해서 안내", 그리고 "스킬을 AI가 적절한 시기를 파악하고 호출하기 위해서 AGENTS.md 파일에 추가해야 하는 부분 지침"에 대해서 작성합니다.
+
+- 예를 들어 AGENTS.md 파일에 `## Documentation Work` 파트가 어떻게 작성되어있는지 확인해주세요.
 
 ## 주의
 
