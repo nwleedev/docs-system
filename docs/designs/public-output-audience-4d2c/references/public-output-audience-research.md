@@ -8,6 +8,10 @@ AI가 작업 지시자에게 보낼 진행 보고를 애플리케이션 UI, 개�
 - 애플리케이션 사용자용 문구: 사용자의 현재 상태, 가능한 행동, 행동 결과를 설명한다.
 - 개발자용 문서: 설치, 사용, 개발, 운영에 필요한 사실과 절차를 설명한다.
 
+공개 API도 사용자가 직접 읽는 화면은 아니지만 배포된 소비자용 산출물이다. 요구사항의 다음 오류를 UI와 함께 다룬다.
+
+> 사용자에게 보이는 문구나 배포되는 API가 내부 구현 계획과 확인 목록을 전달한다.
+
 조사는 2026년 7월 17일에 수행했다. 연구 논문, AI 도구 공급자의 공식 문서와 운영 보고, 공개 저장소의 실제 에이전트 규칙을 확인했다. 이 주제를 직접 다루면서 산출물 누출률까지 측정한 연구는 찾지 못했으므로, 직접 실험 결과와 인접한 운영 사례를 구분해 해석한다. 작업 지시 문구가 코드·문서·커밋에 들어가는 문제는 [작업 의도와 산출물 출처 조사](./prompt-intent-and-artifact-provenance-research.md)가, 번역투와 정형화된 문체는 [한국어 문체 조사](./natural-korean-and-ai-writing-research.md)가 맡는다. 이 문서는 [요구사항 문서](../requirements.md)의 문제 정의와 프로젝트 조건을 기준으로 삼으며, 새 요구사항이나 승인된 결정을 대신하지 않는다.
 
 ### 문제 범위와 재사용 범위
@@ -94,6 +98,30 @@ Google 개발자 문서 스타일 가이드는 문서에서 가리키는 `you`�
 
 두 사례는 작성 모델의 독자 판단 실패를 입증하지 않는다. 그러나 내부 상태와 사용자 표면을 별도 자료와 경로로 관리하고, 최종 화면을 확인해야 한다는 적용 방향은 같다.
 
+Grafana 이슈 #119590은 프록시나 외부 서비스가 반환한 HTML 오류 페이지 전체가 UI 알림과 오류 로그에 나타난다고 보고했다. 병합된 PR #119595는 사용자에게 보이는 메시지를 상태 코드와 상태 문구로 제한하고 원 응답은 별도 필드에 유지했으며, HTML과 일반 텍스트 오류를 구분하는 회귀 검사를 추가했다. AI 작업 보고 사례는 아니지만 내부·외부 원자료를 사용자 메시지로 그대로 전달하지 않고, 사용자용 표현과 진단 자료를 다른 필드로 나눈 실제 수정이다. [Grafana 이슈 #119590](https://github.com/grafana/grafana/issues/119590), [PR #119595](https://github.com/grafana/grafana/pull/119595)
+
+검토 대상 저장소의 현재 개정에서는 내부 준비 상태와 확인 항목을 담은 객체가 공개 API 형식에 그대로 재사용되고, 같은 값이 사용자 입력 화면의 설명과 목록으로 전달되는 경로를 확인했다. 이는 저장소의 실제 코드 경로에 관한 관찰이며, 다른 프로젝트의 발생률이나 AI가 직접 원인이라는 점을 입증하지 않는다. 저장소의 이름, 위치, 파일명과 원문은 기록하지 않았다.
+
+### 사용자 상태와 내부 운영 상태를 분리한다
+
+Google AIP-216은 상태 값을 API 소비자에게 유용한 상태로 제한하고, 내부 구현 상태는 혼란을 만들 수 있으므로 공개 열거형에 넣지 말라고 한다. 처리 중 상태도 사용자가 관찰하거나 그에 따라 행동할 수 있을 때만 가치가 있다고 설명한다. Microsoft의 장기 실행 작업 지침도 공개 작업 상태와 최종 자원을 정의하지만, 내부 단계·재시도·작업자 로그 전체를 응답으로 보내지는 않는다. [Google AIP-216](https://google.aip.dev/216), [Microsoft REST API Guidelines](https://github.com/microsoft/api-guidelines/blob/577874d3844942b7ca6ef9c6fef8b7e6017a3ce5/azure/Guidelines.md)
+
+채널마다 필요한 상태는 다음처럼 다르다.
+
+- UI는 사용자가 알아야 할 현재 결과, 기다려야 하는지, 진행 정도, 다음 행동을 말한다.
+- 공개 API는 소비자가 분기할 안정적인 상태·오류 코드와 필요한 데이터만 제공한다. 지원에 필요하면 내부 의미가 없는 불투명 요청 식별자를 줄 수 있다.
+- 내부 기록은 세부 실행 단계, 재시도, 확인 목록, 원 응답, 스택과 개발 메모를 맡는다.
+
+WCAG 상태 메시지 지침도 성공·결과·대기·진행·오류처럼 사용자가 알아야 할 변화를 보조 기술이 인식할 수 있게 하라고 한다. 내부 작업 순서를 공개하라는 지침은 아니다. [W3C, Status Messages](https://www.w3.org/WAI/WCAG21/Understanding/status-messages.html)
+
+### 공개 API는 내부 모델과 별도 출력 규칙을 사용한다
+
+OWASP Web Security Testing Guide는 백엔드 객체나 내부 자료 구조 전체를 직렬화하고 프런트엔드에서 숨기는 방식이 과도한 데이터 공개를 만든다고 설명한다. UI가 표시하지 않아도 API 응답은 직접 읽을 수 있으므로 서버에서 목적별 출력 객체나 허용 목록을 정의해야 한다. 오류 응답과 중첩 객체도 같은 검토 대상이다. [OWASP WSTG, Testing for Excessive Data Exposure](https://github.com/OWASP/wstg/blob/master/document/4-Web_Application_Security_Testing/12-API_Testing/03-Testing_for_Excessive_Data_Exposure.md)
+
+FastAPI의 공식 문서는 입력 모델과 출력 모델을 분리해 함수가 더 많은 데이터를 반환하더라도 선언한 응답 모델의 필드만 전송하는 예를 제공한다. 특정 프레임워크를 채택하라는 뜻이 아니라, 공개 응답을 내부 객체의 별칭으로 두지 않고 소비자용 필드 목록으로 검증할 수 있다는 구현 사례다. [FastAPI Response Model `afe4112`](https://github.com/fastapi/fastapi/blob/afe41126f624af30038cc8e17b2aaf60ebd4b838/docs/en/docs/tutorial/response-model.md)
+
+RFC 9457도 공개 오류의 `detail`은 클라이언트가 문제를 바로잡도록 돕는 데 집중하고 디버깅 정보를 주지 말라고 한다. 문제 상세 형식은 구현의 디버깅 도구가 아니며 스택과 내부 구현 정보를 공개하면 시스템과 사용자의 개인정보를 위험하게 할 수 있다. [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457.html)
+
 ### 올바른 예와 반례를 함께 둔다
 
 독자와 어조 같은 추상 기준은 판정이 흔들리기 쉽다. UI 오류라면 `저장하지 못했습니다. 연결을 확인하고 다시 시도하세요.`처럼 상태와 다음 행동을 말하는 예를 두고, `요청하신 저장 오류 처리를 구현했습니다.`처럼 작업 지시자에게 보고하는 문장은 반례로 둔다. README라면 검증된 설치 명령과 예상 결과를 정답 예로, `요구사항에 따라 의존성을 추가했습니다.` 같은 작업 회고를 반례로 둔다.
@@ -142,6 +170,7 @@ Anthropic은 초기 평가 세트를 “20-50 simple tasks drawn from real failu
 | Descript·Bolt 평가 사례 | 제품 기준, 정적 분석, 브라우저 검사, 모델 평가, 사람 보정을 조합해 품질·회귀 평가를 운영했다. | 독자 혼동 전용 평가는 아니며 공개된 정량 수치가 제한적이다. |
 | 공개 저장소 규칙 | 산출물의 독자, 사용자 관점, 구현 세부 정보 제외, 사람 확인을 실제 `AGENTS.md`에 명시했다. | 규칙 도입 전후의 실패율을 공개하지 않았다. |
 | 사용자 표면의 내부 항목 보고 | 내부 제어 문구와 명령이 일반 대화나 자동완성에 나타난 원 보고가 있다. | 렌더링·명령 필터 문제이며 모델이 작성한 UI 문구 사례는 아니다. |
+| 공개 응답과 내부 자료 분리 | OWASP와 FastAPI는 내부 객체 전체 직렬화 대신 목적별 출력 모델을 사용하고, RFC 9457은 공개 오류에서 디버깅 정보를 제외하도록 한다. Grafana는 원 HTML 응답과 사용자 메시지를 분리해 병합했다. | AI가 만든 내부 확인 목록의 공개 API 누출률을 직접 측정한 자료는 아니다. |
 | OpenAI 문서 책임 분류 | 외부 공개 문서는 사람 검토·책임 대상으로 남기는 운영 기준을 제시한다. | 공급자의 실무 권고이며 통제 실험은 아니다. |
 
 따라서 `특정 문구 규칙이 누출을 몇 퍼센트 줄인다`고 말할 근거는 없다. 다만 독자 지정 하나에 의존하지 않고 산출물 분류, 가까운 규칙, 예시, 분리된 검토, 회귀 평가를 겹치는 방향은 서로 독립된 자료에서 반복된다.
@@ -171,10 +200,11 @@ Anthropic은 초기 평가 세트를 “20-50 simple tasks drawn from real failu
 - README에는 구현 설명이 필요할 때도 있다. 독자에게 필요한 구조 설명과 작업 지시자에게 보내는 변경 보고를 문맥으로 구분해야 한다.
 - 사람 검토는 가장 강한 출판 경계지만 비용이 든다. 어떤 산출물을 필수 검토 대상으로 둘지는 위험도와 변경 빈도를 함께 보고 정해야 한다.
 - 확인한 운영 사례는 코딩 에이전트와 디지털 서비스에 치우쳐 있다. 자료 수집 결과나 조사 보고서에는 해당 분야 독자와 과업으로 다시 평가해야 한다.
+- 공개 API에 AI가 작성한 구현 계획이나 확인 목록이 들어가는 현상을 독립적으로 측정한 연구는 찾지 못했다. 검토 대상 저장소의 관찰과 인접한 과도한 데이터 공개 지침을 구분해야 한다.
 
 ## 조사 반복과 중단 근거
 
-여섯 차례 검색과 원문 대조를 수행했다.
+기존 여섯 차례에 공개 API와 내부 상태를 다룬 네 차례를 더해 모두 열 차례 검색과 원문 대조를 수행했다.
 
 1. 독자 수준을 지정한 생성 연구와 가독성 조절 연구를 대조했다.
 2. 독자의 전문성뿐 아니라 발표 목적과 길이를 함께 준 생성 연구를 확인했다.
@@ -182,8 +212,12 @@ Anthropic은 초기 평가 세트를 “20-50 simple tasks drawn from real failu
 4. 실제 독자의 쌍대 비교와 사용성 과업으로 문구를 평가하는 방법을 찾았다.
 5. 공개 저장소의 경로별 규칙과 사용자 표면에 내부 항목이 나타난 이슈를 확인했다.
 6. 같은 현상을 직접 측정한 벤치마크와 규칙 도입 전후 수치를 다시 검색했다.
+7. 공개 API의 내부 상태와 전체 객체 직렬화에 관한 표준·보안 지침을 확인했다.
+8. 사용자 상태, 장기 실행 작업, 공개 오류 형식에서 소비자에게 필요한 정보의 범위를 대조했다.
+9. 사용자 메시지와 원 진단 자료를 분리한 공개 이슈와 병합된 수정을 확인했다.
+10. AI 내부 확인 목록이 공개 API에 들어간 직접 측정 사례를 다시 검색했다.
 
-다섯 번째와 여섯 번째 검색에서는 `독자와 과업 지정`, `경로별 규칙`, `실제 독자 비교`, `최종 화면과 과업 검증` 외의 새 예방 범주가 나오지 않았다. 직접 벤치마크도 발견하지 못했다. 새 검색어가 기존 범주를 반복하고 근거의 직접성을 높이지 못해 이 조사 범위는 포화 상태로 판단했다.
+마지막 검색에서는 `소비자에게 유용한 상태`, `목적별 출력 모델`, `사용자 메시지와 진단 자료 분리`, `최종 화면과 원 API 응답의 동시 검사` 외의 새 예방 범주가 나오지 않았다. 직접 벤치마크도 발견하지 못했다. 새 검색어가 기존 범주를 반복하고 근거의 직접성을 높이지 못해 이 조사 범위는 포화 상태로 판단했다.
 
 ## 검토한 출처와 시점
 
@@ -205,3 +239,10 @@ Anthropic은 초기 평가 세트를 “20-50 simple tasks drawn from real failu
 - PostHog [`AGENTS.md`](https://github.com/PostHog/posthog/blob/1b7d6e0ad4cdb5242c83ff1aa8dfd799b8bc7221/AGENTS.md), 커밋 `1b7d6e0ad4cdb5242c83ff1aa8dfd799b8bc7221`, 2026-07-17 확인.
 - Cloudflare Workers SDK [`AGENTS.md`](https://github.com/cloudflare/workers-sdk/blob/028ce1f8db7d5475ff61923616ad1e8029598c6d/packages/wrangler/AGENTS.md), 커밋 `028ce1f8db7d5475ff61923616ad1e8029598c6d`, 2026-07-17 확인.
 - Automattic Jetpack [`AGENTS.md`](https://github.com/Automattic/jetpack/blob/717dcfea741f0a3b1cd1c8fb6e51bbac8d2e3a7a/AGENTS.md), 커밋 `717dcfea741f0a3b1cd1c8fb6e51bbac8d2e3a7a`, 2026-07-17 확인.
+- Google, [AIP-216: States](https://google.aip.dev/216), 2026-07-17 확인.
+- Microsoft, [REST API Guidelines](https://github.com/microsoft/api-guidelines/blob/577874d3844942b7ca6ef9c6fef8b7e6017a3ce5/azure/Guidelines.md), 커밋 `577874d3844942b7ca6ef9c6fef8b7e6017a3ce5`, 2026-07-17 확인.
+- W3C, [Understanding Status Messages](https://www.w3.org/WAI/WCAG21/Understanding/status-messages.html), 2026-07-17 확인.
+- OWASP, [Testing for Excessive Data Exposure](https://github.com/OWASP/wstg/blob/master/document/4-Web_Application_Security_Testing/12-API_Testing/03-Testing_for_Excessive_Data_Exposure.md), 2026-07-17 확인.
+- IETF, [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457.html), 2023-07 게시본, 2026-07-17 확인.
+- FastAPI, [Response Model](https://github.com/fastapi/fastapi/blob/afe41126f624af30038cc8e17b2aaf60ebd4b838/docs/en/docs/tutorial/response-model.md), 커밋 `afe41126f624af30038cc8e17b2aaf60ebd4b838`, 2026-07-17 확인.
+- Grafana, [이슈 #119590](https://github.com/grafana/grafana/issues/119590)과 [PR #119595](https://github.com/grafana/grafana/pull/119595), 2026-03-05 병합본, 2026-07-17 확인.
