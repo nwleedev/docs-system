@@ -46,10 +46,10 @@ next-env.d.ts
 temps/
 .playwright-mcp/
 
-# Codex
-.agents/*
-!.agents/skills/
+# AI Agents
+.agents/
 .codex/
+.claude/
 
 # git worktrees
 .worktrees
