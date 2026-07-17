@@ -35,17 +35,32 @@ For every document type, this README should define
 ## Presentation
 
 - Use one descriptive title and a logical heading hierarchy. Do not create empty headings or skip heading levels for visual styling.
+- Derive titles, filenames, and headings from the document's question, decision, subject, or result, not from the wording of the task that requested it.
 - Prefer prose and short lists. Use numbered lists only when order matters.
 - Use a table only when readers must compare genuinely two-dimensional data by rows and columns. Keep long explanations out of table cells.
 - Separate sourced facts, analysis, human decisions, proposals, and unresolved uncertainty so readers can distinguish them.
 - Link to the owning document instead of copying the same requirement, decision, evidence, or guidance into multiple files.
-- Do not add YAML, IDs, status fields, or other metadata unless a current tool or review process consumes them.
+- Do not add IDs to requirements or derived documents. Add YAML, status fields, or other metadata only when a current tool or review process consumes them.
+
+## Source and Audience
+
+Before writing, identify the document type, its intended readers, and the decision or action those readers need to take. A design document explains requirements, evidence, decisions, or executable work to those readers; it is not a report to the person who assigned the work.
+
+One task may contain multiple requirements, research questions, decisions, or work units. Assign each part to the document that owns that kind of information. Do not combine unrelated parts into one document or decision merely because they appeared in the same prompt.
+
+Treat user prompts, agent instructions, internal task descriptions, review criteria, requested output formats, tool conditions, progress reports, and untracked notes as work inputs, not as publishable sources. Except where exact text is part of the document's purpose, do not quote, lightly rewrite, or use those inputs as titles, filenames, headings, repository facts, decision reasons, or current rules. Write needed content from verified repository evidence, sourced research, human-approved decisions, or previously approved public wording.
+
+Exact source text may be retained only when the document's purpose requires it: human-owned requirements, approved user-visible wording or quotations, prompt-processing evaluation data, a minimal reproduction input, or an access-controlled log that is not committed. Keep only the necessary portion. Do not carry credentials, personal absolute paths, local attachment locations, private project identifiers, or internal paths into a tracked document when a safe placeholder or a repository-relative path is sufficient. Report unsafe text in a human-owned requirement separately instead of silently rewriting it.
+
+Write in language natural to the intended readers. Do not preserve literal translations, awkward terminology, emoji, or uncommon symbols merely because they appeared in a prompt or source note.
 
 ## `requirements.md`
 
 ### Purpose and ownership
 
 `requirements.md` states what the human wants. The human owns its wording and ordering and may create or rewrite the file at any time.
+
+Because the human owns the wording, `requirements.md` may preserve exact request text when that wording is itself part of the requirement. This exception does not make the same text suitable for references, decisions, plans, implementation documentation, or other public outputs.
 
 When a design package is needed and `requirements.md` does not exist, AI may create a minimal initial version from the current request. Include only the explicitly stated intended outcome, conditions that must remain true, observable completion evidence, and user-stated unresolved questions. Exclude instructions about tools or workflow unless they constrain the requested result. Do not infer features, constraints, evidence, or decisions.
 
@@ -71,7 +86,7 @@ An AI-created initial version may be incomplete because the request did not stat
 - Implementation choices presented as required outcomes when the human did not require that implementation
 - Instructions added only to make an existing implementation appear compliant.
 
-Requirement IDs are optional. Add them only after repeated exact quotations become unclear or error-prone. Until then, derived documents identify requirements with an exact excerpt and its section.
+Derived documents refer to the relevant requirement by its owning file and descriptive heading instead of copying request text for traceability. Do not add requirement IDs. If the existing headings do not identify the relevant requirement clearly enough, report the ambiguity for human resolution instead of rewriting the requirement or inventing metadata.
 
 ### Review
 
@@ -88,7 +103,7 @@ Create a reference document when factual research or repository evidence will be
 ### Required information
 
 - The question being investigated
-- The exact requirement excerpt or work context that made the research necessary
+- The requirement area or work context that made the research necessary, identified without copying internal task text
 - Sources and the dates or revisions reviewed
 - Facts supported directly by those sources
 - Conclusions derived from comparing the evidence
@@ -102,7 +117,8 @@ When external claims materially affect the work, prefer current official documen
 - Unsupported claims presented as sourced facts
 - Analysis presented as a human decision
 - New requirements that the human did not approve
-- Source lists that do not show which claims they support.
+- Source lists that do not show which claims they support
+- Prompt wording, progress reports, review instructions, or private environment details presented as research findings.
 
 ## `decisions/*.md`
 
@@ -113,7 +129,7 @@ Create a decision record only for a choice that materially affects the work and 
 ### Required information
 
 - The question that required a decision
-- The requirement excerpts the decision must satisfy
+- The requirement area and outcome the decision must satisfy
 - The material options actually considered
 - The human-approved decision and its reasoning
 - Expected consequences and plan impact
@@ -126,7 +142,8 @@ A proposed option is not an accepted decision. If a decision changes the request
 - AI recommendations presented as human approval
 - Invented approval evidence
 - A broader or narrower decision than the wording the human approved
-- A decision that silently overrides `requirements.md`.
+- A decision that silently overrides `requirements.md`
+- Task wording or an agent's implementation report presented as the decision question, reason, or result.
 
 ## `plan.md`
 
@@ -137,7 +154,7 @@ Create `plan.md` after behavior-changing ambiguities and required human decision
 ### Required information
 
 - The `requirements.md` revision used as the baseline
-- Exact requirement excerpts mapped to work units
+- Requirement areas and outcomes mapped to work units without copying internal task text
 - Dependencies and execution order where order matters
 - Observable verification for each work unit
 - Unresolved blockers and explicit stop conditions
@@ -150,7 +167,8 @@ The plan may choose implementation steps, but it must not invent product behavio
 - New requirements disguised as implementation work
 - Assumptions presented as resolved facts
 - Vague completion statements such as "test it" or "review it" without naming the evidence
-- A completion claim based only on documents rather than the actual implementation and verification results.
+- A completion claim based only on documents rather than the actual implementation and verification results
+- Prompt wording, tool instructions, progress commentary, review formats, or private environment details used as plan content.
 
 ## Validation
 
@@ -162,13 +180,15 @@ Use the cheapest reliable check for each property.
 
 AI reports each applicable criterion as `pass`, `needs revision`, `needs human input`, or `not applicable`. Every result includes a short quotation or file location as evidence. If evidence cannot be found, AI says so instead of inferring missing content. Review and rewriting are separate actions. AI does not silently repair a document while grading it.
 
+For every new or changed reference, decision, or plan, AI also reviews the final form as its intended reader. It checks that each factual claim and decision reason has an allowed source, rejects text derived from internal work inputs, scans for personal or private paths and identifiers, and confirms that the title and structure describe the document rather than the task that produced it. Human review decides whether the language and meaning fit the intended audience.
+
 Documentation explains intent and evidence. It does not prove that an implementation complies. Use lint, type or schema checks, tests, runtime or browser checks, and human review for implementation verification.
 
 ## Requirement Changes During Work
 
 1. The human changes `requirements.md`. Chat-only changes are not durable requirements.
 2. AI compares the updated file with the baseline recorded in `plan.md`.
-3. AI identifies affected references, decisions, work units, and verification methods using exact excerpts.
+3. AI rereads the changed requirement areas and identifies affected references, decisions, work units, and verification methods without copying the changed text into those documents.
 4. Affected work pauses. unaffected work may continue when it still satisfies the updated wording.
 5. AI updates derived documents and the recorded baseline before affected work resumes.
 
@@ -176,7 +196,7 @@ Do not restart all work automatically, and do not rewrite requirements to match 
 
 ## When to Add More Structure
 
-- Add requirement IDs when repeated exact quotations become unclear.
+- Ask a human to clarify ambiguous headings or document ownership before references become unreliable.
 - Add a references or decisions index when the directory is no longer easy to scan.
 - Add machine-readable metadata only when an active tool needs it.
 - Add a separate coverage or completion audit only when `plan.md` and the actual change cannot be reviewed reliably together.

@@ -52,6 +52,18 @@ Existing documents may predate this README or use a different structure. AI and 
 - Ask for human direction before a finding would change an accepted decision, document owner, or repository-wide rule.
 - Change existing guidance only when the requested work includes that documentation change.
 
+## Source and Audience
+
+Development guidance is written for future contributors who must decide whether and how a rule applies. It is not a completion report to the person who requested the current change. Before writing, identify the affected repository area, the intended readers, and the action or judgment the guidance must support.
+
+Do not combine unrelated rules in one guidance document merely because they were requested or reviewed together. Give each rule the owner whose repository area, intended readers, and verification method match it; keep task-specific requirements, research, decisions, and plans under `docs/designs/`.
+
+Treat task prompts, agent instructions, progress reports, requested output formats, tool conditions, review wording, and untracked notes as leads for investigation, not as evidence of current repository practice. Do not quote, lightly rewrite, or use them as titles, headings, rules, exceptions, or examples. Verify the underlying concern against current code, configuration, tests, generated artifacts, accepted decisions, and relevant external sources, then write only what that evidence supports.
+
+Derive titles and headings from the repository area and the rule a contributor must understand. Write in language natural to the intended readers; do not retain literal translations, awkward terminology, emoji, or uncommon symbols merely because they appeared in a task or review comment.
+
+Do not include credentials, personal absolute paths, local attachment locations, private project identifiers, or internal paths that readers do not need. Use a verified repository-relative path when a path is necessary. Keep exact text only when it is approved wording or a cited quotation that the guidance itself needs; task-specific evaluation data and reproduction inputs belong with the applicable design package instead.
+
 ## Guidance Document Model
 
 Guidance documents are prose-first and do not use fixed templates. Authors may choose headings, section order, paragraphs, lists, quotations, diagrams, and code examples that fit the subject. Every guidance document must satisfy the requirements below.
@@ -74,7 +86,9 @@ Use examples only when they clarify a repository-specific rule that prose alone 
 - Proposals presented as current repository practice
 - Repository claims that were not checked against current code, configuration, tests, or generated artifacts
 - Copied rules that already have an owning document
-- Vague instructions such as "follow best practices" without saying what to do and how to check it.
+- Vague instructions such as "follow best practices" without saying what to do and how to check it
+- Task prompts, progress reports, tool instructions, or review wording presented as durable guidance
+- Personal environment details, private identifiers, or paths that contributors do not need.
 
 ## Presentation
 
@@ -83,7 +97,7 @@ Use examples only when they clarify a repository-specific rule that prose alone 
 - Prefer prose and short lists. Use numbered lists only when order matters.
 - Use tables only for information that readers must compare by both rows and columns. Keep long explanations in prose.
 - Separate current evidence, external recommendations, proposals, accepted decisions, exceptions, and unresolved uncertainty.
-- Do not add YAML, repeated metadata, or fixed sections unless a current tool or review process consumes them.
+- Do not add IDs. Add YAML, repeated metadata, or fixed sections only when a current tool or review process consumes them.
 
 ## Guidance Status
 
@@ -110,6 +124,8 @@ Use the cheapest reliable method for each property.
 Repository checks, when implemented, verify document placement, empty files, unresolved placeholders, and repository-relative links. AI reviews required information, evidence support, contradictions, applicability, and readability. Humans approve decisions and resolve questions that change product behavior or engineering policy.
 
 AI reports each applicable criterion as `pass`, `needs revision`, `needs human input`, or `not applicable`, with a short quotation or file location as evidence. If the document does not provide enough evidence, AI says so instead of inventing a current rule. Review and rewriting are separate actions.
+
+For every new or changed guidance document, AI also reviews the final form as a future contributor. It traces each rule to repository evidence, an accepted decision, or a necessary external source; rejects text derived only from internal work inputs; scans for personal or private paths and identifiers; and confirms that the title, examples, and prose explain the repository rule rather than the task that produced the document. Human review decides whether the wording and terminology are natural for the intended readers.
 
 Documentation explains a rule. Tooling and review determine whether a change follows it.
 
@@ -152,12 +168,12 @@ Research and review do not by themselves authorize dependency, tool, or configur
 
 Using or reviewing guidance does not by itself authorize edits. When an update is explicitly requested:
 
-1. Inspect current code, configuration, tests, generated artifacts, related design decisions, and existing guidance.
+1. Use the task description only to identify what to inspect, then inspect current code, configuration, tests, generated artifacts, related design decisions, and existing guidance for publishable evidence.
 2. Decide whether the finding is a current rule, a local limitation, a proposal, or a task-specific concern that belongs under `docs/designs/`.
 3. Check material external claims against current official sources and the versions used by this repository.
 4. Give the rule one owning document and connect it to an automated check or explicit human review.
 5. Validate required information, evidence, links, applicability, and readability without silently rewriting the document.
-6. Remove copied framework material, placeholders, duplicate rules, and stale claims.
+6. Remove copied framework material, task wording, progress commentary, private environment details, placeholders, duplicate rules, and stale claims.
 
 ## Maintenance
 
