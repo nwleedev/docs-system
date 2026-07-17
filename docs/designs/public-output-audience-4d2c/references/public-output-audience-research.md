@@ -27,10 +27,10 @@ AI가 작업 지시자에게 보낼 진행 보고를 애플리케이션 UI, 개�
 1. 작성 전에 산출물 종류, 실제 독자, 독자가 수행할 과업을 분류한다.
 2. UI, README, 작업 보고에 서로 다른 작성 규칙과 근거 자료를 적용한다.
 3. 올바른 예와 잘못된 예를 함께 제공한다.
-4. 공개 산출물을 작업 기록과 분리하고, 실제 독자가 과업을 완수하는지 검토한다.
+4. 독자에게 전달할 결과를 작업 기록과 분리하고, 실제 독자가 과업을 완수하는지 검토한다.
 5. 과거 실패 사례로 회귀 평가를 만들고 정적 검사, 모델 평가, 사람 검토를 조합한다.
 
-프롬프트 규칙은 첫 번째 방어선이지 판정 장치가 아니다. 사용자에게 직접 보이는 문구와 공개 문서는 사람의 최종 책임 범위를 남기는 편이 현재 근거에 맞다.
+프롬프트 규칙은 첫 번째 방어선이지 판정 장치가 아니다. 사용자에게 직접 보이는 문구와 배포 문서는 사람의 최종 책임 범위를 남기는 편이 현재 근거에 맞다.
 
 ## 단일 독자 라벨의 한계와 개선 가능성
 
@@ -44,7 +44,7 @@ GitHub도 저장소 사용자 지정 지시를 응답에 자동으로 넣을 수
 
 ### 한 문맥에 목적이 다른 글이 함께 들어간다
 
-코딩 에이전트는 요청, 계획, 변경 내역, 테스트 결과, 소스 코드, UI 문자열, README를 한 작업 문맥에서 읽는다. 자료 수집과 조사에서도 질문, 조사 메모, 최종 보고서가 같은 문맥에 들어간다. Anthropic의 프롬프트 지침은 예시와 프롬프트 형식이 출력 형식에 영향을 준다고 설명한다. 작업 보고 문체가 공개 문자열에 옮겨지는 직접 실험은 아니지만, 목적이 다른 작업 기록을 공개 문구의 예시와 분리해야 한다는 가능한 메커니즘을 뒷받침한다. [Anthropic Claude 프롬프트 지침](https://docs.anthropic.com/ko/docs/build-with-claude/prompt-engineering/claude-4-best-practices)
+코딩 에이전트는 요청, 계획, 변경 내역, 테스트 결과, 소스 코드, UI 문자열, README를 한 작업 문맥에서 읽는다. 자료 수집과 조사에서도 질문, 조사 메모, 최종 보고서가 같은 문맥에 들어간다. Anthropic의 프롬프트 지침은 예시와 프롬프트 형식이 출력 형식에 영향을 준다고 설명한다. 작업 보고 문체가 사용자에게 전달되는 문자열에 옮겨지는 직접 실험은 아니지만, 목적이 다른 작업 기록을 사용자 문구의 예시와 분리해야 한다는 가능한 메커니즘을 뒷받침한다. [Anthropic Claude 프롬프트 지침](https://docs.anthropic.com/ko/docs/build-with-claude/prompt-engineering/claude-4-best-practices)
 
 ### 산출물 경계가 저장소에 없으면 모델이 추론해야 한다
 
@@ -63,7 +63,7 @@ Mondal 외는 독자의 전문성만이 아니라 발표 목적과 길이 조건
 - 산출물 종류: 작업 보고, UI 문구, 개발자 문서, 변경 기록 중 무엇인가.
 - 실제 독자: 작업 지시자, 제품 사용자, 저장소 기여자 중 누구인가.
 - 독자가 해결하려는 일: 상태 이해, 다음 행동 선택, 설치, 개발 환경 구성 등 무엇인가.
-- 허용 근거: 확인된 제품 동작, 공개된 정책, 저장소에서 검증한 명령 중 무엇을 쓸 수 있는가.
+- 허용 근거: 확인된 제품 동작, 이미 게시됐거나 전달을 승인받은 정책, 저장소에서 검증한 명령 중 무엇을 쓸 수 있는가.
 - 제외할 내용: 요청 문구, 에이전트 진행 상황, 테스트 통과 보고, 내부 경로와 검토 메모 중 무엇인가.
 
 종류 이름만 붙이는 것보다 독자의 행동과 허용 근거를 함께 적어야 판정 기준이 생긴다.
@@ -74,7 +74,7 @@ Mondal 외는 독자의 전문성만이 아니라 발표 목적과 길이 조건
 
 GitHub Copilot은 저장소 전체 지시, 경로별 지시, 디렉터리에서 가장 가까운 `AGENTS.md`를 지원한다. 공식 문서는 “Path-specific custom instructions apply”라고 설명한다. UI 문자열 경로에는 제품 사용자 관점과 상태·행동 중심 규칙을, 문서 경로에는 개발자 과업과 검증된 명령 중심 규칙을 둘 수 있다. 서로 충돌하는 지시는 피해야 하며, GitHub는 여러 지시 집합이 동시에 제공될 수 있다고 경고한다. [GitHub 저장소 사용자 지정 지시](https://docs.github.com/en/copilot/how-tos/copilot-on-github/customize-copilot/add-custom-instructions/add-repository-instructions)
 
-OpenAI의 운영 사례는 전역 파일을 목차로 두고 세부 지침을 저장소 문서로 이동한 뒤, 문서 구조와 최신성을 기계적으로 검사했다. 이 방식은 모든 글쓰기 규칙을 한 파일에 늘어놓기보다 공개 산출물의 공통 원칙만 전역에 두고 UI·README 규칙은 해당 위치에 가깝게 두는 쪽을 지지한다.
+OpenAI의 운영 사례는 전역 파일을 목차로 두고 세부 지침을 저장소 문서로 이동한 뒤, 문서 구조와 최신성을 기계적으로 검사했다. 이 방식은 모든 글쓰기 규칙을 한 파일에 늘어놓기보다 독자에게 전달할 글과 문구의 공통 원칙만 전역에 두고 UI·README 규칙은 해당 위치에 가깝게 두는 쪽을 지지한다.
 
 ### 금지어보다 독자의 과업을 기준으로 쓴다
 
@@ -85,13 +85,13 @@ Google 개발자 문서 스타일 가이드는 문서에서 가리키는 `you`�
 - Stirling PDF의 `AGENTS.md`는 명령 설명이 구현 방법이 아니라 명령이 하는 일을 말해야 하며, 내부 헬퍼나 리팩터링 이력을 적지 말라고 한다. 설명의 독자를 작업 목록에서 명령을 고르는 사용자로 지정한다. [Stirling PDF `AGENTS.md`, `d271b8f`](https://github.com/Stirling-Tools/Stirling-PDF/blob/d271b8f3573e52d89f691c3f8538c405d6e27d17/AGENTS.md#L9)
 - Jetpack의 `AGENTS.md`는 변경 기록을 “from a user's perspective, not the implementation details”로 쓰도록 한다. 변경을 수행한 에이전트가 아니라 릴리스 독자의 관점으로 전환하는 규칙이다. [Jetpack `AGENTS.md`, `717dcfe`](https://github.com/Automattic/jetpack/blob/717dcfea741f0a3b1cd1c8fb6e51bbac8d2e3a7a/AGENTS.md#L220-L224)
 - Cloudflare Workers SDK는 사용자 오류 문구와 텔레메트리 분류명을 구분한다. 텔레메트리는 안정적인 범주여야 하며, UI 문구가 바뀐다는 이유로 함께 바뀌면 안 된다고 명시한다. 같은 사건을 설명해도 소비자가 다르면 문자열을 공유하지 않는 사례다. [Workers SDK `AGENTS.md`, `028ce1f`](https://github.com/cloudflare/workers-sdk/blob/028ce1f8db7d5475ff61923616ad1e8029598c6d/packages/wrangler/AGENTS.md#L32-L34)
-- PostHog의 `AGENTS.md`는 UI, 툴팁, 오류 상태, 알림, 문서, 지원 답변을 사람이 읽는 문구로 묶고 별도 규칙을 둔다. 확신이 없으면 사람에게 묻도록 하며, 공개 Git 기록에는 저장소만 읽는 외부 기여자가 이해할 수 있는 제품·코드 맥락만 쓰게 한다. [PostHog `AGENTS.md`, `1b7d6e0`](https://github.com/PostHog/posthog/blob/1b7d6e0ad4cdb5242c83ff1aa8dfd799b8bc7221/AGENTS.md#L98-L102), [사용자 문구 규칙](https://github.com/PostHog/posthog/blob/1b7d6e0ad4cdb5242c83ff1aa8dfd799b8bc7221/AGENTS.md#L167-L172)
+- PostHog의 `AGENTS.md`는 UI, 툴팁, 오류 상태, 알림, 문서, 지원 답변을 사람이 읽는 문구로 묶고 별도 규칙을 둔다. 확신이 없으면 사람에게 묻도록 하며, 공개 저장소의 Git 기록에는 저장소만 읽는 외부 기여자가 이해할 수 있는 제품·코드 맥락만 쓰게 한다. [PostHog `AGENTS.md`, `1b7d6e0`](https://github.com/PostHog/posthog/blob/1b7d6e0ad4cdb5242c83ff1aa8dfd799b8bc7221/AGENTS.md#L98-L102), [사용자 문구 규칙](https://github.com/PostHog/posthog/blob/1b7d6e0ad4cdb5242c83ff1aa8dfd799b8bc7221/AGENTS.md#L167-L172)
 
-이 사례들은 실제 운영 중인 규칙이라는 점은 확인되지만, 규칙 도입 전후의 독자 혼동 발생률은 공개하지 않았다.
+이 사례들은 실제 운영 중인 규칙이라는 점은 확인되지만, 규칙 도입 전후의 독자 혼동 발생률은 발표하지 않았다.
 
 ### 내부 문구가 사용자 표면에 나온 실제 보고가 있다
 
-요구사항과 똑같이 작업 보고가 README나 제품 UI에 섞인 발생률 연구는 찾지 못했다. 다만 내부용 문구와 사용자용 문구의 구분이 무너진 공개 이슈는 확인했다.
+요구사항과 똑같이 작업 보고가 README나 제품 UI에 섞인 발생률 연구는 찾지 못했다. 다만 내부용 문구와 사용자용 문구의 구분이 무너진 GitHub 이슈는 확인했다.
 
 - Codex Desktop 이슈 #24162는 명령 이름, 로컬 명령 출력, 작업공간 지침 같은 XML 형태의 내부 제어 문구가 일반 대화 화면에 나타났다고 보고했다. 보고자는 진단 정보가 필요하면 별도 상세 화면에 두고 일반 대화와 섞지 말아야 한다고 설명했다. 모델이 쓴 UI 문자열이 아니라 렌더링 경로의 누출이라는 차이가 있다. [openai/codex #24162](https://github.com/openai/codex/issues/24162)
 - Claude Code 이슈 #77572는 `__` 접두사가 붙은 내부 명령이 VS Code의 사용자용 명령 자동완성에 나타났다고 보고했다. 같은 명령 목록에서도 내부 항목은 사용자 선택지에서 걸러야 한다는 사례다. [anthropics/claude-code #77572](https://github.com/anthropics/claude-code/issues/77572)
@@ -100,11 +100,11 @@ Google 개발자 문서 스타일 가이드는 문서에서 가리키는 `you`�
 
 Grafana 이슈 #119590은 프록시나 외부 서비스가 반환한 HTML 오류 페이지 전체가 UI 알림과 오류 로그에 나타난다고 보고했다. 병합된 PR #119595는 사용자에게 보이는 메시지를 상태 코드와 상태 문구로 제한하고 원 응답은 별도 필드에 유지했으며, HTML과 일반 텍스트 오류를 구분하는 회귀 검사를 추가했다. AI 작업 보고 사례는 아니지만 내부·외부 원자료를 사용자 메시지로 그대로 전달하지 않고, 사용자용 표현과 진단 자료를 다른 필드로 나눈 실제 수정이다. [Grafana 이슈 #119590](https://github.com/grafana/grafana/issues/119590), [PR #119595](https://github.com/grafana/grafana/pull/119595)
 
-검토 대상 저장소의 현재 개정에서는 내부 준비 상태와 확인 항목을 담은 객체가 공개 API 형식에 그대로 재사용되고, 같은 값이 사용자 입력 화면의 설명과 목록으로 전달되는 경로를 확인했다. 이는 저장소의 실제 코드 경로에 관한 관찰이며, 다른 프로젝트의 발생률이나 AI가 직접 원인이라는 점을 입증하지 않는다. 저장소의 이름, 위치, 파일명과 원문은 기록하지 않았다.
+검토 대상 저장소의 현재 개정에서는 내부 준비 상태와 확인 항목을 담은 객체가 외부에 제공하는 API 형식에 그대로 재사용되고, 같은 값이 사용자 입력 화면의 설명과 목록으로 전달되는 경로를 확인했다. 이는 저장소의 실제 코드 경로에 관한 관찰이며, 다른 프로젝트의 발생률이나 AI가 직접 원인이라는 점을 입증하지 않는다. 저장소의 이름, 위치, 파일명과 원문은 기록하지 않았다.
 
 ### 사용자 상태와 내부 운영 상태를 분리한다
 
-Google AIP-216은 상태 값을 API 소비자에게 유용한 상태로 제한하고, 내부 구현 상태는 혼란을 만들 수 있으므로 공개 열거형에 넣지 말라고 한다. 처리 중 상태도 사용자가 관찰하거나 그에 따라 행동할 수 있을 때만 가치가 있다고 설명한다. Microsoft의 장기 실행 작업 지침도 공개 작업 상태와 최종 자원을 정의하지만, 내부 단계·재시도·작업자 로그 전체를 응답으로 보내지는 않는다. [Google AIP-216](https://google.aip.dev/216), [Microsoft REST API Guidelines](https://github.com/microsoft/api-guidelines/blob/577874d3844942b7ca6ef9c6fef8b7e6017a3ce5/azure/Guidelines.md)
+Google AIP-216은 상태 값을 API 소비자에게 유용한 상태로 제한하고, 내부 구현 상태는 혼란을 만들 수 있으므로 API에 제공하는 열거형에 넣지 말라고 한다. 처리 중 상태도 사용자가 관찰하거나 그에 따라 행동할 수 있을 때만 가치가 있다고 설명한다. Microsoft의 장기 실행 작업 지침도 API 소비자에게 제공하는 작업 상태와 최종 자원을 정의하지만, 내부 단계·재시도·작업자 로그 전체를 응답으로 보내지는 않는다. [Google AIP-216](https://google.aip.dev/216), [Microsoft REST API Guidelines](https://github.com/microsoft/api-guidelines/blob/577874d3844942b7ca6ef9c6fef8b7e6017a3ce5/azure/Guidelines.md)
 
 채널마다 필요한 상태는 다음처럼 다르다.
 
@@ -112,15 +112,15 @@ Google AIP-216은 상태 값을 API 소비자에게 유용한 상태로 제한�
 - 공개 API는 소비자가 분기할 안정적인 상태·오류 코드와 필요한 데이터만 제공한다. 지원에 필요하면 내부 의미가 없는 불투명 요청 식별자를 줄 수 있다.
 - 내부 기록은 세부 실행 단계, 재시도, 확인 목록, 원 응답, 스택과 개발 메모를 맡는다.
 
-WCAG 상태 메시지 지침도 성공·결과·대기·진행·오류처럼 사용자가 알아야 할 변화를 보조 기술이 인식할 수 있게 하라고 한다. 내부 작업 순서를 공개하라는 지침은 아니다. [W3C, Status Messages](https://www.w3.org/WAI/WCAG21/Understanding/status-messages.html)
+WCAG 상태 메시지 지침도 성공·결과·대기·진행·오류처럼 사용자가 알아야 할 변화를 보조 기술이 인식할 수 있게 하라고 한다. 내부 작업 순서를 사용자에게 보여주라는 지침은 아니다. [W3C, Status Messages](https://www.w3.org/WAI/WCAG21/Understanding/status-messages.html)
 
 ### 공개 API는 내부 모델과 별도 출력 규칙을 사용한다
 
-OWASP Web Security Testing Guide는 백엔드 객체나 내부 자료 구조 전체를 직렬화하고 프런트엔드에서 숨기는 방식이 과도한 데이터 공개를 만든다고 설명한다. UI가 표시하지 않아도 API 응답은 직접 읽을 수 있으므로 서버에서 목적별 출력 객체나 허용 목록을 정의해야 한다. 오류 응답과 중첩 객체도 같은 검토 대상이다. [OWASP WSTG, Testing for Excessive Data Exposure](https://github.com/OWASP/wstg/blob/master/document/4-Web_Application_Security_Testing/12-API_Testing/03-Testing_for_Excessive_Data_Exposure.md)
+OWASP Web Security Testing Guide는 백엔드 객체나 내부 자료 구조 전체를 직렬화하고 프런트엔드에서 숨기는 방식이 과도한 데이터 노출을 만든다고 설명한다. UI가 표시하지 않아도 API 응답은 직접 읽을 수 있으므로 서버에서 목적별 출력 객체나 허용 목록을 정의해야 한다. 오류 응답과 중첩 객체도 같은 검토 대상이다. [OWASP WSTG, Testing for Excessive Data Exposure](https://github.com/OWASP/wstg/blob/master/document/4-Web_Application_Security_Testing/12-API_Testing/03-Testing_for_Excessive_Data_Exposure.md)
 
-FastAPI의 공식 문서는 입력 모델과 출력 모델을 분리해 함수가 더 많은 데이터를 반환하더라도 선언한 응답 모델의 필드만 전송하는 예를 제공한다. 특정 프레임워크를 채택하라는 뜻이 아니라, 공개 응답을 내부 객체의 별칭으로 두지 않고 소비자용 필드 목록으로 검증할 수 있다는 구현 사례다. [FastAPI Response Model `afe4112`](https://github.com/fastapi/fastapi/blob/afe41126f624af30038cc8e17b2aaf60ebd4b838/docs/en/docs/tutorial/response-model.md)
+FastAPI의 공식 문서는 입력 모델과 출력 모델을 분리해 함수가 더 많은 데이터를 반환하더라도 선언한 응답 모델의 필드만 전송하는 예를 제공한다. 특정 프레임워크를 채택하라는 뜻이 아니라, API 응답을 내부 객체의 별칭으로 두지 않고 소비자용 필드 목록으로 검증할 수 있다는 구현 사례다. [FastAPI Response Model `afe4112`](https://github.com/fastapi/fastapi/blob/afe41126f624af30038cc8e17b2aaf60ebd4b838/docs/en/docs/tutorial/response-model.md)
 
-RFC 9457도 공개 오류의 `detail`은 클라이언트가 문제를 바로잡도록 돕는 데 집중하고 디버깅 정보를 주지 말라고 한다. 문제 상세 형식은 구현의 디버깅 도구가 아니며 스택과 내부 구현 정보를 공개하면 시스템과 사용자의 개인정보를 위험하게 할 수 있다. [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457.html)
+RFC 9457도 클라이언트에 보내는 오류의 `detail`은 클라이언트가 문제를 바로잡도록 돕는 데 집중하고 디버깅 정보를 주지 말라고 한다. 문제 상세 형식은 구현의 디버깅 도구가 아니며 스택과 내부 구현 정보를 응답에 포함하면 시스템과 사용자의 개인정보를 위험하게 할 수 있다. [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457.html)
 
 ### 올바른 예와 반례를 함께 둔다
 
@@ -130,9 +130,9 @@ RFC 9457도 공개 오류의 `detail`은 클라이언트가 문제를 바로잡�
 
 예시를 작성자가 임의로 고르는 대신 실제 독자가 두 표현을 비교하게 할 수 있다. Moorjani 외는 실제 독자의 쌍대 비교를 사용해 설득 문장과 기억하기 쉬운 문장의 스타일 판별기를 학습했고, 새 주제 설득 문장의 판별 정확도 87%를 보고했다. UI나 README 연구는 아니지만 `독자에게 적합해 보인다`는 작성자 직감보다 실제 독자 비교로 예시와 평가 기준을 고르는 효과 근거다. [Moorjani 외, Learning to Generate Text in Arbitrary Writing Styles, Findings of EMNLP 2022](https://aclanthology.org/2022.findings-emnlp.138/)
 
-### 작성과 공개 판정을 분리한다
+### 작성과 배포 여부 판단을 분리한다
 
-OpenAI의 AI 네이티브 엔지니어링 지침은 짧은 내부 요약은 에이전트에 맡기되, 공개 API·SDK 문서와 중요 문서는 엔지니어가 출판 전에 검토하고 외부 공개 또는 안전 관련 문서는 사람이 책임지도록 나눈다. 문서의 짧은 표현은 “Engineers review and edit important docs drafted by Codex”다. [OpenAI, Building an AI-native engineering team, 2026년 6월 확인본, 16쪽](https://cdn.openai.com/business-guides-and-resources/building-an-ai-native-engineering-team.pdf#page=16)
+OpenAI의 AI 네이티브 엔지니어링 지침은 짧은 내부 요약은 에이전트에 맡기되, 외부 개발자가 사용하는 API와 SDK 문서와 중요 문서는 엔지니어가 출판 전에 검토하고 외부에 배포하거나 안전과 관련된 문서는 사람이 책임지도록 나눈다. 문서의 짧은 표현은 “Engineers review and edit important docs drafted by Codex”다. [OpenAI, Building an AI-native engineering team, 2026년 6월 확인본, 16쪽](https://cdn.openai.com/business-guides-and-resources/building-an-ai-native-engineering-team.pdf#page=16)
 
 검토자는 소스 코드의 문자열만 보지 않고 실제 화면과 렌더링된 README를 독자의 입장에서 읽어야 한다. 렌더링 모양만 확인해서도 부족하다. UI는 실제 사용자의 과업 성공률, 소요 시간, 포기와 잘못된 성공 판단을 확인하고, README는 새 개발자가 설치·실행·이해 과업을 완료하는지 본다. GOV.UK는 실제 또는 가능성이 높은 사용자 30~60명에게 현실적인 과업과 명확한 정답을 주고 이 지표를 반복 측정하는 사용성 기준을 제시한다. [GOV.UK, Usability benchmarking](https://www.gov.uk/service-manual/measuring-success/usability-benchmarking-a-website-or-whole-service)
 
@@ -167,40 +167,40 @@ Anthropic은 초기 평가 세트를 “20-50 simple tasks drawn from real failu
 | 실제 독자의 쌍대 비교 | 독자 비교로 학습한 스타일 판별기가 새 주제의 설득 문장을 87% 정확도로 구분했다. | 설득·기억 스타일 연구이며 제품 문구의 과업 성공을 측정하지 않았다. |
 | 사용성 기준 | 실제 또는 가능성이 높은 독자가 현실적인 과업을 수행하며 성공률, 시간, 포기, 잘못된 성공 판단을 반복 측정하는 절차가 운영되고 있다. | AI 작성 문구 전용 실험이 아니며 충분한 참여자와 명확한 정답이 필요하다. |
 | OpenAI 에이전트 중심 저장소 | 짧은 진입 문서, 구조화된 지식, 린터와 CI를 사용해 약 5개월간 약 1,500개 PR과 약 100만 줄 규모의 제품을 운영했다고 보고했다. | 여러 장치를 함께 사용한 사례라서 산출물별 규칙 하나의 인과 효과를 분리할 수 없다. |
-| Descript·Bolt 평가 사례 | 제품 기준, 정적 분석, 브라우저 검사, 모델 평가, 사람 보정을 조합해 품질·회귀 평가를 운영했다. | 독자 혼동 전용 평가는 아니며 공개된 정량 수치가 제한적이다. |
-| 공개 저장소 규칙 | 산출물의 독자, 사용자 관점, 구현 세부 정보 제외, 사람 확인을 실제 `AGENTS.md`에 명시했다. | 규칙 도입 전후의 실패율을 공개하지 않았다. |
+| Descript·Bolt 평가 사례 | 제품 기준, 정적 분석, 브라우저 검사, 모델 평가, 사람 보정을 조합해 품질·회귀 평가를 운영했다. | 독자 혼동 전용 평가는 아니며 발표된 정량 수치가 제한적이다. |
+| 공개 저장소 규칙 | 산출물의 독자, 사용자 관점, 구현 세부 정보 제외, 사람 확인을 실제 `AGENTS.md`에 명시했다. | 규칙 도입 전후의 실패율을 발표하지 않았다. |
 | 사용자 표면의 내부 항목 보고 | 내부 제어 문구와 명령이 일반 대화나 자동완성에 나타난 원 보고가 있다. | 렌더링·명령 필터 문제이며 모델이 작성한 UI 문구 사례는 아니다. |
-| 공개 응답과 내부 자료 분리 | OWASP와 FastAPI는 내부 객체 전체 직렬화 대신 목적별 출력 모델을 사용하고, RFC 9457은 공개 오류에서 디버깅 정보를 제외하도록 한다. Grafana는 원 HTML 응답과 사용자 메시지를 분리해 병합했다. | AI가 만든 내부 확인 목록의 공개 API 누출률을 직접 측정한 자료는 아니다. |
-| OpenAI 문서 책임 분류 | 외부 공개 문서는 사람 검토·책임 대상으로 남기는 운영 기준을 제시한다. | 공급자의 실무 권고이며 통제 실험은 아니다. |
+| API 응답과 내부 자료 분리 | OWASP와 FastAPI는 내부 객체 전체 직렬화 대신 목적별 출력 모델을 사용하고, RFC 9457은 클라이언트에 보내는 오류에서 디버깅 정보를 제외하도록 한다. Grafana는 원 HTML 응답과 사용자 메시지를 분리해 병합했다. | AI가 만든 내부 확인 목록이 API 응답에 섞이는 비율을 직접 측정한 자료는 아니다. |
+| OpenAI 문서 책임 분류 | 외부에 배포할 문서는 사람 검토·책임 대상으로 남기는 운영 기준을 제시한다. | 공급자의 실무 권고이며 통제 실험은 아니다. |
 
 따라서 `특정 문구 규칙이 누출을 몇 퍼센트 줄인다`고 말할 근거는 없다. 다만 독자 지정 하나에 의존하지 않고 산출물 분류, 가까운 규칙, 예시, 분리된 검토, 회귀 평가를 겹치는 방향은 서로 독립된 자료에서 반복된다.
 
 ## 여러 프로젝트에서 선택해 적용할 수 있는 제안
 
-현재 저장소가 공개 문구의 근거와 내부 작업 기록을 분리하는 방식은 [작업 의도와 산출물 출처 조사](./prompt-intent-and-artifact-provenance-research.md#입력과-산출물-근거를-분리한다)에 기록했다. 이 문서의 후속 제안은 같은 원칙을 반복하지 않고, 산출물별 실제 독자와 과업을 정하고 그 적합성을 평가하는 부분만 추가한다.
+현재 저장소가 독자에게 전달할 문구의 근거와 내부 작업 기록을 분리하는 방식은 [작업 의도와 산출물 출처 조사](./prompt-intent-and-artifact-provenance-research.md#입력과-산출물-근거를-분리한다)에 기록했다. 이 문서의 후속 제안은 같은 원칙을 반복하지 않고, 산출물별 실제 독자와 과업을 정하고 그 적합성을 평가하는 부분만 추가한다.
 
 후속 설계가 승인된다면 대상 저장소마다 다음 순서로 작은 평가를 먼저 수행하는 편이 타당하다.
 
-1. 해당 저장소의 공개 산출물, 실제 독자, 독자가 수행할 과업을 목록으로 만든다.
+1. 해당 저장소에서 다른 사람이 읽는 글과 문구, 실제 독자, 독자가 수행할 과업을 목록으로 만든다.
 2. 발견된 독자 혼동 사례와 정상 대조군을 20~50개 모으고, 실제 독자가 표현 쌍을 비교하게 해 기준 예시를 고른다.
 3. 현재 규칙만 적용한 결과를 여러 번 측정한다. 독자가 두 변형에서 의미 있는 차이를 보이지 않으면 새 규칙을 추가하지 않는다.
-4. UI와 README 또는 같은 역할을 하는 공개 산출물 경로에 독자·과업·허용 근거·반례를 추가한 변형을 비교한다.
+4. UI와 README 또는 같은 역할을 하는 독자 대상 문구가 있는 경로에 독자·과업·허용 근거·반례를 추가한 변형을 비교한다.
 5. 정적 후보 탐지, 독립된 모델 판정, 브라우저 또는 렌더링 검토, 독자의 과업 수행 평가를 함께 실행한다.
 6. 사람 판정과 모델 판정이 어긋난 사례로 기준을 보정하고 회귀 세트에 남긴다.
 
-이 절차를 모든 저장소에 그대로 복사하면 안 된다. 먼저 대상 저장소의 공개 산출물과 독자를 확인하고, 적용할 규칙만 선택하며, 제품 용어와 실제 실패 사례로 예시와 평가 기준을 다시 작성해야 한다.
+이 절차를 모든 저장소에 그대로 복사하면 안 된다. 먼저 대상 저장소에서 다른 사람이 읽는 글과 문구와 독자를 확인하고, 적용할 규칙만 선택하며, 제품 용어와 실제 실패 사례로 예시와 평가 기준을 다시 작성해야 한다.
 
-요구사항은 문제 조사와 리서치 문서 작성을 요청하지만 린터, 에이전트 지시, 평가 도구의 구현까지 승인하지는 않는다. 어떤 파일에 규칙을 둘지, 공개 전 사람 승인을 필수로 할지, 어떤 표현을 실패로 볼지는 사람의 결정이 필요하다.
+요구사항은 문제 조사와 리서치 문서 작성을 요청하지만 린터, 에이전트 지시, 평가 도구의 구현까지 승인하지는 않는다. 어떤 파일에 규칙을 둘지, 커밋하거나 공유하기 전 사람 승인을 필수로 할지, 어떤 표현을 실패로 볼지는 사람의 결정이 필요하다.
 
 ## 한계와 남은 질문
 
-- 공개 연구에서는 작업 지시자용 보고가 UI나 README에 섞이는 현상을 독립된 오류 유형으로 측정한 벤치마크를 찾지 못했다.
+- 발표된 연구에서는 작업 지시자용 보고가 UI나 README에 섞이는 현상을 독립된 오류 유형으로 측정한 벤치마크를 찾지 못했다.
 - 공개 저장소 규칙은 시도 사례를 보여주지만 도입 전후 수치가 없어 효과 크기를 비교할 수 없다.
 - 언어와 문서 종류에 따라 보고체의 표지가 다르다. 한국어 휴리스틱을 영어 규칙에서 그대로 만들 수 없다.
 - README에는 구현 설명이 필요할 때도 있다. 독자에게 필요한 구조 설명과 작업 지시자에게 보내는 변경 보고를 문맥으로 구분해야 한다.
 - 사람 검토는 가장 강한 출판 경계지만 비용이 든다. 어떤 산출물을 필수 검토 대상으로 둘지는 위험도와 변경 빈도를 함께 보고 정해야 한다.
 - 확인한 운영 사례는 코딩 에이전트와 디지털 서비스에 치우쳐 있다. 자료 수집 결과나 조사 보고서에는 해당 분야 독자와 과업으로 다시 평가해야 한다.
-- 공개 API에 AI가 작성한 구현 계획이나 확인 목록이 들어가는 현상을 독립적으로 측정한 연구는 찾지 못했다. 검토 대상 저장소의 관찰과 인접한 과도한 데이터 공개 지침을 구분해야 한다.
+- 공개 API에 AI가 작성한 구현 계획이나 확인 목록이 들어가는 현상을 독립적으로 측정한 연구는 찾지 못했다. 검토 대상 저장소의 관찰과 인접한 과도한 데이터 노출 지침을 구분해야 한다.
 
 ## 조사 반복과 중단 근거
 
@@ -213,8 +213,8 @@ Anthropic은 초기 평가 세트를 “20-50 simple tasks drawn from real failu
 5. 공개 저장소의 경로별 규칙과 사용자 표면에 내부 항목이 나타난 이슈를 확인했다.
 6. 같은 현상을 직접 측정한 벤치마크와 규칙 도입 전후 수치를 다시 검색했다.
 7. 공개 API의 내부 상태와 전체 객체 직렬화에 관한 표준·보안 지침을 확인했다.
-8. 사용자 상태, 장기 실행 작업, 공개 오류 형식에서 소비자에게 필요한 정보의 범위를 대조했다.
-9. 사용자 메시지와 원 진단 자료를 분리한 공개 이슈와 병합된 수정을 확인했다.
+8. 사용자 상태, 장기 실행 작업, 클라이언트에 전달하는 오류 형식에서 소비자에게 필요한 정보의 범위를 대조했다.
+9. 사용자 메시지와 원 진단 자료를 분리한 GitHub 이슈와 병합된 수정을 확인했다.
 10. AI 내부 확인 목록이 공개 API에 들어간 직접 측정 사례를 다시 검색했다.
 
 마지막 검색에서는 `소비자에게 유용한 상태`, `목적별 출력 모델`, `사용자 메시지와 진단 자료 분리`, `최종 화면과 원 API 응답의 동시 검사` 외의 새 예방 범주가 나오지 않았다. 직접 벤치마크도 발견하지 못했다. 새 검색어가 기존 범주를 반복하고 근거의 직접성을 높이지 못해 이 조사 범위는 포화 상태로 판단했다.
@@ -227,7 +227,7 @@ Anthropic은 초기 평가 세트를 “20-50 simple tasks drawn from real failu
 - Huang 외, [Learning to Ask](https://aclanthology.org/2025.findings-emnlp.843/), Findings of EMNLP 2025, 2026-07-17 확인.
 - Moorjani 외, [Learning to Generate Text in Arbitrary Writing Styles](https://aclanthology.org/2022.findings-emnlp.138/), Findings of EMNLP 2022, 2026-07-17 확인.
 - OpenAI, [Harness engineering](https://openai.com/index/harness-engineering/), 2026-02-11 게시본, 2026-07-17 확인.
-- OpenAI, [Building an AI-native engineering team](https://cdn.openai.com/business-guides-and-resources/building-an-ai-native-engineering-team.pdf), 2026년 6월 공개 PDF, 2026-07-17 확인.
+- OpenAI, [Building an AI-native engineering team](https://cdn.openai.com/business-guides-and-resources/building-an-ai-native-engineering-team.pdf), 2026년 6월 발행 PDF, 2026-07-17 확인.
 - Anthropic, [Demystifying evals for AI agents](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents), 2026-01-09 게시본, 2026-07-17 확인.
 - Anthropic, [Claude 프롬프트 엔지니어링 모범 사례](https://docs.anthropic.com/ko/docs/build-with-claude/prompt-engineering/claude-4-best-practices), 2026-07-17 확인.
 - GitHub, [저장소 사용자 지정 지시](https://docs.github.com/en/copilot/how-tos/copilot-on-github/customize-copilot/add-custom-instructions/add-repository-instructions), 2026-07-17 확인.

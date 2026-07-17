@@ -1,4 +1,4 @@
-# 공개 산출물 검사를 여러 저장소에서 재사용하는 방법
+# 글과 문구 검사를 여러 저장소에서 재사용하는 방법
 
 ## 조사 질문과 소유 범위
 
@@ -31,7 +31,7 @@ Vale는 공통 문장 규칙의 기본 엔진으로 적합하다. 단일 실행 
 | 제목 단계, 줄 길이, 잘못된 Markdown 구조 | markdownlint 선택 적용 | 구조 규칙이 합의된 저장소에서 차단 |
 | 특정 파일 형식의 구문 트리나 기존 textlint 규칙 활용 | textlint 선택 적용 | 해당 규칙의 오탐을 검증한 뒤 차단 |
 | 독자에게 맞는 글인지, 작업 보고가 섞였는지, 한 문서가 여러 결정을 묶었는지 | 범용 서브에이전트를 실행하는 검토 스킬 | 기본적으로 판정 근거를 제시하고 사람에게 넘김 |
-| 공개해도 되는 인용인지, 문구의 제품 의미가 맞는지 | 사람 | 사람이 최종 결정 |
+| 다른 사람에게 보여도 되는 인용인지, 문구의 제품 의미가 맞는지 | 사람 | 사람이 최종 결정 |
 
 이 분리는 결정적 검사, 모델 평가, 사람 평가를 함께 사용하되 가능한 항목은 결정적으로 채점하라는 [Anthropic의 에이전트 평가 지침](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents)과 맞는다. 같은 자료는 모델 평가가 사람 판단과 어긋나지 않는지 교정하고, 정보가 부족하면 판정을 보류할 수 있게 하라고 설명한다. 따라서 검토 에이전트의 결과를 린터 오류처럼 곧바로 차단 신호로 취급하면 안 된다.
 
@@ -94,7 +94,7 @@ vale --config=.vale.ini --no-global --minAlertLevel=suggestion --no-exit README.
 vale --config=.vale.ini --no-global --minAlertLevel=error README.md docs/
 ```
 
-이 명령의 경로는 예시다. 각 저장소는 공개 산출물이 있는 경로와 확장자를 선언해야 한다. 코드에 들어 있는 UI 문자열이나 JSON 번역 파일이 `README.md`와 `docs/`에 있다는 가정을 공통 패키지가 해서는 안 된다.
+이 명령의 경로는 예시다. 각 저장소는 검사 대상 글과 문자열이 있는 경로와 확장자를 선언해야 한다. 코드에 들어 있는 UI 문자열이나 JSON 번역 파일이 `README.md`와 `docs/`에 있다는 가정을 공통 패키지가 해서는 안 된다.
 
 ### 한국어 규칙은 단어 경계를 직접 검증한다
 
@@ -104,7 +104,7 @@ Vale의 `tokens`는 기본적으로 단어 경계를 더한다. Vale가 기초�
 
 [Vale 범위 문서](https://vale.sh/docs/scopes)는 Markdown 제목·문단·목록·대체 텍스트와 코드의 줄·블록 주석을 구분한다. Markdown 코드 블록, 코드 구간, URL 등은 일반 문장과 다르게 처리한다. 이 기능만으로 JSX나 TSX의 사용자 문구가 자동으로 문장 검사를 받는 것은 아니다. 구조화된 JSON·YAML은 [Vale Views](https://vale.sh/docs/views)로 필요한 값을 추출할 수 있고, 소스 코드 문자열은 별도 추출기 또는 해당 언어의 구문 트리 처리가 필요하다.
 
-따라서 저장소별 설정은 “검사하는 경로”뿐 아니라 “아직 추출하지 못하는 공개 문자열”도 알려야 한다. 누락을 Vale 통과로 오해하지 않게 하기 위해서다.
+따라서 저장소별 설정은 “검사하는 경로”뿐 아니라 “검사 대상이지만 아직 추출하지 못하는 문자열”도 알려야 한다. 누락을 Vale 통과로 오해하지 않게 하기 위해서다.
 
 ## 문제 후보를 규칙으로 키우는 절차
 
@@ -130,7 +130,7 @@ Vale의 `tokens`는 기본적으로 단어 경계를 더한다. Vale가 기초�
 
 원문 비교가 필요한 작업에서는 원문을 디스크에 남기지 않는 실행기가 긴 연속 문자열이나 정규화한 조각의 정확한 일치를 검사할 수 있다. 짧은 공통 표현과 흐릿한 유사도는 증거가 약하므로 차단이 아니라 검토 후보로만 사용한다. 원문을 보존해야 하는 요구사항, 승인된 인용, 평가 자료에는 산출물 종류 표시를 통해 검사를 적용하지 않아야 한다.
 
-절대 경로, 제어 문자, 비밀 값 형식, 커밋 제목 형식은 입력 원문이 없어도 결정적으로 검사할 수 있다. Git의 [훅 문서](https://git-scm.com/docs/githooks)는 `pre-commit`이 커밋 생성 전에 파일을 검사하고, `commit-msg`가 제안된 커밋 메시지 파일을 받아 거부할 수 있다고 설명한다. 두 훅은 `--no-verify`로 건너뛸 수 있으므로 로컬 훅만으로 공개를 막았다고 볼 수 없다. 같은 결정적 검사를 CI나 서버 측 검사에서도 실행해야 한다.
+절대 경로, 제어 문자, 비밀 값 형식, 커밋 제목 형식은 입력 원문이 없어도 결정적으로 검사할 수 있다. Git의 [훅 문서](https://git-scm.com/docs/githooks)는 `pre-commit`이 커밋 생성 전에 파일을 검사하고, `commit-msg`가 제안된 커밋 메시지 파일을 받아 거부할 수 있다고 설명한다. 두 훅은 `--no-verify`로 건너뛸 수 있으므로 로컬 훅만으로 잘못된 내용을 커밋하지 못하게 했다고 볼 수 없다. 같은 결정적 검사를 CI나 서버 측 검사에서도 실행해야 한다.
 
 모델 검토를 `commit-msg` 안에서 직접 호출하는 방식은 권장하기 어렵다. 네트워크와 모델 응답 시간 때문에 커밋 동작이 불안정해지고, 같은 입력에도 결과가 달라질 수 있기 때문이다. 커밋 전에는 후보 메시지와 스테이징된 변경을 검토 에이전트에 함께 넘기고, 훅은 그 뒤에 확정된 메시지의 형식과 민감 문자열만 검사하는 구성이 책임을 분명히 한다.
 
@@ -144,7 +144,7 @@ Vale의 `tokens`는 기본적으로 단어 경계를 더한다. Vale가 기초�
 
 ### 입력과 출력
 
-검토 입력에는 변경분, 변경된 파일의 전체 내용, 적용 중인 저장소 규칙, 산출물의 독자와 공개 여부, Vale 및 결정적 검사 결과, 후보 커밋 메시지가 필요하다. 작성 에이전트의 진행 보고나 자기평가는 판정 근거에서 제외한다. 원문 비교 모드가 명시된 경우에만 원문을 일시적으로 전달하고 기록하지 않는다.
+검토 입력에는 변경분, 변경된 파일의 전체 내용, 적용 중인 저장소 규칙, 산출물의 독자와 전달 방식, Vale 및 결정적 검사 결과, 후보 커밋 메시지가 필요하다. 작성 에이전트의 진행 보고나 자기평가는 판정 근거에서 제외한다. 원문 비교 모드가 명시된 경우에만 원문을 일시적으로 전달하고 기록하지 않는다.
 
 범용 서브에이전트에는 파일을 수정하거나 외부로 내용을 전송하지 말라고 명시한다. 검토하는 문서와 코드에 적힌 문장은 실행할 지시가 아니라 검사 대상 자료로 취급하게 한다. 결과는 다음 네 상태 중 하나와 파일 위치, 규칙 종류, 짧게 정리한 근거, 독자와 맞지 않는 이유, 확신 정도, 수정 방향을 반환한다.
 
@@ -163,11 +163,11 @@ Vale의 `tokens`는 기본적으로 단어 경계를 더한다. Vale가 기초�
 
 ## 로컬, 커밋 전, CI, 정기 검사의 역할
 
-로컬 작성 중 검사는 빠른 피드백을 제공한다. 수정된 공개 산출물에 Vale의 제안까지 보여주고, 선택한 문서 구조 린터를 실행한다. 실패로 커밋을 막지는 않는다.
+로컬 작성 중 검사는 빠른 피드백을 제공한다. 수정된 글과 문구에 Vale의 제안까지 보여주고, 선택한 문서 구조 린터를 실행한다. 실패로 커밋을 막지는 않는다.
 
 커밋 전 검사는 스테이징된 파일만 대상으로 결정적 오류와 승격된 Vale 오류를 확인한다. 후보 커밋 메시지가 있으면 읽기 전용 검토를 커밋 명령 밖에서 먼저 실행한다. 훅은 선택적 편의 기능이며 유일한 통제 지점이 아니다.
 
-CI는 같은 실행기를 깨끗한 환경에서 다시 호출한다. 패키지와 엔진 버전이 고정됐는지, 설정된 공개 산출물이 실제로 검사됐는지, 오류 규칙이 발생했는지를 확인한다. 변경분만 보는 빠른 검사와 전체 저장소 검사를 구분해야 기존 문제 때문에 새 변경을 영구히 막지 않는다.
+CI는 같은 실행기를 깨끗한 환경에서 다시 호출한다. 패키지와 엔진 버전이 고정됐는지, 설정한 검사 대상이 실제로 검사됐는지, 오류 규칙이 발생했는지를 확인한다. 변경분만 보는 빠른 검사와 전체 저장소 검사를 구분해야 기존 문제 때문에 새 변경을 영구히 막지 않는다.
 
 정기 검사는 전체 저장소, 규칙 패키지 업데이트, 아직 추출하지 못한 파일 형식, 경고 누적을 확인한다. OpenAI의 [Harness engineering 사례](https://openai.com/index/harness-engineering/)도 반복되는 검토 의견을 전용 린터와 구조 검사로 바꾸고, 문서 상태를 정기적으로 점검하는 작업을 별도로 운영했다고 설명한다. 이는 검토 에이전트가 영구히 같은 지적을 반복하기보다 확인된 패턴을 결정적 검사로 옮기는 순환을 뒷받침한다.
 
@@ -185,27 +185,27 @@ CI는 같은 실행기를 깨끗한 환경에서 다시 호출한다. 패키지�
 
 | 검토 대상 | 현재 저장소에서 맡는 역할 | 변경 필요성에 관한 분석 |
 | --- | --- | --- |
-| `skills/use-design-docs/SKILL.md` | `docs/designs/README.md`를 설계 문서의 단일 기준으로 사용하고 Review·Research·Record·Plan·Validate 순서를 조정한다. | 지금 바로 고칠 근거는 부족하다. 공개 산출물의 출처 규칙은 이 스킬에 복사하지 말고 먼저 `docs/designs/README.md`가 소유해야 한다. README가 새 검사를 정의한 뒤에도 스킬의 기존 Validate·Finish 절차로 호출되지 않는 검사가 있을 때만 어댑터를 바꾼다. |
+| `skills/use-design-docs/SKILL.md` | `docs/designs/README.md`를 설계 문서의 단일 기준으로 사용하고 Review·Research·Record·Plan·Validate 순서를 조정한다. | 지금 바로 고칠 근거는 부족하다. 독자에게 전달할 글과 문구의 출처 규칙은 이 스킬에 복사하지 말고 먼저 `docs/designs/README.md`가 소유해야 한다. README가 새 검사를 정의한 뒤에도 스킬의 기존 Validate·Finish 절차로 호출되지 않는 검사가 있을 때만 어댑터를 바꾼다. |
 | `skills/use-dev-guidance/SKILL.md` | `docs/dev/README.md`를 기준으로 저장소 증거, 외부 조사, 검사 선택과 개발 지침 작업을 연결한다. | 지금 바로 고칠 근거는 부족하다. 개발 지침에서 작업 지시를 근거로 쓰지 않는 규칙은 `docs/dev/README.md`가 먼저 소유해야 한다. 스킬에는 그 규칙을 되풀이하지 않는다. |
 | `docs/designs/README.md` | 사람이 소유하는 요구사항과 파생된 참고 자료·결정·계획의 책임, 근거, 검증 방법을 정한다. | 원문 보존 예외와 파생 문서의 출처·독자 검사를 포함한다. 후속 스킬은 이 규칙을 복사하지 말고 현재 저장소의 README를 검사 입력으로 사용해야 한다. |
-| `docs/dev/README.md` | 반복해서 사용할 저장소별 개발 지침의 근거, 상태, 소유 문서와 검사 방법을 정한다. | 작업 지시를 현재 규칙의 근거로 사용하지 않는 조건과 공개 전 검사를 포함한다. 후속 스킬은 개발 지침을 검토할 때 이 README를 적용해야 한다. |
+| `docs/dev/README.md` | 반복해서 사용할 저장소별 개발 지침의 근거, 상태, 소유 문서와 검사 방법을 정한다. | 작업 지시를 현재 규칙의 근거로 사용하지 않는 조건과 커밋하거나 공유하기 전 검사를 포함한다. 후속 스킬은 개발 지침을 검토할 때 이 README를 적용해야 한다. |
 
 현재 요구사항은 `src/AGENTS.en.md`와 `src/AGENTS.ko.md`를 검토·변경 대상으로 지정하지 않는다. 대상 저장소의 AGENTS에 스킬을 연결하는 방법은 `skills/use-words-review/README.md`가 소유하므로, 같은 안내를 두 참고 문서에 복사할 필요가 없다.
 
 ## 스킬 실행 파일과 사람용 안내 문서를 구분한다
 
-[OpenAI의 스킬 문서](https://developers.openai.com/codex/skills)와 [Claude Code 스킬 문서](https://code.claude.com/docs/en/skills)는 작업에 맞을 때 불러오는 전용 지침과 필요한 자료·스크립트를 스킬에 묶을 수 있다고 설명한다. Anthropic의 [Agent Skills 설계 사례](https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills)는 처음부터 모든 지침을 문맥에 넣지 않고 작업에 필요한 자료를 단계적으로 읽는 방식을 제시한다. 공개 산출물 검사는 설계 문서, 개발 지침, 코드, UI 문구, 커밋 메시지를 함께 다루므로 기존 두 문서 어댑터 중 하나에 넣으면 적용 대상이 어긋난다.
+[OpenAI의 스킬 문서](https://developers.openai.com/codex/skills)와 [Claude Code 스킬 문서](https://code.claude.com/docs/en/skills)는 작업에 맞을 때 불러오는 전용 지침과 필요한 자료·스크립트를 스킬에 묶을 수 있다고 설명한다. Anthropic의 [Agent Skills 설계 사례](https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills)는 처음부터 모든 지침을 문맥에 넣지 않고 작업에 필요한 자료를 단계적으로 읽는 방식을 제시한다. 글과 문구 검사는 설계 문서, 개발 지침, 코드, UI 문구, 커밋 메시지를 함께 다루므로 기존 두 문서 어댑터 중 하나에 넣으면 적용 대상이 어긋난다.
 
 별도 스킬은 다음 작업을 실제로 연결할 때 가치가 있다.
 
-- 변경된 공개 산출물과 산출물별 독자 정보를 수집한다.
+- 변경된 글과 문구, 산출물별 독자 정보를 수집한다.
 - 결정적 검사와 선택한 텍스트 린터를 같은 입력에 실행한다.
 - 의미 검토가 필요한 변경만 범용 서브에이전트에 전달한다.
 - 검사 결과와 사람이 판단해야 할 항목을 정해진 상태로 반환한다.
 
-반대로 기존 AGENTS의 공개 전 검사 목록을 스킬 실행 절차에 그대로 옮기면 같은 규칙의 소유 문서가 늘어난다. 대상 저장소의 `AGENTS.md`에는 상시 적용할 작성·공개 원칙과 채택된 스킬의 호출 조건을 두고, 스킬 README는 사용자가 해당 지침을 자신의 AGENTS에 적용할 수 있는 기본 문구와 병합 방법을 안내하는 구성이 [AGENTS.md 공개 형식](https://agents.md/)의 저장소 지침 역할과 OpenAI의 [짧은 진입 문서 사례](https://openai.com/index/harness-engineering/)에 맞는다.
+반대로 기존 AGENTS의 커밋하거나 공유하기 전 검사 목록을 스킬 실행 절차에 그대로 옮기면 같은 규칙의 소유 문서가 늘어난다. 대상 저장소의 `AGENTS.md`에는 상시 적용할 작성 원칙과 전달 원칙, 채택된 스킬의 호출 조건을 두고, 스킬 README는 사용자가 해당 지침을 자신의 AGENTS에 적용할 수 있는 기본 문구와 병합 방법을 안내하는 구성이 [AGENTS.md 형식 안내](https://agents.md/)의 저장소 지침 역할과 OpenAI의 [짧은 진입 문서 사례](https://openai.com/index/harness-engineering/)에 맞는다.
 
-[Agent Skills 명세](https://agentskills.io/specification), [Codex 스킬 문서](https://developers.openai.com/codex/skills), [Claude Code 스킬 문서](https://code.claude.com/docs/en/skills)는 모두 `SKILL.md`를 실행 진입점으로 사용한다. 자동 호출은 `SKILL.md`의 `description`을 기준으로 판단하며, 보조 자료는 `SKILL.md`가 필요할 때 읽도록 연결한다. 따라서 요구사항에 추가된 `README.md`는 스킬의 실행 절차가 아니라 사람을 위한 설치와 저장소 통합을 맡는다. 사용자가 별도 참고 문서를 찾아 조합하지 않아도 되도록 `Writing Natural Korean`, 공개 산출물의 독자·출처, 작업 지시 문구와 개인 경로의 제외, 공개 전 스킬 호출에 관한 완성된 AGENTS 기본안을 제공해야 한다. `SKILL.md`는 README를 먼저 읽지 않아도 실행 가능해야 한다.
+[Agent Skills 명세](https://agentskills.io/specification), [Codex 스킬 문서](https://developers.openai.com/codex/skills), [Claude Code 스킬 문서](https://code.claude.com/docs/en/skills)는 모두 `SKILL.md`를 실행 진입점으로 사용한다. 자동 호출은 `SKILL.md`의 `description`을 기준으로 판단하며, 보조 자료는 `SKILL.md`가 필요할 때 읽도록 연결한다. 따라서 요구사항에 추가된 `README.md`는 스킬의 실행 절차가 아니라 사람을 위한 설치와 저장소 통합을 맡는다. 사용자가 별도 참고 문서를 찾아 조합하지 않아도 되도록 `Writing Natural Korean`, 독자에게 전달할 글과 문구의 출처, 작업 지시 문구와 개인 경로의 제외, 커밋하거나 공유하기 전 스킬 호출에 관한 완성된 AGENTS 기본안을 제공해야 한다. `SKILL.md`는 README를 먼저 읽지 않아도 실행 가능해야 한다.
 
 Superpowers 리비전 `d884ae0`과 Compound Engineering 리비전 `32fae6c`의 `skills/` 트리를 확인한 결과, 두 프로젝트는 각 스킬의 `SKILL.md`와 필요한 참고 자료를 실행 단위로 관리하며 스킬마다 README를 두지 않는다. 이는 이번 README가 실행 형식의 관례가 아니라 이 저장소가 여러 프로젝트에 배포하는 방법을 설명하기 위한 요구사항임을 뒷받침한다.
 
@@ -230,19 +230,19 @@ Vale를 공통 문장 규칙 엔진으로 선택한다면 요구사항이 지정
 조사 자료를 바탕으로 한 첫 단계 제안은 다음과 같다. 아직 승인된 설계가 아니며 실제 파일 구조와 명령 이름은 별도 결정이 필요하다.
 
 1. 공통 실행기, 선택한 텍스트 규칙 묶음, 결정적 검사 모듈, 검토 항목 원본을 이 저장소가 소유한다.
-2. 대상 저장소는 공개 산출물 경로, 제외 경로, 원문 보존 산출물, 사용할 선택형 어댑터만 선언한다.
+2. 대상 저장소는 검사할 글과 문구의 경로, 제외 경로, 원문 보존 산출물, 사용할 선택형 어댑터만 선언한다.
 3. Vale를 선택한다면 실제로 확인된 소수의 규칙을 제안 수준으로 배포하고, 개인 절대 경로와 명백한 제어 문자처럼 판정이 분명한 검사만 오류로 둔다.
 4. `AGENTS.md`에는 검토 호출 조건만 두고, `use-words-review`가 실행할 때 범용 서브에이전트에 수정 금지 조건과 판정 형식을 전달한다.
 5. 로컬 훅과 CI는 공통 실행기를 호출하고, CI 공급자별 파일에는 실행기 설치와 호출만 남긴다.
 6. 사람이 확인한 반복 지적은 익명화한 검증 자료와 함께 결정적 규칙 후보로 되돌린다.
 
-이 구성은 특정 언어, 패키지 관리자, CI 공급자를 모든 저장소에 강요하지 않는다. Vale를 기본으로 정한다면 Vale가 읽을 수 없는 공개 문자열이 있는 저장소만 추출기나 textlint 어댑터를 추가하고, Markdown 구조 규칙이 필요한 저장소만 markdownlint를 선택한다. textlint를 기본으로 정한다면 Node.js 20 이상과 규칙 패키지 설치를 공통 실행기 내부에서 관리하고, 대상 저장소의 애플리케이션 의존성과 분리해야 한다.
+이 구성은 특정 언어, 패키지 관리자, CI 공급자를 모든 저장소에 강요하지 않는다. Vale를 기본으로 정한다면 Vale가 읽을 수 없는 사용자 대상 문자열이 있는 저장소만 추출기나 textlint 어댑터를 추가하고, Markdown 구조 규칙이 필요한 저장소만 markdownlint를 선택한다. textlint를 기본으로 정한다면 Node.js 20 이상과 규칙 패키지 설치를 공통 실행기 내부에서 관리하고, 대상 저장소의 애플리케이션 의존성과 분리해야 한다.
 
 ## 한계와 사람이 결정해야 하는 질문
 
 - 공통 문장 규칙의 기본 엔진을 Vale로 정할지, Node.js와 구문 트리 처리 비용을 감수하고 textlint로 정할지 결정되지 않았다.
 - 공통 패키지가 처음 지원할 운영체제와 설치 방식은 정해지지 않았다.
-- 첫 적용 저장소와 공개 산출물 경로 선언 형식은 정해지지 않았다.
+- 첫 적용 저장소와 검사 대상 경로 선언 형식은 정해지지 않았다.
 - 어떤 원문 보존 산출물을 표시하고 누가 예외를 승인할지 정해지지 않았다.
 - 경고를 오류로 올릴 오탐 기준과 표본 수는 정해지지 않았다.
 - UI 문자열, 번역 파일, 코드 주석 가운데 첫 버전이 어디까지 추출할지 정해지지 않았다.
@@ -282,7 +282,7 @@ Vale와 textlint의 설치·규칙·패키지·적용 범위 공식 문서, Git 
 - Anthropic: [Demystifying evals for AI agents](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents). 2026년 7월 17일 확인.
 - Anthropic: [Equipping agents for the real world with Agent Skills](https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills). 2026년 7월 17일 확인.
 - OpenAI: [Harness engineering](https://openai.com/index/harness-engineering/). 2026년 7월 17일 확인.
-- Agentic AI Foundation: [AGENTS.md 공개 형식](https://agents.md/). 2026년 7월 17일 확인.
+- Agentic AI Foundation: [AGENTS.md 형식 안내](https://agents.md/). 2026년 7월 17일 확인.
 - Zheng 외: [Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena](https://arxiv.org/abs/2306.05685), arXiv `2306.05685`. 2026년 7월 17일 확인.
 - markdownlint: [공식 저장소](https://github.com/DavidAnson/markdownlint). 2026년 7월 17일 확인.
 - 저장소 자료: [`README.md`](../../../../README.md), [`skills/use-design-docs/SKILL.md`](../../../../skills/use-design-docs/SKILL.md), [`skills/use-dev-guidance/SKILL.md`](../../../../skills/use-dev-guidance/SKILL.md), [`docs/designs/README.md`](../../README.md), [`docs/dev/README.md`](../../../dev/README.md), [`src/AGENTS.en.md`](../../../../src/AGENTS.en.md), [`src/AGENTS.ko.md`](../../../../src/AGENTS.ko.md). 2026년 7월 17일 확인.

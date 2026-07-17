@@ -44,7 +44,7 @@
 
 이 저장소의 운영 방향을 정할 때 다음 1차 자료를 참고했습니다.
 
-- [AGENTS.md 공개 형식](https://agents.md/)
+- [AGENTS.md 형식 안내](https://agents.md/)
 - [OpenAI: Harness engineering](https://openai.com/index/harness-engineering/)
 - [OpenAI: Unrolling the Codex agent loop](https://openai.com/index/unrolling-the-codex-agent-loop/)
 - [GitHub: 저장소별 Copilot 지침 추가](https://docs.github.com/en/copilot/how-tos/copilot-on-github/customize-copilot/add-custom-instructions/add-repository-instructions)
