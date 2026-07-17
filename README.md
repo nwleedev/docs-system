@@ -13,7 +13,7 @@ The files here are starting points. Select the sections that apply to the target
 - [`src/AGENTS.ko.md`](./src/AGENTS.ko.md) is a reference document for Korean-speaking users.
 - [`docs/designs/README.md`](./docs/designs/README.md) describes how to manage requirements, research, decisions, plans, and verification without forcing every project into one document template.
 - [`docs/dev/README.md`](./docs/dev/README.md) describes how to research, organize, apply, and check development guidance.
-- [`.agents/skills/use-design-docs`](./.agents/skills/use-design-docs/SKILL.md) and [`.agents/skills/use-dev-guidance`](./.agents/skills/use-dev-guidance/SKILL.md) are optional adapters for Codex and compatible skill runners. The skills route work; the linked READMEs remain the source of the rules.
+- [`skills/use-design-docs`](./skills/use-design-docs/SKILL.md) and [`skills/use-dev-guidance`](./skills/use-dev-guidance/SKILL.md) are optional adapters for Codex and compatible skill runners. The skills route work; the linked READMEs remain the source of the rules.
 - [`examples/nextjs-frontend.md`](./examples/nextjs-frontend.md) shows one stack-specific research prompt. It is an example, not a default for other projects.
 
 The two language documents under `src/` are maintained independently and are not guaranteed to contain equivalent rules. Compare the relevant sections before adopting either one.

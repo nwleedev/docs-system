@@ -13,7 +13,7 @@
 - [`src/AGENTS.ko.md`](./src/AGENTS.ko.md)는 한국어 사용자를 위한 참고 문서입니다.
 - [`docs/designs/README.md`](./docs/designs/README.md)는 모든 프로젝트에 같은 문서 틀을 강요하지 않으면서 요구사항, 조사 결과, 결정 사항, 계획과 검증 결과를 관리하는 방법을 설명합니다.
 - [`docs/dev/README.md`](./docs/dev/README.md)는 개발 지침을 조사하고 정리한 뒤 실제 작업에 적용하고 확인하는 방법을 설명합니다.
-- [`.agents/skills/use-design-docs`](./.agents/skills/use-design-docs/SKILL.md)와 [`.agents/skills/use-dev-guidance`](./.agents/skills/use-dev-guidance/SKILL.md)는 Codex와 호환되는 Skill 실행 환경에서 선택해 쓸 수 있는 어댑터입니다. Skill은 작업 순서를 안내하며, 실제 규칙은 각 README에서 관리합니다.
+- [`skills/use-design-docs`](./skills/use-design-docs/SKILL.md)와 [`skills/use-dev-guidance`](./skills/use-dev-guidance/SKILL.md)는 Codex와 호환되는 Skill 실행 환경에서 선택해 쓸 수 있는 어댑터입니다. Skill은 작업 순서를 안내하며, 실제 규칙은 각 README에서 관리합니다.
 - [`examples/nextjs-frontend.md`](./examples/nextjs-frontend.md)는 특정 기술 구성에 맞춘 조사 프롬프트 예시입니다. 다른 프로젝트의 기본값으로 사용하지 않습니다.
 
 `src/`의 두 언어 문서는 따로 관리하며 같은 규칙을 번역한 문서라고 보장하지 않습니다. 필요한 항목을 가져오기 전에 두 파일의 해당 내용을 비교하세요.
