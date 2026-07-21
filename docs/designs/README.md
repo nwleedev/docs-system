@@ -155,12 +155,14 @@ Create `plan.md` after behavior-changing ambiguities and required decisions are 
 
 ### Required information
 
-- The `requirements.md` revision used as the baseline
+- The path and applicable headings of the baseline `requirements.md`
 - Requirement areas and outcomes mapped to work units without copying internal task text
 - Dependencies and execution order where order matters
 - Observable verification for each work unit
 - Unresolved blockers and explicit stop conditions
-- The specific applicable files under `docs/dev/` and the revision reviewed when later changes could alter execution.
+- The specific applicable files under `docs/dev/` when later changes could alter execution.
+
+Do not record Git object IDs or timestamps as baseline identifiers. Before the plan's first commit, the current reviewed files are the provisional baseline. After the plan is committed, the versions of those files in the commit that last changed `plan.md` are the baseline. Changing and committing the plan confirms that the requirements and listed development guidance were reviewed again.
 
 The plan may choose implementation steps, but it must not invent product behavior. Every required outcome and protected behavior must be covered by work and verification or identified as blocked.
 
@@ -189,10 +191,10 @@ Documentation explains intent and evidence. It does not prove that an implementa
 ## Requirement Changes During Work
 
 1. The requirements owner changes `requirements.md`. Chat-only changes are not durable requirements.
-2. AI compares the updated file with the baseline recorded in `plan.md`.
+2. AI compares the updated file with the version included in the commit that last changed `plan.md`.
 3. AI rereads the changed requirement areas and identifies affected references, decisions, work units, and verification methods without copying the changed text into those documents.
 4. Affected work pauses. unaffected work may continue when it still satisfies the updated wording.
-5. AI updates derived documents and the recorded baseline before affected work resumes.
+5. AI updates the affected derived documents and commits the reviewed plan before affected work resumes.
 
 Do not restart all work automatically, and do not rewrite requirements to match work already completed.
 

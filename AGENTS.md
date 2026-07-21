@@ -121,7 +121,7 @@ After context compaction, reread AGENTS.md, especially **Core Principles**, and 
 ### Development Guidance
 
 - Read `docs/dev/README.md` before planning, implementing, reviewing, refactoring, testing, or documenting an application change.
-- Do not read all of `docs/dev`. Select only the guidance relevant to the current work, and record the selected files and reviewed revision in the plan or equivalent execution input.
+- Do not read all of `docs/dev`. Select only the guidance relevant to the current work and list those files in the plan or equivalent execution input. For a committed plan, treat the selected files in the commit that last changed the plan as the reviewed baseline. If a selected file changes later, compare it with that baseline before continuing affected work.
 - Development guidance does not follow a fixed template. It must satisfy the inclusion conditions, required information, prohibited content, validation methods, and readability criteria defined in `docs/dev/README.md`.
 - Check the current code, configuration, tests, generated artifacts, approved decisions, and dependency versions before treating existing guidance as a current rule.
 - Verify mechanically checkable rules with lint, type or schema checks, tests, hooks, CI, or runtime evidence. Leave product meaning to the responsible reviewer and approval to the approval owner.
