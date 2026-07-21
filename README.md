@@ -33,9 +33,9 @@ The paths and names under `src/` are not default instruction locations for Codex
 ## Working principles
 
 - Treat repository evidence as the source for current local rules. External guidance can support a proposal, but it does not prove that a rule applies to a particular project.
-- Keep human decisions separate from AI inferences. Requirements and product decisions need explicit human review.
+- Keep decisions made by requirements owners and decision owners separate from AI inferences. Requirements need confirmation from their owner, and product decisions need approval from their decision owner.
 - Give each rule one owner. Link to the owning document instead of copying the same rule into several files.
-- Use linters, type or schema checks, tests, CI, runtime checks, and human review where they can verify a rule. Prose alone does not establish compliance.
+- Use linters, type or schema checks, tests, CI, runtime checks, and review by the responsible reviewer where they can verify a rule. Prose alone does not establish compliance.
 
 ## Project status
 
