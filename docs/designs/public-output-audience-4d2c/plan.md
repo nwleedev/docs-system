@@ -51,6 +51,8 @@ Git 훅, CI, Vale 규칙, 별도 검사기와 새로운 전용 리뷰 에이전�
 
 `src/AGENTS.en.md`와 `src/AGENTS.ko.md`에는 루트 지침과 같은 역할 확인 기준을 반영한다. 두 파일은 다른 저장소에서 참고할 수 있는 배포 문서이므로 각 언어에서 자연스럽게 읽히는 표현을 사용하고, 기존 문장에 있는 `human`이나 `사람`은 역할을 숨기는 경우에만 고친다.
 
+루트 `README.md`와 `README.ko.md`에서는 요구사항 작성자, 제품 결정을 승인하는 결정권자와 자동 검사로 판단할 수 없는 내용을 확인하는 담당 검수자의 책임을 구분한다. 두 파일은 같은 원칙을 각 언어에서 자연스럽게 설명하되 문장을 직역해서 맞추지 않는다.
+
 `docs/designs/README.md`와 `docs/dev/README.md`에는 다음 문서별 기준을 추가한다.
 
 - 설계 문서는 요구사항 작성자, 문서 독자, 결정권자와 검수자가 다를 때 각 역할을 구분한다. 근거만으로 역할을 확인할 수 없으면 `needs human input`으로 보고한다.
@@ -79,6 +81,10 @@ Git 훅, CI, Vale 규칙, 별도 검사기와 새로운 전용 리뷰 에이전�
 
 `skills/use-words-review/README.md`의 AGENTS 기본 지침에는 같은 공통 원칙과 검토 입력을 반영한다. 설치 안내에는 성능 수준을 현재 호스트의 모델에 대응시키는 방법과 실행별 설정을 사용할 수 없을 때의 처리만 설명하고, 특정 공급자의 모델 이름을 필수값으로 고정하거나 스킬 내부 절차 전체를 복사하지 않는다.
 
+이 계획의 대표 사례 판정과 기본 경로 변경은 작업 지시자가 승인한다. 범용 설치 안내에서는 저장소마다 요청자와 검수자 또는 승인 책임자가 다를 수 있으므로, 기준 답안은 담당 검수자가 확인하고 기본 설정 변경은 승인 책임자가 결정하도록 역할을 나눈다.
+
+`skills/use-words-review/references/examples.md`에서는 화면 사용자, 문서 독자, 요구사항 작성자, 검수자, 승인 책임자와 배포 담당자를 가리키던 포괄적인 표현을 실제 역할로 바꾼다. 예시의 허용 여부와 원문 보존 기준은 바꾸지 않는다.
+
 완료 여부는 다음 사례로 확인한다.
 
 - 역할을 특정할 수 있는 문장에서 `사람`을 발견하고 `needs revision`으로 판정한다.
@@ -92,7 +98,7 @@ Git 훅, CI, Vale 규칙, 별도 검사기와 새로운 전용 리뷰 에이전�
 
 작업이 끝나면 다음 증거를 확인한다.
 
-1. `requirements.md`, `AGENTS.md`, `src/AGENTS.en.md`, `src/AGENTS.ko.md`, `docs/designs/README.md`, `docs/dev/README.md`, `skills/use-words-review/SKILL.md`, `skills/use-words-review/README.md`의 변경만 존재한다.
+1. `requirements.md`, `AGENTS.md`, `README.md`, `README.ko.md`, `src/AGENTS.en.md`, `src/AGENTS.ko.md`, `docs/designs/README.md`, `docs/dev/README.md`, `skills/use-words-review/SKILL.md`, `skills/use-words-review/README.md`, `skills/use-words-review/references/examples.md`의 변경만 존재한다.
 2. 요구사항의 적용 대상과 `AGENTS.md`의 공개 산출물 범위, 스킬의 검토 입력이 서로 빠짐없이 연결된다.
 3. 루트와 배포용 AGENTS 문서가 역할을 확인하는 순서와 근거가 없을 때의 처리 방식을 같은 의미로 설명하는지 비교한다.
 4. 설계 문서와 개발 지침의 README가 문서별 적용 기준만 추가하고 공통 원칙이나 점검 목록을 중복해서 소유하지 않는지 확인한다.
