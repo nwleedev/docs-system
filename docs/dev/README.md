@@ -1,6 +1,6 @@
 # Development Guidance
 
-This directory contains repository-specific development guidance that remains useful across multiple changes. It is a navigation layer for current rules and durable human decisions, not a replacement for tests, tooling, framework documentation, or task-specific design documents.
+This directory contains repository-specific development guidance that remains useful across multiple changes. It is a navigation layer for current rules and approved engineering decisions, not a replacement for tests, tooling, framework documentation, or task-specific design documents.
 
 ## Structure
 
@@ -23,7 +23,7 @@ Add guidance only when all of the following are true:
 
 - It applies to more than one change
 - A future contributor would not reliably infer it from code or standard tooling
-- Current repository evidence or an accepted human decision supports it
+- Current repository evidence or an approved decision supports it
 - There is a practical way to verify or review it.
 
 Do not place the following here:
@@ -38,23 +38,25 @@ Do not place the following here:
 
 Inspect the existing directories and files under `docs/dev/` before assuming which topics exist. Read the smallest set of documents whose stated scope matches the current work. Follow repository-local indexes and links when present, but do not require every repository to use the same topic names or nesting.
 
-Before applying guidance, compare it with current code, configuration, tests, generated artifacts, accepted human decisions, and dependency versions. Treat a document as evidence to review, not as proof that its claims are still current.
+Before applying guidance, compare it with current code, configuration, tests, generated artifacts, approved decisions, and dependency versions. Treat a document as evidence to review, not as proof that its claims are still current.
 
 Prefer an existing topic when its responsibility and intended readers match the guidance. Create a new topic only when the guidance meets the inclusion rules above and no existing topic can own it without becoming ambiguous.
 
 ## Existing Guidance
 
-Existing documents may predate this README or use a different structure. AI and human contributors still use them when their scope is relevant.
+Existing documents may predate this README or use a different structure. AI and contributors still use them when their scope is relevant.
 
 - Do not ignore a document because its path or headings differ from this README.
 - Do not reorganize or rewrite existing documents while only reviewing or applying their guidance.
 - Report stale claims, contradictions, unclear ownership, and missing evidence separately from the work that uses the documents.
-- Ask for human direction before a finding would change an accepted decision, document owner, or repository-wide rule.
+- Ask the responsible decision owner before a finding would change an approved decision, document owner, or repository-wide rule.
 - Change existing guidance only when the requested work includes that documentation change.
 
 ## Source and Audience
 
-Development guidance is written for future contributors who must decide whether and how a rule applies. It is not a completion report to the person who requested the current change. Before writing, identify the affected repository area, the intended readers, and the action or judgment the guidance must support.
+Development guidance is written for future contributors who must decide whether and how a rule applies. It is not a completion report to the work requester. Before writing, identify the affected repository area, the intended readers, and the action or judgment the guidance must support.
+
+When the rule author, developer applying the guidance, reviewer, and approval owner are different, identify the applicable role. Do not assign an unverified role or responsibility; report `needs human input` when current evidence and approved decisions do not identify the owner.
 
 Do not combine unrelated rules in one guidance document merely because they were requested or reviewed together. Give each rule the owner whose repository area, intended readers, and verification method match it; keep task-specific requirements, research, decisions, and plans under `docs/designs/`.
 
@@ -74,7 +76,7 @@ Guidance documents are prose-first and do not use fixed templates. Authors may c
 - Current repository evidence supporting the guidance
 - The rule, recommendation, or limitation a contributor must understand
 - Exceptions or conditions that change its application
-- An automated check or explicit human review method
+- An automated check or an explicit review method assigned to the responsible reviewer
 - External sources and relevant versions when external claims materially affect the guidance
 - Whether the guidance is current, proposed, or deprecated.
 
@@ -101,11 +103,11 @@ Use examples only when they clarify a repository-specific rule that prose alone 
 
 ## Guidance Status
 
-- `current` guidance is supported by present repository evidence or an accepted human decision and applies now.
+- `current` guidance is supported by present repository evidence or an approved decision and applies now.
 - `proposed` guidance is a researched recommendation that has not been approved or adopted.
 - `deprecated` guidance no longer applies and points to its replacement or explains why it was retired.
 
-Never present a proposed pattern as a current repository rule. Record a durable project-wide choice as accepted only after explicit human approval. Keep task-specific decisions under the applicable `docs/designs/` package.
+Never present a proposed pattern as a current repository rule. Record a durable project-wide choice as accepted only after the decision owner explicitly approves it. Keep task-specific decisions under the applicable `docs/designs/` package.
 
 ## One Rule, One Owner
 
@@ -119,13 +121,13 @@ Use the cheapest reliable method for each property.
 - Type or schema checks verify data shapes, interfaces, and compatibility.
 - Automated tests verify observable behavior, failure handling, and integration.
 - Runtime or browser checks verify user workflows, rendering, performance, and operational signals.
-- Human review confirms product meaning, usability, visual quality, trade-offs, and approval.
+- The responsible reviewer confirms product meaning, usability, visual quality, and trade-offs. The approval owner approves the result.
 
-Repository checks, when implemented, verify document placement, empty files, unresolved placeholders, and repository-relative links. AI reviews required information, evidence support, contradictions, applicability, and readability. Humans approve decisions and resolve questions that change product behavior or engineering policy.
+Repository checks, when implemented, verify document placement, empty files, unresolved placeholders, and repository-relative links. AI reviews required information, evidence support, contradictions, applicability, and readability. Decision owners approve decisions and resolve questions that change product behavior or engineering policy.
 
 AI reports each applicable criterion as `pass`, `needs revision`, `needs human input`, or `not applicable`, with a short quotation or file location as evidence. If the document does not provide enough evidence, AI says so instead of inventing a current rule. Review and rewriting are separate actions.
 
-For every new or changed guidance document, AI also reviews the final form as a future contributor. It traces each rule to repository evidence, an accepted decision, or a necessary external source; rejects text derived only from internal work inputs; scans for personal or private paths and identifiers; and confirms that the title, examples, and prose explain the repository rule rather than the task that produced the document. Human review decides whether the wording and terminology are natural for the intended readers.
+For every new or changed guidance document, AI also reviews the final form as a future contributor. It traces each rule to repository evidence, an approved decision, or a necessary external source; rejects text derived only from internal work inputs; scans for personal or private paths and identifiers; and confirms that the title, examples, and prose explain the repository rule rather than the task that produced the document. The responsible reviewer decides whether the wording and terminology are natural for the intended readers.
 
 Documentation explains a rule. Tooling and review determine whether a change follows it.
 
@@ -144,7 +146,7 @@ Apply the depth of review in proportion to the change, but do not skip the appli
 
 Inspect existing manifests, configuration, scripts, tests, CI, development guidance, and accepted decisions without reorganizing them. Review current official guidance for the selected versions and establish the smallest applicable baseline for build or syntax checks, type or schema validation, recommended static analysis, dependency and security checks, and observable behavior testing.
 
-Provide runnable commands for the selected baseline and run them once before writing application code. Do not start writing application code until the applicable checks pass or unresolved items that require judgment have been reported and explicitly accepted by a human. Do not attempt to prohibit every theoretical anti-pattern before development begins.
+Provide runnable commands for the selected baseline and run them once before writing application code. Do not start writing application code until the applicable checks pass or unresolved items that require judgment have been reported and explicitly accepted by the responsible decision owner. Do not attempt to prohibit every theoretical anti-pattern before development begins.
 
 ### When dependencies change
 
@@ -159,7 +161,7 @@ For each candidate:
 - State the failure to prevent, the affected scope, and where the failure can be observed
 - Reuse existing compiler, type, schema, lint, test, and CI capabilities before proposing another tool
 - During authorized implementation, add or tighten a static rule only when it detects the intended violation with acceptable precision, has been checked with valid and invalid cases or equivalent evidence, and has proportionate execution and maintenance costs
-- When static analysis cannot prove the property reliably, use a type or schema check, automated test, runtime or browser check, or explicit human review that observes the relevant failure
+- When static analysis cannot prove the property reliably, use a type or schema check, automated test, runtime or browser check, or explicit review by the responsible reviewer that observes the relevant failure
 - Use code examples to explain a rule or test an automated rule, but do not treat non-executable examples as proof of compliance.
 
 Research and review do not by themselves authorize dependency, tool, or configuration changes. Keep repository-specific cases, selected rules, commands, exceptions, and evidence in the applicable topic document or tool configuration rather than this root README.
@@ -171,7 +173,7 @@ Using or reviewing guidance does not by itself authorize edits. When an update i
 1. Use the task description only to identify what to inspect, then inspect current code, configuration, tests, generated artifacts, related design decisions, and existing guidance for publishable evidence.
 2. Decide whether the finding is a current rule, a local limitation, a proposal, or a task-specific concern that belongs under `docs/designs/`.
 3. Check material external claims against current official sources and the versions used by this repository.
-4. Give the rule one owning document and connect it to an automated check or explicit human review.
+4. Give the rule one owning document and connect it to an automated check or explicit review by the responsible reviewer.
 5. Validate required information, evidence, links, applicability, and readability without silently rewriting the document.
 6. Remove copied framework material, task wording, progress commentary, private environment details, placeholders, duplicate rules, and stale claims.
 
@@ -185,8 +187,8 @@ Using or reviewing guidance does not by itself authorize edits. When an update i
 ## Design Basis
 
 - [OpenAI: Harness engineering](https://openai.com/index/harness-engineering/) supports short routing documents, repository-local knowledge, and mechanical checks instead of relying on prose alone.
-- [OpenAI: Evaluation best practices](https://developers.openai.com/api/docs/guides/evaluation-best-practices) recommends task-specific criteria, automated checks where possible, and calibration with human judgment.
-- [Anthropic: Demystifying evals for AI agents](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents) recommends deterministic checks where possible, model review for open-ended results, and human calibration.
+- [OpenAI: Evaluation best practices](https://developers.openai.com/api/docs/guides/evaluation-best-practices) recommends task-specific criteria, automated checks where possible, and calibration with reviewer judgment.
+- [Anthropic: Demystifying evals for AI agents](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents) recommends deterministic checks where possible, model review for open-ended results, and reviewer calibration.
 - [Anthropic: Agent Skills](https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills) recommends progressive disclosure, deterministic code for repeatable operations, and adding guidance from observed failures.
 - [ESLint: Configure Rules](https://eslint.org/docs/latest/use/configure/rules) and [typescript-eslint: Custom Rules](https://typescript-eslint.io/developers/custom-rules/) support scoped rule configuration, explicit severity, and valid and invalid rule tests rather than enabling every available rule.
 - [typescript-eslint: Typed linting performance](https://typescript-eslint.io/troubleshooting/typed-linting/performance/) documents the execution cost of type-aware linting, which must be weighed against the value of the check.

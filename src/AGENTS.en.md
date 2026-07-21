@@ -93,7 +93,7 @@ After context compaction, reread AGENTS.md, especially **Core Principles**, and 
 
 - When requirements change, pause new task assignments and assess the effect on work in progress.
 - Continue only unaffected work. Stop affected work or revalidate it against the changed requirements.
-- Stop all related work and ask a human when the effect is uncertain or when shared assumptions and completion criteria have changed.
+- Stop all related work and ask the requirements owner when the effect is uncertain or when shared assumptions and completion criteria have changed.
 
 ## Documentation Work
 
@@ -102,7 +102,7 @@ After context compaction, reread AGENTS.md, especially **Core Principles**, and 
 - Read `docs/designs/README.md` before creating, reviewing, planning, implementing from, or validating documents under `docs/designs/**`.
 - If the target work has a `requirements.md`, read it in full, then read only the references, decisions, plan, and repository evidence needed for the current question.
 - If a design package is necessary but `requirements.md` does not exist, AI may create a small, easy-to-revise initial draft containing only the outcomes, conditions, completion evidence, and questions explicitly stated by the user. Do not infer unstated content or add empty headings and placeholders.
-- A human owns the wording and order of `requirements.md`. After the initial draft, AI may edit it only when the human requests a change or approves the exact wording. Do not record unapproved inferences as requirements or decisions.
+- The requirements owner controls the wording and order of `requirements.md`. After the initial draft, AI may edit it only when the requirements owner requests a change or approves the exact wording. Do not record unapproved inferences as requirements or decisions.
 - For a conversation-only review or investigation that does not need a design package, use the current request as the work baseline. Do not stop or create a package solely because `requirements.md` is absent.
 - Derived documents do not follow fixed templates. They must satisfy the required information, prohibited content, validation methods, and readability criteria defined in `docs/designs/README.md`.
 - Connect references, decisions, work units, and verification results to exact requirement excerpts and their headings.
@@ -114,7 +114,7 @@ After context compaction, reread AGENTS.md, especially **Core Principles**, and 
 - Do not read all of `docs/dev`. Select only the guidance relevant to the current work, and record the selected files and reviewed revision in the plan or equivalent execution input.
 - Development guidance does not follow a fixed template. It must satisfy the inclusion conditions, required information, prohibited content, validation methods, and readability criteria defined in `docs/dev/README.md`.
 - Check the current code, configuration, tests, generated artifacts, approved decisions, and dependency versions before treating existing guidance as a current rule.
-- Verify mechanically checkable rules with lint, type or schema checks, tests, hooks, CI, or runtime evidence. Leave product meaning and approval to human review.
+- Verify mechanically checkable rules with lint, type or schema checks, tests, hooks, CI, or runtime evidence. Leave product meaning to the responsible reviewer and approval to the approval owner.
 - When the work is complete, confirm that the actual changes match the selected development guidance.
 
 ### Review Principles
@@ -122,7 +122,7 @@ After context compaction, reread AGENTS.md, especially **Core Principles**, and 
 - Document titles and structure may fit their content, but check every required item separately and cite the supporting location.
 - Report each result as `pass`, `needs revision`, `needs human input`, or `not applicable`. Do not infer what cannot be supported by evidence.
 - Keep document review and document editing as separate tasks. Do not automatically rewrite requirements, decisions, or current guidance while reviewing them.
-- Documentation alone does not prove implementation compliance. Use repository checks and explicit human review together.
+- Documentation alone does not prove implementation compliance. Use repository checks and explicit review by the responsible reviewer together.
 - Treat research and review findings as findings, not as permission to edit the requested artifact. When a finding requires a new decision, policy, section, or change of scope, report it separately and obtain approval before editing.
 
 ## Environment Variables and Sensitive Information
@@ -141,7 +141,8 @@ After context compaction, reread AGENTS.md, especially **Core Principles**, and 
 
 ## Public Outputs
 
-- Treat repository content that is committed or shared, including README files, documentation, source code and comments, commit and pull-request text, issue text, release notes, user-visible and assistive text, as public outputs unless the repository explicitly classifies it otherwise.
+- Treat repository content that is committed or shared, including file and directory names, README files, documentation, source code and comments, commit and pull-request text, issue text, release notes, user-visible and assistive text, as public outputs unless the repository explicitly classifies it otherwise.
+- Before writing a public string or name, identify its intended readers, what they must understand or do, the actor described by the text, and any reviewer or approval owner. When those roles matter, name the verified role or describe the action directly instead of using a broad label such as `person` or `human`. If repository evidence does not identify the role, report the unresolved role instead of inventing it.
 - Base every public statement on verified repository evidence, an approved decision, or previously approved public wording. Do not use a user prompt, agent instruction, internal task description, work note, review criterion, rubric, output format, or workflow commentary as publishable source text.
 - Do not quote, copy, or lightly rewrite internal source text into a public output. When the underlying information is necessary, write it again as verified product behavior, usage guidance, or approved policy for the intended reader. If no public-safe source supports it, omit it and report the gap separately.
 - Keep internal identifiers, private document references, implementation-only names, maintainer reminders, unresolved decisions, review notes, and publication checklists out of public outputs. Do not insert `TODO`, `TBD`, or similar placeholders unless the status itself is approved information that readers need.
@@ -151,12 +152,12 @@ After context compaction, reread AGENTS.md, especially **Core Principles**, and 
 
 ### Pre-publication Check
 
-1. List every changed public output, including the commit-message draft.
+1. List every changed public output, including changed file and directory names and the commit-message draft.
 2. Trace every added sentence or string to repository evidence, an approved decision, or approved public wording.
 3. Reject text derived from prompts, internal tasks, review criteria, output formats, or workflow commentary.
 4. Search the changed outputs for internal identifiers, private paths, distinctive prompt phrases, HTML comments, and unresolved markers such as `TODO`, `TBD`, and `FIXME`.
 5. Check claims about licensing, support, security, compatibility, ownership, and product behavior against their approved source.
-6. Read the rendered or final form as the intended reader. Do not publish or commit an output that still explains the agent's work rather than the project.
+6. Read the rendered or final form as the intended reader. Confirm that actors, reviewers, and approval owners are named only when repository evidence supports those roles. Do not publish or commit an output that still explains the agent's work rather than the project.
 
 ## Dependencies
 
