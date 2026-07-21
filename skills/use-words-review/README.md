@@ -1,12 +1,12 @@
 # use-words-review 설치와 AGENTS 설정
 
-`use-words-review`는 문서, README, UI 문구, 접근성 문구, 코드 주석, 커밋, PR, 이슈 문구와 릴리스 노트를 커밋하거나 공유하기 전에 범용 서브에이전트로 검토하는 스킬이다. 독자에게 맞지 않는 작업 보고, 내부 작업 문구의 혼입, 근거 없는 설명, 개인 경로와 비공개 식별자, 번역체와 불필요한 기호를 찾는다. 검토는 파일을 수정하지 않으며, 수정은 별도 승인을 받아 진행한다.
+`use-words-review`는 파일명과 디렉터리명, 문서, README, UI 문구, 접근성 문구, 코드 주석, 커밋, PR, 이슈 문구와 릴리스 노트를 커밋하거나 공유하기 전에 범용 서브에이전트로 검토하는 스킬이다. 독자에게 맞지 않는 작업 보고, 불분명한 역할, 내부 작업 문구의 혼입, 근거 없는 설명, 개인 경로와 비공개 식별자, 번역체와 불필요한 기호를 찾는다. 검토는 파일을 수정하지 않으며, 수정은 별도 승인을 받아 진행한다.
 
 ## 파일 역할
 
 - [`SKILL.md`](SKILL.md)는 자동 호출과 명시 호출의 진입점이며 검토 절차를 모두 포함한다.
 - [`references/examples.md`](references/examples.md)는 한국어 표현이나 허용 여부가 모호한 사례를 검토할 때만 읽는 합성 예시다.
-- 이 README는 사람이 스킬을 설치하고 대상 저장소의 AGENTS에 필요한 지침을 적용할 때 사용한다. 스킬 실행 시 자동으로 읽힌다고 가정하지 않는다.
+- 이 README는 개발자가 스킬을 설치하고 대상 저장소의 AGENTS에 필요한 지침을 적용할 때 사용한다. 스킬 실행 시 자동으로 읽힌다고 가정하지 않는다.
 
 ## 설치
 
@@ -30,23 +30,37 @@
 
 호출 지침만 먼저 복사하지 않는다. 설치되지 않은 스킬을 AGENTS가 요구하면 실행자가 존재하지 않는 도구를 호출하게 된다.
 
+## 모델과 추론 강도 설정
+
+스킬은 문구 길이나 파일 수가 아니라 판단 난도와 잘못 판정했을 때의 영향을 기준으로 호출 시점의 설정을 고른다.
+
+- 구조와 근거가 분명한 확인 작업에는 빠른 모델과 낮은 추론 강도를 사용한다.
+- 문맥 판단이 필요하지만 소유권과 근거가 분명한 일반 검토에는 균형 잡힌 모델과 중간 추론 강도를 사용한다.
+- 지칭 대상이나 문서 책임이 모호하거나 개인정보, 보안, 라이선스, 승인과 소유권을 잘못 판단할 위험이 있는 검토에는 사용할 수 있는 가장 높은 성능의 모델과 높은 추론 강도를 사용한다.
+
+Codex에서 현재 확인한 시작 설정은 앞의 두 경우에 `gpt-5.6-terra`의 `low` 또는 `medium`, 마지막 경우에 `gpt-5.6-sol`의 `high`다. Claude Code에서는 설치 환경에서 사용할 수 있는 빠른 모델, 균형 잡힌 모델과 가장 높은 성능의 모델을 같은 세 단계에 대응시킨다. 모델 이름과 지원하는 추론 강도는 바뀔 수 있으므로 [Codex 서브에이전트 문서](https://learn.chatgpt.com/docs/agent-configuration/subagents)와 [Claude Code 서브에이전트 문서](https://code.claude.com/docs/en/sub-agents)에서 현재 설정을 확인한다.
+
+호스트가 호출별 모델이나 추론 강도 지정을 제공하지 않으면 주 에이전트의 설정을 사용하고 결과에 해당 제약을 적는다. `xhigh`, `max`, `ultra` 같은 설정은 기본값으로 사용하지 않는다. 승인된 대표 사례에서 `high`보다 결함 누락이나 오판을 줄인다는 결과가 있을 때만 사용한다.
+
+기본 설정을 바꾸기 전에는 짧고 기준이 분명한 커밋 문구, 길고 반복적인 문서, 짧지만 역할이 모호한 문장, 여러 문서의 책임을 함께 판단해야 하는 문장, 개인정보 처리나 대외 공개 방침을 판단해야 하는 문장을 비교한다. 담당 검수자가 승인한 상태와 지적 사항을 기준 답안으로 삼고, 상태가 모두 일치하며 `needs revision`과 `needs human input`의 사유를 빠뜨리지 않은 설정끼리 잘못된 지적, 응답 시간과 토큰 사용량을 비교한다. 더 가벼운 설정을 기본값으로 정하려면 비교 결과를 승인 책임자에게 확인받는다.
+
 ## AGENTS에 적용할 기본 지침
 
 아래 블록은 배포를 위한 기본안이다. 저장소에 이미 같은 책임을 가진 절이 있으면 새 절을 만들지 말고 기존 절에 합친다. 제목과 배치는 바꿀 수 있지만, 적용 대상으로 선택한 규칙의 동작을 약화하지 않는다.
 
-`Public Outputs`와 `Words Review`는 문서, 코드 주석, 커밋 또는 사용자 문구를 다른 사람이 읽거나 저장소에 기록하는 경우에 적용한다. `Writing Natural Korean`은 한국어 산출물을 작성하는 저장소에 적용한다.
+`Public Outputs`와 `Words Review`는 파일명과 디렉터리명, 문서, 코드 주석, 커밋 또는 사용자 문구를 작성자 외의 독자가 읽거나 저장소에 기록하는 경우에 적용한다. `Writing Natural Korean`은 한국어 산출물을 작성하는 저장소에 적용한다.
 
 ### 독자에게 전달할 내용과 근거
 
 ```markdown
 ## Public Outputs
 
-- Treat repository content that is committed or shared, including README files, documentation, source code and comments, commit and pull-request text, issue text, release notes, user-visible text, and assistive text, as public unless the repository explicitly classifies it otherwise.
-- Before writing, identify the intended readers, what they need to understand or do, and the artifact that owns the information.
+- Treat repository content that is committed or shared, including file and directory names, README files, documentation, source code and comments, commit and pull-request text, issue text, release notes, user-visible text, and assistive text, as public unless the repository explicitly classifies it otherwise.
+- Before writing, identify the intended readers, what they need to understand or do, the actor described by the text, any reviewer or approval owner, and the artifact that owns the information. Name a verified role or describe the action directly when a broad label would hide responsibility; report an unresolved role instead of inventing it.
 - Base public statements on verified repository evidence, sourced facts, approved decisions, or approved public wording. Do not use a user prompt, agent instruction, task description, work note, review criterion, requested format, tool condition, or progress report as publishable source text.
 - Do not quote, copy, or lightly rewrite internal work inputs into titles, filenames, headings, product facts, decision reasons, comments, or user-visible text. When the underlying information is needed, write it from a publishable source for the intended readers.
 - Keep credentials, personal absolute paths, private URLs, private project identifiers, internal-only names, unresolved decisions, review notes, and publication checklists out of public outputs. Use repository-relative paths when readers need a path.
-- Preserve exact source text only when the artifact requires it, such as a human-owned requirement, approved user-visible wording or quotation, prompt-processing evaluation data, a minimal reproduction input, or an access-controlled log that will not be committed. Keep only the necessary portion.
+- Preserve exact source text only when the artifact requires it, such as a requirement whose wording belongs to the requirements owner, approved user-visible wording or quotation, prompt-processing evaluation data, a minimal reproduction input, or an access-controlled log that will not be committed. Keep only the necessary portion.
 - Write commit messages from the actual change and its reason. Write user-visible and assistive text from the task the user is performing, the purpose of the element, and the state the user needs to understand.
 ```
 
@@ -74,8 +88,9 @@
 ### Words Review
 
 - After creating or changing a public output, and before committing or sharing it, use the `use-words-review` skill. Also use it when the user explicitly requests a wording or public-output review.
-- Give the review the changed outputs, intended readers, applicable repository rules, and candidate commit or publication text. Provide exact prompt text only when an explicit comparison is required, and minimize and redact it first.
+- Give the review the changed outputs and names, intended readers, reader actions, described actors, reviewer or approval owners, applicable repository rules, and candidate commit or publication text. Provide exact prompt text only when an explicit comparison is required, and minimize and redact it first.
 - Have the skill delegate semantic review to one available general-purpose subagent without creating or requiring a named reviewer definition. Keep the delegation read-only when the host supports tool restrictions.
+- Have the skill select the model and reasoning effort at invocation time from the review difficulty and impact. Do not use input size alone or dispatch another subagent to classify the review.
 - Verify every returned finding against the actual change in the main agent, and confirm that the reviewer did not modify files.
 - Report `pass`, `needs revision`, `needs human input`, or `not applicable` with a location and reason. Do not edit the reviewed output unless the user separately authorizes the change.
 - If no general-purpose subagent is available or write access cannot be restricted, report that limitation instead of claiming independent or tool-enforced read-only review.
