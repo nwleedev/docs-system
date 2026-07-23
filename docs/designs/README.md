@@ -36,8 +36,10 @@ For every document type, this README should define
 
 - Use one descriptive title and a logical heading hierarchy. Do not create empty headings or skip heading levels for visual styling.
 - Derive titles, filenames, and headings from the document's question, decision, subject, or result, not from the wording of the task that requested it.
-- Prefer prose and short lists. Use numbered lists only when order matters.
-- Use a table only when readers must compare genuinely two-dimensional data by rows and columns. Keep long explanations out of table cells.
+- Put each section's conclusion or decision before its background detail. Keep each section focused on one question, decision, subject, or result.
+- Do not use tables. Preserve reading order with descriptive headings, short paragraphs, and lists.
+- Use bullets for unordered items and numbered lists only for sequence or priority. Present paired names and descriptions as bold run-in labels followed by prose.
+- When readers must compare options or repeated items, give each one its own subsection and describe the applicable attributes in the same order. Do not add empty fields merely to force uniformity.
 - Separate sourced facts, analysis, approved decisions, proposals, and unresolved uncertainty so readers can distinguish them.
 - Link to the owning document instead of copying the same requirement, decision, evidence, or guidance into multiple files.
 - Do not add IDs to requirements or derived documents. Add YAML, status fields, or other metadata only when a current tool or review process consumes them.
@@ -221,4 +223,4 @@ Do not add these artifacts in advance for every package.
 - [Anthropic: Demystifying evals for AI agents](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents) recommends deterministic checks where possible, model review where necessary, and reviewer calibration for subjective judgments.
 - [Anthropic: Agent Skills](https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills) recommends progressive disclosure and adding instructions from observed failures instead of anticipating every case.
 - [NASA: How to write a good requirement](https://www.nasa.gov/reference/appendix-c-how-to-write-a-good-requirement/) recommends necessary, consistent, implementation-free, and verifiable requirements.
-- [W3C: Headings](https://www.w3.org/WAI/tutorials/page-structure/headings/) and the [Google developer documentation style guide](https://developers.google.com/style/tables) support descriptive heading structure and reserving tables for genuinely tabular information.
+- [W3C: Headings](https://www.w3.org/WAI/tutorials/page-structure/headings/), [Google: Lists](https://developers.google.com/style/lists), [Google: Paragraph structure](https://developers.google.com/style/paragraph-structure), [Microsoft: Lists](https://learn.microsoft.com/en-us/style-guide/scannable-content/lists), [Digital.gov: Headings](https://digital.gov/guides/plain-language/design/headings), and [GOV.UK: Publishing accessible documents](https://www.gov.uk/guidance/publishing-accessible-documents) support descriptive headings, concise paragraphs, and list formats chosen for the information's order and relationships.

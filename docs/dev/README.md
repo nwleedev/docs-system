@@ -96,8 +96,9 @@ Use examples only when they clarify a repository-specific rule that prose alone 
 
 - Use one descriptive title and a logical heading hierarchy. Do not create empty headings or skip levels for visual styling.
 - Put the most important rule or conclusion before background detail.
-- Prefer prose and short lists. Use numbered lists only when order matters.
-- Use tables only for information that readers must compare by both rows and columns. Keep long explanations in prose.
+- Do not use tables. Preserve reading order with descriptive headings, short paragraphs, and lists.
+- Use bullets for unordered items and numbered lists only for sequence or priority. Present paired names and descriptions as bold run-in labels followed by prose.
+- When readers must compare options, rules, or repeated items, give each one its own subsection and describe the applicable attributes in the same order. Do not add empty fields merely to force uniformity.
 - Separate current evidence, external recommendations, proposals, accepted decisions, exceptions, and unresolved uncertainty.
 - Do not add IDs. Add YAML, repeated metadata, or fixed sections only when a current tool or review process consumes them.
 
@@ -195,4 +196,4 @@ Using or reviewing guidance does not by itself authorize edits. When an update i
 - [TypeScript: `strict`](https://www.typescriptlang.org/tsconfig/#strict) illustrates starting from the selected language's supported correctness checks instead of inventing repository rules first.
 - [GitHub: Code scanning default setup](https://docs.github.com/en/code-security/how-tos/find-and-fix-code-vulnerabilities/configure-code-scanning/configure-code-scanning) and [Dependency review](https://docs.github.com/en/code-security/concepts/supply-chain-security/dependency-review) support starting with an applicable baseline and reviewing dependency changes against repository evidence.
 - [Playwright: Best Practices](https://playwright.dev/docs/best-practices) supports testing user-visible behavior instead of relying on implementation details.
-- [W3C: Headings](https://www.w3.org/WAI/tutorials/page-structure/headings/) and the [Google developer documentation style guide](https://developers.google.com/style/tables) support descriptive heading structure and reserving tables for genuinely tabular information.
+- [W3C: Headings](https://www.w3.org/WAI/tutorials/page-structure/headings/), [Google: Lists](https://developers.google.com/style/lists), [Google: Paragraph structure](https://developers.google.com/style/paragraph-structure), [Microsoft: Lists](https://learn.microsoft.com/en-us/style-guide/scannable-content/lists), [Digital.gov: Headings](https://digital.gov/guides/plain-language/design/headings), and [GOV.UK: Publishing accessible documents](https://www.gov.uk/guidance/publishing-accessible-documents) support descriptive headings, concise paragraphs, and list formats chosen for the information's order and relationships.
