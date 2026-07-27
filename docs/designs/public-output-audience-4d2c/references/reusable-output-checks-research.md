@@ -2,9 +2,9 @@
 
 ## 조사 질문과 소유 범위
 
-이 문서는 [요구사항 문서](../requirements.md)의 `요구사항`, `작업 지시 문구가 산출물의 내용과 구조를 대신하면 안 되는 경우`, `필요한 작업 및 변경사항`, `리뷰 에이전트`, `주의`에 해당하는 문제를 여러 저장소에서 반복해서 검사하는 데 필요한 사실을 조사한다. 번역체와 기계적인 표현, 작업 지시 원문의 혼입, 독자 부적합, 개인 경로와 비공개 식별자를 검사 대상으로 삼고, 검토 스킬과 Vale 설정을 배포하는 방법을 확인한다.
+이 문서는 [요구사항 문서](../requirements.md)의 `요구사항`, `작업 지시 문구가 산출물의 내용과 구조를 대신하면 안 되는 경우`, `필요한 작업 및 변경사항`, `리뷰 에이전트`, `토큰 비용`, `스킬에 README.md 파일 제거`, `주의`에 해당하는 문제를 여러 저장소에서 반복해서 검사하는 데 필요한 사실을 조사한다. 번역체와 기계적인 표현, 작업 지시 원문의 혼입, 독자 부적합, 개인 경로와 비공개 식별자를 검사 대상으로 삼고, 검토 스킬의 실행 비용과 배포 방법을 확인한다.
 
-2026년 7월 17일을 기준으로 Vale, markdownlint, textlint를 비교하고, Git 커밋 전 검사와 범용 서브에이전트 검토를 결합하는 방법을 확인했다. 변경된 요구사항이 지정한 설계·개발 문서와 배포용 에이전트 지침의 현재 역할, 검토 스킬과 `src/vale` 구성의 필요성도 검토했다. 이 문서는 검사 체계의 구성과 운영만 맡는다. 문제 유형과 기존 사례는 [독자 혼동 조사](public-output-audience-research.md), [작업 지시와 산출물 출처 조사](prompt-intent-and-artifact-provenance-research.md), [한국어 문체 조사](natural-korean-and-ai-writing-research.md), [민감한 원문 조사](sensitive-input-preservation-research.md), [문서 제목과 결정 단위 조사](decision-record-scope-and-title-research.md)에 기록되어 있다.
+첫 조사는 2026년 7월 17일에 수행했다. Vale, markdownlint, textlint를 비교하고 Git 커밋 전 검사와 범용 서브에이전트 검토를 결합하는 방법을 확인했다. 7월 28일에는 Codex와 Claude Code의 현재 스킬 및 서브에이전트 문서, Agent Skills 명세, 실제 스킬 저장소와 주석으로 범위를 표시한 배포 사례를 다시 확인했다. 변경된 요구사항이 지정한 설계 문서, 개발 지침, 배포용 에이전트 지침의 현재 역할도 비교했다. 이 문서는 검사 체계의 구성과 운영만 맡는다. 문제 유형과 기존 사례는 [독자 혼동 조사](public-output-audience-research.md), [작업 지시와 산출물 출처 조사](prompt-intent-and-artifact-provenance-research.md), [한국어 문체 조사](natural-korean-and-ai-writing-research.md), [민감한 원문 조사](sensitive-input-preservation-research.md), [문서 제목과 결정 단위 조사](decision-record-scope-and-title-research.md)에 기록되어 있다.
 
 아래의 구성은 조사 자료를 비교해 얻은 제안이며 사람이 승인한 설계 결정은 아니다.
 
@@ -20,6 +20,8 @@ Vale는 공통 문장 규칙의 기본 엔진으로 적합하다. 단일 실행 
 2. 공통 Vale 규칙과 결정적 검사를 배포하는 버전 고정 패키지
 3. 의미 판단이 필요한 변경만 범용 서브에이전트에 맡기는 검토 스킬
 4. 로컬, 커밋 전, CI, 정기 전체 검사에서 같은 명령을 호출하는 실행기
+
+`use-words-review`는 문장마다 호출하지 않는다. 같은 커밋이나 공유 단위에 들어갈 변경을 모아 한 번 검토하고, 결정적 검사로 판정할 수 없는 의미 문제만 서브에이전트에 맡긴다. 현재 스킬은 모델을 고정하지 않고 검토 난도와 잘못 판단했을 때의 영향을 기준으로 실행할 때 선택한다. 과거 실행별 토큰 기록은 저장소에 없으므로 정확한 절감량은 계산할 수 없다.
 
 ## 검사 책임을 나누는 기준
 
@@ -136,7 +138,7 @@ Vale의 `tokens`는 기본적으로 단어 경계를 더한다. Vale가 기초�
 
 ### 실행 시 역할과 기준을 전달한다
 
-[Codex 서브에이전트 문서](https://developers.openai.com/codex/agent-configuration/subagents)는 별도 설정 없이 사용할 수 있는 `default` 범용 에이전트를 제공한다. [Claude Code 문서](https://code.claude.com/docs/en/sub-agents)도 내장 `general-purpose` 에이전트를 제공한다. 두 도구 모두 전용 에이전트 정의 파일을 만들지 않고 범용 서브에이전트에 현재 작업의 역할과 범위를 전달할 수 있다.
+[Codex 서브에이전트 문서](https://learn.chatgpt.com/docs/agent-configuration/subagents)는 별도 설정 없이 사용할 수 있는 `default` 범용 에이전트를 제공한다. [Claude Code 문서](https://code.claude.com/docs/en/sub-agents)도 내장 `general-purpose` 에이전트를 제공한다. 두 도구 모두 전용 에이전트 정의 파일을 만들지 않고 범용 서브에이전트에 현재 작업의 역할과 범위를 전달할 수 있다.
 
 검토 역할, 입력 범위, 판정 항목, 수정 금지 조건과 결과 형식은 `use-words-review` 스킬이 실행할 때 전달해야 한다. `AGENTS.md`에는 어떤 변경에서 이 스킬을 호출하는지만 남긴다. 이 방식은 제품별 에이전트 파일을 유지하지 않으면서도 긴 판정 절차를 모든 작업의 기본 문맥에서 제외한다. 서브에이전트의 읽기 전용 상태를 도구 권한으로 제한할 수 없는 환경에서는 지시만으로 권한이 제한됐다고 주장하지 말고, 파일 변경 여부를 주 에이전트가 확인해야 한다.
 
@@ -158,6 +160,23 @@ Vale의 `tokens`는 기본적으로 단어 경계를 더한다. Vale가 기초�
 검토 에이전트는 린터가 놓친 의미 문제를 찾을 수 있지만 정답 판정기는 아니다. 모델 평가는 표현 길이, 제시 순서, 평가 모델 자신이 선호하는 답에 영향을 받을 수 있다는 [LLM 평가 연구](https://arxiv.org/abs/2306.05685)가 있다. 모델 간 다수결만으로 이 문제를 없앨 수 있다는 근거도 없다.
 
 기본값은 한 명의 검토 에이전트와 사람의 확인으로 두고, 위험이 높거나 판정이 불확실한 변경에서만 두 번째 관점을 요청하는 편이 비용과 판단 책임을 모두 드러낸다. 자동 차단은 규칙과 수정 방법이 명확한 결정적 오류에 한정하고, 의미 판단 결과는 주 작성자 또는 사람이 해소 여부를 기록해야 한다.
+
+### 호출 수와 모델 설정을 함께 줄인다
+
+Codex는 서브에이전트가 각자 모델과 도구를 사용하므로 단일 실행보다 토큰을 더 쓴다고 밝힌다. 모델이나 추론 강도를 고정하지 않으면 실행 환경이 작업에 맞는 설정을 고를 수 있고, 명시할 때에는 `gpt-5.6-terra`를 빠르고 비용이 낮은 검토에, `gpt-5.6`을 모호하고 여러 단계가 필요한 검토에 쓰도록 안내한다. 낮은 추론 강도는 단순한 작업, 중간은 일반 작업, 높은 추론 강도는 복잡한 논리와 예외 확인에 맞는다. 높은 추론 강도는 응답 시간과 토큰 사용량도 늘린다. [OpenAI 서브에이전트 문서](https://learn.chatgpt.com/docs/agent-configuration/subagents)
+
+Claude Code도 서브에이전트의 모델과 추론 강도를 호출별로 지정할 수 있으며, 값을 생략하면 주 대화의 설정을 물려받는다. Anthropic의 추론 강도 문서는 낮은 설정이 도구 호출과 사고를 포함한 전체 토큰 사용량을 줄이지만 일부 판단 능력이 낮아질 수 있다고 설명한다. 따라서 공급자와 관계없이 가장 낮은 설정을 기본값으로 고정하는 대신, 대표 검토 사례를 통과하는 가장 가벼운 설정을 선택해야 한다. [Claude Code 서브에이전트 문서](https://code.claude.com/docs/en/sub-agents), [Anthropic 추론 강도 문서](https://platform.claude.com/docs/en/build-with-claude/effort)
+
+현재 `skills/use-words-review/SKILL.md`는 한 번 호출할 때 범용 서브에이전트 하나를 사용하고, 주 에이전트가 누락이나 근거 없는 판정을 확인한 경우에만 높은 설정으로 다시 검토한다. 호출 수를 더 줄이려면 이 흐름을 다음과 같이 명확히 해야 한다.
+
+1. 작성 중인 문장마다 호출하지 않고 커밋하거나 공유할 변경을 한 번에 모은다.
+2. 개인 경로, 비밀 값 형식, 미완성 표시와 형식 오류를 먼저 검색해 서브에이전트 입력에서 제거한다.
+3. 변경된 문단과 관계를 판단하는 데 필요한 절만 전달하고, 문서 전체가 필요한 경우를 따로 밝힌다.
+4. 근거와 구조가 분명하면 빠른 모델과 낮은 추론 강도, 문맥 판단이 필요하면 균형 잡힌 모델과 중간 추론 강도를 사용한다.
+5. 지칭 대상이나 문서 책임이 충돌하거나 공개 결과의 영향이 큰 경우에만 높은 성능의 모델과 높은 추론 강도를 사용한다.
+6. 첫 판정이 불리하다는 이유로 다시 호출하지 않는다. 주 에이전트가 실제 누락, 근거 없는 판정 또는 상충하는 증거를 확인했을 때만 한 번 다시 검토한다.
+
+OpenAI의 현재 모델 지침은 같은 지시를 한 번만 적고 반복되는 지침과 불필요한 도구 설명을 줄인 뒤 실제 작업을 반영한 평가로 확인하라고 안내한다. OpenAI 평가 지침도 실제 사용 분포를 반영한 사례와 담당 검수자의 판단으로 평가 결과를 맞추도록 권고한다. 그러므로 비용 비교에서는 입력 토큰만 줄이는 대신 결함 누락, 잘못된 지적, `needs human input` 판정, 전체 토큰, 응답 시간을 함께 기록해야 한다. [OpenAI 모델 지침](https://developers.openai.com/api/docs/guides/latest-model), [OpenAI 평가 지침](https://developers.openai.com/api/docs/guides/evaluation-best-practices)
 
 ## 로컬, 커밋 전, CI, 정기 검사의 역할
 
@@ -201,11 +220,13 @@ CI는 같은 실행기를 깨끗한 환경에서 다시 호출한다. 패키지�
 - **현재 역할.** 반복해서 사용할 저장소별 개발 지침의 근거, 상태, 소유 문서와 검사 방법을 정한다.
 - **변경 필요성.** 작업 지시를 현재 규칙의 근거로 사용하지 않는 조건과 커밋하거나 공유하기 전 검사를 포함한다. 후속 스킬은 개발 지침을 검토할 때 이 README를 적용해야 한다.
 
-현재 요구사항은 `src/AGENTS.en.md`와 `src/AGENTS.ko.md`를 검토·변경 대상으로 지정하지 않는다. 대상 저장소의 AGENTS에 스킬을 연결하는 방법은 `skills/use-words-review/README.md`가 소유하므로, 같은 안내를 두 참고 문서에 복사할 필요가 없다.
+추가된 요구사항은 `skills/use-words-review/README.md`를 없애고 `src/AGENTS.en.md`와 `src/AGENTS.ko.md`에 스킬 호출 지침을 넣도록 지정한다. 루트 `README.md`와 `README.ko.md`는 현재 삭제 대상 README를 설치 안내로 연결하므로 링크와 설치 설명도 함께 바꿔야 한다. `skills/use-design-docs/SKILL.md`, `skills/use-dev-guidance/SKILL.md`, `docs/designs/README.md`, `docs/dev/README.md`는 각 문서 종류의 작업 절차와 검증을 이미 맡고 있으며, 모든 공개 문구를 검토하는 호출 조건을 다시 소유할 필요가 없다.
 
-## 스킬 실행 파일과 사람용 안내 문서를 구분한다
+## 스킬과 배포 지침의 소유 파일을 나눈다
 
-[OpenAI의 스킬 문서](https://developers.openai.com/codex/skills)와 [Claude Code 스킬 문서](https://code.claude.com/docs/en/skills)는 작업에 맞을 때 불러오는 전용 지침과 필요한 자료·스크립트를 스킬에 묶을 수 있다고 설명한다. Anthropic의 [Agent Skills 설계 사례](https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills)는 처음부터 모든 지침을 문맥에 넣지 않고 작업에 필요한 자료를 단계적으로 읽는 방식을 제시한다. 글과 문구 검사는 설계 문서, 개발 지침, 코드, UI 문구, 커밋 메시지를 함께 다루므로 기존 두 문서 어댑터 중 하나에 넣으면 적용 대상이 어긋난다.
+[Agent Skills 명세](https://agentskills.io/specification), [OpenAI 스킬 문서](https://developers.openai.com/codex/skills)와 [Claude Code 스킬 문서](https://code.claude.com/docs/en/agent-sdk/skills)는 `SKILL.md`를 필수 실행 파일로 정의한다. 스크립트, 참고 자료와 자산은 선택 사항이며, 스킬 폴더의 README를 필수 파일이나 자동 탐색 입력으로 지정하지 않는다. OpenAI는 스킬 이름과 설명을 먼저 읽고 선택된 뒤에 `SKILL.md` 전체를 불러온다고 설명한다. 따라서 `skills/use-words-review/README.md`를 지워도 `SKILL.md`와 `references/examples.md`만으로 스킬 실행 형식은 유지된다.
+
+글과 문구 검사는 설계 문서, 개발 지침, 코드, UI 문구와 커밋 메시지를 함께 다루므로 기존 두 문서 어댑터 중 하나에 넣으면 적용 대상이 어긋난다. 실행 절차는 `skills/use-words-review/SKILL.md`, 판정 예시는 `skills/use-words-review/references/examples.md`, 다른 저장소에 적용할 호출 지침은 `src/AGENTS.en.md`와 `src/AGENTS.ko.md`, 설치와 제거 방법은 루트 `README.md`와 `README.ko.md`가 맡는 구성이 각 문서의 현재 독자와 맞는다.
 
 별도 스킬은 다음 작업을 실제로 연결할 때 가치가 있다.
 
@@ -214,11 +235,11 @@ CI는 같은 실행기를 깨끗한 환경에서 다시 호출한다. 패키지�
 - 의미 검토가 필요한 변경만 범용 서브에이전트에 전달한다.
 - 검사 결과와 사람이 판단해야 할 항목을 정해진 상태로 반환한다.
 
-반대로 기존 AGENTS의 커밋하거나 공유하기 전 검사 목록을 스킬 실행 절차에 그대로 옮기면 같은 규칙의 소유 문서가 늘어난다. 대상 저장소의 `AGENTS.md`에는 상시 적용할 작성 원칙과 전달 원칙, 채택된 스킬의 호출 조건을 두고, 스킬 README는 사용자가 해당 지침을 자신의 AGENTS에 적용할 수 있는 기본 문구와 병합 방법을 안내하는 구성이 [AGENTS.md 형식 안내](https://agents.md/)의 저장소 지침 역할과 OpenAI의 [짧은 진입 문서 사례](https://openai.com/index/harness-engineering/)에 맞는다.
+반대로 기존 AGENTS의 커밋하거나 공유하기 전 검사 목록을 스킬 실행 절차에 그대로 옮기면 같은 규칙의 소유 문서가 늘어난다. 대상 저장소의 `AGENTS.md`에는 상시 적용할 작성 원칙과 채택한 스킬의 호출 조건만 두고, 상세한 입력 수집과 판정 절차는 `SKILL.md`가 맡아야 한다. OpenAI의 AGENTS 문서는 가까운 경로의 지침을 합쳐 읽으며 전체 기본 크기에 제한이 있다고 설명하므로, 스킬 절차 전체를 AGENTS에 복사하는 방식은 피해야 한다. [OpenAI AGENTS 문서](https://learn.chatgpt.com/docs/agent-configuration/agents-md)
 
-[Agent Skills 명세](https://agentskills.io/specification), [Codex 스킬 문서](https://developers.openai.com/codex/skills), [Claude Code 스킬 문서](https://code.claude.com/docs/en/skills)는 모두 `SKILL.md`를 실행 진입점으로 사용한다. 자동 호출은 `SKILL.md`의 `description`을 기준으로 판단하며, 보조 자료는 `SKILL.md`가 필요할 때 읽도록 연결한다. 따라서 요구사항에 추가된 `README.md`는 스킬의 실행 절차가 아니라 사람을 위한 설치와 저장소 통합을 맡는다. 사용자가 별도 참고 문서를 찾아 조합하지 않아도 되도록 `Writing Natural Korean`, 독자에게 전달할 글과 문구의 출처, 작업 지시 문구와 개인 경로의 제외, 커밋하거나 공유하기 전 스킬 호출에 관한 완성된 AGENTS 기본안을 제공해야 한다. `SKILL.md`는 README를 먼저 읽지 않아도 실행 가능해야 한다.
+Superpowers 리비전 `3dcbd5c`와 Compound Engineering 리비전 `a9f6d53`의 `skills/` 트리를 다시 확인한 결과, 두 프로젝트는 각 스킬의 `SKILL.md`와 필요한 참고 자료를 실행 단위로 관리하며 스킬마다 README를 두지 않는다. Compound Engineering은 AGENTS에 넣은 호환 지침을 `BEGIN`과 `END` HTML 주석 사이에 두고, 제거할 때 그 범위만 잘라내는 구현을 제공한다. terraform-docs도 생성한 README 내용을 시작과 끝 주석 사이에 넣어 해당 범위만 바꾼다. 이 사례들은 HTML 주석이 Markdown 독자에게 보이지 않으면서 관리 범위를 분명히 표시할 수 있음을 보여준다. 다만 주석 이름과 제거 동작은 Agent Skills 표준이 아니라 각 배포 도구가 정한 규칙이다. [Compound Engineering 범위 제거 구현](https://github.com/EveryInc/compound-engineering-plugin/blob/a9f6d530d4446d805a3100387dedd86268d7e695/src/utils/codex-agents.ts), [terraform-docs 출력 설정](https://github.com/terraform-docs/terraform-docs/blob/10965cddfa169679511f176cfe67dd0189dc935f/docs/user-guide/configuration/output.md)
 
-Superpowers 리비전 `d884ae0`과 Compound Engineering 리비전 `32fae6c`의 `skills/` 트리를 확인한 결과, 두 프로젝트는 각 스킬의 `SKILL.md`와 필요한 참고 자료를 실행 단위로 관리하며 스킬마다 README를 두지 않는다. 이는 이번 README가 실행 형식의 관례가 아니라 이 저장소가 여러 프로젝트에 배포하는 방법을 설명하기 위한 요구사항임을 뒷받침한다.
+두 배포용 AGENTS 문서에는 `<!-- BEGIN USE WORDS REVIEW -->`과 `<!-- END USE WORDS REVIEW -->`처럼 고유한 주석을 한 쌍만 두고, 그 안에 호출 조건, 검토 입력, 결과 상태와 수정 금지 조건을 넣는 편이 적절하다. 루트 README는 스킬 폴더 설치 경로와 함께 이 범위를 대상 AGENTS에 합치는 방법, 스킬을 제거할 때 같은 범위만 지우는 방법을 설명해야 한다. 자동으로 주석 범위를 바꾸는 코드까지 만들 필요는 없다.
 
 `AGENTS.md`의 상세한 한국어 표현 예시를 전부 옮기는 것은 아직 근거가 부족하다. AGENTS 지침은 모든 작업에서 읽히지만 스킬 본문과 `examples.md`는 스킬이 호출된 뒤에만 읽힌다. 작성 단계에서도 필요한 독자·근거·자연스러운 문장 원칙은 AGENTS에 남기고, 긴 표현 대응표와 실패·허용 예시는 `examples.md`로 옮길 수 있는지 항목별로 검토해야 한다. 예시를 옮긴 뒤 스킬이 호출되지 않은 작성 작업에서 기존 예방 효과가 사라진다면 이동하지 않는다.
 
@@ -258,22 +279,25 @@ Vale를 공통 문장 규칙 엔진으로 선택한다면 요구사항이 지정
 - 경고를 오류로 올릴 오탐 기준과 표본 수는 정해지지 않았다.
 - UI 문자열, 번역 파일, 코드 주석 가운데 첫 버전이 어디까지 추출할지 정해지지 않았다.
 - Codex와 Claude Code 외 도구에서 범용 서브에이전트를 선택하고 역할을 전달하는 방법은 정해지지 않았다.
-- 검토 에이전트 호출 비용과 지연을 허용할 변경 범위는 정해지지 않았다.
+- 과거 검토 실행의 입력 토큰, 출력 토큰과 응답 시간 기록이 없어 현재 비용이나 예상 절감률은 계산할 수 없다.
+- 어떤 모델과 추론 강도가 승인된 대표 사례를 모두 통과하는지는 아직 비교하지 않았다.
 - 자동 호출의 상세 범위와 비용이 큰 변경에서 적용할 예외는 실제 스킬 검증을 거쳐야 한다.
 
 이 질문들은 요구사항을 바꾸지는 않지만 구현 범위와 운영 비용을 바꾼다. 사람이 선택하기 전에는 `plan.md`나 결정 기록에 확정된 내용으로 옮기면 안 된다.
 
 ## 요구사항과 후속 설계에 미치는 영향
 
-이번 조사로 `requirements.md`를 수정할 필요는 없다. 조사 결과는 하나의 만능 린터를 요구사항으로 추가하기보다, 기계적으로 판정할 수 있는 문제와 의미 판단이 필요한 문제를 나누는 설계가 필요하다는 근거를 제공한다.
+이번 조사로 `requirements.md`를 더 수정할 필요는 없다. 조사 결과는 하나의 만능 린터를 요구사항으로 추가하기보다, 기계적으로 판정할 수 있는 문제와 의미 판단이 필요한 문제를 나누는 설계가 필요하다는 근거를 제공한다.
 
-후속 작업은 먼저 `use-words-review`의 호출 조건, 범용 서브에이전트 입력, 판정 형식과 사람용 설치 안내를 구현해야 한다. 그 뒤 공통 텍스트 검사 도구, 공통 패키지의 첫 지원 범위, 대상 저장소 선언 방식과 규칙 승격 기준을 결정하고 `src/vale` 작업을 구체화할 수 있다.
+후속 작업은 `skills/use-words-review/SKILL.md`에서 같은 공유 단위의 변경을 한 번에 검토하도록 호출 시점과 입력 범위를 명확히 하고, [한국어 문체 조사](natural-korean-and-ai-writing-research.md)가 정리한 문장 사이의 관계를 판정 기준에 추가해야 한다. `references/examples.md`에는 관계가 끊긴 사례와 정상 사례를 함께 둔다.
+
+배포 구조에서는 `skills/use-words-review/README.md`를 삭제하고, 호출 지침을 주석 범위와 함께 `src/AGENTS.en.md`와 `src/AGENTS.ko.md`에 옮긴다. 루트 `README.md`와 `README.ko.md`는 `SKILL.md`를 설치 진입점으로 연결하고 AGENTS 범위의 적용 및 제거 방법을 설명한다. `skills/use-design-docs/SKILL.md`, `skills/use-dev-guidance/SKILL.md`, `docs/designs/README.md`, `docs/dev/README.md`에는 같은 내용을 추가하지 않는다.
 
 ## 조사 반복과 중단 근거
 
-Vale와 textlint의 설치·규칙·패키지·적용 범위 공식 문서, Git 훅 공식 문서, Codex와 Claude Code의 스킬 및 검토 에이전트 문서, 실제 텍스트 규칙을 운영하는 조직의 설정과 소스, 에이전트 평가 자료를 교차 확인했다. 지정된 저장소 파일의 현재 역할도 같은 리비전에서 비교했다. 도구마다 맡을 수 있는 검사, 규칙 배포 방법, 오탐을 줄이는 승격 절차, 모델 검토의 한계가 반복해서 같은 방향을 가리켰다.
+Vale와 textlint의 설치, 규칙, 패키지와 적용 범위 공식 문서, Git 훅 공식 문서, Codex와 Claude Code의 스킬 및 서브에이전트 문서, 실제 텍스트 규칙을 운영하는 조직의 설정과 소스, 에이전트 평가 자료를 교차 확인했다. 추가 요구사항을 확인한 뒤 스킬의 필수 파일, AGENTS 지침을 읽는 순서, 모델과 추론 강도 선택, 주석으로 관리 범위를 표시하는 사례를 다시 조사했다. 지정된 저장소 파일의 현재 역할도 같은 작업 트리에서 비교했다.
 
-추가 검색은 개별 규칙 후보와 특정 대상 저장소의 파일 형식을 정할 때 필요하다. 현재 질문인 “어떤 검사 층을 어떤 순서로 재사용할 수 있는가”에는 새 출처가 구조를 바꿀 가능성이 낮아 조사를 중단했다.
+마지막 대조에서는 OpenAI, Anthropic과 Agent Skills 명세가 모두 `SKILL.md`를 필수 실행 파일로 두고 README를 요구하지 않았으며, 두 실제 프로젝트의 스킬 트리도 같은 구성을 사용했다. 비용 자료도 호출 수, 입력 중복, 모델과 추론 강도를 실제 사례로 비교하라는 결론에서 반복됐다. 새 파일이나 검사 계층을 요구하는 근거가 더 나오지 않아 조사를 중단했다.
 
 ## 검토한 출처와 시점
 
@@ -286,19 +310,21 @@ Vale와 textlint의 설치·규칙·패키지·적용 범위 공식 문서, Git 
 - Red Hat Documentation: [Vale 규칙 검증 스크립트](https://github.com/redhat-documentation/vale-at-red-hat/blob/bf4a628e07a9a9c4416760e96249d31e0134cba8/tools/validate-vale-rules.sh), 커밋 `bf4a628e07a9a9c4416760e96249d31e0134cba8`. 2026년 7월 17일 확인.
 - Datadog: [Vale 기여 지침](https://github.com/DataDog/datadog-vale/blob/a6a543b8aadf2c2b09005207c560c061d3ff0bca/CONTRIBUTING.md), 커밋 `a6a543b8aadf2c2b09005207c560c061d3ff0bca`. 2026년 7월 17일 확인.
 - Git: [githooks](https://git-scm.com/docs/githooks). 2026년 7월 17일 확인.
-- Codex: [Subagents](https://developers.openai.com/codex/agent-configuration/subagents), [Code review](https://developers.openai.com/codex/code-review). 2026년 7월 17일 확인.
-- Codex: [Build skills](https://developers.openai.com/codex/skills). 2026년 7월 17일 확인.
-- Claude Code: [Create custom subagents](https://code.claude.com/docs/en/sub-agents). 2026년 7월 17일 확인.
-- Claude Code: [Extend Claude with skills](https://code.claude.com/docs/en/skills). 2026년 7월 17일 확인.
+- Codex: [Subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents), [Build skills](https://learn.chatgpt.com/docs/build-skills), [AGENTS.md](https://learn.chatgpt.com/docs/agent-configuration/agents-md). 2026년 7월 28일 확인.
+- OpenAI: [Model guidance](https://developers.openai.com/api/docs/guides/latest-model), [Evaluation best practices](https://developers.openai.com/api/docs/guides/evaluation-best-practices). 2026년 7월 28일 확인.
+- Claude Code: [Create custom subagents](https://code.claude.com/docs/en/sub-agents), [Agent Skills in the SDK](https://code.claude.com/docs/en/agent-sdk/skills). 2026년 7월 28일 확인.
+- Anthropic: [Effort](https://platform.claude.com/docs/en/build-with-claude/effort). 2026년 7월 28일 확인.
+- Agent Skills: [Specification](https://agentskills.io/specification). 2026년 7월 28일 확인.
 - Anthropic: [Demystifying evals for AI agents](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents). 2026년 7월 17일 확인.
 - Anthropic: [Equipping agents for the real world with Agent Skills](https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills). 2026년 7월 17일 확인.
 - OpenAI: [Harness engineering](https://openai.com/index/harness-engineering/). 2026년 7월 17일 확인.
 - Agentic AI Foundation: [AGENTS.md 형식 안내](https://agents.md/). 2026년 7월 17일 확인.
 - Zheng 외: [Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena](https://arxiv.org/abs/2306.05685), arXiv `2306.05685`. 2026년 7월 17일 확인.
 - markdownlint: [공식 저장소](https://github.com/DavidAnson/markdownlint). 2026년 7월 17일 확인.
-- 저장소 자료: [`README.md`](../../../../README.md), [`skills/use-design-docs/SKILL.md`](../../../../skills/use-design-docs/SKILL.md), [`skills/use-dev-guidance/SKILL.md`](../../../../skills/use-dev-guidance/SKILL.md), [`docs/designs/README.md`](../../README.md), [`docs/dev/README.md`](../../../dev/README.md), [`src/AGENTS.en.md`](../../../../src/AGENTS.en.md), [`src/AGENTS.ko.md`](../../../../src/AGENTS.ko.md). 2026년 7월 17일 확인.
-- Superpowers: [`skills/` 트리](https://github.com/obra/superpowers/tree/d884ae04edebef577e82ff7c4e143debd0bbec99/skills), 리비전 `d884ae04edebef577e82ff7c4e143debd0bbec99`. 2026년 7월 17일 확인.
-- Compound Engineering: [`skills/` 트리](https://github.com/EveryInc/compound-engineering-plugin/tree/32fae6c546704b3befb7e5eba30fc6bed931fba9/skills), 리비전 `32fae6c546704b3befb7e5eba30fc6bed931fba9`. 2026년 7월 17일 확인.
+- 저장소 자료: [`README.md`](../../../../README.md), [`README.ko.md`](../../../../README.ko.md), [`skills/use-words-review/SKILL.md`](../../../../skills/use-words-review/SKILL.md), [`skills/use-words-review/README.md`](../../../../skills/use-words-review/README.md), [`skills/use-design-docs/SKILL.md`](../../../../skills/use-design-docs/SKILL.md), [`skills/use-dev-guidance/SKILL.md`](../../../../skills/use-dev-guidance/SKILL.md), [`docs/designs/README.md`](../../README.md), [`docs/dev/README.md`](../../../dev/README.md), [`src/AGENTS.en.md`](../../../../src/AGENTS.en.md), [`src/AGENTS.ko.md`](../../../../src/AGENTS.ko.md). 2026년 7월 28일 확인.
+- Superpowers: [`skills/` 트리](https://github.com/obra/superpowers/tree/3dcbd5c4b48e02263fbf4a3c01e3fe4f81d584d9/skills), 리비전 `3dcbd5c4b48e02263fbf4a3c01e3fe4f81d584d9`. 2026년 7월 28일 확인.
+- Compound Engineering: [`skills/` 트리](https://github.com/EveryInc/compound-engineering-plugin/tree/a9f6d530d4446d805a3100387dedd86268d7e695/skills), [AGENTS 범위 제거 구현](https://github.com/EveryInc/compound-engineering-plugin/blob/a9f6d530d4446d805a3100387dedd86268d7e695/src/utils/codex-agents.ts), 리비전 `a9f6d530d4446d805a3100387dedd86268d7e695`. 2026년 7월 28일 확인.
+- terraform-docs: [출력 범위 설정](https://github.com/terraform-docs/terraform-docs/blob/10965cddfa169679511f176cfe67dd0189dc935f/docs/user-guide/configuration/output.md), 리비전 `10965cddfa169679511f176cfe67dd0189dc935f`. 2026년 7월 28일 확인.
 - LanguageTool: [지원 언어](https://help.languagetool.org/hc/en-us/articles/39254526141463-What-languages-does-LanguageTool-support). 2026년 7월 17일 확인.
 - Kiwi: [공식 저장소](https://github.com/bab2min/kiwi), [kiwipiepy 문서](https://bab2min.github.io/kiwipiepy/). 2026년 7월 17일 확인.
 - Go: [regexp/syntax](https://pkg.go.dev/regexp/syntax). 2026년 7월 17일 확인.
