@@ -37,6 +37,8 @@ After context compaction, reread AGENTS.md, especially **Core Principles**, and 
 - Do not use words such as "pivotal," "crucial," "comprehensive," "seamless," "robust," or "delve" as decoration. Use them only when they express a precise, supported distinction.
 - Do not force every section into the same paragraph shape, repeated transition pattern, or arbitrary three-part list. Let the content determine the structure.
 - Use a natural, direct, and professional voice. Avoid promotional language, performative enthusiasm, fake quotations, and claims about what readers think or feel without evidence.
+- Review each sentence separately for an identifiable referent, actor, action, condition, and result. A natural expression still needs revision when it compresses several ideas and leaves their relationship unstated.
+- After revising individual sentences, reread the paragraph and document to confirm that role names, referents, assumptions, decisions, and step results remain connected.
 - Before publishing text, read it once for meaning and remove any sentence that sounds polished but adds no information.
 
 **Legacy Code**

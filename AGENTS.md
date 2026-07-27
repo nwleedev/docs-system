@@ -47,6 +47,8 @@ After context compaction, reread AGENTS.md, especially **Core Principles**, and 
   - Do not always translate `ensure`, `support`, and `address` as `보장하다`, `지원하다`, and `다루다`. Choose the verb that describes the actual action, such as `확인하다`, `허용하다`, `처리하다`, `해결하다`, or `설명하다`.
   - Do not immediately translate `expose`, `capture`, `align`, and `surface` as `노출하다`, `포착하다`, `정렬하다`, and `표면화하다`. Choose a context-appropriate verb such as `공개하다`, `기록하다`, `맞추다`, or `드러내다`.
   - Keep the established term when it is precise in the relevant field, as in a legal contract, a mathematical boundary, screen alignment, or the exposure of sensitive information.
+- Review each sentence separately for an identifiable referent, actor, action, condition, and result. A natural expression still needs revision when it compresses several ideas and leaves their relationship unstated.
+- After revising individual sentences, reread the paragraph and document to confirm that role names, referents, assumptions, decisions, and step results remain connected.
 - Before publishing, review the text once as if reading it aloud. Rewrite expressions that a Korean speaker would not use in the same situation, sentences that sound polished but add no information, and literal translations that reveal the English source.
 
 **Legacy Code**

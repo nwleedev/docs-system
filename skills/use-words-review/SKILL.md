@@ -35,6 +35,12 @@ Prefer the changed text and enough surrounding context to understand headings, c
 
 Read [references/examples.md](references/examples.md) when reviewing Korean wording or when the distinction between a prohibited and allowed case is unclear. Use the examples to calibrate judgment; do not turn example phrases into a word blacklist and do not pass text merely because no example matches it.
 
+Choose the review context from the relationship that must be judged:
+
+- Provide the changed paragraph and the necessary adjacent sentences when they are enough to identify each sentence's subject, referent, action, condition, and result.
+- Provide the changed section when the review must connect a heading, an earlier step's result, a role, or the document's assigned responsibility.
+- Provide the full file only when the changed section depends on decisions or definitions elsewhere in the document.
+
 Prepare a delegation message containing only:
 
 - the read-only review role and prohibition on editing;
@@ -70,7 +76,11 @@ Ask the subagent to judge each applicable criterion:
 4. Claims and assigned roles use publishable evidence, approved decisions, or approved wording; unresolved support, ownership, compatibility, security, privacy, licensing, and responsibility are not invented.
 5. Exact source text is retained only for an allowed purpose and only to the necessary extent.
 6. Personal paths, credentials, private URLs, private project identifiers, internal-only names, and unnecessary local paths are absent or safely replaced.
-7. Korean wording is natural for the intended readers rather than literal, mechanically translated, padded with stock phrases, or mixed with avoidable English forms.
+7. Korean wording is natural for the intended readers rather than literal, mechanically translated, padded with stock phrases, or mixed with avoidable English forms. Judge natural wording, sentence meaning, and relationships between sentences separately:
+   - For each sentence, determine whether the text identifies its subject or referent, action, conditions, and result without requiring the reader to invent missing information.
+   - Do not fail a sentence for length alone. Fail a short sentence when its subject, referent, premise, or necessary explanation is missing, and allow a long sentence when the relationships between its parts remain explicit.
+   - Check that the same role name keeps the same responsibility, pronouns and phrases such as "this result" have one identifiable referent, conditions and assumptions appear before the action that relies on them, and one step's result explains why the next step can begin.
+   - Distinguish verified facts, proposals under review, and approved decisions. Do not let a later sentence silently promote a proposal into an approved decision.
 8. Emoji and uncommon symbols are absent unless readers or an approved format need them.
 
 Require one of these statuses for every applicable criterion and artifact:
@@ -81,6 +91,8 @@ Require one of these statuses for every applicable criterion and artifact:
 - `not applicable`: the criterion does not apply, with a short reason.
 
 Require each non-passing result to identify a tight location, the evidence or reasoning, and the reader-facing consequence. Instruct the subagent not to rewrite the artifact and not to quote sensitive text in its report.
+
+When one sentence compresses several independent judgments or actions, require the finding to identify the clauses whose relationship is unclear and the information the reader cannot recover. When a problem spans sentences or sections, require both locations and describe the missing relationship between them.
 
 For UI and accessibility text, judge whether users can understand the relevant state and next action. For code comments and API documentation, judge whether callers or maintainers receive the conditions and constraints they need.
 
