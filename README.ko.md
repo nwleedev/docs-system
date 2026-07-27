@@ -44,7 +44,7 @@
 
 스킬을 설치한 뒤 [`src/AGENTS.en.md`](./src/AGENTS.en.md) 또는 [`src/AGENTS.ko.md`](./src/AGENTS.ko.md)에서 `BEGIN USE WORDS REVIEW`와 `END USE WORDS REVIEW` 표시를 포함한 구간 전체를 대상 저장소의 AGENTS에 합칩니다. 대상 저장소의 기존 소제목 구성을 유지하고 실제로 적용할 규칙만 추가합니다.
 
-스킬을 제거할 때에는 설치한 스킬 디렉터리와 시작·종료 표시를 포함한 AGENTS 구간 전체를 삭제합니다. 표시 밖에 있는 AGENTS 규칙은 그대로 둡니다.
+스킬을 제거할 때에는 설치한 스킬 디렉터리와 시작 및 종료 표시를 포함한 AGENTS 구간 전체를 삭제합니다. 표시 밖에 있는 AGENTS 규칙은 그대로 둡니다.
 
 ## 운영 원칙
 
