@@ -14,7 +14,7 @@ The files here are starting points. Select the sections that apply to the target
 - [`docs/designs/README.md`](./docs/designs/README.md) describes how to manage requirements, research, decisions, plans, and verification without forcing every project into one document template.
 - [`docs/dev/README.md`](./docs/dev/README.md) describes how to research, organize, apply, and check development guidance.
 - [`skills/use-design-docs`](./skills/use-design-docs/SKILL.md) and [`skills/use-dev-guidance`](./skills/use-dev-guidance/SKILL.md) are optional adapters for Codex and compatible skill runners. The skills route work; the linked READMEs remain the source of the rules.
-- [`skills/use-words-review`](./skills/use-words-review/README.md) explains how to install a read-only public-output review skill and add its audience, provenance, Korean-writing, and invocation rules to a target repository's `AGENTS.md`.
+- [`skills/use-words-review`](./skills/use-words-review/SKILL.md) is a read-only review skill for text and names that will be committed or shared.
 - [`examples/nextjs-frontend.md`](./examples/nextjs-frontend.md) shows one stack-specific research prompt. It is an example, not a default for other projects.
 
 The two language documents under `src/` are maintained independently and are not guaranteed to contain equivalent rules. Compare the relevant sections before adopting either one.
@@ -29,6 +29,22 @@ The two language documents under `src/` are maintained independently and are not
 6. Keep the root file concise. Move detailed knowledge into maintained documents and link to it instead of turning `AGENTS.md` into a manual.
 
 The paths and names under `src/` are not default instruction locations for Codex and similar tools. Copy the selected material into a recognized file or configure the tool explicitly. This repository does not generate or merge `AGENTS.md`. Do not combine every reference section by default. A short instruction file with relevant, testable rules is more useful than a complete-looking file filled with assumptions.
+
+## Install or remove use-words-review
+
+Copy the entire `skills/use-words-review/` directory to a skill location supported by the tool:
+
+- Codex repository: `.agents/skills/use-words-review/`
+- Codex user: `$HOME/.agents/skills/use-words-review/`
+- Claude Code repository: `.claude/skills/use-words-review/`
+- Claude Code user: `$HOME/.claude/skills/use-words-review/`
+- Plugin: `<plugin-root>/skills/use-words-review/`
+
+Confirm the current discovery locations in the [Codex skills documentation](https://developers.openai.com/codex/skills) or [Claude Code skills documentation](https://code.claude.com/docs/en/skills). The `skills/use-words-review/` directory in this repository is a distribution source and is not automatically discovered from this path.
+
+After installing the skill, copy the entire section from [`src/AGENTS.en.md`](./src/AGENTS.en.md) or [`src/AGENTS.ko.md`](./src/AGENTS.ko.md), including the `BEGIN USE WORDS REVIEW` and `END USE WORDS REVIEW` markers, into the target repository's applicable `AGENTS.md`. Keep the target repository's existing section structure and add only the rules that apply there.
+
+To remove the skill, delete its installed directory and the marked AGENTS section, including both markers. Keep the surrounding AGENTS rules unchanged.
 
 ## Working principles
 

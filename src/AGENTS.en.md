@@ -99,6 +99,16 @@ After context compaction, reread AGENTS.md, especially **Core Principles**, and 
 
 ## Documentation Work
 
+<!-- BEGIN USE WORDS REVIEW -->
+### Words Review
+
+- After creating or changing text or names that will be committed or shared, run the installed `use-words-review` skill before committing or sharing them. Also run it when a wording or public-output review is requested.
+- Review changes from the same commit or publication together. Provide the changed outputs and names, intended readers and reader actions, described roles, applicable repository rules, and candidate commit or publication text.
+- Have the skill use one available general-purpose subagent for read-only semantic review. If no subagent is available, follow the skill's main-agent fallback and state that independent review was not performed.
+- Report each applicable criterion as `pass`, `needs revision`, `needs human input`, or `not applicable`, with a location and reason for every result that does not pass.
+- Keep review and editing separate. Verify findings against the actual change, confirm that review did not modify files, and edit only in a separately authorized task.
+<!-- END USE WORDS REVIEW -->
+
 ### Design Documents
 
 - Read `docs/designs/README.md` before creating, reviewing, planning, implementing from, or validating documents under `docs/designs/**`.

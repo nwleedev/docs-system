@@ -14,6 +14,7 @@
 - [`docs/designs/README.md`](./docs/designs/README.md)는 모든 프로젝트에 같은 문서 틀을 강요하지 않으면서 요구사항, 조사 결과, 결정 사항, 계획과 검증 결과를 관리하는 방법을 설명합니다.
 - [`docs/dev/README.md`](./docs/dev/README.md)는 개발 지침을 조사하고 정리한 뒤 실제 작업에 적용하고 확인하는 방법을 설명합니다.
 - [`skills/use-design-docs`](./skills/use-design-docs/SKILL.md)와 [`skills/use-dev-guidance`](./skills/use-dev-guidance/SKILL.md)는 Codex와 호환되는 Skill 실행 환경에서 선택해 쓸 수 있는 어댑터입니다. Skill은 작업 순서를 안내하며, 실제 규칙은 각 README에서 관리합니다.
+- [`skills/use-words-review`](./skills/use-words-review/SKILL.md)는 커밋하거나 공유할 글과 이름을 읽기 전용으로 검토하는 스킬입니다.
 - [`examples/nextjs-frontend.md`](./examples/nextjs-frontend.md)는 특정 기술 구성에 맞춘 조사 프롬프트 예시입니다. 다른 프로젝트의 기본값으로 사용하지 않습니다.
 
 `src/`의 두 언어 문서는 따로 관리하며 같은 규칙을 번역한 문서라고 보장하지 않습니다. 필요한 항목을 가져오기 전에 두 파일의 해당 내용을 비교하세요.
@@ -28,6 +29,22 @@
 6. 루트 파일은 짧게 유지합니다. 자세한 내용은 관리할 수 있는 별도 문서로 옮기고 링크로 연결합니다.
 
 `src/`에 있는 파일명과 경로는 Codex를 비롯한 여러 도구가 기본으로 찾는 지침 위치가 아닙니다. 필요한 내용을 도구가 인식하는 파일로 옮기거나 별도 설정을 해야 합니다. 이 저장소는 `AGENTS.md`를 자동으로 만들거나 합치지 않습니다. 모든 부분을 한꺼번에 합치지 마세요. 관련 있고 확인할 수 있는 규칙만 담은 짧은 지침이, 근거 없는 규칙으로 채운 완성형 문서보다 쓸모 있습니다.
+
+## use-words-review 설치와 제거
+
+`skills/use-words-review/` 디렉터리 전체를 사용하는 도구가 지원하는 스킬 위치에 복사합니다.
+
+- Codex 저장소: `.agents/skills/use-words-review/`
+- Codex 사용자: `$HOME/.agents/skills/use-words-review/`
+- Claude Code 저장소: `.claude/skills/use-words-review/`
+- Claude Code 사용자: `$HOME/.claude/skills/use-words-review/`
+- 플러그인: `<plugin-root>/skills/use-words-review/`
+
+현재 탐색 위치는 [Codex 스킬 문서](https://developers.openai.com/codex/skills) 또는 [Claude Code 스킬 문서](https://code.claude.com/docs/en/skills)에서 확인합니다. 이 저장소의 `skills/use-words-review/`는 배포 원본이며, 이 경로에 있다는 이유만으로 자동 탐색되지는 않습니다.
+
+스킬을 설치한 뒤 [`src/AGENTS.en.md`](./src/AGENTS.en.md) 또는 [`src/AGENTS.ko.md`](./src/AGENTS.ko.md)에서 `BEGIN USE WORDS REVIEW`와 `END USE WORDS REVIEW` 표시를 포함한 구간 전체를 대상 저장소의 AGENTS에 합칩니다. 대상 저장소의 기존 소제목 구성을 유지하고 실제로 적용할 규칙만 추가합니다.
+
+스킬을 제거할 때에는 설치한 스킬 디렉터리와 시작·종료 표시를 포함한 AGENTS 구간 전체를 삭제합니다. 표시 밖에 있는 AGENTS 규칙은 그대로 둡니다.
 
 ## 운영 원칙
 
