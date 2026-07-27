@@ -9,11 +9,11 @@
 - `### 토큰 비용`
 - `### 스킬에 README.md 파일 제거`
 
-역할과 공개 문구의 출처를 구분하는 규칙은 현재 루트 `AGENTS.md`, 배포용 AGENTS 문서, 설계 문서와 개발 지침의 작성 규칙, `use-words-review`에 반영돼 있다. 남은 작업은 문장 하나의 표현을 고치는 검토와 문서 전체의 관계를 확인하는 검토를 연결하고, 반복 호출 비용을 줄이며, 스킬별 README에 있던 배포 안내를 저장소의 배포 문서로 옮기는 것이다.
+역할과 공개 문구의 출처를 구분하는 규칙은 현재 루트 `AGENTS.md`, 배포용 AGENTS 문서, 설계 문서와 개발 지침의 작성 규칙, `use-words-review`에 반영돼 있다. 남은 작업은 자연스러운 표현, 문장 자체의 뜻, 문서 전체의 관계를 각각 확인하도록 검토 절차를 보완하고, 반복 호출 비용을 줄이며, 스킬별 README에 있던 배포 안내를 저장소의 배포 문서로 옮기는 것이다.
 
 다음 조사 문서를 근거로 사용한다.
 
-- `references/natural-korean-and-ai-writing-research.md`의 `문장 사이의 관계를 따로 검토한다`
+- `references/natural-korean-and-ai-writing-research.md`의 `문장 자체의 뜻을 따로 확인한다`와 `문장 사이의 관계를 따로 검토한다`
 - `references/reusable-output-checks-research.md`의 `호출 수와 모델 설정을 함께 줄인다`
 - `references/reusable-output-checks-research.md`의 `스킬과 배포 지침의 소유 파일을 나눈다`
 
@@ -21,7 +21,8 @@
 
 ## 적용 원칙
 
-- 문장마다 자연스러운 표현을 썼는지와 문장 사이의 관계가 분명한지는 따로 확인한다.
+- 자연스러운 표현을 썼는지, 한 문장만 읽어도 뜻을 이해할 수 있는지, 문장 사이의 관계가 분명한지를 각각 확인한다.
+- 한 문장에 전제, 조건, 판단이나 행동을 여럿 넣어 그 관계나 필요한 설명이 빠졌다면 문법상 자연스러워도 통과시키지 않는다.
 - 같은 역할과 지칭 대상, 조건과 가정, 앞 단계의 결과, 사실과 제안 및 승인된 결정의 상태가 문단과 절을 지나도 이어져야 한다.
 - 관계를 판단할 근거가 없으면 접속 표현으로 메우거나 역할과 결정을 추정하지 않고 `needs human input`으로 남긴다.
 - 작성 중인 문장마다 서브에이전트를 호출하지 않는다. 같은 커밋이나 공유 단위에 들어갈 변경을 모아 한 번 검토한다.
@@ -32,10 +33,13 @@
 
 ## 작업 순서
 
-### 문서 전체의 관계를 검토한다
+### 문장 자체의 뜻과 문서 전체의 관계를 검토한다
 
 `skills/use-words-review/SKILL.md`의 입력 범위와 일곱 번째 판정 기준을 보완한다.
 
+- 문장마다 대상, 주체, 행동, 조건과 결과를 문서에 적힌 내용만으로 구분할 수 있는지 확인한다.
+- 한 문장에 독립된 판단이나 행동이 여럿 들어가 관계를 추측해야 한다면 문장을 나누거나 빠진 설명을 보충하도록 판정한다.
+- 문장 길이만으로 실패를 정하지 않는다. 길더라도 각 요소의 관계가 분명하면 통과시키고, 짧더라도 전제나 지칭 대상이 빠지면 통과시키지 않는다.
 - 변경분만으로 관계를 판단할 수 있으면 변경된 문단과 필요한 앞뒤 문장을 전달한다.
 - 제목과 절 사이의 관계, 앞 단계의 결과 또는 문서 책임을 확인해야 하면 변경된 절이나 파일 전체를 전달한다.
 - 같은 역할 이름이 같은 책임을 가리키는지 확인한다.
@@ -48,6 +52,8 @@
 
 `skills/use-words-review/references/examples.md`에는 문법상 자연스럽지만 관계가 끊긴 합성 사례와 정상 대조 사례를 추가한다.
 
+- 여러 전제, 조건과 행동을 한 문장에 압축해 관계를 알 수 없는 경우
+- 짧고 자연스럽지만 대상이나 필요한 설명이 빠진 경우
 - 같은 역할을 설명 없이 다른 이름으로 부르는 경우
 - 앞에서 정하지 않은 승인 범위나 결과를 참조하는 경우
 - 가리킬 수 있는 대상이 둘 이상인 표현
@@ -55,7 +61,7 @@
 
 각 사례는 판정, 문제가 되는 두 위치, 독자가 알 수 없는 관계, 관계를 분명히 한 대조문을 포함한다. 실제 프로젝트 이름, 작업 지시 원문, 개인 경로와 비공개 식별자는 사용하지 않는다.
 
-**완료 증거.** 네 실패 사례가 `needs revision` 또는 근거가 없는 경우 `needs human input`으로 판정되고, 정상 대조 사례는 `pass`로 판정된다. 문장 하나만 지적해서는 설명할 수 없는 실패에서 양쪽 위치가 함께 보고된다.
+**완료 증거.** 문장 자체의 뜻을 알 수 없는 두 사례와 문장 사이의 관계가 끊긴 네 사례가 `needs revision` 또는 근거가 없는 경우 `needs human input`으로 판정되고, 정상 대조 사례는 `pass`로 판정된다. 문장 자체의 문제는 빠진 정보나 불분명한 관계를 지적하고, 두 문장이나 절에 걸친 문제는 양쪽 위치를 함께 보고한다.
 
 ### 검토 호출과 토큰 사용을 줄인다
 
@@ -102,13 +108,13 @@
 - **삭제한다.** `skills/use-words-review/README.md`.
 - **조사와 계획만 갱신한다.** 이 설계 패키지의 `references/natural-korean-and-ai-writing-research.md`, `references/reusable-output-checks-research.md`, `plan.md`.
 - **변경하지 않는다.** `skills/use-design-docs/SKILL.md`, `skills/use-dev-guidance/SKILL.md`, `docs/designs/README.md`, `docs/dev/README.md`. 현재 규칙으로 문서 종류별 검증을 수행할 수 있고, 공개 문구 검토 절차를 추가하면 소유 파일이 겹친다.
-- **추가하지 않는다.** 새 스킬, 전용 서브에이전트 파일, `src/vale` 설정, 훅, CI와 별도 검사기. 문장 사이의 의미 관계를 정규식으로 판정할 근거가 없고 현재 요구사항은 기존 스킬 변경으로 충족할 수 있다.
+- **추가하지 않는다.** 새 스킬, 전용 서브에이전트 파일, `src/vale` 설정, 훅, CI와 별도 검사기. 문장 안팎의 의미 관계를 정규식으로 판정할 근거가 없고 현재 요구사항은 기존 스킬 변경으로 충족할 수 있다.
 
 ## 최종 검증
 
 1. 요구사항의 네 해당 부분이 조사 문서와 작업 단위에 빠짐없이 연결되는지 확인한다.
 2. `git diff --check`가 통과하고 변경 파일에 개인 절대 경로, 비공개 식별자, `TODO`, `TBD`, `FIXME`가 없는지 확인한다.
-3. 문장 관계의 실패 사례와 정상 대조 사례를 같은 입력 형식으로 검토한다.
+3. 문장 자체의 뜻과 문장 사이의 관계에 관한 실패 사례 및 정상 대조 사례를 같은 입력 형식으로 검토한다.
 4. 가벼운 설정과 높은 설정을 비교할 때 판정 품질, 토큰과 응답 시간을 함께 기록하는지 확인한다.
 5. 삭제한 README를 가리키는 저장소 상대 링크가 남지 않았는지 검색한다.
 6. 두 배포용 AGENTS 문서의 표시 범위와 의미가 각 언어에서 일치하는지 확인한다.
@@ -131,5 +137,5 @@
 - [OpenAI AGENTS 문서](https://learn.chatgpt.com/docs/agent-configuration/agents-md)는 경로별 AGENTS 지침을 합쳐 읽고 전체 크기를 제한하므로 실행 절차 전체보다 짧은 호출 조건을 배포 문서에 두는 근거가 된다.
 - [OpenAI 서브에이전트 문서](https://learn.chatgpt.com/docs/agent-configuration/subagents), [OpenAI 모델 지침](https://developers.openai.com/api/docs/guides/latest-model), [OpenAI 평가 지침](https://developers.openai.com/api/docs/guides/evaluation-best-practices)은 호출 수와 높은 추론 강도가 비용을 늘리며, 실제 사례에서 품질을 유지하는 설정을 비교해야 한다고 안내한다.
 - [Claude Code 서브에이전트 문서](https://code.claude.com/docs/en/sub-agents)와 [Anthropic 추론 강도 문서](https://platform.claude.com/docs/en/build-with-claude/effort)는 호출별 설정과 상속 동작, 낮은 설정의 비용 절감과 판단 능력 사이의 차이를 설명한다.
-- [Google 문단 구성](https://developers.google.com/style/paragraph-structure), [Google 문장 구성](https://developers.google.com/style/sentence-structure), [GOV.UK 사용자 스토리 작성](https://www.gov.uk/service-manual/agile-delivery/writing-user-stories), [NASA 요구사항 작성](https://www.nasa.gov/reference/appendix-c-how-to-write-a-good-requirement/)과 [W3C 제목 구조](https://www.w3.org/WAI/tutorials/page-structure/headings/)는 문장별 표현 외에 역할, 조건, 가정, 정보 순서와 문서 구조를 확인해야 한다는 근거를 제공한다.
+- [Google 문장 구성](https://developers.google.com/style/sentence-structure), [Microsoft 전 세계 독자를 위한 작성 지침](https://learn.microsoft.com/en-us/style-guide/global-communications/writing-tips), [GOV.UK 명료한 문장 지침](https://guidance.publishing.service.gov.uk/writing-to-gov-uk-standards/writing-guidelines/clear-language/), [GOV.UK 기능 표준 작성 지침](https://www.gov.uk/government/publications/handbook-for-standard-managers/functional-standards-writing-style-guide)과 [NASA 요구사항 작성](https://www.nasa.gov/reference/appendix-c-how-to-write-a-good-requirement/)은 조건과 행동의 관계, 한 문장에 담긴 생각의 수, 주체와 행동, 빠진 가정을 확인해야 한다는 근거를 제공한다. [Google 문단 구성](https://developers.google.com/style/paragraph-structure), [GOV.UK 사용자 스토리 작성](https://www.gov.uk/service-manual/agile-delivery/writing-user-stories)과 [W3C 제목 구조](https://www.w3.org/WAI/tutorials/page-structure/headings/)는 문단과 문서 전체의 정보 순서와 관계를 확인해야 한다는 근거를 제공한다.
 - [Compound Engineering의 AGENTS 범위 제거 구현](https://github.com/EveryInc/compound-engineering-plugin/blob/a9f6d530d4446d805a3100387dedd86268d7e695/src/utils/codex-agents.ts)과 [terraform-docs 출력 범위 설정](https://github.com/terraform-docs/terraform-docs/blob/10965cddfa169679511f176cfe67dd0189dc935f/docs/user-guide/configuration/output.md)은 Markdown의 HTML 주석으로 관리 범위를 표시하고 그 범위만 교체하거나 제거하는 실제 사례다.
