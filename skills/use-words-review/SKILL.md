@@ -10,10 +10,11 @@ Review public outputs without editing them. Delegate the semantic review to one 
 ## Establish the review scope
 
 1. Identify every changed output that will be committed, published, or shared. Include changed file and directory names and the candidate commit, pull-request, issue, or release text when applicable.
-2. Treat tracked repository text as public unless an applicable repository rule classifies it otherwise.
-3. Record the intended readers, what each reader must understand or do, the actor described by the text, any reviewer or approval owner, and whether exact source text is part of the artifact's purpose.
-4. Read the applicable AGENTS instructions and the owning document rules. When present and relevant, read repository-local design or development documentation indexes rather than assuming their structure.
-5. Keep review and editing separate. Do not modify an artifact unless the user separately authorizes the edit.
+2. Group outputs that belong to the same commit or publication into one review. Do not call a reviewer for each sentence while drafting.
+3. Treat tracked repository text as public unless an applicable repository rule classifies it otherwise.
+4. Record the intended readers, what each reader must understand or do, the actor described by the text, any reviewer or approval owner, and whether exact source text is part of the artifact's purpose.
+5. Read the applicable AGENTS instructions and the owning document rules. When present and relevant, read repository-local design or development documentation indexes rather than assuming their structure.
+6. Keep review and editing separate. Do not modify an artifact unless the user separately authorizes the edit.
 
 ## Collect publishable evidence
 
@@ -62,7 +63,22 @@ Use the readers, evidence, role clarity, and publication impact already collecte
 
 A long repetitive document may use the first or second setting, while a short high-impact sentence may require the third. Do not use `xhigh`, `max`, `ultra`, or an equivalent setting by default. Use a higher setting only when representative, approved review cases show that it prevents omissions or incorrect judgments that remain at `high`.
 
-Resolve these capability levels against the models and effort controls exposed by the current host. If the host does not support a per-invocation override, inherit the main agent's configuration and report the limitation. Do not create or require a named reviewer or classifier definition.
+When the current Codex host provides these models, use `gpt-5.6-terra` with low effort for the first level, `gpt-5.6-terra` with medium effort for the second, and `gpt-5.6-sol` with high effort for the third. Do not substitute a similarly named model when one of these is unavailable. Use another setting only after it passes the approved review cases below.
+
+Resolve these capability levels against the models and effort controls exposed by the current host. A call that changes the model or reasoning effort must receive a self-contained delegation message with the review scope, context, rules, check results, and result format. Do not depend on the full conversation being inherited by that call. If the host does not support a per-invocation override or cannot combine the required context with an override, inherit the main agent's configuration and report the limitation. Do not create or require a named reviewer or classifier definition.
+
+Before adopting a different or lighter setting, have the responsible reviewer approve the expected status and findings for representative cases. The set must include:
+
+- two sentences whose meaning is unclear because they omit or compress necessary information;
+- four cases where roles, referents, conditions, step results, or decision status do not connect across sentences;
+- a case that lacks evidence and must return `needs human input`;
+- a long but clear sentence and correctly connected sentences that must return `pass`.
+
+If repository evidence does not identify the responsible reviewer, keep the current setting and report adoption of a different or lighter setting as `needs human input`. Do not assign that approval role to the main agent or subagent by inference.
+
+Use a setting only when it matches every required status and finding. Reject it if it misses one defect, invents one defect, or fails to return `needs human input` where required. Among settings that pass, compare defect misses, incorrect findings, missed `needs human input` results, input, output, and total tokens, and elapsed time.
+
+Use token counts and elapsed time reported for the individual invocation. If the host does not expose an invocation-level value, record it as unavailable rather than estimating it, and exclude that run from measured token-cost comparisons.
 
 ## Delegate to a general-purpose subagent
 
@@ -96,7 +112,7 @@ When one sentence compresses several independent judgments or actions, require t
 
 For UI and accessibility text, judge whether users can understand the relevant state and next action. For code comments and API documentation, judge whether callers or maintainers receive the conditions and constraints they need.
 
-If no general-purpose subagent is available, perform the same checks in the main context but report that independent review was not performed. If write access cannot be restricted, do not claim that tool-enforced read-only review occurred.
+If no general-purpose subagent is available, perform the same checks in the main context. Put a warning at the beginning of the result that states independent review was not performed and why. This fallback alone does not stop a commit or publication. If write access cannot be restricted, do not claim that tool-enforced read-only review occurred.
 
 Repeat the review with the strongest available model and high reasoning effort only when the reviewer cannot judge the artifact because evidence conflicts or the main agent finds an unsupported or omitted judgment during reconciliation. A `needs revision` result alone does not require a more capable model. Missing evidence or authority remains `needs human input` at every model setting.
 
@@ -110,6 +126,6 @@ Repeat the review with the strongest available model and high reasoning effort o
 
 ## Report
 
-List the reviewed outputs, their intended readers, the checks performed, the model and reasoning setting when known, and the per-criterion results. Separate defects that can be revised from questions for the requirements owner, decision owner, reviewer, or approval owner. State any missing independent review, unavailable model override, unavailable check, redaction, or incomplete evidence.
+List the reviewed outputs, their intended readers, the checks performed, the model and reasoning setting when known, and the per-criterion results. Include invocation-level token counts and elapsed time when the host provides them; otherwise mark those values as unavailable. Separate defects that can be revised from questions for the requirements owner, decision owner, reviewer, or approval owner. State any missing independent review, unavailable model override, unavailable check, redaction, or incomplete evidence.
 
 End the review without editing files. If the user later authorizes fixes, make them as a separate task and run this review again on the revised outputs.
