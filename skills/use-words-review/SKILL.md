@@ -1,6 +1,6 @@
 ---
 name: use-words-review
-description: Review changed public or tracked text and names with an independent general-purpose subagent for audience fit, clear roles, publishable provenance, prompt or work-note leakage, private paths and identifiers, unnatural Korean, and unnecessary symbols. Use after creating, renaming, or editing files and directories, documentation, README files, UI or accessibility text, code comments, commit or pull-request text, issue text, or release notes; before committing or sharing those outputs; and whenever the user requests a wording or public-output review.
+description: Review changed public or tracked text and names in any language with an independent general-purpose subagent for audience fit, clear roles, publishable provenance, prompt or work-note leakage, private paths and identifiers, sentence meaning and relationships, and unnecessary symbols. Also review natural Korean when the output contains Korean. Use after creating, renaming, or editing files and directories, documentation, README files, UI or accessibility text, code comments, commit or pull-request text, issue text, or release notes; before committing or sharing those outputs; and whenever the user requests a wording or public-output review.
 ---
 
 # Use Words Review
@@ -15,6 +15,7 @@ Review public outputs without editing them. Delegate the semantic review to one 
 4. Record the intended readers, what each reader must understand or do, the actor described by the text, any reviewer or approval owner, and whether exact source text is part of the artifact's purpose.
 5. Read the applicable AGENTS instructions and the owning document rules. When present and relevant, read repository-local design or development documentation indexes rather than assuming their structure.
 6. Keep review and editing separate. Do not modify an artifact unless the user separately authorizes the edit.
+7. Identify which languages appear in the changed output. Apply the common review to every language. Apply the Korean reference only to Korean text, including the Korean portions of multilingual output.
 
 ## Collect publishable evidence
 
@@ -34,18 +35,13 @@ When Git and text search are available, inspect only the changed public outputs 
 
 Prefer the changed text and enough surrounding context to understand headings, claims, and reader actions. Include a full file only when the relationship between sections cannot be judged from the diff.
 
-Read [references/examples.md](references/examples.md) when reviewing Korean wording or when the distinction between a prohibited and allowed case is unclear. Use the examples to calibrate judgment; do not turn example phrases into a word blacklist and do not pass text merely because no example matches it.
+Select reference files before opening either one:
 
-Treat frequently misused expressions as review candidates, not automatic failures. Judge whether the surrounding text identifies the subject, action, condition, result, and intended reader.
+1. Read [references/examples.md](references/examples.md) when calibrating the common criteria or when the distinction between a prohibited and allowed case is unclear. The examples cover audience, evidence, source preservation, private paths, sentence meaning, and relationships between sentences.
+2. If the changed output has no Korean, do not open [references/korean.md](references/korean.md), even when a common criterion is unclear. Do not inspect this file merely to decide whether it applies.
+3. If the changed output contains Korean or the review must judge a Korean expression, read `references/korean.md` and apply it only to the Korean text.
 
-- Keep `경로` when it identifies a file or directory location, a URL component, or a network route. When it stands for a method, procedure, option, or sequence, require the text to name that action.
-- Keep `공개 저장소` when a product's documented visibility type or access rule uses that name. For general internet distribution, require the text to state who can find, read, download, or modify the repository.
-- Keep terms such as `범위`, `경계`, `계약`, `루브릭`, `유효성`, `정합성`, and `가시성` when the field and object being judged give them a precise meaning. Otherwise require the text to name the affected object and judgment.
-- Check whether verbs such as `지원`, `보장`, `대응`, `다루다`, `노출`, `포착`, `정렬`, and `표면화` hide the actual behavior, responsible actor, or condition. Keep an established technical use when those details are clear.
-- Report evaluative words such as `핵심`, `효과적`, `원활`, `강력`, `견고`, `포괄적`, `다양한`, and `본질적` as `needs revision` when deleting them changes no fact, condition, or reader action.
-- Resolve familiar but vague words such as `해당`, `관련`, `이 내용`, `결과`, `출력`, `데이터`, `기능`, and `범위` to one identifiable referent in nearby text.
-
-When repository evidence cannot determine the intended meaning, return `needs human input` instead of choosing a replacement. A word's presence in an example or candidate list never decides the status.
+Use each selected reference to calibrate judgment. Do not turn an example or candidate expression into a blacklist, and do not pass text merely because no example matches it. When repository evidence cannot determine the intended meaning, return `needs human input` instead of choosing a replacement.
 
 Choose the review context from the relationship that must be judged:
 
@@ -103,12 +99,14 @@ Ask the subagent to judge each applicable criterion:
 4. Claims and assigned roles use publishable evidence, approved decisions, or approved wording; unresolved support, ownership, compatibility, security, privacy, licensing, and responsibility are not invented.
 5. Exact source text is retained only for an allowed purpose and only to the necessary extent.
 6. Personal paths, credentials, private URLs, private project identifiers, internal-only names, and unnecessary local paths are absent or safely replaced.
-7. Korean wording is natural for the intended readers rather than literal, mechanically translated, padded with stock phrases, or mixed with avoidable English forms. Judge natural wording, sentence meaning, and relationships between sentences separately:
+7. Each sentence conveys enough information to understand its meaning, and relationships between sentences and sections remain explicit:
    - For each sentence, determine whether the text identifies its subject or referent, action, conditions, and result without requiring the reader to invent missing information.
    - Do not fail a sentence for length alone. Fail a short sentence when its subject, referent, premise, or necessary explanation is missing, and allow a long sentence when the relationships between its parts remain explicit.
-   - Check that the same role name keeps the same responsibility, pronouns and phrases such as "this result" have one identifiable referent, conditions and assumptions appear before the action that relies on them, and one step's result explains why the next step can begin.
+   - Check that the same role name keeps the same responsibility. When adjacent text switches role names, require evidence that they name distinct roles or explain that they name the same role; do not infer the relationship from familiar titles.
+   - Check that pronouns and phrases such as "this result" have one identifiable referent, conditions and assumptions appear before the action that relies on them, and one step's result explains why the next step can begin.
    - Distinguish verified facts, proposals under review, and approved decisions. Do not let a later sentence silently promote a proposal into an approved decision.
-8. Emoji and uncommon symbols are absent unless readers or an approved format need them.
+8. When the output contains Korean, its Korean wording is natural for the intended readers rather than literal, mechanically translated, padded with stock phrases, or mixed with avoidable English forms. Apply `references/korean.md` only to the Korean text.
+9. Emoji and uncommon symbols are absent unless readers or an approved format need them.
 
 Require one of these statuses for every applicable criterion and artifact:
 
@@ -120,6 +118,8 @@ Require one of these statuses for every applicable criterion and artifact:
 Require each non-passing result to identify a tight location, the evidence or reasoning, and the reader-facing consequence. Instruct the subagent not to rewrite the artifact and not to quote sensitive text in its report.
 
 When one sentence compresses several independent judgments or actions, require the finding to identify the clauses whose relationship is unclear and the information the reader cannot recover. When a problem spans sentences or sections, require both locations and describe the missing relationship between them.
+
+Use `needs revision` only when repository evidence already identifies the exact referent, actor, relationship, or decision needed to correct the text. Use `needs human input` when that information is absent or conflicting; naming a plausible actor or relationship is not a correction.
 
 For UI and accessibility text, judge whether users can understand the relevant state and next action. For code comments and API documentation, judge whether callers or maintainers receive the conditions and constraints they need.
 
@@ -137,6 +137,6 @@ Repeat the review with the strongest available model and high reasoning effort o
 
 ## Report
 
-List the reviewed outputs, their intended readers, the checks performed, the model and reasoning setting when known, and the per-criterion results. Include invocation-level token counts and elapsed time when the host provides them; otherwise mark those values as unavailable. Separate defects that can be revised from questions for the requirements owner, decision owner, reviewer, or approval owner. State any missing independent review, unavailable model override, unavailable check, redaction, or incomplete evidence.
+List the reviewed outputs, their intended readers, the reference files opened, the checks performed, the model and reasoning setting when known, and the per-criterion results. Include invocation-level token counts and elapsed time when the host provides them; otherwise mark those values as unavailable. Separate defects that can be revised from questions for the requirements owner, decision owner, reviewer, or approval owner. State any missing independent review, unavailable model override, unavailable check, redaction, or incomplete evidence.
 
 End the review without editing files. If the user later authorizes fixes, make them as a separate task and run this review again on the revised outputs.
