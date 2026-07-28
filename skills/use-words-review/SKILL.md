@@ -36,6 +36,17 @@ Prefer the changed text and enough surrounding context to understand headings, c
 
 Read [references/examples.md](references/examples.md) when reviewing Korean wording or when the distinction between a prohibited and allowed case is unclear. Use the examples to calibrate judgment; do not turn example phrases into a word blacklist and do not pass text merely because no example matches it.
 
+Treat frequently misused expressions as review candidates, not automatic failures. Judge whether the surrounding text identifies the subject, action, condition, result, and intended reader.
+
+- Keep `경로` when it identifies a file or directory location, a URL component, or a network route. When it stands for a method, procedure, option, or sequence, require the text to name that action.
+- Keep `공개 저장소` when a product's documented visibility type or access rule uses that name. For general internet distribution, require the text to state who can find, read, download, or modify the repository.
+- Keep terms such as `범위`, `경계`, `계약`, `루브릭`, `유효성`, `정합성`, and `가시성` when the field and object being judged give them a precise meaning. Otherwise require the text to name the affected object and judgment.
+- Check whether verbs such as `지원`, `보장`, `대응`, `다루다`, `노출`, `포착`, `정렬`, and `표면화` hide the actual behavior, responsible actor, or condition. Keep an established technical use when those details are clear.
+- Report evaluative words such as `핵심`, `효과적`, `원활`, `강력`, `견고`, `포괄적`, `다양한`, and `본질적` as `needs revision` when deleting them changes no fact, condition, or reader action.
+- Resolve familiar but vague words such as `해당`, `관련`, `이 내용`, `결과`, `출력`, `데이터`, `기능`, and `범위` to one identifiable referent in nearby text.
+
+When repository evidence cannot determine the intended meaning, return `needs human input` instead of choosing a replacement. A word's presence in an example or candidate list never decides the status.
+
 Choose the review context from the relationship that must be judged:
 
 - Provide the changed paragraph and the necessary adjacent sentences when they are enough to identify each sentence's subject, referent, action, condition, and result.
