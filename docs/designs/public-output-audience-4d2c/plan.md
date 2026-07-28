@@ -9,9 +9,10 @@
 - `### 토큰 비용`
 - `### 스킬에 README.md 파일 제거`
 - `### 문맥에 맞지 않는 경로와 공개 표현`
+- `### 공통 검토 절차와 한국어 판정 기준 분리`
 - `### 외부 출처를 찾기 어려운 문제`
 
-역할과 공개 문구의 출처를 구분하는 규칙은 현재 루트 `AGENTS.md`, 배포용 AGENTS 문서, 설계 문서와 개발 지침의 작성 규칙, `use-words-review`에 반영돼 있다. 문장 자체의 뜻과 문서 전체의 관계를 나누는 검토, 모델 선택과 비용 기준, 스킬 README의 배포 안내 이전도 반영됐다. 남은 작업은 문맥에 따라 뜻이 달라지는 표현을 정상 용례와 함께 판정하도록 기존 스킬과 예시를 보완하고, 설계 문서에서 여러 외부 출처를 주장별로 구분하는 것이다. 아래 완료된 작업 단위는 후속 변경에서 유지할 기준과 회귀 확인 항목으로 남긴다.
+역할과 공개 문구의 출처를 구분하는 규칙은 현재 루트 `AGENTS.md`, 배포용 AGENTS 문서, 설계 문서와 개발 지침의 작성 규칙, `use-words-review`에 반영돼 있다. 문장 자체의 뜻과 문서 전체의 관계를 나누는 검토, 모델 선택과 비용 기준, 스킬 README의 배포 안내 이전도 반영됐다. 남은 작업은 공통 문장 의미 검사를 한국어 자연스러움 검사와 분리하고, 한국어 판정 자료를 새 `references/korean.md`로 옮기며, 문맥에 따라 뜻이 달라지는 표현을 정상 용례와 함께 판정하도록 참조 자료를 정리하는 것이다. 설계 문서에서 여러 외부 출처를 주장별로 구분하는 기존 작업도 유지한다. 아래 완료된 작업 단위는 후속 변경에서 유지할 기준과 회귀 확인 항목으로 남긴다.
 
 다음 조사 문서를 근거로 사용한다.
 
@@ -20,6 +21,7 @@
 - `references/external-source-presentation-research.md`의 `결론`과 `다른 형식과 적용 조건`
 - `references/reusable-output-checks-research.md`의 `호출 수와 모델 설정을 함께 줄인다`
 - `references/reusable-output-checks-research.md`의 `스킬과 배포 지침의 소유 파일을 나눈다`
+- `references/reusable-output-checks-research.md`의 `공통 검토와 한국어 판정 자료를 분리한다`
 
 새 검토 스킬, 전용 서브에이전트 파일, Vale 규칙, Git 훅, CI 작업과 별도 검사기는 추가하지 않는다. 현재 작업에 적용할 개발 지침은 `docs/dev/README.md`이며 별도의 `docs/dev/` 문서는 만들지 않는다.
 
@@ -37,7 +39,9 @@
 - 작성 중인 문장마다 서브에이전트를 호출하지 않는다. 같은 커밋이나 공유 단위에 들어갈 변경을 모아 한 번 검토한다.
 - 결정적 검색을 먼저 실행하고, 그 결과와 관계 판단에 필요한 문단 또는 절만 서브에이전트에 전달한다.
 - 모델 이름을 스킬의 필수 설정으로 고정하지 않는다. 실행 환경에서 제공하는 모델 가운데 승인된 대표 사례를 통과하는 가장 가벼운 설정을 선택한다.
-- `skills/use-words-review/SKILL.md`는 실행 절차, `references/examples.md`는 판정 예시, `src/AGENTS.en.md`와 `src/AGENTS.ko.md`는 다른 저장소에 배포할 호출 지침, 루트 README 두 파일은 설치와 제거 방법을 맡는다.
+- `skills/use-words-review/SKILL.md`는 공통 실행 절차와 모든 언어에 적용되는 문장 의미 검사, `references/korean.md`는 한국어 표현 판정 기준과 한국어 대조 사례, `references/examples.md`는 언어와 관계없는 판정 사례를 맡는다.
+- `src/AGENTS.en.md`와 `src/AGENTS.ko.md`는 다른 저장소에 배포할 호출 지침과 해당 언어로 작성할 때 항상 필요한 짧은 원칙을 맡고, 루트 README 두 파일은 설치와 제거 방법을 맡는다.
+- 한국어가 있는 결과물에만 `references/korean.md`를 적용한다. 여러 언어가 섞였으면 한국어 부분에만 적용하고, 모든 언어에 필요한 문장 뜻과 연결 검사는 `SKILL.md`에서 계속 수행한다.
 - `docs/designs/README.md`, `docs/dev/README.md`, `skills/use-design-docs/SKILL.md`, `skills/use-dev-guidance/SKILL.md`에는 같은 검토 절차를 복사하지 않는다.
 
 ## 확정한 운영 방식
@@ -65,9 +69,24 @@
 
 **완료 증거.** 2단계 목록에서는 한 하위 항목에 외부 링크가 하나만 있고 각 링크 문구로 목적지를 구분할 수 있으며, 가까운 상위 항목에서 출처가 뒷받침하는 내용을 확인할 수 있다. 주장 문단 뒤에 1단계 출처 목록을 쓰면 그 문단은 하나의 주장만 담고 각 출처 항목에는 외부 링크가 하나만 있어야 한다. 단일 출처를 쓴 문장에는 외부 링크가 하나만 있고, 서로 다른 주장은 별도 소제목이나 문단에서 해당 출처와 연결된다. 각주를 사용했다면 대상 표시 환경에서 각주로 이동하고 본문으로 돌아올 수 있는지 확인하며, 최종 독자가 같은 출처를 본문에 연결한 형식보다 주장과 근거를 쉽게 찾을 수 있다고 판정해야 한다. 링크를 여러 줄로 나누기만 한 경우는 통과시키지 않고 최종 독자가 주장과 출처의 관계를 직접 확인한다.
 
+### 공통 검토와 한국어 판정 자료를 분리한다
+
+`skills/use-words-review/SKILL.md`, `skills/use-words-review/references/examples.md`, 새 `skills/use-words-review/references/korean.md`와 `src/AGENTS.ko.md`의 책임을 다시 나눈다.
+
+- `SKILL.md`는 검토 대상의 언어를 확인한다. 한국어가 있거나 한국어 표현을 판정해야 할 때만 `references/korean.md`를 읽고, 다국어 결과물에서는 한국어 부분에만 그 기준을 적용한다.
+- `SKILL.md`의 설명은 모든 언어의 공개 문구와 문장 의미를 검토한다는 범위를 먼저 밝히고, 한국어가 포함됐을 때 한국어 자연스러움도 검사한다고 적는다. 한국어 표현 목록은 설명에 넣지 않는다.
+- 현재 한국어 자연스러움 항목에 들어 있는 문장 자체의 뜻과 문장 사이의 관계 검사를 모든 언어에 적용되는 별도 판정 항목으로 옮긴다. 한국어가 없는 글에서도 대상, 행동 주체, 행동, 조건, 결과와 문장 사이의 관계를 검사한다.
+- `SKILL.md` 본문의 `경로`, `공개 저장소`, 전문용어, 행동을 감추는 동사, 평가 표현과 모호한 지칭 표현 목록은 `references/korean.md`로 옮긴다.
+- `references/examples.md`에서 한국어 어휘 자체가 판정 이유인 사례는 `references/korean.md`로 옮긴다. 작업 보고, 근거, 원문, 개인 경로와 문장 의미 및 연결처럼 언어와 관계없는 사례는 `references/examples.md`에 남긴다.
+- `src/AGENTS.ko.md`에는 독자와 문맥에 맞게 쓰기, 낱말 단위로 직역하지 않기, 대상과 행동을 밝히기, 의미 없는 수식어를 쓰지 않기, 문장 뜻과 연결을 각각 확인하기 같은 짧은 작성 원칙을 남긴다. 영어 용어별 대체 목록과 판정 사례는 제거한다.
+- `SKILL.md`는 두 참조 파일을 각각 직접 연결하고 읽을 조건을 설명한다. 참조 파일이 다른 참조 파일을 다시 불러오게 만들지 않는다.
+- 별도 한국어 스킬, 영어 참조 파일과 파일 생성기는 추가하지 않는다. 영어 참조 파일은 영어에서 반복되는 표현 실패와 검증 사례가 확인된 뒤 검토한다.
+
+**완료 증거.** 스킬 설명만 읽어도 한국어가 없는 공개 문구 검토에 이 스킬을 사용할 수 있음을 알 수 있다. 한국어가 없는 대표 사례에서 `references/korean.md`를 읽지 않고도 문장 뜻과 연결을 판정한다. 한국어 대표 사례에서는 새 참조 파일을 읽고 문제와 정상 사례를 모두 올바르게 판정한다. `SKILL.md`와 `src/AGENTS.ko.md`에는 상세한 한국어 표현 목록이 남지 않고, 한국어 표현의 판정 조건과 대조 사례는 `references/korean.md`에서 찾을 수 있다. 두 참조 파일은 `SKILL.md`에서 한 단계로 연결되고 서로를 참조하지 않는다.
+
 ### 문맥에 따라 표현을 판정한다
 
-`skills/use-words-review/SKILL.md`의 한국어 판정 기준과 `references/examples.md`의 대조 사례를 보완한다.
+`skills/use-words-review/references/korean.md`의 한국어 판정 기준과 대조 사례를 보완한다.
 
 - `경로`는 파일과 디렉터리 위치, URL 구성 요소와 네트워크 전달 구간을 가리킬 때 유지한다. 방법, 절차, 선택지나 진행 순서를 뜻하면 실제 행동을 적는다.
 - `공개 저장소`는 제품의 표시 유형이나 보안 규칙이 그 명칭과 열람 조건을 정한 경우에만 유지한다. 일반적인 인터넷 배포 상태는 누가 무엇을 볼 수 있는지 적는다.
@@ -83,7 +102,7 @@
 
 ### 반영된 문장 뜻과 관계 검토를 유지한다
 
-`skills/use-words-review/SKILL.md`의 입력 범위와 일곱 번째 판정 기준에는 다음 내용이 반영돼 있다.
+`skills/use-words-review/SKILL.md`의 입력 범위와 모든 언어에 적용되는 문장 의미 및 연결 판정에는 다음 내용을 유지한다.
 
 - 문장마다 대상, 주체, 행동, 조건과 결과를 문서에 적힌 내용만으로 구분할 수 있는지 확인한다.
 - 한 문장에 독립된 판단이나 행동이 여럿 들어가 관계를 추측해야 한다면 문장을 나누거나 빠진 설명을 보충하도록 판정한다.
@@ -96,7 +115,7 @@
 - 확인된 사실, 검토 중인 제안과 승인된 결정이 서로 다른 상태로 표시되는지 확인한다.
 - 문제가 두 문장이나 절에 걸쳐 있으면 판정 결과에 양쪽 위치와 독자가 놓치는 관계를 함께 적는다.
 
-루트 `AGENTS.md`, `src/AGENTS.en.md`와 `src/AGENTS.ko.md`의 자연스러운 글쓰기 원칙에는 문장을 따로 고친 뒤 문단과 문서 전체를 다시 읽는다는 짧은 기준을 추가한다. 상세 판정 목록은 `SKILL.md`만 소유한다.
+루트 `AGENTS.md`, `src/AGENTS.en.md`와 `src/AGENTS.ko.md`의 자연스러운 글쓰기 원칙에는 문장을 따로 고친 뒤 문단과 문서 전체를 다시 읽는다는 짧은 기준을 유지한다. 언어와 관계없는 상세 의미 판정은 `SKILL.md`, 한국어 표현의 상세 판정은 `references/korean.md`가 소유한다.
 
 `skills/use-words-review/references/examples.md`에는 문법상 자연스럽지만 관계가 끊긴 합성 사례와 정상 대조 사례를 추가한다.
 
@@ -153,21 +172,21 @@
 
 안내 내용과 내부 링크는 소유 문서로 옮겨졌고 `skills/use-words-review/README.md`는 삭제됐다. 후속 변경에서 이 파일이나 주석 범위용 코드와 생성기를 다시 추가하지 않는다.
 
-**완료 증거.** 스킬 폴더에는 `SKILL.md`와 `references/examples.md`만 남는다. 저장소에서 삭제한 README를 가리키는 링크가 없고, 두 배포용 AGENTS 문서에 시작과 끝 주석이 각각 한 번만 존재한다. 표시된 범위만 제거해도 주변 AGENTS 문서가 그대로 읽힌다.
+**완료 증거.** 스킬 폴더에는 `SKILL.md`, `references/examples.md`와 `references/korean.md`만 존재한다. 저장소에서 삭제한 README를 가리키는 링크가 없고, 두 배포용 AGENTS 문서에 시작과 끝 주석이 각각 한 번만 존재한다. 표시된 범위만 제거해도 주변 AGENTS 문서가 그대로 읽힌다.
 
 ## 파일별 변경 판단
 
-- **후속 변경 대상이다.** `skills/use-words-review/SKILL.md`, `skills/use-words-review/references/examples.md`.
-- **현재 상태를 유지한다.** `AGENTS.md`, `src/AGENTS.en.md`, `src/AGENTS.ko.md`, `README.md`, `README.ko.md`.
+- **후속 변경 대상이다.** `skills/use-words-review/SKILL.md`, `skills/use-words-review/references/examples.md`, 새 `skills/use-words-review/references/korean.md`, `src/AGENTS.ko.md`.
+- **현재 상태를 유지한다.** `AGENTS.md`, `src/AGENTS.en.md`, `README.md`, `README.ko.md`.
 - **삭제 상태를 유지한다.** `skills/use-words-review/README.md`.
 - **조사와 계획을 갱신한다.** 이 설계 패키지의 `references/external-source-presentation-research.md`, `plan.md`.
 - **외부 출처 기준을 보완한다.** `docs/designs/README.md`. 설계 문서의 공통 표시 방식은 이 파일이 소유한다.
 - **변경하지 않는다.** `skills/use-design-docs/SKILL.md`, `skills/use-dev-guidance/SKILL.md`, `docs/dev/README.md`. 현재 절차로 각 README의 기준을 읽고 검증할 수 있으므로 출처 표시 규칙을 스킬에 복사하지 않는다.
-- **추가하지 않는다.** 새 스킬, 전용 서브에이전트 파일, `src/vale` 설정, 훅, CI와 별도 검사기. 문장 안팎의 의미 관계를 정규식으로 판정할 근거가 없고 현재 요구사항은 기존 스킬 변경으로 충족할 수 있다.
+- **추가하지 않는다.** 새 스킬, 다른 언어의 참조 파일, 전용 서브에이전트 파일, 생성기, `src/vale` 설정, 훅, CI와 별도 검사기. 문장 안팎의 의미 관계를 정규식으로 판정할 근거가 없고 현재 요구사항은 기존 스킬과 한국어 참조 파일 변경으로 충족할 수 있다.
 
 ## 최종 검증
 
-1. 요구사항의 여섯 해당 부분이 조사 문서와 작업 단위에 빠짐없이 연결되는지 확인한다.
+1. 요구사항의 일곱 해당 부분이 조사 문서와 작업 단위에 빠짐없이 연결되는지 확인한다.
 2. `git diff --check`가 통과하고 변경 파일에 개인 절대 경로, 비공개 식별자, `TODO`, `TBD`, `FIXME`가 없는지 확인한다.
 3. 문장 자체의 뜻과 문장 사이의 관계에 관한 실패 사례 및 정상 대조 사례를 같은 입력 형식으로 검토한다.
 4. 실행 환경이 지정 모델을 제공하면 `gpt-5.6-terra`의 낮은 추론 강도와 중간 추론 강도, `gpt-5.6-sol`의 높은 추론 강도를 같은 대표 사례로 비교한다. 지정 모델을 제공하지 않으면 실제로 사용한 설정과 제약, 같은 대표 사례의 통과 결과를 기록한다. 두 경우 모두 판정 품질, 토큰과 응답 시간을 확인한다.
@@ -179,6 +198,9 @@
 10. `docs/designs/README.md`의 reference, plan과 최종 독자 검토 기준을 각각 `pass`, `needs revision`, `needs human input`, `not applicable`로 판정한다.
 11. 문맥에 따라 달라지는 각 표현군에서 문제 사례와 정상 사례를 함께 검토하고, 단어 출현만으로 실패 또는 통과가 결정되지 않는지 확인한다.
 12. 외부 출처를 새 형식으로 쓴 부분에서 한 출처 항목에 외부 링크가 하나만 있는지 검색하고, 각 출처가 가까운 하나의 주장과 연결되는지 읽어 확인한다.
+13. 한국어가 없는 검토 입력에서도 문장 뜻과 연결 항목이 적용되고 `references/korean.md`가 입력에 포함되지 않는지 확인한다.
+14. 한국어 검토 입력에서는 `references/korean.md`를 읽고 한국어 부분에만 적용하는지 확인한다.
+15. `SKILL.md`에서 두 참조 파일로 직접 연결되고 참조 파일끼리 연결되지 않는지 확인하며, 상세한 한국어 표현 목록이 `SKILL.md`와 `src/AGENTS.ko.md`에 중복되지 않는지 검색한다.
 
 문서 검토만으로 스킬이 실제 설치 환경에서 동작한다고 판정하지 않는다. 구현 뒤 Codex와 Claude Code에서 스킬 탐색, AGENTS 적용, 호출별 설정 지원 여부를 각각 확인해야 한다.
 
@@ -191,6 +213,8 @@
 - README를 삭제하려면 현재 요구사항과 관계없는 설치 정책이나 배포 도구를 새로 정해야 하는 경우 그 작업만 멈추고 필요한 결정을 보고한다.
 - 기존 배포용 AGENTS 문서의 의미를 유지하려면 이번 검토와 관계없는 정책까지 바꿔야 하는 경우 해당 변경을 분리한다.
 - 외부 출처를 나누는 과정에서 기존 주장의 의미나 근거 범위를 확인할 수 없으면 모양만 바꾸지 않고 해당 항목을 `needs human input`으로 남긴다.
+- 한국어 작성 단계에서 항상 필요한 원칙과 검토 시에만 필요한 상세 판정 자료를 구분할 수 없으면 해당 항목을 옮기지 않고 두 실행 시점의 필요성을 다시 확인한다.
+- 다른 언어의 전용 참조 파일은 반복 실패와 정상 대조 사례가 확인되기 전까지 만들지 않는다.
 
 ## 확인한 외부 출처
 
@@ -199,6 +223,14 @@
   - [OpenAI 스킬 문서](https://learn.chatgpt.com/docs/build-skills)는 스킬 탐색과 `SKILL.md`를 불러오는 절차를 설명한다.
   - [Claude Code 스킬 문서](https://code.claude.com/docs/en/agent-sdk/skills)는 Agent SDK에서 사용하는 스킬 디렉터리 구성을 설명한다.
   - [OpenAI AGENTS 문서](https://learn.chatgpt.com/docs/agent-configuration/agents-md)는 경로별 지침을 합쳐 읽는 방식과 크기 제한을 설명한다.
+- **공통 절차와 언어별 참조 자료.** 공통 실행 절차는 짧게 유지하고 한국어에만 필요한 판정 자료는 필요할 때 직접 읽는 참조 파일로 분리한다.
+  - [Agent Skills 명세](https://agentskills.io/specification)는 집중된 참조 파일을 필요할 때 읽고 `SKILL.md`에서 한 단계로 연결하도록 안내한다.
+  - [OpenAI 스킬 문서](https://learn.chatgpt.com/docs/build-skills)는 스킬을 선택한 뒤 `SKILL.md`를 읽고 선택형 참조 자료를 필요에 따라 사용하는 점진적 로딩 방식을 설명한다.
+  - [Claude Code 스킬 문서](https://code.claude.com/docs/en/skills)는 `SKILL.md`를 핵심 절차에 집중하고 상세한 스타일 가이드와 예시를 보조 파일로 분리하도록 안내한다.
+  - [Claude Code 프로젝트 지침](https://code.claude.com/docs/en/memory)은 모든 작업에서 필요한 규칙과 특정 작업에만 필요한 절차를 프로젝트 지침과 스킬로 나누도록 설명한다.
+  - [Unicode LDML](https://unicode.org/reports/tr35/)은 공통 자료를 언어 중립 계층에 두고 언어별 자료에는 다른 값만 두어 중복과 관리 오류를 줄이는 구조를 설명한다.
+  - [Google의 다국어 문서 지침](https://developers.google.com/style/translation)은 현지화를 단순 번역과 구분하고 언어와 독자에 맞는 용어 및 문장 구조를 사용하도록 안내한다.
+  - [Microsoft의 전 세계 독자를 위한 작성 지침](https://learn.microsoft.com/en-us/style-guide/global-communications/writing-tips)은 분명한 문장 구조와 일관된 용어 사용을 권고한다.
 - **검토 모델과 비용.** 호출 수와 높은 추론 강도는 비용을 늘릴 수 있으므로 실제 검토 사례에서 품질을 유지하는 설정을 비교해야 한다.
   - [OpenAI 서브에이전트 문서](https://learn.chatgpt.com/docs/agent-configuration/subagents)는 서브에이전트의 설정과 호출 방식을 설명한다.
   - [OpenAI 모델 지침](https://developers.openai.com/api/docs/guides/latest-model)은 작업 난도에 따른 모델과 추론 설정을 설명한다.
