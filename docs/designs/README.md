@@ -41,6 +41,11 @@ For every document type, this README should define
 - Use bullets for unordered items and numbered lists only for sequence or priority. Present paired names and descriptions as bold run-in labels followed by prose.
 - When readers must compare options or repeated items, give each one its own subsection and describe the applicable attributes in the same order. Do not add empty fields merely to force uniformity.
 - Separate sourced facts, analysis, approved decisions, proposals, and unresolved uncertainty so readers can distinguish them.
+- When one external source supports a claim, place one descriptive inline link at the end of the claim.
+- When several external sources support one claim, use a nested list by default. State the compared result in the parent item, then give each source its own child item with one descriptive link and the fact confirmed from that source.
+- A paragraph that contains one claim may be followed immediately by a one-level source list. Give each source its own item with one external link and the fact it supports.
+- When sources support different claims, separate the claims with subsections or paragraphs and place each source near the claim it supports. Do not collect links in an unrelated `References` or `Further reading` list at the end of the document.
+- Use footnotes only when the target renderer provides working navigation to the note and back to the text, and the intended reader finds them easier to follow than inline sources.
 - Link to the owning document instead of copying the same requirement, decision, evidence, or guidance into multiple files.
 - Do not add IDs to requirements or derived documents. Add YAML, status fields, or other metadata only when a current tool or review process consumes them.
 
@@ -109,6 +114,7 @@ Create a reference document when factual research or repository evidence will be
 - The question being investigated
 - The requirement area or work context that made the research necessary, identified without copying internal task text
 - Sources and the dates or revisions reviewed
+- A descriptive link and the supported fact for each external source, placed where readers can identify the claim it supports
 - Facts supported directly by those sources
 - Conclusions derived from comparing the evidence
 - Limitations, conflicts, and unresolved uncertainty
@@ -223,4 +229,10 @@ Do not add these artifacts in advance for every package.
 - [Anthropic: Demystifying evals for AI agents](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents) recommends deterministic checks where possible, model review where necessary, and reviewer calibration for subjective judgments.
 - [Anthropic: Agent Skills](https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills) recommends progressive disclosure and adding instructions from observed failures instead of anticipating every case.
 - [NASA: How to write a good requirement](https://www.nasa.gov/reference/appendix-c-how-to-write-a-good-requirement/) recommends necessary, consistent, implementation-free, and verifiable requirements.
-- [W3C: Headings](https://www.w3.org/WAI/tutorials/page-structure/headings/), [Google: Lists](https://developers.google.com/style/lists), [Google: Paragraph structure](https://developers.google.com/style/paragraph-structure), [Microsoft: Lists](https://learn.microsoft.com/en-us/style-guide/scannable-content/lists), [Digital.gov: Headings](https://digital.gov/guides/plain-language/design/headings), and [GOV.UK: Publishing accessible documents](https://www.gov.uk/guidance/publishing-accessible-documents) support descriptive headings, concise paragraphs, and list formats chosen for the information's order and relationships.
+- **Document structure.** Descriptive headings, focused paragraphs, and lists chosen for the information's order make documents easier to scan without hiding relationships between items.
+  - [W3C: Headings](https://www.w3.org/WAI/tutorials/page-structure/headings/) explains how heading levels communicate the organization of page content.
+  - [Google: Lists](https://developers.google.com/style/lists) distinguishes unordered collections from procedures that require a numbered sequence.
+  - [Google: Paragraph structure](https://developers.google.com/style/paragraph-structure) recommends one topic per paragraph and placing the most important information first.
+  - [Microsoft: Lists](https://learn.microsoft.com/en-us/style-guide/scannable-content/lists) recommends lists for repeated or sequential information that readers need to scan.
+  - [Digital.gov: Headings](https://digital.gov/guides/plain-language/design/headings) recommends descriptive headings that divide content into manageable sections.
+  - [GOV.UK: Publishing accessible documents](https://www.gov.uk/guidance/publishing-accessible-documents) explains how heading structure and lists support accessible reading order.
