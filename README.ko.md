@@ -42,9 +42,9 @@
 
 현재 탐색 위치는 [Codex 스킬 문서](https://developers.openai.com/codex/skills) 또는 [Claude Code 스킬 문서](https://code.claude.com/docs/en/skills)에서 확인합니다. 이 저장소의 `skills/use-words-review/`는 배포 원본이며, 이 경로에 있다는 이유만으로 자동 탐색되지는 않습니다.
 
-스킬을 설치한 뒤 [`src/AGENTS.en.md`](./src/AGENTS.en.md) 또는 [`src/AGENTS.ko.md`](./src/AGENTS.ko.md)에서 `BEGIN USE WORDS REVIEW`와 `END USE WORDS REVIEW` 표시를 포함한 구간 전체를 대상 저장소의 AGENTS에 합칩니다. 대상 저장소의 기존 소제목 구성을 유지하고 실제로 적용할 규칙만 추가합니다.
+스킬을 설치한 뒤 [`src/AGENTS.en.md`](./src/AGENTS.en.md) 또는 [`src/AGENTS.ko.md`](./src/AGENTS.ko.md)에서 `BEGIN USE WORDS REVIEW`와 `END USE WORDS REVIEW` 표시를 포함한 구간 전체를 도구가 읽는 지침 파일에 합칩니다. Codex에서는 해당 `AGENTS.md`에 추가합니다. Claude Code에서는 `CLAUDE.md`에 추가하거나, `AGENTS.md`에 둔 뒤 `CLAUDE.md`에서 `@AGENTS.md`로 불러옵니다. 대상 저장소의 기존 소제목 구성을 유지하고 실제로 적용할 규칙만 추가합니다.
 
-스킬을 제거할 때에는 설치한 스킬 디렉터리와 시작 및 종료 표시를 포함한 AGENTS 구간 전체를 삭제합니다. 표시 밖에 있는 AGENTS 규칙은 그대로 둡니다.
+스킬을 제거할 때에는 설치한 스킬 디렉터리와 지침 파일에 추가한 표시 구간 전체를 삭제합니다. 다른 규칙을 불러오는 데 필요한 `@AGENTS.md`와 표시 밖의 지침은 그대로 둡니다.
 
 ## 운영 원칙
 

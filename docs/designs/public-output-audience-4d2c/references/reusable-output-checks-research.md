@@ -235,7 +235,9 @@ CI는 같은 실행기를 깨끗한 환경에서 다시 호출한다. 패키지�
 - 의미 검토가 필요한 변경만 범용 서브에이전트에 전달한다.
 - 검사 결과와 사람이 판단해야 할 항목을 정해진 상태로 반환한다.
 
-반대로 기존 AGENTS의 커밋하거나 공유하기 전 검사 목록을 스킬 실행 절차에 그대로 옮기면 같은 규칙의 소유 문서가 늘어난다. 대상 저장소의 `AGENTS.md`에는 상시 적용할 작성 원칙과 채택한 스킬의 호출 조건만 두고, 상세한 입력 수집과 판정 절차는 `SKILL.md`가 맡아야 한다. OpenAI의 AGENTS 문서는 가까운 경로의 지침을 합쳐 읽으며 전체 기본 크기에 제한이 있다고 설명하므로, 스킬 절차 전체를 AGENTS에 복사하는 방식은 피해야 한다. [OpenAI AGENTS 문서](https://learn.chatgpt.com/docs/agent-configuration/agents-md)
+반대로 기존 AGENTS의 커밋하거나 공유하기 전 검사 목록을 스킬 실행 절차에 그대로 옮기면 같은 규칙의 소유 문서가 늘어난다. Codex를 쓰는 저장소의 `AGENTS.md`에는 상시 적용할 작성 원칙과 채택한 스킬의 호출 조건만 두고, 상세한 입력 수집과 판정 절차는 `SKILL.md`가 맡아야 한다. OpenAI의 AGENTS 문서는 가까운 경로의 지침을 합쳐 읽으며 전체 기본 크기에 제한이 있다고 설명하므로, 스킬 절차 전체를 AGENTS에 복사하는 방식은 피해야 한다. [OpenAI AGENTS 문서](https://learn.chatgpt.com/docs/agent-configuration/agents-md)
+
+Claude Code는 `AGENTS.md`를 직접 읽지 않고 `CLAUDE.md` 또는 `.claude/CLAUDE.md`를 프로젝트 지침으로 읽는다. 같은 저장소에서 두 도구가 지침을 공유하려면 `CLAUDE.md`에 호출 조건을 직접 두거나 `@AGENTS.md`로 기존 파일을 불러와야 한다. 따라서 배포 안내는 표시 구간의 내용뿐 아니라 도구가 실제로 읽는 파일도 구분해야 한다. [Claude Code 프로젝트 지침](https://code.claude.com/docs/en/memory)
 
 Superpowers 리비전 `3dcbd5c`와 Compound Engineering 리비전 `a9f6d53`의 `skills/` 트리를 다시 확인한 결과, 두 프로젝트는 각 스킬의 `SKILL.md`와 필요한 참고 자료를 실행 단위로 관리하며 스킬마다 README를 두지 않는다. Compound Engineering은 AGENTS에 넣은 호환 지침을 `BEGIN`과 `END` HTML 주석 사이에 두고, 제거할 때 그 범위만 잘라내는 구현을 제공한다. terraform-docs도 생성한 README 내용을 시작과 끝 주석 사이에 넣어 해당 범위만 바꾼다. 이 사례들은 HTML 주석이 Markdown 독자에게 보이지 않으면서 관리 범위를 분명히 표시할 수 있음을 보여준다. 다만 주석 이름과 제거 동작은 Agent Skills 표준이 아니라 각 배포 도구가 정한 규칙이다. [Compound Engineering 범위 제거 구현](https://github.com/EveryInc/compound-engineering-plugin/blob/a9f6d530d4446d805a3100387dedd86268d7e695/src/utils/codex-agents.ts), [terraform-docs 출력 설정](https://github.com/terraform-docs/terraform-docs/blob/10965cddfa169679511f176cfe67dd0189dc935f/docs/user-guide/configuration/output.md)
 

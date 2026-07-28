@@ -148,7 +148,7 @@
 - `src/AGENTS.en.md`와 `src/AGENTS.ko.md`에는 각각 `BEGIN USE WORDS REVIEW`와 `END USE WORDS REVIEW` HTML 주석으로 범위를 표시한다.
 - 표시된 범위에는 커밋하거나 공유하기 전 호출 조건, 한 번에 전달할 변경과 독자 정보, 범용 서브에이전트 사용, 상태 판정, 수정과 검토를 분리하는 조건만 둔다.
 - 자연스러운 글쓰기와 공개 문구의 출처 원칙은 각 AGENTS 문서의 기존 절이 계속 소유한다. 표시된 범위에 같은 내용을 다시 복사하지 않는다.
-- `README.md`와 `README.ko.md`는 `skills/use-words-review/SKILL.md`를 설치 진입점으로 연결하고, 스킬 폴더 설치 위치, 배포용 AGENTS의 표시 범위를 대상 저장소에 합치는 방법, 스킬 제거 시 그 범위만 지우는 방법을 설명한다.
+- `README.md`와 `README.ko.md`는 `skills/use-words-review/SKILL.md`를 설치 진입점으로 연결하고, 스킬 폴더 설치 위치, 배포용 AGENTS의 표시 범위를 Codex의 `AGENTS.md`나 Claude Code의 `CLAUDE.md`에 합치는 방법, 스킬 제거 시 그 범위만 지우는 방법을 설명한다.
 - 두 README는 각 언어의 독자에게 자연스럽게 작성하며 서로를 문장 단위로 직역하지 않는다.
 
 안내 내용과 내부 링크는 소유 문서로 옮겨졌고 `skills/use-words-review/README.md`는 삭제됐다. 후속 변경에서 이 파일이나 주석 범위용 코드와 생성기를 다시 추가하지 않는다.

@@ -40,14 +40,26 @@ Microsoft의 한국어 현지화 지침도 일반 독자에게는 익숙한 말�
 
 ### 단어 목록은 판정의 시작점으로만 사용한다
 
-공식 한국어 문서에 나온 표현이라는 사실만으로 모든 문서에서 자연스럽다고 판정할 수 없다. 같은 기관의 한국어 문서도 `공개 저장소`, `공개 리포지토리`와 `퍼블릭 리포지토리`를 섞어 쓰거나 `가시성`과 `표시 유형`을 같은 설정에 사용한다. 공식 번역은 해당 제품의 용례를 확인하는 근거지만, 다른 독자와 문서에 그대로 옮길 근거는 아니다. [GitHub 프로필 기여 문서](https://docs.github.com/ko/account-and-profile/concepts/contributions-on-your-profile), [GitHub 데이터 유출 방지 지침](https://docs.github.com/ko/code-security/tutorials/secure-your-organization/prevent-data-leaks), [Microsoft Power Pages 사이트 표시 설정](https://learn.microsoft.com/ko-kr/power-pages/security/site-visibility)
+공식 한국어 문서에 나온 표현이라는 사실만으로 모든 문서에서 자연스럽다고 판정할 수 없다. 같은 기관의 한국어 문서도 `공개 저장소`, `공개 리포지토리`와 `퍼블릭 리포지토리`를 섞어 쓰거나 `가시성`과 `표시 유형`을 같은 설정에 사용한다. 공식 번역은 해당 제품의 용례를 확인하는 근거지만, 다른 독자와 문서에 그대로 옮길 근거는 아니다.
+
+- [GitHub 프로필 기여 문서](https://docs.github.com/ko/account-and-profile/concepts/contributions-on-your-profile)는 프로필에 표시할 수 있는 항목을 설명하면서 `공개 저장소`를 사용한다.
+- [GitHub 데이터 유출 방지 지침](https://docs.github.com/ko/code-security/tutorials/secure-your-organization/prevent-data-leaks)은 저장소의 표시 유형을 설명하면서 `퍼블릭 리포지토리`를 사용한다.
+- [Microsoft Power Pages 사이트 표시 설정](https://learn.microsoft.com/ko-kr/power-pages/security/site-visibility)은 사이트를 볼 수 있는 사람을 정하는 설정을 `사이트 가시성`이라고 부른다.
 
 현재 저장소의 [자연스러운 한국어 작성 지침](../../../../AGENTS.md#writing-natural-korean)은 `경계`, `계약`, `지원`, `보장`, `노출`처럼 문맥에 따라 뜻이 달라지는 표현과 정보 없이 붙이기 쉬운 수식어를 검토 후보로 든다. 이 목록은 저장소의 작성 규칙이지 AI 생성문의 표현 빈도를 측정한 자료가 아니므로, 조사할 표현을 고르는 데만 사용했다.
 
 현재 저장소 지침과 실제 실패에서 반복되는 후보는 다음처럼 나뉜다.
 
-- **분야에서 뜻이 정해진 명사.** `범위`, `경계`, `계약`, `루브릭`, `유효성`, `정합성`, `가시성`은 법률, 수학, 교육 평가, 시험 방법, 데이터 품질과 제품 설정에서 정확한 용어가 될 수 있다. 국가법령정보센터는 법 조항이 적용되는 대상을 `적용범위`로 구분하고, 시험 방법의 `유효성`을 의도한 목적에 맞는지 객관적 증거로 확인하는 절차로 정의한다. 공공데이터포털은 서로 다른 코드 값이 맞는지 검사하는 일을 `정합성 검증`이라고 적고, 국립국어원과 한국교육학술정보원의 연구는 단계별 평정 기준을 `루브릭`이라고 부른다. 해당 분야와 판정 대상이 문서에 드러날 때는 유지하고, 일반 독자가 실제로 확인할 조건을 알아야 할 때는 포함 대상, 일치시킬 값, 채점 기준 또는 볼 수 있는 사람을 직접 적는다. [선원법 적용범위](https://law.go.kr/LSW/lsInfoP.do?lsiSeq=193433), [항공정보 품질관리 지침의 유효성 정의](https://law.go.kr/LSW/admRulInfoP.do?admRulSeq=2100000238114), [국토교통부 항공사 코드 데이터](https://www.data.go.kr/data/15061951/fileData.do), [국립국어원 평가인증 연구](https://www.korean.go.kr/common/download.do?c_file_name=6dfb6914-dc17-4829-87a0-ceba40e8fdfd_0.pdf&file_path=reportData&o_file_name=%ED%95%9C%EA%B5%AD%EC%96%B4%EA%B5%90%EC%9B%90+%EA%B5%90%EC%9C%A1%EA%B8%B0%EA%B4%80+%ED%8F%89%EA%B0%80%EC%9D%B8%EC%A6%9D+%ED%83%80%EB%8B%B9%EC%84%B1+%EC%A0%90%EA%B2%80+%EB%B0%8F+%EA%B5%90%EC%9B%90%EC%9E%90%EA%B2%A9%EC%A0%9C%EB%8F%84+%EC%9A%B4%EC%98%81+%ED%9A%A8%EC%9C%A8%ED%99%94+%EB%B0%A9%EC%95%88+%EC%97%B0%EA%B5%AC+%EA%B2%B0%EA%B3%BC%EB%B3%B4%EA%B3%A0%EC%84%9C.pdf), [한국교육학술정보원 디지털 리터러시 검사 연구](https://www.keris.or.kr/main/ad/pblcte/selectPblcteRRInfo.do?mi=1138&pblcteSeq=13834)
-- **여러 행동을 대신할 수 있는 동사.** `지원`, `보장`, `대응`, `다루다`, `노출`, `포착`, `정렬`, `표면화`는 문맥에 따라 서로 다른 일을 가리킨다. 예를 들어 제품 문서에서 `지원`은 호환되는 운영체제, 유지보수 기간, 고객 문의 처리와 기능 제공을 모두 가리킬 수 있다. `보장`은 법률상 권리나 검증된 품질 조건에는 맞지만, 근거가 없는 예상 효과를 확정된 결과처럼 보이게 할 수 있다. 독자가 구현하거나 검증해야 하는 문서에서는 어떤 값을 받고, 무엇을 표시하거나 반환하며, 누가 어떤 문제를 처리하는지 실제 동작으로 바꿔 쓴다. [Microsoft Windows 10 지원 종료 문서](https://learn.microsoft.com/ko-kr/microsoft-365-apps/end-of-support/windows-10-support), [Microsoft Windows App SDK 지원 설명](https://learn.microsoft.com/ko-kr/windows/apps/windows-app-sdk/release-channels), [근로기준법](https://www.law.go.kr/법령/근로기준법)
+- **분야에서 뜻이 정해진 명사.** `범위`, `경계`, `계약`, `루브릭`, `유효성`, `정합성`, `가시성`은 법률, 수학, 교육 평가, 시험 방법, 데이터 품질과 제품 설정에서 정확한 용어가 될 수 있다. 해당 분야와 판정 대상이 문서에 드러날 때는 유지하고, 일반 독자가 실제로 확인할 조건을 알아야 할 때는 포함 대상, 일치시킬 값, 채점 기준 또는 볼 수 있는 사람을 직접 적는다.
+  - [선원법 적용범위](https://law.go.kr/LSW/lsInfoP.do?lsiSeq=193433)는 법 조항이 적용되는 대상을 `적용범위`로 구분한다.
+  - [항공정보 품질관리 지침의 유효성 정의](https://law.go.kr/LSW/admRulInfoP.do?admRulSeq=2100000238114)는 시험 방법의 `유효성`을 의도한 목적에 맞는지 객관적 증거로 확인하는 절차로 정의한다.
+  - [국토교통부 항공사 코드 데이터](https://www.data.go.kr/data/15061951/fileData.do)는 서로 다른 코드 값이 맞는지 검사하는 일을 `정합성 검증`이라고 적는다.
+  - [국립국어원 평가인증 연구](https://www.korean.go.kr/common/download.do?c_file_name=6dfb6914-dc17-4829-87a0-ceba40e8fdfd_0.pdf&file_path=reportData&o_file_name=%ED%95%9C%EA%B5%AD%EC%96%B4%EA%B5%90%EC%9B%90+%EA%B5%90%EC%9C%A1%EA%B8%B0%EA%B4%80+%ED%8F%89%EA%B0%80%EC%9D%B8%EC%A6%9D+%ED%83%80%EB%8B%B9%EC%84%B1+%EC%A0%90%EA%B2%80+%EB%B0%8F+%EA%B5%90%EC%9B%90%EC%9E%90%EA%B2%A9%EC%A0%9C%EB%8F%84+%EC%9A%B4%EC%98%81+%ED%9A%A8%EC%9C%A8%ED%99%94+%EB%B0%A9%EC%95%88+%EC%97%B0%EA%B5%AC+%EA%B2%B0%EA%B3%BC%EB%B3%B4%EA%B3%A0%EC%84%9C.pdf)는 단계별 평정 기준을 `루브릭`이라고 부른다.
+  - [한국교육학술정보원 디지털 리터러시 검사 연구](https://www.keris.or.kr/main/ad/pblcte/selectPblcteRRInfo.do?mi=1138&pblcteSeq=13834)는 검사 문항의 단계별 채점 기준을 루브릭으로 제시한다.
+- **여러 행동을 대신할 수 있는 동사.** `지원`, `보장`, `대응`, `다루다`, `노출`, `포착`, `정렬`, `표면화`는 문맥에 따라 서로 다른 일을 가리킨다. 독자가 구현하거나 검증해야 하는 문서에서는 어떤 값을 받고, 무엇을 표시하거나 반환하며, 누가 어떤 문제를 처리하는지 실제 동작으로 바꿔 쓴다.
+  - [Microsoft Windows 10 지원 종료 문서](https://learn.microsoft.com/ko-kr/microsoft-365-apps/end-of-support/windows-10-support)는 `지원`을 제품 유지보수 기간이 끝나는 상태에 사용한다.
+  - [Microsoft Windows App SDK 지원 설명](https://learn.microsoft.com/ko-kr/windows/apps/windows-app-sdk/release-channels)은 `지원`을 릴리스 채널별 제공 기간과 연결한다.
+  - [근로기준법](https://www.law.go.kr/법령/근로기준법)은 `보장`을 법률상 권리와 근로 조건에 사용한다.
 - **정보를 더하지 않는 평가와 수식.** `핵심`, `효과적`, `원활`, `강력`, `견고`, `포괄적`, `다양한`, `본질적`이 무엇과 비교한 결과인지 문서에 없다면 독자가 확인할 정보가 늘어나지 않는다. 삭제해도 기능, 조건이나 판단이 달라지지 않으면 빼고, 성능이나 품질을 주장하려면 측정 대상과 기준 및 결과를 적는다.
 - **대상 없이 쓰인 익숙한 말.** `해당`, `관련`, `이 내용`, `결과`, `출력`, `데이터`, `기능`, `범위`는 한국어 자체가 잘못된 말이 아니다. 그러나 가까운 문장에서 하나의 대상을 찾을 수 없거나 행동의 끝을 감추면 구체적인 이름과 결과로 바꾼다. 저장소 근거만으로 대상을 확인할 수 없으면 자연스럽게 보이는 문장을 추정해 만들지 않고 `needs human input`으로 남긴다.
 
@@ -63,13 +75,27 @@ Microsoft의 한국어 현지화 지침도 일반 독자에게는 익숙한 말�
 
 한국어 자료를 사용한 KatFishNet 연구에서도 사람 글은 품사 조합이 더 다양했고, LLM 글은 쉼표와 규칙적인 띄어쓰기가 더 자주 나타났다. 에세이에서 쉼표가 있는 문장 비율은 사람 26.31%, LLM 61.03%였고 문장당 쉼표 수는 1.13과 2.56이었다. 그러나 논문 초록처럼 원래 구조가 정형화된 글에서는 차이가 줄었다. 쉼표 수 하나로 실패를 확정하지 말고 같은 종류의 실제 글과 비교해야 한다. [Kim 외, Detecting LLM-Generated Korean Text through Linguistic Feature Analysis, ACL 2025](https://aclanthology.org/2025.acl-long.1030/)
 
-자연스러운 어휘와 문법만으로는 문서의 흐름을 확인할 수 없다. Google 작성 지침은 한 문단에서 한 가지 생각을 다루고 중요한 내용을 먼저 제시하며, 지시문에서는 조건이나 목표를 행동보다 앞에 두라고 안내한다. GOV.UK의 사용자 스토리 지침은 행위자, 필요한 동작, 목표와 완료 결과를 함께 적도록 한다. 이 기준들은 문장을 따로 읽는 검사보다 문단 안에서 정보가 어떤 순서로 이어지는지 확인해야 한다는 근거다. [Google 문단 구성](https://developers.google.com/style/paragraph-structure), [Google 문장 구성](https://developers.google.com/style/sentence-structure), [GOV.UK 사용자 스토리 작성](https://www.gov.uk/service-manual/agile-delivery/writing-user-stories)
+자연스러운 어휘와 문법만으로는 문서의 흐름을 확인할 수 없다. 문장을 따로 읽는 검사와 함께 문단 안에서 정보가 어떤 순서로 이어지는지 확인해야 한다.
 
-NASA의 요구사항 점검표는 한 문장에 하나의 생각과 하나의 주어 및 서술어가 있는지, 가정이 명시됐는지, 관련 요구사항과 모순되지 않는지 확인한다. W3C의 제목 지침은 제목 계층이 문서의 구성과 각 절의 관계를 전달해야 한다고 설명한다. 두 지침은 요구사항과 웹 문서에 관한 자료이므로 모든 글에 그대로 적용할 수는 없지만, 역할, 전제, 순서와 문서 구조를 어휘 검토와 별도로 확인해야 한다는 판단을 뒷받침한다. [NASA 요구사항 작성 점검표](https://www.nasa.gov/reference/appendix-c-how-to-write-a-good-requirement/), [W3C 제목 구조](https://www.w3.org/WAI/tutorials/page-structure/headings/)
+- [Google 문단 구성](https://developers.google.com/style/paragraph-structure)은 한 문단에서 한 가지 생각을 다루고 중요한 내용을 먼저 제시하도록 안내한다.
+- [Google 문장 구성](https://developers.google.com/style/sentence-structure)은 지시문에서 조건이나 목표를 행동보다 앞에 두도록 안내한다.
+- [GOV.UK 사용자 스토리 작성](https://www.gov.uk/service-manual/agile-delivery/writing-user-stories)은 행위자, 필요한 동작, 목표와 완료 결과를 함께 적도록 안내한다.
 
-문법이 맞고 익숙한 단어를 썼다는 사실만으로 문장 자체가 이해하기 쉽다고 볼 수는 없다. NASA 점검표는 문법 정확성과 별도로 한 문장에 하나의 생각과 하나의 주어 및 서술어가 있는지, 가정이 빠지지 않았는지 확인한다. GOV.UK 기능 표준 작성 지침도 한 문장에 한 가지 생각을 담으라고 하고, Microsoft는 여러 구나 절을 잇는 복문을 나누되 필요한 뜻까지 줄여 문장이 부자연스러워지지 않도록 하라고 안내한다. 이 자료는 문장의 길이를 기계적으로 제한하라는 근거가 아니라, 한 문장 안에서 주체, 행동, 조건과 결과의 관계를 독자가 추측해야 하는지 따로 판정해야 한다는 근거다. [NASA 요구사항 작성 점검표](https://www.nasa.gov/reference/appendix-c-how-to-write-a-good-requirement/), [GOV.UK 기능 표준 작성 지침](https://www.gov.uk/government/publications/handbook-for-standard-managers/functional-standards-writing-style-guide), [Microsoft 전 세계 독자를 위한 작성 지침](https://learn.microsoft.com/en-us/style-guide/global-communications/writing-tips)
+역할, 전제, 순서와 문서 구조도 어휘와 별도로 확인해야 한다. 다음 두 자료는 요구사항과 웹 문서를 대상으로 하므로 모든 글에 그대로 적용할 수는 없지만, 문장과 절의 관계를 검토할 근거가 된다.
 
-Google은 지시문에서 상황, 조건이나 목표를 행동보다 먼저 제시하라고 한다. GOV.UK는 능동문으로 행동 주체를 드러내고 25단어를 넘는 문장은 나눌 후보로 보되 글을 잘 쓰는 것이 길이 자체보다 중요하다고 설명한다. 따라서 짧은 문장도 대상이나 전제가 빠졌다면 고쳐야 하고, 긴 문장도 각 요소의 관계가 분명하다면 길이만으로 실패로 판정하면 안 된다. [Google 문장 구성](https://developers.google.com/style/sentence-structure), [GOV.UK 명료한 문장 지침](https://guidance.publishing.service.gov.uk/writing-to-gov-uk-standards/writing-guidelines/clear-language/)
+- [NASA 요구사항 작성 점검표](https://www.nasa.gov/reference/appendix-c-how-to-write-a-good-requirement/)는 한 문장에 하나의 생각과 하나의 주어 및 서술어가 있는지, 가정이 명시됐는지, 관련 요구사항과 모순되지 않는지 확인한다.
+- [W3C 제목 구조](https://www.w3.org/WAI/tutorials/page-structure/headings/)는 제목 계층이 문서의 구성과 각 절의 관계를 전달해야 한다고 설명한다.
+
+문법이 맞고 익숙한 단어를 썼다는 사실만으로 문장 자체가 이해하기 쉽다고 볼 수는 없다. 문장의 길이를 기계적으로 제한하지 말고, 한 문장 안에서 주체, 행동, 조건과 결과의 관계를 독자가 추측해야 하는지 따로 판정해야 한다.
+
+- [NASA 요구사항 작성 점검표](https://www.nasa.gov/reference/appendix-c-how-to-write-a-good-requirement/)는 문법 정확성과 별도로 한 문장에 하나의 생각과 하나의 주어 및 서술어가 있는지, 가정이 빠지지 않았는지 확인한다.
+- [GOV.UK 기능 표준 작성 지침](https://www.gov.uk/government/publications/handbook-for-standard-managers/functional-standards-writing-style-guide)은 한 문장에 한 가지 생각을 담도록 안내한다.
+- [Microsoft 전 세계 독자를 위한 작성 지침](https://learn.microsoft.com/en-us/style-guide/global-communications/writing-tips)은 여러 구나 절을 잇는 복문을 나누되 필요한 뜻까지 줄이지 않도록 안내한다.
+
+짧은 문장도 대상이나 전제가 빠졌다면 고쳐야 하고, 긴 문장도 각 요소의 관계가 분명하다면 길이만으로 실패로 판정하면 안 된다.
+
+- [Google 문장 구성](https://developers.google.com/style/sentence-structure)은 지시문에서 상황, 조건이나 목표를 행동보다 먼저 제시하도록 안내한다.
+- [GOV.UK 명료한 문장 지침](https://guidance.publishing.service.gov.uk/writing-to-gov-uk-standards/writing-guidelines/clear-language/)은 능동문으로 행동 주체를 드러내고 긴 문장을 나눌 후보로 보되 문장 길이만으로 품질을 판단하지 않도록 설명한다.
 
 ### 문장부호와 문자
 
@@ -266,10 +292,14 @@ UI, README, 조사 보고서는 필요한 문장 길이, 높임 수준, 전문�
 - GOV.UK, [Use clear language](https://guidance.publishing.service.gov.uk/writing-to-gov-uk-standards/writing-guidelines/clear-language/), 2026-07-28 확인.
 - GOV.UK, [Functional Standards writing style guide](https://www.gov.uk/government/publications/handbook-for-standard-managers/functional-standards-writing-style-guide), 2024-09-30 발행본, 2026-07-28 확인.
 - W3C, [Headings](https://www.w3.org/WAI/tutorials/page-structure/headings/), 2026-07-27 확인.
-- GitHub, [프로필에서 기여](https://docs.github.com/ko/account-and-profile/concepts/contributions-on-your-profile)와 [조직에서 데이터 유출 방지](https://docs.github.com/ko/code-security/tutorials/secure-your-organization/prevent-data-leaks), 2026-07-28 확인.
+- GitHub, [프로필에서 기여](https://docs.github.com/ko/account-and-profile/concepts/contributions-on-your-profile), `공개 저장소` 용례 확인, 2026-07-28 확인.
+- GitHub, [조직에서 데이터 유출 방지](https://docs.github.com/ko/code-security/tutorials/secure-your-organization/prevent-data-leaks), `퍼블릭 리포지토리` 용례 확인, 2026-07-28 확인.
 - Microsoft, [Power Pages의 사이트 가시성](https://learn.microsoft.com/ko-kr/power-pages/security/site-visibility), 2025-05-08 갱신본, 2026-07-28 확인.
-- 국가법령정보센터, [선원법 적용범위](https://www.law.go.kr/법령/선원법), [근로기준법의 권리 보장](https://www.law.go.kr/법령/근로기준법)과 [항공정보 품질관리 지침의 유효성 정의](https://law.go.kr/LSW/admRulInfoP.do?admRulSeq=2100000238114), 2026-07-28 확인.
+- 국가법령정보센터, [선원법 적용범위](https://www.law.go.kr/법령/선원법), 법률 적용 대상의 `범위` 용례 확인, 2026-07-28 확인.
+- 국가법령정보센터, [근로기준법의 권리 보장](https://www.law.go.kr/법령/근로기준법), 법률상 권리의 `보장` 용례 확인, 2026-07-28 확인.
+- 국가법령정보센터, [항공정보 품질관리 지침의 유효성 정의](https://law.go.kr/LSW/admRulInfoP.do?admRulSeq=2100000238114), 시험 방법의 `유효성` 정의 확인, 2026-07-28 확인.
 - 공공데이터포털, [국토교통부 세계항공사 코드](https://www.data.go.kr/data/15061951/fileData.do), 2026-02-26 수정본, 2026-07-28 확인.
 - 국립국어원, [한국어교원 교육기관 평가인증 타당성 연구](https://www.korean.go.kr/common/download.do?c_file_name=6dfb6914-dc17-4829-87a0-ceba40e8fdfd_0.pdf&file_path=reportData&o_file_name=%ED%95%9C%EA%B5%AD%EC%96%B4%EA%B5%90%EC%9B%90+%EA%B5%90%EC%9C%A1%EA%B8%B0%EA%B4%80+%ED%8F%89%EA%B0%80%EC%9D%B8%EC%A6%9D+%ED%83%80%EB%8B%B9%EC%84%B1+%EC%A0%90%EA%B2%80+%EB%B0%8F+%EA%B5%90%EC%9B%90%EC%9E%90%EA%B2%A9%EC%A0%9C%EB%8F%84+%EC%9A%B4%EC%98%81+%ED%9A%A8%EC%9C%A8%ED%99%94+%EB%B0%A9%EC%95%88+%EC%97%B0%EA%B5%AC+%EA%B2%B0%EA%B3%BC%EB%B3%B4%EA%B3%A0%EC%84%9C.pdf), 2026-07-28 확인.
 - 한국교육학술정보원, [국가수준 초중학생 디지털 리터러시 수준 측정 연구](https://www.keris.or.kr/main/ad/pblcte/selectPblcteRRInfo.do?mi=1138&pblcteSeq=13834), 2026-07-28 확인.
-- Microsoft, [Windows 10 지원 종료](https://learn.microsoft.com/ko-kr/microsoft-365-apps/end-of-support/windows-10-support)와 [Windows App SDK 릴리스 채널](https://learn.microsoft.com/ko-kr/windows/apps/windows-app-sdk/release-channels), 2026-07-28 확인.
+- Microsoft, [Windows 10 지원 종료](https://learn.microsoft.com/ko-kr/microsoft-365-apps/end-of-support/windows-10-support), 제품 유지보수 기간의 `지원` 용례 확인, 2026-07-28 확인.
+- Microsoft, [Windows App SDK 릴리스 채널](https://learn.microsoft.com/ko-kr/windows/apps/windows-app-sdk/release-channels), 릴리스 채널별 제공 기간의 `지원` 용례 확인, 2026-07-28 확인.

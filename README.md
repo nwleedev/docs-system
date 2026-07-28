@@ -42,9 +42,9 @@ Copy the entire `skills/use-words-review/` directory to a skill location support
 
 Confirm the current discovery locations in the [Codex skills documentation](https://developers.openai.com/codex/skills) or [Claude Code skills documentation](https://code.claude.com/docs/en/skills). The `skills/use-words-review/` directory in this repository is a distribution source and is not automatically discovered from this path.
 
-After installing the skill, copy the entire section from [`src/AGENTS.en.md`](./src/AGENTS.en.md) or [`src/AGENTS.ko.md`](./src/AGENTS.ko.md), including the `BEGIN USE WORDS REVIEW` and `END USE WORDS REVIEW` markers, into the target repository's applicable `AGENTS.md`. Keep the target repository's existing section structure and add only the rules that apply there.
+After installing the skill, copy the entire section from [`src/AGENTS.en.md`](./src/AGENTS.en.md) or [`src/AGENTS.ko.md`](./src/AGENTS.ko.md), including the `BEGIN USE WORDS REVIEW` and `END USE WORDS REVIEW` markers, into an instruction file that the tool loads. Use the applicable `AGENTS.md` for Codex. For Claude Code, add the section to `CLAUDE.md`, or keep it in `AGENTS.md` and import that file from `CLAUDE.md` with `@AGENTS.md`. Keep the target repository's existing section structure and add only the rules that apply there.
 
-To remove the skill, delete its installed directory and the marked AGENTS section, including both markers. Keep the surrounding AGENTS rules unchanged.
+To remove the skill, delete its installed directory and the marked section from the file where it was added, including both markers. Keep the surrounding instructions and any `@AGENTS.md` import that remains necessary for other rules.
 
 ## Working principles
 
