@@ -9,13 +9,15 @@
 - `### 토큰 비용`
 - `### 스킬에 README.md 파일 제거`
 - `### 문맥에 맞지 않는 경로와 공개 표현`
+- `### 외부 출처를 찾기 어려운 문제`
 
-역할과 공개 문구의 출처를 구분하는 규칙은 현재 루트 `AGENTS.md`, 배포용 AGENTS 문서, 설계 문서와 개발 지침의 작성 규칙, `use-words-review`에 반영돼 있다. 문장 자체의 뜻과 문서 전체의 관계를 나누는 검토, 모델 선택과 비용 기준, 스킬 README의 배포 안내 이전도 반영됐다. 남은 작업은 문맥에 따라 뜻이 달라지는 표현을 정상 용례와 함께 판정하도록 기존 스킬과 예시를 보완하는 것이다. 아래 완료된 작업 단위는 후속 변경에서 유지할 기준과 회귀 확인 항목으로 남긴다.
+역할과 공개 문구의 출처를 구분하는 규칙은 현재 루트 `AGENTS.md`, 배포용 AGENTS 문서, 설계 문서와 개발 지침의 작성 규칙, `use-words-review`에 반영돼 있다. 문장 자체의 뜻과 문서 전체의 관계를 나누는 검토, 모델 선택과 비용 기준, 스킬 README의 배포 안내 이전도 반영됐다. 남은 작업은 문맥에 따라 뜻이 달라지는 표현을 정상 용례와 함께 판정하도록 기존 스킬과 예시를 보완하고, 설계 문서에서 여러 외부 출처를 주장별로 구분하는 것이다. 아래 완료된 작업 단위는 후속 변경에서 유지할 기준과 회귀 확인 항목으로 남긴다.
 
 다음 조사 문서를 근거로 사용한다.
 
 - `references/natural-korean-and-ai-writing-research.md`의 `문장 자체의 뜻을 따로 확인한다`와 `문장 사이의 관계를 따로 검토한다`
 - `references/natural-korean-and-ai-writing-research.md`의 `단어 목록은 판정의 시작점으로만 사용한다`
+- `references/external-source-presentation-research.md`의 `결론`과 `다른 형식과 적용 조건`
 - `references/reusable-output-checks-research.md`의 `호출 수와 모델 설정을 함께 줄인다`
 - `references/reusable-output-checks-research.md`의 `스킬과 배포 지침의 소유 파일을 나눈다`
 
@@ -26,6 +28,9 @@
 - 자연스러운 표현을 썼는지, 한 문장만 읽어도 뜻을 이해할 수 있는지, 문장 사이의 관계가 분명한지를 각각 확인한다.
 - 자주 잘못 쓰이는 표현은 검토 후보로만 사용한다. 실제 뜻, 독자와 분야를 확인한 뒤 정확한 전문용어이면 유지하고, 대상이나 행동을 감추면 구체적으로 고친다.
 - 같은 표현의 문제 사례와 정상 사례를 함께 검토한다. 후보 목록에 있다는 이유만으로 실패시키거나 공식 문서에 용례가 있다는 이유만으로 통과시키지 않는다.
+- 하나의 주장을 여러 외부 출처로 뒷받침할 때는 주장을 상위 항목에 쓰고 출처를 하위 항목에 하나씩 두는 방식을 기본으로 사용한다. 서로 다른 주장은 소제목이나 문단을 나누고 각 출처를 해당 주장 가까이에 둔다.
+- 하나의 주장만 담은 문단 바로 아래에 출처 목록을 두는 형식도 허용한다. 이때에도 출처마다 별도 목록 항목을 사용한다.
+- 링크 문구에는 문서나 페이지를 구분할 수 있는 이름을 사용하고, 각 출처에서 확인한 내용을 같은 항목에 적는다.
 - 한 문장에 전제, 조건, 판단이나 행동을 여럿 넣어 그 관계나 필요한 설명이 빠졌다면 문법상 자연스러워도 통과시키지 않는다.
 - 같은 역할과 지칭 대상, 조건과 가정, 앞 단계의 결과, 사실과 제안 및 승인된 결정의 상태가 문단과 절을 지나도 이어져야 한다.
 - 관계를 판단할 근거가 없으면 접속 표현으로 메우거나 역할과 결정을 추정하지 않고 `needs human input`으로 남긴다.
@@ -43,6 +48,22 @@
 - 실행 환경이 위 모델을 제공하지 않으면 이름이 비슷한 모델을 임의로 대신 쓰지 않는다. 같은 대표 사례를 통과한 설정을 사용하거나 주 에이전트의 설정을 물려받고, 적용한 설정과 제약을 결과에 기록한다.
 
 ## 작업 순서
+
+### 외부 출처를 주장별로 구분한다
+
+`docs/designs/README.md`의 Presentation과 reference 작성 기준에 외부 출처 배치 원칙을 추가한다.
+
+- 출처가 하나뿐이면 주장 문장 끝에 설명이 분명한 링크 하나를 둘 수 있다.
+- 하나의 주장을 뒷받침하는 출처가 여러 개이면 주장을 상위 항목에 쓰고 출처를 하위 항목에 하나씩 두는 방식을 기본으로 사용한다.
+- 하나의 주장만 담은 문단 바로 아래에 출처 목록을 둘 수 있다. 이때에도 한 출처마다 별도 항목을 사용한다.
+- 하위 출처 항목에는 목적지를 구분할 수 있는 링크 문구와 그 출처에서 확인한 내용을 적는다.
+- 출처들이 서로 다른 주장을 뒷받침하면 주제별 소제목이나 문단으로 나누고 해당 주장 가까이에 출처를 둔다.
+- 문서 끝에 출처 링크만 모아 놓거나 근거와 관계를 알 수 없는 `참고 자료` 목록은 사용하지 않는다.
+- 각주는 표시 환경에서 링크와 되돌아가기가 작동하고 본문보다 읽기 쉬운 경우에만 사용한다.
+
+기존 설계 문서 전체를 한 번에 고치지 않는다. 각 문서를 수정할 때 주장과 출처의 관계를 다시 확인해 새 형식을 적용한다. 이 계획의 `확인한 외부 출처`는 현재 변경에서 새 형식의 적용 사례로 고친다.
+
+**완료 증거.** 2단계 목록에서는 한 하위 항목에 외부 링크가 하나만 있고 각 링크 문구로 목적지를 구분할 수 있으며, 가까운 상위 항목에서 출처가 뒷받침하는 내용을 확인할 수 있다. 주장 문단 뒤에 1단계 출처 목록을 쓰면 그 문단은 하나의 주장만 담고 각 출처 항목에는 외부 링크가 하나만 있어야 한다. 단일 출처를 쓴 문장에는 외부 링크가 하나만 있고, 서로 다른 주장은 별도 소제목이나 문단에서 해당 출처와 연결된다. 각주를 사용했다면 대상 표시 환경에서 각주로 이동하고 본문으로 돌아올 수 있는지 확인하며, 최종 독자가 같은 출처를 본문에 연결한 형식보다 주장과 근거를 쉽게 찾을 수 있다고 판정해야 한다. 링크를 여러 줄로 나누기만 한 경우는 통과시키지 않고 최종 독자가 주장과 출처의 관계를 직접 확인한다.
 
 ### 문맥에 따라 표현을 판정한다
 
@@ -139,13 +160,14 @@
 - **후속 변경 대상이다.** `skills/use-words-review/SKILL.md`, `skills/use-words-review/references/examples.md`.
 - **현재 상태를 유지한다.** `AGENTS.md`, `src/AGENTS.en.md`, `src/AGENTS.ko.md`, `README.md`, `README.ko.md`.
 - **삭제 상태를 유지한다.** `skills/use-words-review/README.md`.
-- **조사와 계획을 갱신한다.** 이 설계 패키지의 `references/natural-korean-and-ai-writing-research.md`, `plan.md`.
-- **변경하지 않는다.** `skills/use-design-docs/SKILL.md`, `skills/use-dev-guidance/SKILL.md`, `docs/designs/README.md`, `docs/dev/README.md`. 현재 규칙으로 문서 종류별 검증을 수행할 수 있고, 공개 문구 검토 절차를 추가하면 소유 파일이 겹친다.
+- **조사와 계획을 갱신한다.** 이 설계 패키지의 `references/external-source-presentation-research.md`, `plan.md`.
+- **외부 출처 기준을 보완한다.** `docs/designs/README.md`. 설계 문서의 공통 표시 방식은 이 파일이 소유한다.
+- **변경하지 않는다.** `skills/use-design-docs/SKILL.md`, `skills/use-dev-guidance/SKILL.md`, `docs/dev/README.md`. 현재 절차로 각 README의 기준을 읽고 검증할 수 있으므로 출처 표시 규칙을 스킬에 복사하지 않는다.
 - **추가하지 않는다.** 새 스킬, 전용 서브에이전트 파일, `src/vale` 설정, 훅, CI와 별도 검사기. 문장 안팎의 의미 관계를 정규식으로 판정할 근거가 없고 현재 요구사항은 기존 스킬 변경으로 충족할 수 있다.
 
 ## 최종 검증
 
-1. 요구사항의 다섯 해당 부분이 조사 문서와 작업 단위에 빠짐없이 연결되는지 확인한다.
+1. 요구사항의 여섯 해당 부분이 조사 문서와 작업 단위에 빠짐없이 연결되는지 확인한다.
 2. `git diff --check`가 통과하고 변경 파일에 개인 절대 경로, 비공개 식별자, `TODO`, `TBD`, `FIXME`가 없는지 확인한다.
 3. 문장 자체의 뜻과 문장 사이의 관계에 관한 실패 사례 및 정상 대조 사례를 같은 입력 형식으로 검토한다.
 4. 실행 환경이 지정 모델을 제공하면 `gpt-5.6-terra`의 낮은 추론 강도와 중간 추론 강도, `gpt-5.6-sol`의 높은 추론 강도를 같은 대표 사례로 비교한다. 지정 모델을 제공하지 않으면 실제로 사용한 설정과 제약, 같은 대표 사례의 통과 결과를 기록한다. 두 경우 모두 판정 품질, 토큰과 응답 시간을 확인한다.
@@ -156,6 +178,7 @@
 9. 변경된 본문, 파일 이름과 후보 커밋 메시지를 `use-words-review`로 한 번에 검토한다.
 10. `docs/designs/README.md`의 reference, plan과 최종 독자 검토 기준을 각각 `pass`, `needs revision`, `needs human input`, `not applicable`로 판정한다.
 11. 문맥에 따라 달라지는 각 표현군에서 문제 사례와 정상 사례를 함께 검토하고, 단어 출현만으로 실패 또는 통과가 결정되지 않는지 확인한다.
+12. 외부 출처를 새 형식으로 쓴 부분에서 한 출처 항목에 외부 링크가 하나만 있는지 검색하고, 각 출처가 가까운 하나의 주장과 연결되는지 읽어 확인한다.
 
 문서 검토만으로 스킬이 실제 설치 환경에서 동작한다고 판정하지 않는다. 구현 뒤 Codex와 Claude Code에서 스킬 탐색, AGENTS 적용, 호출별 설정 지원 여부를 각각 확인해야 한다.
 
@@ -167,12 +190,30 @@
 - 서브에이전트를 사용할 수 없다는 이유만으로 작업을 중단하지 않는다. 주 에이전트 검토와 경고를 모두 남길 수 없을 때만 커밋과 공유를 멈춘다.
 - README를 삭제하려면 현재 요구사항과 관계없는 설치 정책이나 배포 도구를 새로 정해야 하는 경우 그 작업만 멈추고 필요한 결정을 보고한다.
 - 기존 배포용 AGENTS 문서의 의미를 유지하려면 이번 검토와 관계없는 정책까지 바꿔야 하는 경우 해당 변경을 분리한다.
+- 외부 출처를 나누는 과정에서 기존 주장의 의미나 근거 범위를 확인할 수 없으면 모양만 바꾸지 않고 해당 항목을 `needs human input`으로 남긴다.
 
-## 확인한 외부 근거
+## 확인한 외부 출처
 
-- [Agent Skills 명세](https://agentskills.io/specification), [OpenAI 스킬 문서](https://learn.chatgpt.com/docs/build-skills)와 [Claude Code 스킬 문서](https://code.claude.com/docs/en/agent-sdk/skills)는 `SKILL.md`를 필수 실행 파일로 두며 README를 필수 구성으로 지정하지 않는다.
-- [OpenAI AGENTS 문서](https://learn.chatgpt.com/docs/agent-configuration/agents-md)는 경로별 AGENTS 지침을 합쳐 읽고 전체 크기를 제한하므로 실행 절차 전체보다 짧은 호출 조건을 배포 문서에 두는 근거가 된다.
-- [OpenAI 서브에이전트 문서](https://learn.chatgpt.com/docs/agent-configuration/subagents), [OpenAI 모델 지침](https://developers.openai.com/api/docs/guides/latest-model), [OpenAI 평가 지침](https://developers.openai.com/api/docs/guides/evaluation-best-practices)은 호출 수와 높은 추론 강도가 비용을 늘리며, 실제 사례에서 품질을 유지하는 설정을 비교해야 한다고 안내한다.
-- [Claude Code 서브에이전트 문서](https://code.claude.com/docs/en/sub-agents)와 [Anthropic 추론 강도 문서](https://platform.claude.com/docs/en/build-with-claude/effort)는 호출별 설정과 상속 동작, 낮은 설정의 비용 절감과 판단 능력 사이의 차이를 설명한다.
-- [Google 문장 구성](https://developers.google.com/style/sentence-structure), [Microsoft 전 세계 독자를 위한 작성 지침](https://learn.microsoft.com/en-us/style-guide/global-communications/writing-tips), [GOV.UK 명료한 문장 지침](https://guidance.publishing.service.gov.uk/writing-to-gov-uk-standards/writing-guidelines/clear-language/), [GOV.UK 기능 표준 작성 지침](https://www.gov.uk/government/publications/handbook-for-standard-managers/functional-standards-writing-style-guide)과 [NASA 요구사항 작성](https://www.nasa.gov/reference/appendix-c-how-to-write-a-good-requirement/)은 조건과 행동의 관계, 한 문장에 담긴 생각의 수, 주체와 행동, 빠진 가정을 확인해야 한다는 근거를 제공한다. [Google 문단 구성](https://developers.google.com/style/paragraph-structure), [GOV.UK 사용자 스토리 작성](https://www.gov.uk/service-manual/agile-delivery/writing-user-stories)과 [W3C 제목 구조](https://www.w3.org/WAI/tutorials/page-structure/headings/)는 문단과 문서 전체의 정보 순서와 관계를 확인해야 한다는 근거를 제공한다.
-- [Compound Engineering의 AGENTS 범위 제거 구현](https://github.com/EveryInc/compound-engineering-plugin/blob/a9f6d530d4446d805a3100387dedd86268d7e695/src/utils/codex-agents.ts)과 [terraform-docs 출력 범위 설정](https://github.com/terraform-docs/terraform-docs/blob/10965cddfa169679511f176cfe67dd0189dc935f/docs/user-guide/configuration/output.md)은 Markdown의 HTML 주석으로 관리 범위를 표시하고 그 범위만 교체하거나 제거하는 실제 사례다.
+- **스킬과 배포 지침의 소유 파일.** 스킬 실행에는 `SKILL.md`가 필요하지만 스킬별 README는 필수 구성이 아니다. AGENTS 문서는 짧은 호출 조건을 배포하는 위치로 사용할 수 있다.
+  - [Agent Skills 명세](https://agentskills.io/specification)는 스킬 디렉터리에서 `SKILL.md`를 필수 파일로 정의한다.
+  - [OpenAI 스킬 문서](https://learn.chatgpt.com/docs/build-skills)는 스킬 탐색과 `SKILL.md`를 불러오는 절차를 설명한다.
+  - [Claude Code 스킬 문서](https://code.claude.com/docs/en/agent-sdk/skills)는 Agent SDK에서 사용하는 스킬 디렉터리 구성을 설명한다.
+  - [OpenAI AGENTS 문서](https://learn.chatgpt.com/docs/agent-configuration/agents-md)는 경로별 지침을 합쳐 읽는 방식과 크기 제한을 설명한다.
+- **검토 모델과 비용.** 호출 수와 높은 추론 강도는 비용을 늘릴 수 있으므로 실제 검토 사례에서 품질을 유지하는 설정을 비교해야 한다.
+  - [OpenAI 서브에이전트 문서](https://learn.chatgpt.com/docs/agent-configuration/subagents)는 서브에이전트의 설정과 호출 방식을 설명한다.
+  - [OpenAI 모델 지침](https://developers.openai.com/api/docs/guides/latest-model)은 작업 난도에 따른 모델과 추론 설정을 설명한다.
+  - [OpenAI 평가 지침](https://developers.openai.com/api/docs/guides/evaluation-best-practices)은 실제 사례에 맞춘 평가와 검수자 판정의 보정을 안내한다.
+  - [Claude Code 서브에이전트 문서](https://code.claude.com/docs/en/sub-agents)는 호출별 모델 설정과 상속 동작을 설명한다.
+  - [Anthropic 추론 강도 문서](https://platform.claude.com/docs/en/build-with-claude/effort)는 낮은 추론 강도의 비용 절감과 판단 능력 사이의 차이를 설명한다.
+- **문장과 문서의 의미 관계.** 조건과 행동, 주체와 결과, 한 문장에 담긴 생각의 수를 확인하고 문단과 제목의 순서도 함께 살펴야 한다.
+  - [Google 문장 구성](https://developers.google.com/style/sentence-structure)은 조건과 목표를 행동보다 먼저 제시하는 문장 구성을 안내한다.
+  - [Microsoft 전 세계 독자를 위한 작성 지침](https://learn.microsoft.com/en-us/style-guide/global-communications/writing-tips)은 복잡한 문장을 나누되 필요한 뜻을 유지하도록 안내한다.
+  - [GOV.UK 명료한 문장 지침](https://guidance.publishing.service.gov.uk/writing-to-gov-uk-standards/writing-guidelines/clear-language/)은 주체가 드러나는 문장과 길이 검토 기준을 설명한다.
+  - [GOV.UK 기능 표준 작성 지침](https://www.gov.uk/government/publications/handbook-for-standard-managers/functional-standards-writing-style-guide)은 한 문장에 한 가지 생각을 담도록 안내한다.
+  - [NASA 요구사항 작성](https://www.nasa.gov/reference/appendix-c-how-to-write-a-good-requirement/)은 주체, 행동, 조건과 빠진 가정을 확인하는 점검 항목을 제공한다.
+  - [Google 문단 구성](https://developers.google.com/style/paragraph-structure)은 한 문단에서 한 가지 주제를 다루고 중요한 정보를 먼저 제시하도록 안내한다.
+  - [GOV.UK 사용자 스토리 작성](https://www.gov.uk/service-manual/agile-delivery/writing-user-stories)은 행위자, 필요한 동작, 목표와 완료 결과를 함께 적도록 안내한다.
+  - [W3C 제목 구조](https://www.w3.org/WAI/tutorials/page-structure/headings/)는 제목 계층으로 문서 구성과 절의 관계를 전달하도록 안내한다.
+- **주석으로 표시한 관리 범위.** Markdown의 HTML 주석으로 관리 범위를 표시하고 해당 부분만 바꾸거나 제거한 구현 사례가 있다.
+  - [Compound Engineering의 AGENTS 범위 제거 구현](https://github.com/EveryInc/compound-engineering-plugin/blob/a9f6d530d4446d805a3100387dedd86268d7e695/src/utils/codex-agents.ts)은 시작과 끝 주석 사이의 지침만 제거한다.
+  - [terraform-docs 출력 범위 설정](https://github.com/terraform-docs/terraform-docs/blob/10965cddfa169679511f176cfe67dd0189dc935f/docs/user-guide/configuration/output.md)은 생성한 내용을 주석 범위 안에서 교체한다.
