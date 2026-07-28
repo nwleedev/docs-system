@@ -1,199 +1,199 @@
-# 공통 글과 문구 검토 예시
+# Common Writing Review Examples
 
-이 예시는 언어와 관계없이 적용하는 독자, 근거, 문맥과 문장 의미 판정을 돕는다. 한국어로 작성된 사례에서도 판정 이유는 특정 한국어 표현의 사용 여부가 아니다. 표현 하나가 예시에 있다는 이유만으로 오류로 판정하지 않는다. 실제 저장소 이름, 개인 경로, 비공개 식별자와 작업 지시 원문은 사용하지 않았다.
+These examples calibrate the criteria that apply to every language: audience, evidence, context, sentence meaning, and relationships between sentences. A phrase does not fail merely because it resembles an example. Judge the phrase in its actual context. The examples use fictional projects, generic paths, and generic roles. They do not reproduce task instructions, private identifiers, or personal paths.
 
-## 목차
+## Contents
 
-- [독자에게 필요한 설명과 작업 보고](#독자에게-필요한-설명과-작업-보고)
-- [작업 지시를 대신한 제목과 확인된 대상을 나타내는 제목](#작업-지시를-대신한-제목과-확인된-대상을-나타내는-제목)
-- [한 작업에 포함된 서로 다른 내용](#한-작업에-포함된-서로-다른-내용)
-- [불필요한 기호와 필요한 표기](#불필요한-기호와-필요한-표기)
-- [개인 경로와 독자에게 필요한 경로](#개인-경로와-독자에게-필요한-경로)
-- [원문을 보존하지 않는 경우와 보존하는 경우](#원문을-보존하지-않는-경우와-보존하는-경우)
-- [문장 자체의 뜻과 문장 사이의 관계](#문장-자체의-뜻과-문장-사이의-관계)
+- [Reader guidance and work reports](#reader-guidance-and-work-reports)
+- [Titles based on instructions and titles based on the subject](#titles-based-on-instructions-and-titles-based-on-the-subject)
+- [Unrelated decisions from one request](#unrelated-decisions-from-one-request)
+- [Unnecessary symbols and required notation](#unnecessary-symbols-and-required-notation)
+- [Personal paths and paths that readers need](#personal-paths-and-paths-that-readers-need)
+- [When not to preserve source text](#when-not-to-preserve-source-text)
+- [Sentence meaning and relationships between sentences](#sentence-meaning-and-relationships-between-sentences)
 
-## 독자에게 필요한 설명과 작업 보고
+## Reader guidance and work reports
 
-문제가 있는 문장:
+Problematic:
 
-> 요청하신 대로 안내 화면을 구현했습니다. 요구하신 색상과 문구도 모두 반영했습니다.
+> As requested, we implemented the notification screen. We also applied all requested colors and text.
 
-이 문장은 화면 사용자보다 작업 지시자에게 완료 사실을 보고한다.
+This text reports completed work to the requester instead of helping someone use the notification screen.
 
-독자에게 맞춘 문장:
+Reader-focused:
 
-> 알림을 받으려면 설정에서 이메일 주소를 확인한 뒤 저장하세요.
+> To receive notifications, confirm your email address in Settings, and then save your changes.
 
-이 문장은 사용자가 해야 할 일과 다음 상태를 설명한다.
+This text tells readers what to do and what the action enables.
 
-## 작업 지시를 대신한 제목과 확인된 대상을 나타내는 제목
+## Titles based on instructions and titles based on the subject
 
-문제가 있는 제목:
+Problematic title:
 
-> 캐시를 적용하고 오류 문구를 바꾸라는 요청
+> Request to add caching and change the error message
 
-이 제목은 작업 지시를 보존할 목적이 없는 문서에서 지시 문구를 문서 주제로 사용한다.
+Unless the document must preserve the original request, this title treats an instruction as the document's subject.
 
-문서 대상을 나타내는 제목:
+Title based on the subject:
 
-> 검색 결과 캐시와 실패 응답 처리
+> Search result caching and failed request messages
 
-제목이 실제로 함께 설명할 수 있는 동작과 조건을 나타내는지는 문서 내용과 저장소 근거로 다시 확인해야 한다.
+The document and repository evidence must still show that these subjects belong in the same document.
 
-## 한 작업에 포함된 서로 다른 내용
+## Unrelated decisions from one request
 
-문제가 있는 구조:
+Problematic structure:
 
-> 하나의 결정 문서에서 로그 보존 기간, 버튼 색상, 의존성 업데이트 방식을 함께 결정한다.
+> One decision record sets the log retention period, button color, and dependency update policy.
 
-세 내용이 같은 프롬프트에 있었다는 사실만으로 하나의 결정이 되지는 않는다. 독자, 승인 주체와 검증 방법이 다르면 각각의 소유 문서로 나눈다.
+These subjects do not form one decision merely because they appeared in the same request. Separate them when they have different readers, approval owners, or verification methods.
 
-허용할 수 있는 구조:
+Acceptable structure:
 
-> 로그 보존 정책은 운영 결정에 기록하고, 화면 색상은 승인된 디자인 자료에 연결하며, 의존성 변경은 개발 계획과 검증 결과에 기록한다.
+> Record the log retention period in the operations decision, link the button color to the approved design, and record the dependency update in the implementation plan and verification results.
 
-## 불필요한 기호와 필요한 표기
+## Unnecessary symbols and required notation
 
-문제가 있는 문장:
+Problematic:
 
-> 빠른 설정 · 안전한 저장 · 쉬운 공유 ✨
+> Quick setup · safe storage · easy sharing ✨
 
-일반 문장부호로 충분한 문장:
+Plain punctuation is sufficient:
 
-> 설정을 마치면 내용을 저장하고 팀에 공유할 수 있습니다.
+> Complete the setup, save the content, and share it with your team.
 
-수학식, 상표, 승인된 UI 문구, 접근성에 필요한 기호처럼 독자가 정확히 알아야 하는 표기는 유지한다.
+Keep symbols when readers need the exact notation, such as in a formula, trademark, approved interface label, or accessibility instruction.
 
-## 개인 경로와 독자에게 필요한 경로
+## Personal paths and paths that readers need
 
-문제가 있는 문장:
+Problematic:
 
-> 첨부 파일은 `/home/<account>/Desktop/<project>/capture.png`에서 확인합니다.
+> Find the attachment at `/home/<account>/Desktop/<project>/capture.png`.
 
-저장소 안의 파일을 가리키는 문장:
+Repository path that readers can use:
 
-> 예제 설정은 `examples/config.yml`에서 확인합니다.
+> See `examples/config.yml` for an example configuration.
 
-로컬 입력 위치가 재현에 꼭 필요하면 커밋되지 않는 기록에 최소한으로 보관하고, 작성자 외의 독자가 읽는 문서에는 안전한 자리표시자를 사용한다.
+If a local input path is necessary to reproduce a result, retain only the required portion in an untracked record. Use a safe placeholder in documents read by anyone other than the person who owns that path.
 
-## 원문을 보존하지 않는 경우와 보존하는 경우
+## When not to preserve source text
 
-보존하면 안 되는 경우:
+Do not preserve source text when:
 
-> README가 작업 지시 문구를 문서의 소개, 제목 또는 프로젝트 사실로 그대로 사용한다.
+> A README uses task instructions as its introduction, title, or description of project behavior.
 
-최소 원문이 필요한 경우:
+Some artifacts require a limited amount of exact source text:
 
-- 요구사항 작성자가 문구를 직접 정한 요구사항
-- 승인 책임자가 승인한 UI 문구나 짧은 인용
-- 프롬프트 처리 동작을 평가하는 입력 자료
-- 문제를 재현하는 데 필요한 최소 입력
-- 접근 권한과 보존 기간이 정해진 커밋되지 않는 실행 기록
+- a requirement whose wording belongs to the requirements owner;
+- an approved interface message or short quotation;
+- evaluation input for prompt-processing behavior;
+- the minimum input needed to reproduce a problem;
+- an untracked execution record with defined access and retention rules.
 
-허용 사례에서도 목적에 필요하지 않은 개인 정보, 자격 증명, 내부 경로와 비공개 식별자는 제거하거나 별도로 보호한다.
+Even in these cases, remove or separately protect personal information, credentials, private paths, and private identifiers that the artifact does not need.
 
-## 문장 자체의 뜻과 문장 사이의 관계
+## Sentence meaning and relationships between sentences
 
-문법과 어휘가 자연스럽다는 이유만으로 뜻이 분명하다고 판정하지 않는다. 다음 사례는 한 문장 안에서 빠진 관계와 여러 문장 사이에서 끊긴 관계를 나눠 보여 준다.
+Natural grammar and familiar words do not make a sentence clear by themselves. The following examples distinguish missing relationships within one sentence from missing relationships across sentences.
 
-### 여러 판단을 한 문장에 압축한 경우
+### Several judgments compressed into one sentence
 
-> 검토 결과를 반영해 승인 범위를 정리하고 배포할 수 있도록 확인한다.
+> Apply the review findings to clarify the approved scope and confirm that it can be released.
 
-- **판정:** `needs human input`
-- **위치 1:** `승인 범위를 정리하고`
-- **위치 2:** `배포할 수 있도록 확인한다`
-- **독자가 알 수 없는 관계:** 누가 무엇을 확인하는지, 승인 범위를 정하는 일이 배포 허가인지 단순한 문서 정리인지 알 수 없다.
-- **관계를 확인한 뒤 쓸 수 있는 문장:** 검수자는 검토 결과가 문서에 반영됐는지 확인한다. 승인 책임자가 배포 범위를 승인하면 배포 담당자가 배포를 시작한다.
+- **Verdict:** `needs human input`
+- **Location 1:** `clarify the approved scope`
+- **Location 2:** `confirm that it can be released`
+- **Missing relationship:** The text does not identify who confirms what, whether clarifying the scope grants release approval, or whether the action only updates a document.
+- **Possible wording after the relationship is confirmed:** The reviewer confirms that the document reflects the review findings. After the approval owner approves the release scope, the release owner starts the release.
 
-### 짧지만 대상이 빠진 경우
+### A short sentence with no identifiable object
 
-제목:
+Heading:
 
-> 변경 결과
+> Change result
 
-본문:
+Body:
 
-> 확인한 뒤 반영한다.
+> Review it, and then apply it.
 
-- **판정:** `needs human input`
-- **위치 1:** 제목의 `변경 결과`
-- **위치 2:** 본문의 `확인한 뒤 반영한다`
-- **독자가 알 수 없는 관계:** 무엇을 확인하고 어디에 반영하는지 알 수 없다.
-- **관계를 확인한 뒤 쓸 수 있는 문장:** 검수자가 변경된 안내 문구를 확인한 뒤 승인된 문구를 화면에 반영한다.
+- **Verdict:** `needs human input`
+- **Location 1:** `Change result`
+- **Location 2:** `Review it, and then apply it`
+- **Missing relationship:** Readers cannot identify what must be reviewed or where it must be applied.
+- **Possible wording after the relationship is confirmed:** The reviewer checks the revised notification text. The interface owner then adds the approved text to the notification screen.
 
-### 같은 역할을 다른 이름으로 부르는 경우
+### Different names for roles with no stated relationship
 
-첫 문장:
+First sentence:
 
-> 검수자가 변경 내용을 확인한다.
+> The reviewer checks the changes.
 
-다음 문장:
+Next sentence:
 
-> 관리자는 확인 결과를 승인한다.
+> The administrator approves the review result.
 
-- **판정:** `needs human input`
-- **위치 1:** 첫 문장의 `검수자`
-- **위치 2:** 다음 문장의 `관리자`
-- **독자가 알 수 없는 관계:** 두 이름이 같은 역할인지, 검수와 승인을 맡은 서로 다른 역할인지 문서에 근거가 없다.
-- **관계를 확인한 뒤 쓸 수 있는 문장:** 검수자가 변경 내용을 확인한다. 승인 책임자는 검수 결과를 검토한 뒤 배포 여부를 결정한다.
+- **Verdict:** `needs human input`
+- **Location 1:** `reviewer`
+- **Location 2:** `administrator`
+- **Missing relationship:** The document does not establish whether these names refer to one role or to separate review and approval roles.
+- **Possible wording after the relationship is confirmed:** The reviewer checks the changes. The approval owner reviews the findings and decides whether to authorize the release.
 
-### 앞에서 정하지 않은 승인을 참조하는 경우
+### A reference to approval that has not been established
 
-앞 문장:
+First sentence:
 
-> 담당자가 변경된 항목을 목록으로 만든다.
+> The release owner lists the changed items.
 
-다음 문장:
+Next sentence:
 
-> 승인된 범위만 배포한다.
+> Release only the approved scope.
 
-- **판정:** `needs human input`
-- **위치 1:** 앞 문장의 `변경된 항목`
-- **위치 2:** 다음 문장의 `승인된 범위`
-- **독자가 알 수 없는 관계:** 승인하는 역할, 승인 시점과 목록 중 어느 항목이 승인됐는지 정해져 있지 않다.
-- **관계를 확인한 뒤 쓸 수 있는 문장:** 담당자가 변경된 항목을 목록으로 만든다. 승인 책임자가 목록에서 배포할 항목을 정하면 배포 담당자는 승인된 항목만 배포한다.
+- **Verdict:** `needs human input`
+- **Location 1:** `lists the changed items`
+- **Location 2:** `the approved scope`
+- **Missing relationship:** The text does not identify who approves the items, when approval occurs, or which listed items belong to the approved scope.
+- **Possible wording after the relationship is confirmed:** The release owner lists the changed items. After the approval owner selects the items for release, the release owner publishes only those items.
 
-### 가리킬 수 있는 대상이 둘 이상인 경우
+### A phrase with more than one possible referent
 
-앞 문장:
+First sentence:
 
-> 검수 결과와 배포 기록을 보고서에 첨부한다.
+> Attach the review findings and the release log to the report.
 
-다음 문장:
+Next sentence:
 
-> 이 내용은 일주일 동안 보관한다.
+> Retain this record for seven days.
 
-- **판정:** `needs human input`
-- **위치 1:** 앞 문장의 `검수 결과와 배포 기록`
-- **위치 2:** 다음 문장의 `이 내용`
-- **독자가 알 수 없는 관계:** 보관 대상이 검수 결과인지, 배포 기록인지, 보고서 전체인지 알 수 없다.
-- **관계를 확인한 뒤 쓸 수 있는 문장:** 검수 결과와 배포 기록을 첨부한 보고서는 일주일 동안 보관한다.
+- **Verdict:** `needs human input`
+- **Location 1:** `the review findings and the release log`
+- **Location 2:** `this record`
+- **Missing relationship:** Readers cannot tell whether the retention rule applies to the findings, the log, or the complete report.
+- **Possible wording after the relationship is confirmed:** Retain the report, including the attached review findings and release log, for seven days.
 
-### 제안을 승인된 결정처럼 이어 쓰는 경우
+### A proposal treated as an approved decision
 
-앞 문장:
+First sentence:
 
-> 검토자는 경고를 먼저 표시하는 방안을 제안했다.
+> The reviewer proposed showing a warning before the operation starts.
 
-다음 문장:
+Next sentence:
 
-> 경고를 표시한 뒤 작업을 계속한다.
+> Show the warning, and then continue the operation.
 
-- **판정:** `needs human input`
-- **위치 1:** 앞 문장의 `방안을 제안했다`
-- **위치 2:** 다음 문장의 `작업을 계속한다`
-- **독자가 알 수 없는 관계:** 제안이 승인됐는지, 누가 작업을 계속하기로 결정했는지 알 수 없다.
-- **관계를 확인한 뒤 쓸 수 있는 문장:** 검토자는 경고를 먼저 표시하는 방안을 제안했다. 승인 책임자가 이 방안을 승인하면 작업자는 경고를 표시한 뒤 작업을 계속한다.
+- **Verdict:** `needs human input`
+- **Location 1:** `proposed`
+- **Location 2:** `Show the warning`
+- **Missing relationship:** The text does not say whether anyone approved the proposal or authorized the operation to continue.
+- **Possible wording after the relationship is confirmed:** The reviewer proposed showing a warning before the operation starts. If the approval owner accepts the proposal, the operator shows the warning before continuing the operation.
 
-### 관계가 분명한 정상 사례
+### Clear relationships
 
-> 입력 파일에 개인 경로가 있으면 검수자가 해당 경로를 저장소 상대 경로로 바꾼다. 검수자는 변경된 경로로 파일을 찾을 수 있는지 확인한 뒤 문서를 공유한다.
+> If an input file contains a personal path, the reviewer replaces that path with a repository-relative path. The reviewer confirms that the file remains accessible at the revised path before sharing the document.
 
-- **판정:** `pass`
-- **확인한 관계:** 조건, 행동 주체, 변경 결과와 다음 단계가 순서대로 드러난다.
+- **Verdict:** `pass`
+- **Confirmed relationship:** The condition, actor, change, verification, and next step appear in order.
 
-> 검수자는 문서의 제목, 각 절의 책임과 검증 결과를 차례로 확인하고, 앞 절에서 만든 결과가 다음 절의 입력으로 쓰일 때 그 관계를 문서에 적었는지도 함께 확인한다.
+> The reviewer checks the document title, the responsibility assigned to each section, and the verification results. When one section produces an input for the next section, the reviewer also confirms that the document states that relationship.
 
-- **판정:** `pass`
-- **확인한 관계:** 문장이 길지만 검수 대상과 추가 확인 조건이 구분되며 빠진 주체나 지칭 대상이 없다.
+- **Verdict:** `pass`
+- **Confirmed relationship:** Although the text contains several checks, each object and condition has an identifiable relationship to the reviewer.
