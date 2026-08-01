@@ -102,10 +102,16 @@ After context compaction, reread AGENTS.md, especially **Core Principles**, and 
 <!-- BEGIN USE WORDS REVIEW -->
 ### Words Review
 
+- At the start of a task that will draft or revise Korean public text, names, or a user-facing response, read the installed `use-words-review` skill's `references/korean.md`. This includes UI and accessibility text, code comments, commit and pull-request text, issue text, release notes, and reusable wording. Apply the reference only to Korean text.
+- Before sending any Korean response, inspect the user-visible draft sentence by sentence, rewrite violations, and send only the revised response. Apply this self-review to short progress updates and confirmations without loading the reference again or calling a subagent each time.
+- In general Korean prose, do not use U+00B7. Preserve the exact character only when a quotation, approved name, code, regular expression, character test, code-point explanation, or evaluation input requires it. For example, rewrite `설계·구현·검증 결과를 기록합니다` as `설계, 구현과 검증 결과를 기록합니다`.
+- Do not translate an English term into one fixed Korean word without checking its meaning. Expressions such as `계약`, `경로`, `공개`, `좁히다`, and `박다` are examples, not a closed list. Keep an established term only when the domain, referent, action, conditions, and result make its meaning clear; otherwise state the actual rule or action, or return `needs human input` when evidence cannot determine it.
+- Remove Korean translationese and formulaic AI prose. Rewrite expressions such as `본질적으로`, `다양한 측면에서`, `강력한`, and `원활한` when they add no fact. Do not invent an introduction or conclusion that repeats the answer, force unrelated content into three items, or repeat the same paragraph shape.
 - After creating or changing text or names that will be committed or shared, run the installed `use-words-review` skill before committing or sharing them. Also run it when a wording or public-output review is requested.
+- For a Korean response that states requirements, decisions, policies, security, privacy, licensing, ownership, or reusable wording, draft the answer and run `use-words-review` before sending it when a general-purpose subagent is available.
 - Review changes from the same commit or publication together. Provide the changed outputs and names, intended readers and reader actions, described roles, applicable repository rules, and candidate commit or publication text.
-- Have the skill use one available general-purpose subagent for read-only semantic review. If no subagent is available, follow the skill's main-agent fallback and state that independent review was not performed.
-- Report each applicable criterion as `pass`, `needs revision`, `needs human input`, or `not applicable`, with a location and reason for every result that does not pass.
+- Have the skill use one available general-purpose subagent for read-only semantic review. If no subagent is available, follow the skill's main-agent fallback. State that independent review was not performed when the user requested the review result; do not add that internal status to a pre-send review.
+- When the user asks for the review itself, report each applicable criterion as `pass`, `needs revision`, `needs human input`, or `not applicable`, with a location and reason for every result that does not pass. For a pre-send review, apply the findings and send only the revised response; do not append the internal review report unless the user requested it.
 - Keep review and editing separate. Verify findings against the actual change, confirm that review did not modify files, and edit only in a separately authorized task.
 <!-- END USE WORDS REVIEW -->
 

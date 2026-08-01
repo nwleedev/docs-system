@@ -1,6 +1,6 @@
 ---
 name: use-words-review
-description: Review changed public or tracked text and names in any language with an independent general-purpose subagent for audience fit, clear roles, publishable provenance, prompt or work-note leakage, private paths and identifiers, sentence meaning and relationships, and unnecessary symbols. Also review natural Korean when the output contains Korean. Use after creating, renaming, or editing files and directories, documentation, README files, UI or accessibility text, code comments, commit or pull-request text, issue text, or release notes; before committing or sharing those outputs; and whenever the user requests a wording or public-output review.
+description: Review changed public or tracked text, names, and high-impact user-facing drafts in any language with an independent general-purpose subagent for audience fit, clear roles, publishable provenance, prompt or work-note leakage, private paths and identifiers, sentence meaning and relationships, and unnecessary symbols. Also review natural Korean when the output contains Korean. Use after creating, renaming, or editing files and directories, documentation, README files, UI or accessibility text, code comments, commit or pull-request text, issue text, or release notes; before committing or sharing those outputs; before sending Korean requirements, decisions, policies, security, privacy, licensing, ownership, or reusable wording; and whenever the user requests a wording or public-output review.
 ---
 
 # Use Words Review
@@ -16,6 +16,7 @@ Review public outputs without editing them. Delegate the semantic review to one 
 5. Read the applicable AGENTS instructions and the owning document rules. When present and relevant, read repository-local design or development documentation indexes rather than assuming their structure.
 6. Keep review and editing separate. Do not modify an artifact unless the user separately authorizes the edit.
 7. Identify which languages appear in the changed output. Apply the common review to every language. Apply the Korean reference only to Korean text, including the Korean portions of multilingual output.
+8. When the scope is a user-facing response, review only the draft that the user would receive. Do not include hidden reasoning, tool traces, or routine progress messages unless those messages are themselves the requested wording.
 
 ## Collect publishable evidence
 
@@ -31,6 +32,8 @@ Run repository-provided checks that apply to the changed outputs. Include availa
 
 When Git and text search are available, inspect only the changed public outputs for formatting errors, personal absolute paths, private identifiers, distinctive prompt phrases, HTML comments, and unresolved markers. Redact a sensitive match in the report instead of repeating it. Treat search matches as review candidates, not automatic failures.
 
+For Korean text, search for U+00B7 before semantic review. Classify each match by its actual role. Report general-prose use as `needs revision`. Preserve the character when an exact quotation, approved name, code, regular expression, character test, code-point explanation, or evaluation input requires it. Do not replace matches automatically.
+
 ## Prepare the independent review
 
 Prefer the changed text and enough surrounding context to understand headings, claims, and reader actions. Include a full file only when the relationship between sections cannot be judged from the diff.
@@ -39,7 +42,7 @@ Select reference files before opening either one:
 
 1. Read [references/examples.md](references/examples.md) when calibrating the common criteria or when the distinction between a prohibited and allowed case is unclear. The examples cover audience, evidence, source preservation, private paths, sentence meaning, and relationships between sentences.
 2. If the changed output has no Korean, do not open [references/korean.md](references/korean.md), even when a common criterion is unclear. Do not inspect this file merely to decide whether it applies.
-3. If the changed output contains Korean or the review must judge a Korean expression, read `references/korean.md` and apply it only to the Korean text.
+3. If the changed output contains Korean or the review must judge a Korean expression, read [references/korean.md](references/korean.md) in full and apply it only to the Korean text. This reference is required for Korean; do not treat it as optional because the common criteria appear sufficient.
 
 Use each selected reference to calibrate judgment. Do not turn an example or candidate expression into a blacklist, and do not pass text merely because no example matches it. When repository evidence cannot determine the intended meaning, return `needs human input` instead of choosing a replacement.
 
@@ -105,7 +108,7 @@ Ask the subagent to judge each applicable criterion:
    - Check that the same role name keeps the same responsibility. When adjacent text switches role names, require evidence that they name distinct roles or explain that they name the same role; do not infer the relationship from familiar titles.
    - Check that pronouns and phrases such as "this result" have one identifiable referent, conditions and assumptions appear before the action that relies on them, and one step's result explains why the next step can begin.
    - Distinguish verified facts, proposals under review, and approved decisions. Do not let a later sentence silently promote a proposal into an approved decision.
-8. When the output contains Korean, its Korean wording is natural for the intended readers rather than literal, mechanically translated, padded with stock phrases, or mixed with avoidable English forms. Apply `references/korean.md` only to the Korean text.
+8. When the output contains Korean, its Korean wording is natural for the intended readers rather than literal, mechanically translated, padded with stock phrases, or mixed with avoidable English forms. Apply `references/korean.md` only to the Korean text. Check general-prose U+00B7, context-dependent terms beyond any fixed candidate list, repeated introductions and conclusions, arbitrary three-part structures, and repeated paragraph shapes.
 9. Emoji and uncommon symbols are absent unless readers or an approved format need them.
 
 Require one of these statuses for every applicable criterion and artifact:
@@ -123,7 +126,7 @@ Use `needs revision` only when repository evidence already identifies the exact 
 
 For UI and accessibility text, judge whether users can understand the relevant state and next action. For code comments and API documentation, judge whether callers or maintainers receive the conditions and constraints they need.
 
-If no general-purpose subagent is available, perform the same checks in the main context. Put a warning at the beginning of the result that states independent review was not performed and why. This fallback alone does not stop a commit or publication. If write access cannot be restricted, do not claim that tool-enforced read-only review occurred.
+If no general-purpose subagent is available, perform the same checks in the main context. For a Korean user-facing draft, apply every question in `references/korean.md`, rewrite each violation, and review the revised text once more. For a file or other stored artifact, keep the fallback read-only and report findings without editing. When the user requested a review result, put a warning at the beginning of that result that states independent review was not performed and why. For a pre-send review, apply the fallback without appending an internal review report to the response. This fallback alone does not stop a commit or publication. If write access cannot be restricted, do not claim that tool-enforced read-only review occurred.
 
 Repeat the review with the strongest available model and high reasoning effort only when the reviewer cannot judge the artifact because evidence conflicts or the main agent finds an unsupported or omitted judgment during reconciliation. A `needs revision` result alone does not require a more capable model. Missing evidence or authority remains `needs human input` at every model setting.
 
@@ -137,6 +140,8 @@ Repeat the review with the strongest available model and high reasoning effort o
 
 ## Report
 
-List the reviewed outputs, their intended readers, the reference files opened, the checks performed, the model and reasoning setting when known, and the per-criterion results. Include invocation-level token counts and elapsed time when the host provides them; otherwise mark those values as unavailable. Separate defects that can be revised from questions for the requirements owner, decision owner, reviewer, or approval owner. State any missing independent review, unavailable model override, unavailable check, redaction, or incomplete evidence.
+When the user requested a review result, list the reviewed outputs, their intended readers, the reference files opened, the checks performed, the model and reasoning setting when known, and the per-criterion results. Include invocation-level token counts and elapsed time when the host provides them; otherwise mark those values as unavailable. Separate defects that can be revised from questions for the requirements owner, decision owner, reviewer, or approval owner. State any missing independent review, unavailable model override, unavailable check, redaction, or incomplete evidence.
+
+When this skill runs only as a pre-send check for a user-facing draft, return the findings to the main agent. The main agent revises the draft and sends only the resulting response. Do not add the internal review report, model setting, token counts, or elapsed time unless the user asked for the review itself.
 
 End the review without editing files. If the user later authorizes fixes, make them as a separate task and run this review again on the revised outputs.
