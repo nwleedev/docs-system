@@ -100,18 +100,22 @@ After context compaction, reread AGENTS.md, especially **Core Principles**, and 
 ## Documentation Work
 
 <!-- BEGIN USE WORDS REVIEW -->
-### Words Review
+### Writing Korean Chat Responses
 
-- At the start of a task that will draft or revise Korean public text, names, or a user-facing response, read the installed `use-words-review` skill's `references/korean.md`. This includes UI and accessibility text, code comments, commit and pull-request text, issue text, release notes, and reusable wording. Apply the reference only to Korean text.
-- Before sending any Korean response, inspect the user-visible draft sentence by sentence, rewrite violations, and send only the revised response. Apply this self-review to short progress updates and confirmations without loading the reference again or calling a subagent each time.
+- Do not load `references/korean.md` or run `use-words-review` merely because a task involves routine chat, progress updates, confirmations, or explanatory responses. Write intermediate messages and final responses according to the rules below from the first draft.
+- In a progress update, state only the verified fact and the next action. Do not add a formulaic introduction or conclusion, a report of the review process, or a summary that repeats the preceding sentence.
 - In general Korean prose, do not use U+00B7. Preserve the exact character only when a quotation, approved name, code, regular expression, character test, code-point explanation, or evaluation input requires it. For example, rewrite `설계·구현·검증 결과를 기록합니다` as `설계, 구현과 검증 결과를 기록합니다`.
-- Do not translate an English term into one fixed Korean word without checking its meaning. Expressions such as `계약`, `경로`, `공개`, `좁히다`, and `박다` are examples, not a closed list. Keep an established term only when the domain, referent, action, conditions, and result make its meaning clear; otherwise state the actual rule or action, or return `needs human input` when evidence cannot determine it.
-- Remove Korean translationese and formulaic AI prose. Rewrite expressions such as `본질적으로`, `다양한 측면에서`, `강력한`, and `원활한` when they add no fact. Do not invent an introduction or conclusion that repeats the answer, force unrelated content into three items, or repeat the same paragraph shape.
-- After creating or changing text or names that will be committed or shared, run the installed `use-words-review` skill before committing or sharing them. Also run it when a wording or public-output review is requested.
-- For a Korean response that states requirements, decisions, policies, security, privacy, licensing, ownership, or reusable wording, draft the answer and run `use-words-review` before sending it when a general-purpose subagent is available.
+- Do not translate an English term into one fixed Korean word without checking its meaning. Expressions such as `계약`, `경로`, `공개`, `좁히다`, and `박다` are examples, not a closed list. Keep an established term only when the domain, referent, action, conditions, and result make its meaning clear. Otherwise state the actual rule or action. If evidence cannot determine the meaning, do not guess; ask the user for the missing information.
+- Do not use Korean translationese or formulaic AI prose. Avoid expressions such as `본질적으로`, `다양한 측면에서`, `강력한`, and `원활한` when they add no fact. Do not invent an introduction or conclusion that repeats the answer, force unrelated content into three items, or repeat the same paragraph shape.
+
+### Reviewing Text That Will Be Stored or Delivered
+
+- Before storing, committing, publishing, or sharing outside the conversation any Korean text or name that AI created or changed, read the installed `use-words-review` skill's `references/korean.md` and run the skill. This includes UI and accessibility text, code comments, commit and pull-request text, issue text, and release notes. Apply the reference only to Korean text.
+- Treat wording drafted in chat as review scope only when the user explicitly requests its review or the wording will be stored, published, or delivered verbatim outside the conversation. Sending an ordinary chat response does not by itself make it a shared output.
+- Run `use-words-review` when the user explicitly requests a review of particular wording or a public output, even when no file changed.
 - Review changes from the same commit or publication together. Provide the changed outputs and names, intended readers and reader actions, described roles, applicable repository rules, and candidate commit or publication text.
-- Have the skill use one available general-purpose subagent for read-only semantic review. If no subagent is available, follow the skill's main-agent fallback. State that independent review was not performed when the user requested the review result; do not add that internal status to a pre-send review.
-- When the user asks for the review itself, report each applicable criterion as `pass`, `needs revision`, `needs human input`, or `not applicable`, with a location and reason for every result that does not pass. For a pre-send review, apply the findings and send only the revised response; do not append the internal review report unless the user requested it.
+- Have the skill use one available general-purpose subagent for read-only semantic review. If no subagent is available, follow the skill's main-agent fallback. When the user requested the review result, state at the beginning of the result why independent review was not performed. For an internal check before committing or sharing, do not append that status to an unrelated chat response.
+- When the user asks for the review itself, report each applicable criterion as `pass`, `needs revision`, `needs human input`, or `not applicable`, with a location and reason for every result that does not pass.
 - Keep review and editing separate. Verify findings against the actual change, confirm that review did not modify files, and edit only in a separately authorized task.
 <!-- END USE WORDS REVIEW -->
 
