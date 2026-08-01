@@ -1,6 +1,6 @@
 ---
 name: use-words-review
-description: Review changed public or tracked text, names, and high-impact user-facing drafts in any language with an independent general-purpose subagent for audience fit, clear roles, publishable provenance, prompt or work-note leakage, private paths and identifiers, sentence meaning and relationships, and unnecessary symbols. Also review natural Korean when the output contains Korean. Use after creating, renaming, or editing files and directories, documentation, README files, UI or accessibility text, code comments, commit or pull-request text, issue text, or release notes; before committing or sharing those outputs; before sending Korean requirements, decisions, policies, security, privacy, licensing, ownership, or reusable wording; and whenever the user requests a wording or public-output review.
+description: Review changed public or tracked text and names in any language with an independent general-purpose subagent for audience fit, clear roles, publishable provenance, prompt or work-note leakage, private paths and identifiers, sentence meaning and relationships, and unnecessary symbols. Also review natural Korean when the output contains Korean. Use after creating, renaming, or editing files and directories, documentation, README files, UI or accessibility text, code comments, commit or pull-request text, issue text, or release notes; before committing, publishing, or sharing those outputs; when wording drafted in chat will be stored, published, or delivered verbatim outside the conversation; and whenever the user explicitly requests a wording or public-output review. Do not use for routine chat, progress updates, explanations, or final responses that will not be reused as reviewed wording.
 ---
 
 # Use Words Review
@@ -16,7 +16,7 @@ Review public outputs without editing them. Delegate the semantic review to one 
 5. Read the applicable AGENTS instructions and the owning document rules. When present and relevant, read repository-local design or development documentation indexes rather than assuming their structure.
 6. Keep review and editing separate. Do not modify an artifact unless the user separately authorizes the edit.
 7. Identify which languages appear in the changed output. Apply the common review to every language. Apply the Korean reference only to Korean text, including the Korean portions of multilingual output.
-8. When the scope is a user-facing response, review only the draft that the user would receive. Do not include hidden reasoning, tool traces, or routine progress messages unless those messages are themselves the requested wording.
+8. Treat wording drafted in chat as review scope only when the user explicitly requests its review or the wording will be stored, published, or delivered verbatim outside the conversation. Sending an ordinary chat response does not by itself make it a shared output. Review only the in-scope wording. Exclude hidden reasoning, tool traces, routine progress messages, general explanations, and final responses that will not be reused as reviewed wording.
 
 ## Collect publishable evidence
 
@@ -126,7 +126,7 @@ Use `needs revision` only when repository evidence already identifies the exact 
 
 For UI and accessibility text, judge whether users can understand the relevant state and next action. For code comments and API documentation, judge whether callers or maintainers receive the conditions and constraints they need.
 
-If no general-purpose subagent is available, perform the same checks in the main context. For a Korean user-facing draft, apply every question in `references/korean.md`, rewrite each violation, and review the revised text once more. For a file or other stored artifact, keep the fallback read-only and report findings without editing. When the user requested a review result, put a warning at the beginning of that result that states independent review was not performed and why. For a pre-send review, apply the fallback without appending an internal review report to the response. This fallback alone does not stop a commit or publication. If write access cannot be restricted, do not claim that tool-enforced read-only review occurred.
+If no general-purpose subagent is available, perform the same checks in the main context. Keep the fallback read-only for files, stored artifacts, and wording supplied or drafted in chat, and report findings without editing. For Korean, apply every applicable question in `references/korean.md`. When the user requested a review result, put a warning at the beginning of that result that states independent review was not performed and why. This fallback alone does not stop a commit, publication, or delivery. If write access cannot be restricted, do not claim that tool-enforced read-only review occurred.
 
 Repeat the review with the strongest available model and high reasoning effort only when the reviewer cannot judge the artifact because evidence conflicts or the main agent finds an unsupported or omitted judgment during reconciliation. A `needs revision` result alone does not require a more capable model. Missing evidence or authority remains `needs human input` at every model setting.
 
@@ -142,6 +142,6 @@ Repeat the review with the strongest available model and high reasoning effort o
 
 When the user requested a review result, list the reviewed outputs, their intended readers, the reference files opened, the checks performed, the model and reasoning setting when known, and the per-criterion results. Include invocation-level token counts and elapsed time when the host provides them; otherwise mark those values as unavailable. Separate defects that can be revised from questions for the requirements owner, decision owner, reviewer, or approval owner. State any missing independent review, unavailable model override, unavailable check, redaction, or incomplete evidence.
 
-When this skill runs only as a pre-send check for a user-facing draft, return the findings to the main agent. The main agent revises the draft and sends only the resulting response. Do not add the internal review report, model setting, token counts, or elapsed time unless the user asked for the review itself.
+When wording drafted in chat is reviewed because it will be stored, published, or delivered verbatim outside the conversation, return the findings to the main agent before that action. Do not add the internal review report, model setting, token counts, or elapsed time to an unrelated response. When the user explicitly requested the wording review, report the review result as requested.
 
 End the review without editing files. If the user later authorizes fixes, make them as a separate task and run this review again on the revised outputs.
