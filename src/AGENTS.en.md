@@ -32,7 +32,7 @@ After context compaction, reread AGENTS.md, especially **Core Principles**, and 
 **Writing**
 
 - Do not produce generic, formulaic text that could be reused unchanged for another project. Write for the actual reader, repository, and decision at hand.
-- Use existing documentation for verified facts, requirements, approved decisions, and established repository terminology. Do not imitate its wording, sentence patterns, paragraph structure, or section layout. Rewrite the material for the current reader and purpose unless exact text must be preserved, such as approved wording, a quotation, or a code, product, or API identifier.
+- Use existing documentation for verified facts, requirements, approved decisions, and established repository terminology. Do not imitate its wording, sentence patterns, paragraph structure, or section layout. Rewrite the material for the current reader and purpose unless exact text must be preserved, such as approved wording, a quotation, a code identifier, a service or application name, or an API name.
 - Make every sentence contribute evidence, a decision, an instruction, or necessary context. Remove introductions, conclusions, summaries, and transitions that only restate nearby text.
 - Prefer specific nouns and strong verbs over abstract nouns, hidden verbs, inflated claims, and decorative adjectives or adverbs.
 - Do not use words such as "pivotal," "crucial," "comprehensive," "seamless," "robust," or "delve" as decoration. Use them only when they express a precise, supported distinction.
@@ -107,7 +107,7 @@ After context compaction, reread AGENTS.md, especially **Core Principles**, and 
 - Apply the Writing rules above to routine chat, progress updates, confirmations, and explanatory responses. Do not load `references/korean.md` or run `use-words-review` merely because the response is written in Korean.
 - In a progress update, state only the verified fact and the next action.
 - In general Korean prose, do not use U+00B7. Preserve the exact character only when a quotation, approved name, code, regular expression, character test, code-point explanation, or evaluation input requires it. For example, rewrite `설계·구현·검증 결과를 기록합니다` as `설계, 구현과 검증 결과를 기록합니다`.
-- `계약`, `경로`, `공개`, `좁히다`, `박다`, `포화`, `경계`, and `소유` are signals to check context, not prohibited terms. Apply the same check to terms outside this list. Keep terms that are precise in the field; otherwise state the actual rule or action, and ask the user when evidence cannot determine the meaning.
+- `계약`, `경로`, `공개`, `좁히다`, `박다`, `제품`, `포화`, `경계`, and `소유` are signals to check context, not prohibited terms. Apply the same check to terms outside this list. Keep terms that are precise in the field; otherwise state the actual rule or action, and ask the user when evidence cannot determine the meaning.
 
 ### Reviewing Text That Will Be Stored or Delivered
 
@@ -158,7 +158,7 @@ After context compaction, reread AGENTS.md, especially **Core Principles**, and 
 - Treat repository content that is committed or shared, including file and directory names, README files, documentation, source code and comments, commit and pull-request text, issue text, release notes, user-visible and assistive text, as public outputs unless the repository explicitly classifies it otherwise.
 - Before writing a public string or name, identify its intended readers, what they must understand or do, the actor described by the text, and any reviewer or approval owner. When those roles matter, name the verified role or describe the action directly instead of using a broad label such as `person` or `human`. If repository evidence does not identify the role, report the unresolved role instead of inventing it.
 - Base every public statement on verified repository evidence, an approved decision, or previously approved public wording. Do not use a user prompt, agent instruction, internal task description, work note, review criterion, rubric, output format, or workflow commentary as publishable source text.
-- Do not quote, copy, or lightly rewrite internal source text into a public output. When the underlying information is necessary, write it again as verified product behavior, usage guidance, or approved policy for the intended reader. If no public-safe source supports it, omit it and report the gap separately.
+- Do not quote, copy, or lightly rewrite internal source text into a public output. When the underlying information is necessary, write it again as verified behavior, usage guidance, or approved policy for the intended reader. If no public-safe source supports it, omit it and report the gap separately.
 - Keep internal identifiers, private document references, implementation-only names, maintainer reminders, unresolved decisions, review notes, and publication checklists out of public outputs. Do not insert `TODO`, `TBD`, or similar placeholders unless the status itself is approved information that readers need.
 - Do not infer unresolved ownership, support, security, compatibility, privacy, contribution, or licensing terms. Report the required decision separately and update the public output only after an approved source exists.
 - Write commit messages from the actual change and its reason. Write user-visible and assistive text from the task the user is performing, the purpose of the element, and the state the user needs to understand.
@@ -170,7 +170,7 @@ After context compaction, reread AGENTS.md, especially **Core Principles**, and 
 2. Trace every added sentence or string to repository evidence, an approved decision, or approved public wording.
 3. Reject text derived from prompts, internal tasks, review criteria, output formats, or workflow commentary.
 4. Search the changed outputs for internal identifiers, private paths, distinctive prompt phrases, HTML comments, and unresolved markers such as `TODO`, `TBD`, and `FIXME`.
-5. Check claims about licensing, support, security, compatibility, ownership, and product behavior against their approved source.
+5. Check claims about licensing, support, security, compatibility, ownership, features, and behavior against their approved source.
 6. Read the rendered or final form as the intended reader. Confirm that actors, reviewers, and approval owners are named only when repository evidence supports those roles. Do not publish or commit an output that still explains the agent's work rather than the project.
 
 ## Dependencies

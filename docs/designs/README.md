@@ -86,7 +86,7 @@ After the initial version exists, AI may identify gaps and propose exact changes
 - Observable evidence that will show the work is complete
 - Unresolved questions that would change the requested behavior, if any.
 
-Include protected behavior, exclusions, inputs, environment, or product constraints only when they affect the work. The requirements owner may express this information in plain sentences without YAML, tables, IDs, formal scenarios, or technical terminology.
+Include protected behavior, exclusions, inputs, environment, or domain constraints only when they affect the work. The requirements owner may express this information in plain sentences without YAML, tables, IDs, formal scenarios, or technical terminology.
 
 An AI-created initial version may be incomplete because the request did not state every required item. Mark the missing criteria as `needs revision` or `needs human input`. Do not fill them by inference merely to make the document pass review.
 
@@ -174,7 +174,7 @@ Create `plan.md` after behavior-changing ambiguities and required decisions are 
 
 Do not record Git object IDs or timestamps as baseline identifiers. Before the plan's first commit, the current reviewed files are the provisional baseline. After the plan is committed, the versions of those files in the commit that last changed `plan.md` are the baseline. Changing and committing the plan confirms that the requirements and listed development guidance were reviewed again.
 
-The plan may choose implementation steps, but it must not invent product behavior. Every required outcome and protected behavior must be covered by work and verification or identified as blocked.
+The plan may choose implementation steps, but it must not invent behavior that the requirements owner did not request or approve. Every required outcome and protected behavior must be covered by work and verification or identified as blocked.
 
 ### Prohibited content
 
@@ -190,7 +190,7 @@ Use the cheapest reliable check for each property.
 
 - Repository checks, when implemented, verify file placement, required files, empty files or directories, unresolved placeholders, and repository-relative links.
 - AI checks required information, ambiguity, contradictions, evidence support, requirement coverage, and readability.
-- Requirements owners confirm intended requirements and answer behavior-changing questions. Decision owners approve decisions, and responsible reviewers judge product meaning or trade-offs that tools cannot decide.
+- Requirements owners confirm intended requirements and answer behavior-changing questions. Decision owners approve decisions, and responsible reviewers judge intended behavior or trade-offs that tools cannot decide.
 
 AI reports each applicable criterion as `pass`, `needs revision`, `needs human input`, or `not applicable`. Every result includes a short quotation or file location as evidence. If evidence cannot be found, AI says so instead of inferring missing content. Review and rewriting are separate actions. AI does not silently repair a document while grading it.
 

@@ -13,7 +13,7 @@ docs/dev/
     <guidance>.md
 ```
 
-Topic names are repository-specific. Prefer terms already used by the repository's code, product, operations, and existing documentation. Do not create empty topic directories or rename existing topics to match another repository.
+Topic names are repository-specific. Prefer terms already used by the repository's code, user-facing interfaces, domain language, operations, and existing documentation. Do not create empty topic directories or rename existing topics to match another repository.
 
 Create a topic-level `README.md` only when readers cannot reliably find the right file from names and links alone. Do not move, rename, merge, split, or rewrite existing guidance solely to make the directory match this example.
 
@@ -122,9 +122,9 @@ Use the cheapest reliable method for each property.
 - Type or schema checks verify data shapes, interfaces, and compatibility.
 - Automated tests verify observable behavior, failure handling, and integration.
 - Runtime or browser checks verify user workflows, rendering, performance, and operational signals.
-- The responsible reviewer confirms product meaning, usability, visual quality, and trade-offs. The approval owner approves the result.
+- The responsible reviewer confirms intended behavior, usability, visual quality, and trade-offs. The approval owner approves the result.
 
-Repository checks, when implemented, verify document placement, empty files, unresolved placeholders, and repository-relative links. AI reviews required information, evidence support, contradictions, applicability, and readability. Decision owners approve decisions and resolve questions that change product behavior or engineering policy.
+Repository checks, when implemented, verify document placement, empty files, unresolved placeholders, and repository-relative links. AI reviews required information, evidence support, contradictions, applicability, and readability. Decision owners approve decisions and resolve questions that change intended behavior or engineering policy.
 
 AI reports each applicable criterion as `pass`, `needs revision`, `needs human input`, or `not applicable`, with a short quotation or file location as evidence. If the document does not provide enough evidence, AI says so instead of inventing a current rule. Review and rewriting are separate actions.
 
@@ -180,7 +180,7 @@ Using or reviewing guidance does not by itself authorize edits. When an update i
 
 ## Maintenance
 
-- Recheck guidance when the relevant dependency, architecture, product behavior, or repository evidence changes.
+- Recheck guidance when the relevant dependency, architecture, observable behavior, or repository evidence changes.
 - Mark uncertain or unapproved guidance as proposed rather than current.
 - Promote frequently violated, mechanically detectable rules into lint, tests, schemas, hooks, or CI.
 - Delete guidance that only repeats code or official documentation without adding repository-specific meaning.
