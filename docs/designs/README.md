@@ -39,14 +39,14 @@ For every document type, this README should define
 - Put each section's conclusion or decision before its background detail. Keep each section focused on one question, decision, subject, or result.
 - Do not use tables. Preserve reading order with descriptive headings, short paragraphs, and lists.
 - Use bullets for unordered items and numbered lists only for sequence or priority. Present paired names and descriptions as bold run-in labels followed by prose.
-- When readers must compare options or repeated items, give each one its own subsection and describe the applicable attributes in the same order. Do not add empty fields merely to force uniformity.
+- When readers must compare options or repeated items, give each one its own subsection and describe the applicable attributes in the same order. Keep that repeated structure when every subsection contributes a new fact or basis for judgment. Do not add empty fields merely to force uniformity, and remove repeated conclusions that add no information.
 - Separate sourced facts, analysis, approved decisions, proposals, and unresolved uncertainty so readers can distinguish them.
 - When one external source supports a claim, place one descriptive inline link at the end of the claim.
 - When several external sources support one claim, use a nested list by default. State the compared result in the parent item, then give each source its own child item with one descriptive link and the fact confirmed from that source.
 - A paragraph that contains one claim may be followed immediately by a one-level source list. Give each source its own item with one external link and the fact it supports.
 - When sources support different claims, separate the claims with subsections or paragraphs and place each source near the claim it supports. Do not collect links in an unrelated `References` or `Further reading` list at the end of the document.
 - Use footnotes only when the target renderer provides working navigation to the note and back to the text, and the intended reader finds them easier to follow than inline sources.
-- Link to the owning document instead of copying the same requirement, decision, evidence, or guidance into multiple files.
+- Link to the authoritative document instead of copying the same requirement, decision, evidence, or guidance into multiple files.
 - Do not add IDs to requirements or derived documents. Add YAML, status fields, or other metadata only when a current tool or review process consumes them.
 
 ## Source and Audience
@@ -55,17 +55,19 @@ Before writing, identify the document type, its intended readers, and the decisi
 
 When the requirements owner, intended readers, decision owner, and reviewer are different, name the applicable role instead of referring to all of them as a person or human. If the repository and approved decisions do not identify the responsible role, report `needs human input` instead of assigning responsibility.
 
-One task may contain multiple requirements, research questions, decisions, or work units. Assign each part to the document that owns that kind of information. Do not combine unrelated parts into one document or decision merely because they appeared in the same prompt.
+One task may contain multiple requirements, research questions, decisions, or work units. Record each part in the document designated for that kind of information. Do not combine unrelated parts into one document or decision merely because they appeared in the same prompt.
 
 Treat user prompts, agent instructions, internal task descriptions, review criteria, requested output formats, tool conditions, progress reports, and untracked notes as work inputs, not as publishable sources. Except where exact text is part of the document's purpose, do not quote, lightly rewrite, or use those inputs as titles, filenames, headings, repository facts, decision reasons, or current rules. Write needed content from verified repository evidence, sourced research, approved decisions, or previously approved public wording.
 
-Exact source text may be retained only when the document's purpose requires it: requirements whose wording belongs to the requirements owner, approved user-visible wording or quotations, prompt-processing evaluation data, a minimal reproduction input, or an access-controlled log that is not committed. Keep only the necessary portion. Do not carry credentials, personal absolute paths, local attachment locations, private project identifiers, or internal paths into a tracked document when a safe placeholder or a repository-relative path is sufficient. Report unsafe text in a requirement to its owner separately instead of silently rewriting it.
+Derived design documents may use verified requirements, approved decisions, repository evidence, and comparison structures needed to present the same attributes in the same order. An existing title, abstract noun, or conclusion is not approved public wording merely because it appears in a source document. Rewrite the material for the current readers and identify the actor, action, conditions, and result. Preserve a repeated comparison structure when each section adds a new fact or basis for judgment; revise repeated conclusions that add no information.
+
+Exact source text may be retained only when the document's purpose requires it: requirements whose wording belongs to the requirements owner, approved user-visible wording or quotations, prompt-processing evaluation data, a minimal reproduction input, or an access-controlled log that is not committed. Keep only the necessary portion. Do not carry credentials, personal absolute paths, local attachment locations, private project identifiers, or internal paths into a tracked document when a safe placeholder or a repository-relative path is sufficient. Report unsafe text in a requirement to the requirements owner separately instead of silently rewriting it.
 
 Write in language natural to the intended readers. Do not preserve literal translations, awkward terminology, emoji, or uncommon symbols merely because they appeared in a prompt or source note.
 
 ## `requirements.md`
 
-### Purpose and ownership
+### Purpose and authority
 
 `requirements.md` states the requirements owner's requested outcome. The requirements owner controls its wording and ordering and may create or rewrite the file at any time.
 
@@ -90,12 +92,12 @@ An AI-created initial version may be incomplete because the request did not stat
 
 ### Prohibited content
 
-- AI-inferred requirements presented as requirements approved by their owner
+- AI-inferred requirements presented as requirements approved by the requirements owner
 - Unverifiable completion language without observable evidence
 - Implementation choices presented as required outcomes when the requirements owner did not require that implementation
 - Instructions added only to make an existing implementation appear compliant.
 
-Derived documents refer to the relevant requirement by its owning file and descriptive heading instead of copying request text for traceability. Do not add requirement IDs. If the existing headings do not identify the relevant requirement clearly enough, report the ambiguity to the requirements owner instead of rewriting the requirement or inventing metadata.
+Derived documents refer to the relevant requirement by the file that records it and its descriptive heading instead of copying request text for traceability. Do not add requirement IDs. If the existing headings do not identify the relevant requirement clearly enough, report the ambiguity to the requirements owner instead of rewriting the requirement or inventing metadata.
 
 ### Review
 
@@ -208,7 +210,7 @@ Do not restart all work automatically, and do not rewrite requirements to match 
 
 ## When to Add More Structure
 
-- Ask the requirements owner or document owner to clarify ambiguous headings or ownership before references become unreliable.
+- Ask the requirements owner or the role responsible for maintaining the document to clarify ambiguous headings or responsibility before references become unreliable.
 - Add a references or decisions index when the directory is no longer easy to scan.
 - Add machine-readable metadata only when an active tool needs it.
 - Add a separate coverage or completion audit only when `plan.md` and the actual change cannot be reviewed reliably together.
