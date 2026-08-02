@@ -10,6 +10,7 @@ These examples calibrate the criteria that apply to every language: audience, ev
 - [Unnecessary symbols and required notation](#unnecessary-symbols-and-required-notation)
 - [Personal paths and paths that readers need](#personal-paths-and-paths-that-readers-need)
 - [When not to preserve source text](#when-not-to-preserve-source-text)
+- [Verified source content and inherited wording](#verified-source-content-and-inherited-wording)
 - [Sentence meaning and relationships between sentences](#sentence-meaning-and-relationships-between-sentences)
 
 ## Reader guidance and work reports
@@ -93,6 +94,20 @@ Some artifacts require a limited amount of exact source text:
 - an untracked execution record with defined access and retention rules.
 
 Even in these cases, remove or separately protect personal information, credentials, private paths, and private identifiers that the artifact does not need.
+
+## Verified source content and inherited wording
+
+Problematic:
+
+> Copy the earlier document's title, abstractions, and concluding sentence because that document supplied the facts for this one.
+
+Using a document as a factual source does not establish that its wording was approved for a new audience or purpose.
+
+Reader-focused:
+
+> Retain the verified facts and approved decisions from the earlier document. Rewrite the explanation for the new readers, naming the actor, action, conditions, and result. Keep a repeated structure when readers need to compare the same attributes in the same order.
+
+This version preserves source content and a necessary comparison structure without treating inherited wording as a style template.
 
 ## Sentence meaning and relationships between sentences
 

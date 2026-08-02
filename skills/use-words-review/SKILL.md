@@ -17,6 +17,7 @@ Review public outputs without editing them. Delegate the semantic review to one 
 6. Keep review and editing separate. Do not modify an artifact unless the user separately authorizes the edit.
 7. Identify which languages appear in the changed output. Apply the common review to every language. Apply the Korean reference only to Korean text, including the Korean portions of multilingual output.
 8. Treat wording drafted in chat as review scope only when the user explicitly requests its review or the wording will be stored, published, or delivered verbatim outside the conversation. Sending an ordinary chat response does not by itself make it a shared output. Review only the in-scope wording. Exclude hidden reasoning, tool traces, routine progress messages, general explanations, and final responses that will not be reused as reviewed wording.
+9. Identify the source documents that the writing agent used to draft or revise each output and include them in the review context. Provide the full source document when relationships elsewhere in it affect the judgment; otherwise provide the smallest excerpts that preserve the relevant facts, decisions, structure, and wording. Do not assume that a source document's title, abstractions, terminology, paragraph shape, or conclusion is approved public wording.
 
 ## Collect publishable evidence
 
@@ -25,6 +26,8 @@ For every added or changed statement, identify support from repository evidence,
 Retain exact source text only when the artifact requires it, such as a requirement whose wording belongs to the requirements owner, approved user-visible wording or quotation, prompt-processing evaluation data, a minimal reproduction input, or an access-controlled log that will not be committed. Use only the minimum text needed for the stated purpose.
 
 Provide original prompt text to the reviewer only when the review explicitly requires an exact comparison. Minimize and redact it before delegation, and do not write it to a tracked file or durable log.
+
+Apply the same minimization before providing source documents used to draft the output. Remove or redact credentials, personal paths, private URLs, private identifiers, and unrelated personal information. Supply only the excerpts needed to verify facts, decisions, structure, and inherited wording unless relationships elsewhere in the source require the full document.
 
 ## Run available deterministic checks
 
@@ -44,6 +47,8 @@ Select reference files before opening either one:
 2. If the changed output has no Korean, do not open [references/korean.md](references/korean.md), even when a common criterion is unclear. Do not inspect this file merely to decide whether it applies.
 3. If the changed output contains Korean or the review must judge a Korean expression, read [references/korean.md](references/korean.md) in full and apply it only to the Korean text. This reference is required for Korean; do not treat it as optional because the common criteria appear sufficient.
 
+Record whether each required reference was read. If a required reference cannot be opened or read in full, stop the affected review and report the missing reference. Do not return `pass` for an artifact whose required reference was unavailable.
+
 Use each selected reference to calibrate judgment. Do not turn an example or candidate expression into a blacklist, and do not pass text merely because no example matches it. When repository evidence cannot determine the intended meaning, return `needs human input` instead of choosing a replacement.
 
 Choose the review context from the relationship that must be judged:
@@ -51,6 +56,7 @@ Choose the review context from the relationship that must be judged:
 - Provide the changed paragraph and the necessary adjacent sentences when they are enough to identify each sentence's subject, referent, action, condition, and result.
 - Provide the changed section when the review must connect a heading, an earlier step's result, a role, or the document's assigned responsibility.
 - Provide the full file only when the changed section depends on decisions or definitions elsewhere in the document.
+- Provide the minimized and redacted source documents used to draft the output, or the smallest relevant excerpts, when the review must determine whether the new text inherited an abstraction, an avoidable English common noun, a repeated conclusion, or another unapproved wording pattern. Preserve the source's verified facts and approved decisions while treating its wording as review context rather than a style template.
 
 Prepare a delegation message containing only:
 
@@ -109,6 +115,8 @@ Ask the subagent to judge each applicable criterion:
    - Check that pronouns and phrases such as "this result" have one identifiable referent, conditions and assumptions appear before the action that relies on them, and one step's result explains why the next step can begin.
    - Distinguish verified facts, proposals under review, and approved decisions. Do not let a later sentence silently promote a proposal into an approved decision.
 8. When the output contains Korean, its Korean wording is natural for the intended readers rather than literal, mechanically translated, padded with stock phrases, or mixed with avoidable English forms. Apply `references/korean.md` only to the Korean text. Check general-prose U+00B7, context-dependent terms beyond any fixed candidate list, repeated introductions and conclusions, arbitrary three-part structures, and repeated paragraph shapes.
+   - Compare the output with the source documents used to draft it. Check whether it inherited abstract nouns, avoidable English common nouns, or conclusions that add no new fact, decision, action, or condition.
+   - Preserve established professional terms and repeated structures that readers need to compare the same attributes in the same order. Do not fail them merely because the source document also used them.
 9. Emoji and uncommon symbols are absent unless readers or an approved format need them.
 
 Require one of these statuses for every applicable criterion and artifact:
@@ -140,7 +148,7 @@ Repeat the review with the strongest available model and high reasoning effort o
 
 ## Report
 
-When the user requested a review result, list the reviewed outputs, their intended readers, the reference files opened, the checks performed, the model and reasoning setting when known, and the per-criterion results. Include invocation-level token counts and elapsed time when the host provides them; otherwise mark those values as unavailable. Separate defects that can be revised from questions for the requirements owner, decision owner, reviewer, or approval owner. State any missing independent review, unavailable model override, unavailable check, redaction, or incomplete evidence.
+When the user requested a review result, list the reviewed outputs, their intended readers, the source documents supplied as drafting context, the reference files opened, whether `references/korean.md` was read when Korean applied, the checks performed, the model and reasoning setting when known, and the per-criterion results. Include invocation-level token counts and elapsed time when the host provides them; otherwise mark those values as unavailable. Separate defects that can be revised from questions for the requirements owner, decision owner, reviewer, or approval owner. State any missing or unreadable required reference, missing independent review, unavailable model override, unavailable check, redaction, or incomplete evidence.
 
 When wording drafted in chat is reviewed because it will be stored, published, or delivered verbatim outside the conversation, return the findings to the main agent before that action. Do not add the internal review report, model setting, token counts, or elapsed time to an unrelated response. When the user explicitly requested the wording review, report the review result as requested.
 
