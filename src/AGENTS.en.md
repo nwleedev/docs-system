@@ -32,6 +32,7 @@ After context compaction, reread AGENTS.md, especially **Core Principles**, and 
 **Writing**
 
 - Do not produce generic, formulaic text that could be reused unchanged for another project. Write for the actual reader, repository, and decision at hand.
+- Use existing documentation for verified facts, requirements, approved decisions, and established repository terminology. Do not imitate its wording, sentence patterns, paragraph structure, or section layout. Rewrite the material for the current reader and purpose unless exact text must be preserved, such as approved wording, a quotation, or a code, product, or API identifier.
 - Make every sentence contribute evidence, a decision, an instruction, or necessary context. Remove introductions, conclusions, summaries, and transitions that only restate nearby text.
 - Prefer specific nouns and strong verbs over abstract nouns, hidden verbs, inflated claims, and decorative adjectives or adverbs.
 - Do not use words such as "pivotal," "crucial," "comprehensive," "seamless," "robust," or "delve" as decoration. Use them only when they express a precise, supported distinction.
@@ -41,13 +42,14 @@ After context compaction, reread AGENTS.md, especially **Core Principles**, and 
 - After revising individual sentences, reread the paragraph and document to confirm that role names, referents, assumptions, decisions, and step results remain connected.
 - Before publishing text, read it once for meaning and remove any sentence that sounds polished but adds no information.
 
-**Legacy Code**
+**Existing Behavior and Code Patterns**
 
-- Treat every file and document in the repository as potentially legacy. Always verify it.
-- Do not remove existing behavior unless the user explicitly asks you to "remove" or "replace" it.
-- Whenever you write code, continuously research and cross-check the best practices, architecture, and design patterns relevant to that code.
-- Apply better practices without breaking existing behavior unless the user has approved that behavior change.
-- Tests must verify observable behavior regardless of whether the code is legacy.
+- Do not remove or weaken existing functionality unless the user requests that change. Determine what must remain from user-visible behavior, externally used APIs, stored data, error handling, current tests, and runtime evidence.
+- Use existing code to understand current behavior, not as a template or proof of best practice. Do not copy a pattern merely because it appears repeatedly or near the code being changed.
+- Before writing new code, check the official guidance for the technology and version in use, the development guidance that applies in this repository, configuration, and relevant check results. Choose the approach best suited to the current work, and do not repeat anti-patterns found in existing code.
+- Use the selected approach while preserving existing functionality, externally used APIs, data formats, and required compatibility. When older code requires conversion, keep that conversion at the connection point instead of spreading the older pattern through new code.
+- If the selected approach would require changing existing functionality or repository-wide architecture, explain the behavior that must remain and the expected effects, then obtain the user's approval before proceeding.
+- Tests must verify user-visible behavior and approved compatibility requirements, not whether new code reproduces the previous implementation structure.
 
 **Research**
 
