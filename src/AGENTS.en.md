@@ -102,45 +102,31 @@ After context compaction, reread AGENTS.md, especially **Core Principles**, and 
 <!-- BEGIN USE WORDS REVIEW -->
 ### Writing Korean Chat Responses
 
-- Do not load `references/korean.md` or run `use-words-review` merely because a task involves routine chat, progress updates, confirmations, or explanatory responses.
-- Write intermediate messages and final responses from the first draft so that the referent, actor, action, conditions, and result are explicit. After revising individual sentences, confirm that roles, referents, and the preceding step's result remain connected to the sentences that follow.
-- In a progress update, state only the verified fact and the next action. Do not add a formulaic introduction or conclusion, a report of the review process, or a summary that repeats the preceding sentence.
+- Apply the Writing rules above to routine chat, progress updates, confirmations, and explanatory responses. Do not load `references/korean.md` or run `use-words-review` merely because the response is written in Korean.
+- In a progress update, state only the verified fact and the next action.
 - In general Korean prose, do not use U+00B7. Preserve the exact character only when a quotation, approved name, code, regular expression, character test, code-point explanation, or evaluation input requires it. For example, rewrite `설계·구현·검증 결과를 기록합니다` as `설계, 구현과 검증 결과를 기록합니다`.
-- Do not translate an English term into one fixed Korean word without checking its meaning. `계약`, `경로`, `공개`, `좁히다`, `박다`, `포화`, `경계`, and `소유` are a small set of review signals, not prohibited terms. Apply the same questions to expressions outside this list: whether the term is established in the field and whether the referent, actor, action, conditions, and result are explicit. Keep a precise term; otherwise state the actual rule or action. If evidence cannot determine the meaning, do not guess; ask the user for the missing information.
-- An existing document may supply verified facts and approved decisions, but it is not an approved style example. Before copying its title or wording, rewrite the text for the current readers and state the actual action, conditions, and result.
-- Do not use Korean translationese or formulaic AI prose. Avoid expressions such as `본질적으로`, `다양한 측면에서`, `강력한`, and `원활한` when they add no fact. Do not invent an introduction or conclusion that repeats the answer, force unrelated content into three items, or repeat the same paragraph shape.
+- `계약`, `경로`, `공개`, `좁히다`, `박다`, `포화`, `경계`, and `소유` are signals to check context, not prohibited terms. Apply the same check to terms outside this list. Keep terms that are precise in the field; otherwise state the actual rule or action, and ask the user when evidence cannot determine the meaning.
 
 ### Reviewing Text That Will Be Stored or Delivered
 
-- When AI will create or revise Korean text or a name for storage, commit, publication, or sharing outside the conversation, read the installed `use-words-review` skill's `references/korean.md` in full before drafting. This includes UI and accessibility text, code comments, commit and pull-request text, issue text, and release notes. Apply the reference only to Korean text.
+- When AI will create or revise Korean text or a name for storage, commit, publication, or sharing outside the conversation, read the installed `use-words-review` skill's `references/korean.md` in full before drafting. Apply the reference only to Korean text.
 - After completing the text, group changes from the same sharing unit and run `use-words-review` once immediately before the actual storage, commit, publication, or sharing action.
 - When wording drafted in chat will be stored, published, or delivered verbatim outside the conversation, review it once per sharing unit immediately before the actual storage or delivery action. Sending an ordinary chat response does not by itself make it a review target.
 - When the user explicitly requests a review of particular wording or a public output, group all wording named in that request into one review unit and run `use-words-review` once, even when no file changed. Treat a later request to review revised wording as a new review unit.
 - If the current run cannot find or read the skill, do not claim completion of work that requires the review. When the reviewed output contains Korean, also do not claim completion if `references/korean.md` cannot be found or read in full. Report whether the observed gap is a missing installation or a missing reference, to the extent that the current run can determine it.
-- For review, provide the changed outputs and names, the existing documents used to draft them, intended readers and reader actions, described roles, applicable repository rules, and candidate commit or publication text.
-- Have the skill use one available general-purpose subagent for read-only semantic review. If no subagent is available, follow the skill's main-agent fallback. When the user requested the review result, state at the beginning of the result why independent review was not performed. For an internal check before committing or sharing, do not append that status to an unrelated chat response.
-- When the user asks for the review itself, report each applicable criterion as `pass`, `needs revision`, `needs human input`, or `not applicable`, with a location and reason for every result that does not pass.
-- Keep review and editing separate. Verify findings against the actual change, confirm that review did not modify files, and edit only in a separately authorized task.
 <!-- END USE WORDS REVIEW -->
 
 ### Design Documents
 
 - Read `docs/designs/README.md` before creating, reviewing, planning, implementing from, or validating documents under `docs/designs/**`.
 - If the target work has a `requirements.md`, read it in full, then read only the references, decisions, plan, and repository evidence needed for the current question.
-- If a design package is necessary but `requirements.md` does not exist, AI may create a small, easy-to-revise initial draft containing only the outcomes, conditions, completion evidence, and questions explicitly stated by the user. Do not infer unstated content or add empty headings and placeholders.
-- The requirements owner controls the wording and order of `requirements.md`. After the initial draft, AI may edit it only when the requirements owner requests a change or approves the exact wording. Do not record unapproved inferences as requirements or decisions.
-- For a conversation-only review or investigation that does not need a design package, use the current request as the work baseline. Do not stop or create a package solely because `requirements.md` is absent.
-- Derived documents do not follow fixed templates. They must satisfy the required information, prohibited content, validation methods, and readability criteria defined in `docs/designs/README.md`.
-- Connect references, decisions, work units, and verification results to exact requirement excerpts and their headings.
+- Connect references, decisions, work units, and verification results to the requirements file through descriptive headings.
 - When the work is complete, check the documents and actual results again against the criteria in `docs/designs/README.md`.
 
 ### Development Guidance
 
 - Read `docs/dev/README.md` before planning, implementing, reviewing, refactoring, testing, or documenting an application change.
-- Do not read all of `docs/dev`. Select only the guidance relevant to the current work and list those files in the plan or equivalent execution input. For a committed plan, treat the selected files in the commit that last changed the plan as the reviewed baseline. If a selected file changes later, compare it with that baseline before continuing affected work.
-- Development guidance does not follow a fixed template. It must satisfy the inclusion conditions, required information, prohibited content, validation methods, and readability criteria defined in `docs/dev/README.md`.
-- Check the current code, configuration, tests, generated artifacts, approved decisions, and dependency versions before treating existing guidance as a current rule.
-- Verify mechanically checkable rules with lint, type or schema checks, tests, hooks, CI, or runtime evidence. Leave product meaning to the responsible reviewer and approval to the approval owner.
+- Do not read all of `docs/dev`. Select only the guidance relevant to the current work and list those files in the plan or equivalent execution input.
 - When the work is complete, confirm that the actual changes match the selected development guidance.
 
 ### Review Principles
