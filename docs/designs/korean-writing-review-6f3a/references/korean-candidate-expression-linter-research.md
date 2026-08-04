@@ -2,11 +2,11 @@
 
 ## 결론
 
-2026년 8월 4일 기준 권고안은 **구조화된 후보 자료를 textlint 사용자 규칙으로 검사하고, AI에는 textlint MCP 또는 JSON formatter로 진단을 전달하는 방식**이다. 후보 표현, 검토 이유, 문제 사례와 정상 사례를 규칙별 자료로 관리하면 AI가 각 출현을 문맥에 따라 판정할 수 있다. Pull Request나 변경 줄에 결과를 표시해야 할 때만 reviewdog를 뒤에 연결한다.
+2026년 8월 4일 기준 권고안은 **구조화된 후보 자료를 textlint 사용자 규칙으로 검사하고, AI에는 JSON 진단을 전달하는 방식**이다. 독립된 `use-words-review` 스킬에서는 Node.js 표준 기능만 사용하는 실행 스크립트가 버전을 고정한 textlint CLI를 `npx`로 호출하고, 스킬에 포함된 사용자 규칙과 후보 자료를 읽는 구성이 가장 적은 설치 절차로 목적을 달성한다. 후보 표현, 검토 이유, 문제 사례와 정상 사례를 규칙별 자료로 관리하면 AI가 각 출현을 문맥에 따라 판정할 수 있다. textlint MCP와 reviewdog는 각각 대화형 도구 연결과 Pull Request 표시가 실제로 필요할 때만 추가한다.
 
 Vale도 모든 출현과 위치, 설명, 링크를 출력할 수 있다. 다만 후보별 정보를 YAML 규칙의 문자열 필드에 넣어야 하며, AI가 호출할 MCP와 구조화된 추가 데이터 필드가 없다. 커스텀 스크립트는 출력 형식을 가장 자유롭게 정할 수 있지만 Markdown 구문, 위치 계산, 제외 규칙, Git 상태와 표준 입력 처리를 직접 유지해야 한다. reviewdog는 표현을 찾지 않으므로 단독 대안이 아니다.
 
-현재 저장소에는 실행 가능한 검사기가 없다. 어느 선택지를 쓰더라도 산문으로 작성된 `korean.md`와 기계가 읽는 후보 자료의 관계를 먼저 정해야 한다. 이 문서는 [한국어 문서 검토 재발 방지 요구사항의 목표](../requirements.md#목표) 가운데 기계 검사와 의미 검토의 분담을 후속 작업에서 판단할 수 있도록 네 선택지를 비교한다. 독자는 `use-words-review` 검사기를 설계하거나 승인할 담당자다. 이 문서는 구현이나 의존성 도입을 승인하지 않는다.
+현재 저장소에는 실행 가능한 검사기가 없다. 어느 선택지를 쓰더라도 산문으로 작성된 `korean.md`와 기계가 읽는 후보 자료의 관계를 먼저 정해야 한다. 스킬 디렉터리에 스크립트나 `package.json`을 두는 것만으로 npm 의존성이 설치되지는 않으므로, 실행할 때 내려받을지 별도 설치 단계에서 고정할지도 정해야 한다. 이 문서는 [한국어 문서 검토 재발 방지 요구사항의 목표](../requirements.md#목표) 가운데 기계 검사와 의미 검토의 분담을 후속 작업에서 판단할 수 있도록 네 선택지를 비교한다. 독자는 `use-words-review` 검사기를 설계하거나 승인할 담당자다. 이 문서는 구현이나 의존성 도입을 승인하지 않는다.
 
 ## 비교 기준
 
@@ -164,7 +164,66 @@ Node.js package를 배포할 수 없거나, Markdown 구문과 무관하게 원�
 
 이 구성은 textlint를 후보 지식의 기준으로 삼는다는 뜻이 아니다. 기준 자료는 도구와 독립된 한 파일이어야 하며 `korean.md`는 사람이 읽는 판정 설명으로 남긴다. 두 자료의 후보 식별자와 참고 위치가 어긋나지 않는지는 실행 검사로 확인해야 한다. 구조화 자료의 파일 형식과 생성 방향은 후속 설계에서 정한다.
 
-Vale는 이미 조직 표준으로 배포된 경우의 대안이다. 커스텀 스크립트는 raw text 전수 검사나 독자적인 진단 protocol이 필요한 경우의 대안이다. reviewdog는 어느 선택에서도 선택적 전달 계층이다.
+Vale는 이미 조직 표준으로 배포된 경우의 대안이다. 커스텀 스크립트는 raw text 전수 검사나 독자적인 진단 형식이 필요한 경우의 대안이다. reviewdog는 어느 선택에서도 선택적 전달 계층이다.
+
+## 스킬 내부 스크립트 구성
+
+이 절은 2026년 8월 4일에 공개된 OpenAI와 Agent Skills 문서, npm 11 문서, textlint 15.8.0 문서와 OpenAI Codex `main` 브랜치의 `skill-installer` 표본을 확인한 결과다.
+
+### 스킬이 포함할 수 있는 실행 자원
+
+[OpenAI의 Skills 문서](https://learn.chatgpt.com/docs/build-skills)는 스킬을 `SKILL.md`와 선택적인 `scripts/`, `references/`, `assets/`로 구성할 수 있다고 설명한다. [Agent Skills 명세](https://agentskills.io/specification#scripts)는 `scripts/`에 실행 코드를 둘 수 있으며, 스크립트가 자체 실행 가능해야 하거나 필요한 의존성을 명확히 밝혀야 한다고 정한다. 따라서 후보 표현 탐색처럼 결과가 매번 같아야 하고 반복 실행하는 작업은 `SKILL.md`에 절차를 길게 쓰기보다 스크립트로 옮기는 것이 명세에 맞는다.
+
+다만 스킬은 패키지 관리자와 같은 설치 단위가 아니다. OpenAI Codex 소스 트리의 [`skill-installer` 표본](https://github.com/openai/codex/blob/main/codex-rs/skills/src/assets/samples/skill-installer/scripts/install-skill-from-github.py)은 대상 디렉터리에 `SKILL.md`가 있는지 확인한 뒤 파일을 복사한다. 이 표본 설치기는 `package.json`을 읽거나 `npm install`과 `npm ci`를 실행하지 않는다. OpenAI의 Skills 문서에도 npm 의존성을 자동 설치한다는 규약은 없다. 따라서 이 설치 방식을 사용할 때 스킬 안의 JavaScript 파일이 `import "textlint"`를 사용하려면 실행 전에 Node.js가 찾을 수 있는 위치에 해당 패키지를 설치해야 한다.
+
+[Node.js의 ECMAScript module 문서](https://nodejs.org/api/esm.html#import-specifiers)는 `textlint`처럼 경로가 아닌 패키지 이름을 Node.js 패키지 해석 규칙으로 찾는다고 설명한다. 스킬 디렉터리에 소스 파일이 있다는 사실만으로 외부 패키지를 불러올 수 있는 것은 아니다.
+
+### 권고 파일 구성
+
+첫 구현의 제안 구조는 다음과 같다. 이는 조사 결론이며 파일 이름과 자료 형식을 승인한 결정은 아니다.
+
+```text
+skills/use-words-review/
+├── SKILL.md
+├── references/
+│   ├── korean.md
+│   ├── examples.md
+│   └── candidate-expressions.json
+└── scripts/
+    ├── lint-candidates.mjs
+    └── textlint-rules/
+        └── candidate-expressions.js
+```
+
+`lint-candidates.mjs`는 Node.js 표준 기능만 사용한다. 입력 파일이나 표준 입력을 받고, 스킬 디렉터리를 `import.meta.url`로 계산하며, textlint 프로세스를 실행하고, textlint JSON 결과를 후보 자료의 판정 이유와 사례로 보강해 표준 출력에 기록한다. 이 파일이 textlint API를 직접 `import`하지 않으면 스크립트 자체의 모듈 탐색 문제를 피할 수 있다.
+
+`candidate-expressions.js`는 textlint가 로드하는 사용자 규칙이다. textlint의 [공식 `rulesdir` 예제](https://github.com/textlint/textlint/tree/v15.8.0/examples/rulesdir)는 CommonJS 규칙을 `rules/`에 두고 `textlint --rulesdir ./rules README.md`로 실행한다. 사용자 규칙은 후보 자료에서 pattern을 읽고 모든 출현을 `RuleError`로 보고하되 자동 수정은 제공하지 않는다. `korean.md`는 사람이 읽는 판정 설명으로 유지하고, `candidate-expressions.json`에는 탐색과 결과 보강에 필요한 값만 둔다.
+
+### npm 의존성을 사용하는 방법
+
+가장 작은 운영 단위는 실행 스크립트가 버전을 고정한 textlint CLI를 `npx --yes`로 호출하는 방식이다. [Agent Skills의 스크립트 안내](https://agentskills.io/skill-creation/using-scripts#using-one-off-commands)도 `npx package@version`을 스킬에서 사용할 수 있으며, 패키지를 필요할 때 내려받아 npm 캐시에 보관한다고 설명한다. 버전을 고정하면 검사 결과가 최신 배포에 따라 예고 없이 바뀌는 일을 줄일 수 있다. `--yes`는 npm이 원격 패키지 설치 여부를 묻느라 에이전트 실행을 멈추지 않게 한다. textlint에는 로컬 규칙 디렉터리와 JSON formatter를 지정한다. 정확한 명령과 경로 처리 방식은 구현 단계의 실행 검증으로 확정해야 한다.
+
+첫 실행에는 Node.js와 npm, npm registry에 연결할 네트워크 권한이 필요하다. 정확한 버전 지정은 변경 범위를 줄이지만 외부 패키지 실행에 따른 공급망 위험을 없애지는 않는다. 따라서 스킬은 필요한 실행 환경과 네트워크 조건을 `SKILL.md`에 밝히고, 실행 환경의 외부 다운로드 승인 절차를 따라야 한다. 인터넷에 연결할 수 없는 환경이나 승인 없이 내려받을 수 없는 환경에서는 이 방식을 완료 가능한 검사로 취급하면 안 된다.
+
+이 방식은 npm으로 배포된 textlint를 그대로 실행하지만, `lint-candidates.mjs`가 textlint 모듈을 직접 가져오는 방식은 아니다. [npm exec 문서](https://docs.npmjs.com/cli/v11/commands/npm-exec)는 요청한 패키지의 실행 파일을 프로세스 `PATH`에서 사용할 수 있게 한다고 설명한다. 호출 스크립트의 `import "textlint"` 해석 위치까지 바꾸는 기능은 아니다. 두 동작을 같은 것으로 가정하면 textlint 명령은 실행되지만 호출 스크립트의 import는 실패할 수 있다.
+
+승인된 설치 단계와 반복 실행을 분리해야 한다면 스킬 디렉터리에 `package.json`과 `package-lock.json`을 두고 설치 단계에서 `npm ci`를 실행하는 방식이 맞다. [npm ci 문서](https://docs.npmjs.com/cli/v11/commands/npm-ci)는 `package-lock.json`을 요구하고, `package.json`과 일치하지 않으면 실패하며, 기존 `node_modules`를 지운 뒤 lockfile에 기록된 의존성을 설치한다고 설명한다. [package-lock 문서](https://docs.npmjs.com/cli/v11/configuring-npm/package-lock-json)는 이 파일이 설치될 정확한 의존성 tree를 기록한다고 설명한다. `npm ci`도 필요한 패키지가 npm 캐시에 없으면 내려받아야 한다. 설치가 성공해 `node_modules`가 준비된 뒤에는 검사 실행에 네트워크가 필요하지 않다. 이 구성에서는 실행 스크립트가 textlint API를 직접 불러올 수 있지만, Codex의 표본 설치기가 `npm ci`를 대신 실행하지 않으므로 설치 절차와 실패 처리를 별도로 책임져야 한다. `node_modules`를 스킬 소스에 포함하는 방식은 크기, 운영체제 차이, 라이선스 확인과 업데이트 비용이 커서 기본안으로 삼지 않는다.
+
+textlint MCP는 npm 설치 문제를 없애지 않는다. [textlint MCP 문서](https://textlint.org/docs/mcp/)는 MCP 서버를 실행하기 전에 textlint와 사용할 규칙이 구성된 프로젝트가 필요하다고 설명한다. MCP는 `lintFile`과 `lintText`라는 호출 방법을 제공하지만 의존성 배포 방식은 CLI와 같다. 다른 도구도 같은 검사기를 호출하거나 에이전트가 수시로 저장되지 않은 문구를 검사해야 한다는 요구가 생겼을 때 추가하는 편이 낫다.
+
+### 스크립트 입출력 조건
+
+[Agent Skills의 스크립트 안내](https://agentskills.io/skill-creation/using-scripts#write-automation-friendly-scripts)는 에이전트가 실행하는 스크립트에 비대화형 동작, `--help`, 명확한 오류 메시지, 기계가 읽을 수 있는 표준 출력, 진단용 표준 오류와 의미 있는 종료 코드를 권고한다. 후보 검사기에 적용하면 다음 조건이 필요하다.
+
+- 표준 출력에는 후보 진단 JSON만 기록하고, 다운로드 상태와 오류는 표준 오류에 기록한다.
+- 후보가 발견된 상태와 검사기를 실행하지 못한 상태를 서로 다른 종료 코드나 결과 상태로 구분한다. 후보는 의미 검토가 필요하다는 뜻이지 문서가 틀렸다는 뜻이 아니다.
+- 같은 표현의 판정 이유와 사례는 한 번 제공하고 모든 출현 위치를 묶어, 반복이 많은 파일에서도 출력 크기를 제한한다.
+- 저장소 상대 위치, 줄과 열, 실제 일치 문자열과 주변 문장을 제공한다. AI는 이 정보와 `korean.md`를 함께 읽고 각 출현을 판정한다.
+- 의존성을 내려받지 못했거나 규칙 자료가 잘못됐으면 문자열 수동 검색을 성공으로 대신하지 않는다. 실행하지 못한 검사를 완료된 검사로 오인하지 않도록 실패 이유를 그대로 반환한다.
+
+### 교차검증 결론
+
+스킬의 스크립트는 npm으로 내려받은 외부 모듈을 사용할 수 있다. 다만 사용할 수 있다는 사실과 스킬 설치 시 자동으로 준비된다는 주장은 다르다. `npx` 방식은 실행 파일을 필요할 때 준비하므로 별도의 초기화 파일을 줄일 수 있다. `package-lock.json`과 `npm ci` 방식은 사전 설치 절차를 추가하는 대신 설치 결과를 재현하기 쉽고, 설치가 끝난 뒤의 검사 실행에는 네트워크가 필요하지 않다. [요구사항의 목표](../requirements.md#목표)는 후보 표현과 정상 사례를 AI 검토에 연결하는 것이며 textlint API를 다른 애플리케이션 코드에서 재사용하도록 요구하지 않는다. 따라서 첫 설계에서는 표준 기능으로 작성한 얇은 실행 스크립트, 고정 버전 textlint CLI와 로컬 사용자 규칙까지만 두고, MCP 서버와 별도 npm 프로젝트는 실제 필요가 생길 때 추가하는 구성이 맞다.
 
 ## 구현 전에 정해야 할 사항
 
@@ -173,9 +232,13 @@ Vale는 이미 조직 표준으로 배포된 경우의 대안이다. 커스텀 �
 - **정확한 원문도 경고할지:** 코드 블록, 인용문과 평가 입력에도 후보를 알릴지, 일반 산문만 검사할지 정해야 한다.
 - **예시 반복 방식:** 모든 출현에 사례를 반복할지, 표현별 설명 한 건과 출현 위치 목록을 나눌지 정해야 한다.
 - **실행 위치:** `use-words-review` 호출 중에만 실행할지, pre-commit이나 CI에도 연결할지 정해야 한다. 후보 발견을 실패로 바꾸는 동작은 별도 결정이 필요하다.
+- **의존성 준비 방식:** 첫 실행의 네트워크 다운로드를 허용할지, 설치 단계에서 `npm ci`를 실행한 뒤 준비된 `node_modules`로 검사할지 정해야 한다.
+- **배포 단위:** 개인 또는 저장소 스킬로만 둘지, 여러 환경에 같은 실행 환경과 MCP 설정을 함께 배포하는 플러그인으로 만들지 정해야 한다. OpenAI의 [플러그인 문서](https://learn.chatgpt.com/docs/build-skills#package-skills-with-plugins)는 플러그인이 스킬과 MCP 구성을 함께 묶을 수 있다고 설명하지만 npm 패키지를 자동 설치한다고 설명하지는 않는다.
 
 ## 조사 한계
 
 공식 문서, 최신 릴리스와 공개 저장소 소스에서 Vale, textlint, reviewdog, Git과 Node.js API를 확인했다. GitHub 코드 검색에서 한국어 후보 목록과 정상 용례를 함께 제공하는 같은 목적의 완제품은 찾지 못했지만, 검색 결과가 없다는 사실만으로 모든 비공개 도구와 이름이 다른 공개 구현의 부재를 증명할 수는 없다.
 
-이번 조사는 도구 기능과 현재 저장소의 차이를 비교했다. 실제 한국어 문장, CRLF, 한 줄의 반복 출현, 이름 변경, 공백이 있는 파일명, 잘못된 인코딩과 표준 입력을 사용한 실행 평가는 구현이 승인된 뒤 수행해야 한다.
+이번 조사는 도구 기능과 현재 저장소의 차이를 비교했다. 구현과 외부 의존성 설치는 [요구사항의 목표](../requirements.md#목표)에 포함되지 않으므로 `npx`로 textlint를 내려받거나 제안한 실행 스크립트와 사용자 규칙을 실행하지 않았다. 정확한 `rulesdir` 명령, 스킬 위치에 공백이 있을 때의 인수 전달과 첫 실행 후 npm 캐시만 있는 상태에서의 동작은 구현이 승인된 뒤 검증해야 한다.
+
+실제 한국어 문장, CRLF, 한 줄의 반복 출현, 이름 변경, 공백이 있는 파일명, 잘못된 인코딩과 표준 입력을 사용한 실행 평가도 같은 단계에서 수행해야 한다.
