@@ -6,13 +6,13 @@
 
 규칙의 `reference` 필드는 제거하는 편이 맞다. 스킬은 사용자 홈, 저장소 내부, 관리 환경 또는 다른 호스트에 설치될 수 있다. 실행 결과를 이해할 때마다 별도 파일을 찾아 읽게 하면 설치 위치 해석과 추가 문맥 사용이 필요하다. literal로 찾을 규칙은 `id`, `expressions`, `message`, `queries`, `negatives`, `positives`를 스크립트 상수 하나에 둔다. 출력은 일치한 규칙의 설명과 사례를 규칙마다 한 번만 싣고, 출현별 위치와 원문 일부를 별도 배열에 둔다.
 
-`reference` 제거와 `korean.md` 제거는 같은 결정이 아니다. `korean.md`에는 literal 검색으로 만들 수 없는 문장 판정 절차가 있다. 영어식 무생물 주어, 행동 주체가 빠진 피동문, 명사 나열, 지칭 대상 변화, 근거 없이 이어받은 표현과 반복되는 문단 구조는 내장 후보 목록만으로 전수 탐색할 수 없다. `korean.md`를 없애려면 이러한 의미 검토 기준을 `SKILL.md`의 짧은 필수 절차로 옮겨야 한다. 이 이동 없이 파일만 지우면 기존 검토 동작이 약해진다.
+`reference` 제거와 `korean.md` 제거는 같은 결정이 아니다. `korean.md`에는 literal 검색으로 만들 수 없는 문장 판정 절차가 있다. 영어식 무생물 주어, 행동 주체가 빠진 피동문, 명사 나열, 지칭 대상 변화, 근거 없이 이어받은 표현과 반복되는 문단 구조는 내장 후보 목록만으로 전수 탐색할 수 없다. 따라서 `korean.md`를 없애지 않고 이러한 의미 검토 기준만 남긴다. literal 후보, 판정 질문과 대조 사례는 스크립트로 옮겨 두 파일이 같은 자료를 중복 관리하지 않게 한다.
 
 입력은 `--changed <repo>`, 반복 가능한 `--file <path>`, `--stdin --source-name <name>` 가운데 정확히 하나만 사용한다. 각 입력 어댑터가 `Source`를 만들고 같은 `scanSources` 함수가 원문을 검사한다. 이는 여러 구현을 위한 framework가 아니라 파일 선택과 문자열 탐색을 분리하는 한 파일 내부의 함수 경계다. 원문 문자열을 명령행 인수로 직접 받는 `--text`는 shell quoting과 인수 길이 문제 때문에 두지 않는다.
 
 정상 결과는 표준 출력에 JSON 객체 하나로 쓴다. 후보가 있거나 없어도 종료 상태는 `0`이다. Git 실행, 인수, 파일 읽기, 인코딩, 크기 또는 직렬화가 실패하면 예외를 최상위에서 한 번 잡아 짧은 메시지를 표준 오류에 쓰고 종료 상태를 `2`로 정한다. 후보를 `throw new Error`로 전달하면 모든 출현을 모으지 못하고 실행 실패와 검토 대상을 구분할 수 없으므로 사용하지 않는다.
 
-이 안은 [요구사항의 목표](../requirements.md#목표)에 있는 `korean.md` 유지 여부, 모든 후보 출현의 경고 방식과 스크립트 설계를 구체화한 제안이다. 현재 요구사항은 후속 구현에서 새 파일을 금지하므로, 요구사항 소유자가 스크립트 한 파일 추가와 한국어 자료의 책임 이동을 승인하기 전에는 구현할 수 없다.
+이 안은 [요구사항의 목표](../requirements.md#목표)에 있는 `korean.md` 유지 여부, 모든 후보 출현의 경고 방식과 스크립트 설계를 구체화한다. 요구사항 소유자는 `skills/use-words-review/scripts/scan-korean-expressions.mjs` 한 파일을 새로 만들고, literal 후보 자료와 의미 검토 기준의 책임을 나누는 방안을 승인했다.
 
 ## 조사 질문과 확인 범위
 
@@ -66,25 +66,34 @@ OpenAI 문서는 Codex가 현재 디렉터리부터 저장소 루트까지의 `.
 use-words-review/
 ├── SKILL.md
 ├── references/
-│   └── examples.md
+│   ├── examples.md
+│   └── korean.md
 └── scripts/
-    └── <candidate-scanner>.mjs
+    └── scan-korean-expressions.mjs
 ```
 
-이 구조는 `korean.md` 제거안이 승인됐을 때의 목표 모습이다. 정확한 스크립트 이름과 `korean.md` 제거는 아직 결정되지 않았다. `package.json`, lock 파일, `node_modules`, `assets/`, `agents/openai.yaml`과 설정 파일은 표준 기능만 쓰는 한 파일의 실행 결과에 필요하지 않다. `.mjs`는 가까운 `package.json`의 `type` 값과 무관하게 ES module로 해석된다. [Node.js package 문서](https://nodejs.org/api/packages.html#packagejson-and-file-extensions)가 이 동작을 정의한다.
+`package.json`, lock 파일, `node_modules`, `assets/`, `agents/openai.yaml`과 설정 파일은 표준 기능만 쓰는 한 파일의 실행 결과에 필요하지 않다. `.mjs`는 가까운 `package.json`의 `type` 값과 무관하게 ES module로 해석된다. [Node.js package 문서](https://nodejs.org/api/packages.html#packagejson-and-file-extensions)가 이 동작을 정의한다.
 
-### `korean.md`를 없앨 때 자료를 나눈다
+### `korean.md`는 의미 검토 자료로 유지한다
 
-`korean.md`를 그대로 유지하는 안은 사례를 읽고 고치기 쉽지만, AI가 후보마다 파일과 소제목을 다시 읽어야 하고 스크립트의 literal과 문서 사례가 어긋날 수 있다. 파일을 통째로 스크립트 상수에 넣는 안은 한 실행으로 자료를 전달하지만, literal로 찾을 수 없는 의미 검토 절차까지 JavaScript 문자열에 묻힌다.
+`korean.md`에 모든 사례를 그대로 유지하면 AI가 후보마다 파일과 소제목을 다시 읽어야 하고 스크립트의 literal과 문서 사례가 어긋날 수 있다. 파일을 통째로 스크립트 상수에 넣으면 literal로 찾을 수 없는 의미 검토 절차까지 JavaScript 문자열에 묻힌다. 승인된 구성은 두 책임을 나눈다.
 
 권장안은 다음처럼 책임을 나누는 것이다.
 
 - 스크립트는 기계적으로 찾을 표현, 경고 설명, 문맥 판정 질문, 문제 사례와 정상 사례를 한 규칙 상수에 둔다.
-- `SKILL.md`는 스크립트를 실행할 시점, 결과를 읽는 절차와 literal로 찾을 수 없는 의미 검토 기준을 둔다.
+- `SKILL.md`는 스크립트를 실행할 시점, 결과를 읽는 순서와 `korean.md`의 의미 검토를 수행할 조건을 둔다.
+- `korean.md`는 literal 검색으로 찾을 수 없는 문장 구조와 문단 관계의 의미 검토 기준을 둔다.
 - 언어 공통 사례가 계속 필요하면 기존 `references/examples.md`를 유지한다.
-- `korean.md`는 위 자료 이동과 대표 평가에서 동작이 유지됨을 확인한 뒤에만 제거한다.
 
 이 구분은 deterministic file processing에는 `scripts/`, 실행 순서와 중단 조건에는 `SKILL.md`, 필요할 때만 읽는 상세 자료에는 `references/`를 쓰라는 공식 역할과 맞는다. 모든 상세 자료를 반드시 `references/`에 두라는 뜻은 아니다. 스크립트가 반환해야 할 규칙 metadata는 실행 코드와 같은 정본에 있어야 한다. [Agent Skills 스크립트 안내](https://agentskills.io/skill-creation/using-scripts)와 [OpenAI 스킬 작성 지침](https://developers.openai.com/codex/skills)을 확인했다.
+
+### 실행 기준은 Node.js 22와 Git 2.18이다
+
+최저 실행 버전은 Node.js 22.0.0과 Git 2.18.0으로 정한다. 2026년 8월 6일 기준 Node.js 22는 유지보수 중인 가장 오래된 LTS 계열이고 Node.js 20은 지원이 끝났다. Node.js는 프로덕션에서 Active LTS 또는 Maintenance LTS를 사용하라고 안내한다. [Node.js 릴리스 현황](https://nodejs.org/en/about/previous-releases)을 확인했다.
+
+Git 프로젝트는 LTS 계열을 지정하지 않는다. 따라서 Git 최저 버전은 LTS라는 이름이 아니라 실제 명령 기능으로 정한다. `git status --porcelain=v1 -z --no-renames --untracked-files=all`에 필요한 `--no-renames`와 `status.renames`는 Git 2.18.0에서 추가됐다. porcelain v1은 버전 간 출력 안정성을 약속하고 `-z`는 경로를 NUL로 구분한다. [Git 2.18.0 릴리스 기록](https://raw.githubusercontent.com/git/git/v2.18.0/Documentation/RelNotes/2.18.0.txt)과 [git-status 문서](https://git-scm.com/docs/git-status)를 대조했다.
+
+운영체제 이름만으로 호환을 약속하지 않는다. Node.js 22가 Tier 1로 분류한 GNU/Linux, Windows와 macOS의 운영체제, CPU architecture 및 libc 조합을 지원 범위로 삼는다. 구현은 shell을 거치지 않고 Git을 실행하며, 경로를 줄바꿈이 아닌 NUL byte로 구분해야 한다. 대표 검증은 Linux, macOS와 Windows에서 Node.js 22 및 각 환경의 현재 Git으로 같은 self-test, 파일 입력, 표준 입력과 `--changed` 사례를 실행한다. [Node.js 22 지원 platform 목록](https://github.com/nodejs/node/blob/v22.x/BUILDING.md#platform-list)과 저장소 루트 판정에 쓰는 [git-rev-parse 문서](https://git-scm.com/docs/git-rev-parse)를 확인했다.
 
 ## 규칙 schema
 
@@ -121,6 +130,12 @@ const rules = [
 
 초기 후보 목록은 현재 `korean.md`와 저장소의 자연스러운 한국어 조사에서 직접 다시 살피도록 정한 literal 및 안전한 활용형만 포함한다. 정상 사례에 나온 제품명, 판정 상태, 영문 원어와 설명 문장을 자동으로 규칙으로 만들지 않는다. 후보가 없다는 결과는 문장 구조와 목록 밖 표현의 의미 검토가 끝났다는 뜻이 아니다.
 
+### 실행 대상은 내장 규칙 전체로 고정한다
+
+정상 실행에서 검사할 표현은 위 `rules` 상수 하나가 결정한다. CLI와 스킬 호출자는 규칙 ID, 표현, 일부 규칙을 고르는 filter 또는 외부 규칙 자료를 전달할 수 없다. 스크립트는 입력 source마다 `rules`의 모든 `expressions`를 선언 순서대로 검사한다. AI는 실행 대상을 고르지 않고, 스크립트가 보고한 각 출현의 원문과 규칙 자료를 읽어 표현을 유지할지, 고칠지 또는 추가 확인을 요청할지만 판단한다.
+
+`catalog`도 호출자가 제공하지 않는다. 스크립트는 시작할 때 `rules` 전체를 검증하고 순회하면서 `catalog`의 `id`와 `expressions`를 만든다. 일부 규칙의 검증이나 순회를 마치지 못하면 정상 JSON을 출력하지 않고 실행 실패로 끝낸다. 따라서 `catalog`는 AI가 선택한 규칙 목록이 아니라, 해당 실행이 사용한 내장 규칙 전체를 확인하는 자료다. 다만 내장 목록에 없는 표현까지 찾았다는 증거는 아니므로 목록 밖 의미 문제는 `korean.md`의 문장 검토 기준으로 판정한다.
+
 ## 입력 schema와 함수 경계
 
 ### 공통 `Source`
@@ -141,17 +156,17 @@ SourceProvider = () => AsyncIterable<Source>
 `id`는 출력에서 원문을 구분하는 값이다. `text`는 검사할 문자열이고, `path`는 Git 또는 파일 어댑터가 실제 파일을 확인할 때만 제공한다. 탐색 본체는 파일 시스템과 Git을 알지 않고 `Source`의 문자열만 검사한다.
 
 ```js
-scanSources({ provideSources, rules });
+scanSources({ provideSources });
 ```
 
-`provideSources`는 함수 인수로 넘긴다. class, DI framework, 공용 interface 파일, factory와 registry는 만들지 않는다. 어댑터가 세 개라는 사실만으로 확장 framework가 필요하지 않으며, 같은 파일의 순수 함수 경계면 테스트와 실행 경로 분리에 충분하다.
+`provideSources`만 함수 인수로 넘기고 `scanSources`는 같은 module의 `rules`를 사용한다. class, DI framework, 공용 interface 파일, factory와 registry는 만들지 않는다. 어댑터가 세 개라는 사실만으로 확장 framework가 필요하지 않으며, 같은 파일의 순수 함수 경계면 테스트와 실행 경로 분리에 충분하다.
 
 textlint에서 확인한 것처럼 입력 차이를 `Source` 뒤에 숨겨서는 안 된다. Git 어댑터는 변경 파일 선정과 저장소 상대 위치를, 파일 어댑터는 호출자가 정한 순서와 표시 위치를, 표준 입력 어댑터는 `source-name`과 byte 상한을 각각 책임진다. 공통 값은 탐색에 필요한 최소 부분뿐이다.
 
 ### 변경 파일 입력
 
 ```text
-node <skill-root>/scripts/<candidate-scanner>.mjs --changed <repo>
+node <skill-root>/scripts/scan-korean-expressions.mjs --changed <repo>
 ```
 
 `--changed`의 저장소 위치는 절대 위치 또는 현재 디렉터리 기준 상대 위치로 받는다. 저장소 전체를 순회하지 않고, 지정한 Git 작업 트리에서 staged, unstaged와 untracked 상태로 보고된 파일을 합친다. 삭제되지 않은 일반 파일의 현재 작업 트리 내용을 한 번씩 검사한다. 변경 hunk만 검사하지 않고 선택된 파일의 현재 원문 전체를 검사한다. 파일에 새로 추가되지 않은 `경계`도 같은 파일의 문맥 검토 대상이기 때문이다. 변경 파일이 없으면 빈 `sources`와 `warnings`를 가진 정상 JSON을 출력한다.
@@ -165,7 +180,7 @@ index와 작업 트리가 모두 바뀐 파일도 현재 작업 트리 내용을
 ### 지정 파일 입력
 
 ```text
-node <skill-root>/scripts/<candidate-scanner>.mjs \
+node <skill-root>/scripts/scan-korean-expressions.mjs \
   --file docs/guide.md \
   --file docs/reference.md
 ```
@@ -178,7 +193,7 @@ node <skill-root>/scripts/<candidate-scanner>.mjs \
 
 ```text
 printf '%s' '<review-text>' | \
-  node <skill-root>/scripts/<candidate-scanner>.mjs \
+  node <skill-root>/scripts/scan-korean-expressions.mjs \
   --stdin --source-name draft.md
 ```
 
@@ -248,7 +263,7 @@ printf '%s' '<review-text>' | \
 }
 ```
 
-`catalog`에는 이번 실행에서 검사한 모든 규칙의 `id`와 `expressions`를 선언 순서대로 넣는다. AI는 빈 `warnings`가 빈 규칙 목록을 실행한 결과인지, 승인된 후보를 모두 검사한 결과인지 구분할 수 있다. `rules`에는 실제 경고가 생긴 규칙의 설명, 질문과 사례만 한 번씩 넣어 결과 크기를 줄인다. `sources`에는 실제로 검사한 source를 후보가 없어도 모두 넣어 빈 `warnings`가 검사 누락을 뜻하지 않게 한다. 표준 입력 source에는 `path`를 넣지 않는다. `warnings`는 출현 하나마다 항목 하나를 둔다.
+`catalog`에는 스크립트가 순회한 내장 `rules` 전체의 `id`와 `expressions`를 선언 순서대로 넣는다. 호출자나 AI가 이 배열을 입력하거나 일부 항목을 고를 수 없다. AI는 빈 `warnings`가 내장 규칙 전체를 실행한 결과인지 확인할 수 있다. `rules`에는 실제 경고가 생긴 규칙의 설명, 질문과 사례만 한 번씩 넣어 결과 크기를 줄인다. `sources`에는 실제로 검사한 source를 후보가 없어도 모두 넣어 빈 `warnings`가 검사 누락을 뜻하지 않게 한다. 표준 입력 source에는 `path`를 넣지 않는다. `warnings`는 출현 하나마다 항목 하나를 둔다.
 
 `catalogs`는 사용하지 않는다. 정상 실행 한 건은 여러 catalog가 아니라 실행한 규칙의 간략 목록 하나를 만들기 때문이다. `rules`는 이 목록 전체를 반복하지 않고 경고가 생긴 규칙의 상세 자료만 담는다. 이 구분은 SARIF의 필드 구성을 복사한 것이 아니라 현재 출력의 중복을 줄이기 위한 자체 규약이다. SARIF는 도구 구성 요소의 전체 규칙을 `rules`에 두고 결과가 `ruleId`로 이를 참조한다. [SARIF 2.1.0의 `rules`와 `ruleId`](https://docs.oasis-open.org/sarif/sarif/v2.1.0/sarif-v2.1.0.html)를 확인했다.
 
@@ -302,6 +317,8 @@ MCP는 실시간 자료, 인증, 권한과 외부 시스템 작업에 맞고, �
 
 - 빈 표현, 공백뿐인 표현, 고립 surrogate와 중복 `id`를 거부한다.
 - 문제 사례와 정상 사례 및 판정 질문이 비어 있으면 거부한다.
+- 정상 실행 경로가 규칙 또는 표현 filter를 받지 않고 내장 `rules` 전체를 검사하는지 확인한다.
+- 처음, 중간과 마지막 규칙에만 각각 일치하는 원문에서도 모든 규칙을 순회하고 모든 출현을 남긴다.
 - 같은 줄과 여러 줄의 반복 및 겹치는 출현을 모두 찾는다.
 - `경계`, `경계를`과 `보안경계`의 substring 출현을 모두 찾는다.
 - 같은 위치에서 규칙이 다른 경고를 임의로 합치지 않는다.
@@ -321,23 +338,29 @@ MCP는 실시간 자료, 인증, 권한과 외부 시스템 작업에 맞고, �
 
 ### 출력과 실패
 
-- 후보가 없어도 실행한 모든 `id`와 `expressions`, 검사한 모든 source 및 빈 `rules`와 `warnings`를 가진 RFC 8259 JSON을 출력하고 `0`으로 끝난다.
+- 후보가 없어도 순회한 내장 `rules` 전체에서 만든 `catalog`, 검사한 모든 source 및 빈 `rules`와 `warnings`를 가진 RFC 8259 JSON을 출력하고 `0`으로 끝난다.
 - 후보가 있으면 실행한 전체 규칙 목록과 일치한 규칙의 metadata를 각각 한 번, 모든 출현을 각각 출력하고 `0`으로 끝난다.
+- 호출자가 `catalog`, 규칙 ID나 표현 목록을 입력하는 실행 방법이 없는지 확인한다.
 - `catalog`, `rules`, `sources`와 `warnings`의 참조가 모두 연결되는지 확인한다.
 - 표준 입력 source에는 실제 파일 `path`를 만들지 않는다.
 - 직렬화 결과가 상한을 넘으면 JSON 일부를 출력하지 않고 `2`로 끝난다.
 - 입력 또는 내부 실패는 stdout에 정상 JSON을 남기지 않고 짧은 stderr와 `2`로 끝난다.
 - 같은 입력을 네트워크가 없는 환경에서 실행해 같은 결과를 얻는다.
 
-대표 평가에서는 스크립트가 정상 전문용어도 후보로 찾고 AI가 그대로 유지하는지, 문제 표현은 질문과 사례를 근거로 고치는지, 목록에 없는 의미 문제를 `SKILL.md` 절차가 계속 찾는지를 함께 확인한다.
+대표 평가에서는 스크립트가 정상 전문용어도 후보로 찾고 AI가 그대로 유지하는지, 문제 표현은 질문과 사례를 근거로 고치는지, 목록에 없는 의미 문제를 `korean.md`의 기준으로 계속 찾는지를 함께 확인한다.
 
-## 구현 전에 승인할 내용
+## 승인된 구현 기준과 남은 결정
 
-다음 내용은 조사 결론이 아니라 요구사항 소유자 또는 정해진 검수자의 승인이 필요하다.
+요구사항 소유자는 다음 내용을 승인했다.
 
-- 후속 구현의 새 파일 금지에서 `scripts/<candidate-scanner>.mjs` 한 파일을 예외로 둘지
-- `korean.md`의 literal 규칙과 사례를 스크립트로, 의미 검토 절차를 `SKILL.md`로 옮긴 뒤 `korean.md`를 제거할지
-- 정확한 스크립트 파일명과 Node.js 및 Git 최저 버전 및 운영체제
+- 새 파일은 `skills/use-words-review/scripts/scan-korean-expressions.mjs` 하나만 만든다.
+- literal 후보, 설명, 판정 질문과 대조 사례는 스크립트의 단일 `rules` 상수가 맡는다.
+- `korean.md`는 literal 검색으로 찾을 수 없는 문장과 문단의 의미 검토 기준을 맡는다.
+- 정상 실행은 외부 입력으로 규칙을 고르지 않고 내장 `rules` 전체를 순회하며, `catalog`는 실제로 순회한 전체 규칙에서 만든다.
+- 최저 버전은 Node.js 22.0.0과 Git 2.18.0이다. 지원 범위는 Node.js 22가 Tier 1로 분류한 Linux, macOS와 Windows 조합이며 세 운영체제에서 대표 실행을 확인한다.
+
+다음 내용은 조사 결론이 아니라 요구사항 소유자 또는 정해진 검수자의 승인이 더 필요하다.
+
 - 초기 규칙의 `id`, literal 및 활용형, 설명, 질문, 문제 사례와 정상 사례 전체
 - `--file`의 정규화 위치를 `sourceId`와 `path`에 그대로 싣는 정책이 개인 위치를 다루는 현재 검토 입력에 맞는지
 - `--changed`가 index가 아닌 현재 작업 트리 원문을 검사하는 안
@@ -345,7 +368,7 @@ MCP는 실시간 자료, 인증, 권한과 외부 시스템 작업에 맞고, �
 - 제안한 JSON 필드명과 UTF-16 열 단위
 - 규칙 자료와 의미 검토 절차 변경을 승인할 역할 및 대표 평가 판정자
 
-이 결정이 나기 전에도 조사 문서는 구현의 선택지를 설명할 수 있지만, 계획에서 해당 구현을 시작하거나 `korean.md`를 삭제한 것으로 기록하면 안 된다.
+남은 결정이 나기 전에는 그 값에 의존하는 구현을 시작하지 않는다. `korean.md`는 승인된 책임 구분에 따라 유지한다.
 
 ## 조사 한계
 
