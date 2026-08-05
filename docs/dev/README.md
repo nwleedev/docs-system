@@ -46,6 +46,8 @@ Prefer an existing topic when its responsibility and intended readers match the 
 
 Existing documents may predate this README or use a different structure. AI and contributors still use them when their scope is relevant.
 
+- [Node.js MJS command-line scanners](./node/mjs-cli.md) defines the repository's current runtime, input, Git, literal scan, output, self-test, and ESLint rules for standalone `.mjs` scanners.
+
 - Do not ignore a document because its path or headings differ from this README.
 - Do not reorganize or rewrite existing documents while only reviewing or applying their guidance.
 - Report stale claims, contradictions, unclear ownership, and missing evidence separately from the work that uses the documents.

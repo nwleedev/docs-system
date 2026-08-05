@@ -26,7 +26,7 @@
 
 이후 변경에서 바로 사용할 대표 평가 사례를 한 묶음 제안한다. 예시는 일반 산문의 U+00B7, 정확한 문자 보존, 문맥에 따른 용어 판정, 번역체와 정형화된 채팅 답변을 함께 다룬다.
 
-후속 사례와 변경 계획을 기준으로 기존 `src`, `skills`, `docs` 파일에 필요한 개선을 적용한다. 후속 구현에서 새로 만들 수 있는 파일은 `skills/use-words-review/scripts/scan-korean-expressions.mjs` 하나다.
+후속 사례와 변경 계획을 기준으로 기존 `src`, `skills`, `docs` 파일에 필요한 개선을 적용한다. 검사기 개발을 시작하기 전에 Node.js `.mjs` 명령줄 스크립트의 실패 사례, 권장 코드와 피해야 할 코드를 개발 지침에 기록하고, 정확히 찾을 수 있는 코드 형태는 ESLint 규칙으로 검사한다. 이 준비 작업은 `docs/dev/README.md`, `docs/dev/node/mjs-cli.md`, `eslint.config.mjs`, `package.json`과 `pnpm-lock.yaml`을 만들거나 갱신할 수 있다. 후속 구현에서 새로 만들 수 있는 실행 파일은 `skills/use-words-review/scripts/scan-korean-expressions.mjs` 하나다.
 
 "한국어가 제대로 작성되었는지 검사"하기 위해서는 지금 현재는 references/korean.md 파일에 추가 지침 형태로 작성하고 있다. 만약 한국어 텍스트 검사를 스크립트 기반으로 하도록 할 때 korean.md 파일을 유지할지 아니면 스크립트에 모든 한국어 검사 기준을 포함시키도록 할지에 대해서 교차검증 및 비교한다.
 
@@ -41,7 +41,7 @@
 - 대상 저장소에는 `docs/designs/README.md`, `docs/dev/README.md`, 필요한 스킬과 배포용 AGENTS 문서를 복사해 적용하는 현재 방식을 고려한다.
 - 지정된 예시 저장소의 모든 워크트리 브랜치와 각 커밋의 변경을 조사하되, 저장소 이름, 로컬 위치, 조직명, 개인 자료와 원문 내용을 추적 문서에 옮기지 않는다.
 - 기존 [번역투와 정형화된 AI 문체 조사](../public-output-audience-4d2c/references/natural-korean-and-ai-writing-research.md)가 소유하는 일반 판정 원칙은 새 문서에 복제하지 않는다.
-- 초기 조사 작업은 요구사항, 조사 자료, 승인된 결정과 초기 평가 사례를 설계 패키지에 기록하는 데까지였다. 후속 구현은 변경 계획이 지정한 기존 `src`, `skills`, `docs` 파일과 `skills/use-words-review/scripts/scan-korean-expressions.mjs`를 대상으로 한다. 루트 README와 루트 AGENTS 문서는 이번 구현 범위에 포함하지 않는다.
+- 초기 조사 작업은 요구사항, 조사 자료, 승인된 결정과 초기 평가 사례를 설계 패키지에 기록하는 데까지였다. 개발 준비 작업은 Node.js `.mjs` 개발 지침, ESLint 설정과 개발 의존성 manifest 및 lock 파일을 대상으로 한다. 후속 구현은 변경 계획이 지정한 기존 `src`, `skills`, `docs` 파일과 `skills/use-words-review/scripts/scan-korean-expressions.mjs`를 대상으로 한다. 루트 README와 루트 AGENTS 문서는 이번 구현 범위에 포함하지 않는다.
 - 문제 사례에는 특정 저장소나 사용자 문장을 그대로 옮기지 않고, 실패 구조만 남긴 합성 사례와 정상 대조 사례를 사용한다.
 - 예시 저장소 집계를 다시 검증할 역할과 원본 자료의 안전한 기록 보관 방식은 이번 작업에서 정하지 않는다. 갱신한 체계를 적용한 뒤 후속 작업을 계속할 때 다시 검토한다.
 
@@ -68,3 +68,5 @@
 - `skills/use-words-review/scripts/scan-korean-expressions.mjs`가 존재하며 Node.js 표준 기능만으로 실행된다.
 - 검사 스크립트는 외부에서 규칙이나 표현을 선택하는 입력을 받지 않고 내장 `rules` 전체를 항상 순회한다. 출력의 `catalog`는 실제로 순회한 전체 `rules`에서 생성되고, 발견한 모든 출현과 판정에 필요한 문제 사례 및 정상 사례를 AI에 제공한다.
 - 후보가 있거나 없는 정상 실행은 종료 상태 `0`, 인수, Git 또는 입력 처리 실패는 종료 상태 `2`로 구분된다. 외부 패키지와 네트워크 없이 실행할 수 있으며, 같은 파일의 self-test로 핵심 탐색 동작을 확인할 수 있다.
+- 개발 지침이 현재 검사기에서 발생할 수 있는 `.mjs` 실패 사례마다 적용 조건, 관찰 결과, 권장 코드, 피해야 할 코드와 검증 방법을 설명한다.
+- ESLint가 정확히 찾을 수 있는 코드 형태는 정상 및 오류 사례로 확인된 규칙으로 검사한다. Git 상태, 파일 위치, 인코딩, 문자열 위치와 출력 완료처럼 코드를 실행해야 확인할 수 있는 조건은 후속 검사기의 self-test 또는 실행 검사가 맡는다.
