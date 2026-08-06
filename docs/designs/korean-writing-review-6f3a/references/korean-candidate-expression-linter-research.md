@@ -2,7 +2,7 @@
 
 ## 결론
 
-`use-words-review`의 후보 검사기는 textlint, Vale와 reviewdog를 실행 의존성으로 넣지 않고 Node.js 표준 기능만 사용하는 `.mjs` 한 파일로 구성하는 안이 가장 작다. 스크립트는 표현을 확정 오류로 판정하지 않고, 내장 규칙에 해당하는 모든 출현과 AI가 판단할 때 필요한 설명 및 대조 사례를 표준 출력의 JSON 객체로 제공한다. Markdown parser, 외부 규칙 파일, 결과 파일, formatter 추상화와 MCP는 현재 결과에 필요하지 않다.
+`use-words-review`의 후보 검사기는 textlint, Vale와 reviewdog를 실행 의존성으로 넣지 않고 Node.js 표준 기능만 사용하는 `.mjs` 한 파일로 구성하는 안이 가장 작다. 스크립트는 표현을 확정 오류로 판정하지 않고, 내장 규칙에 해당하는 모든 출현을 세어 출력 한도 안의 상세 경고와 정확한 생략 수를 AI에게 제공한다. 판단에 필요한 설명 및 대조 사례도 같은 표준 출력 JSON 객체에 넣는다. Markdown parser, 외부 규칙 파일, 결과 파일, formatter 추상화와 MCP는 현재 결과에 필요하지 않다.
 
 규칙의 `reference` 필드는 제거하는 편이 맞다. 스킬은 사용자 홈, 저장소 내부, 관리 환경 또는 다른 호스트에 설치될 수 있다. 실행 결과를 이해할 때마다 별도 파일을 찾아 읽게 하면 설치 위치 해석과 추가 문맥 사용이 필요하다. literal로 찾을 규칙은 `id`, `expressions`, `message`, `queries`, `negatives`, `positives`를 스크립트 상수 하나에 둔다. 출력은 일치한 규칙의 설명과 사례를 규칙마다 한 번만 싣고, 출현별 위치와 원문 일부를 별도 배열에 둔다.
 
@@ -93,7 +93,7 @@ use-words-review/
 
 Git 프로젝트는 LTS 계열을 지정하지 않는다. 따라서 Git 최저 버전은 LTS라는 이름이 아니라 실제 명령 기능으로 정한다. `git status --porcelain=v1 -z --no-renames --untracked-files=all`에 필요한 `--no-renames`와 `status.renames`는 Git 2.18.0에서 추가됐다. porcelain v1은 버전 간 출력 안정성을 약속하고 `-z`는 경로를 NUL로 구분한다. [Git 2.18.0 릴리스 기록](https://raw.githubusercontent.com/git/git/v2.18.0/Documentation/RelNotes/2.18.0.txt)과 [git-status 문서](https://git-scm.com/docs/git-status)를 대조했다.
 
-운영체제 이름만으로 호환을 약속하지 않는다. Node.js 22가 Tier 1로 분류한 GNU/Linux, Windows와 macOS의 운영체제, CPU architecture 및 libc 조합을 지원 범위로 삼는다. 구현은 shell을 거치지 않고 Git을 실행하며, 경로를 줄바꿈이 아닌 NUL byte로 구분해야 한다. 대표 검증은 Linux, macOS와 Windows에서 Node.js 22 및 각 환경의 현재 Git으로 같은 self-test, 파일 입력, 표준 입력과 `--changed` 사례를 실행한다. [Node.js 22 지원 platform 목록](https://github.com/nodejs/node/blob/v22.x/BUILDING.md#platform-list)과 저장소 루트 판정에 쓰는 [git-rev-parse 문서](https://git-scm.com/docs/git-rev-parse)를 확인했다.
+현재 구현과 대표 실행은 macOS에서만 확인한다. Linux와 Windows 동작은 이번 완료 증거에 포함하지 않는다. 구현은 shell을 거치지 않고 Git을 실행하며 경로를 줄바꿈이 아닌 NUL byte로 구분하지만, 이 작성 방식만으로 확인하지 않은 운영체제의 동작을 주장하지 않는다. Node.js가 공개한 platform 목록은 실행 환경을 조사하는 자료이며 이번 검증 범위를 넓히는 근거로 사용하지 않는다. [Node.js 22 지원 platform 목록](https://github.com/nodejs/node/blob/v22.x/BUILDING.md#platform-list)과 저장소 루트 판정에 쓰는 [git-rev-parse 문서](https://git-scm.com/docs/git-rev-parse)를 확인했다.
 
 ## 규칙 schema
 
@@ -128,7 +128,9 @@ const rules = [
 
 스크립트가 시작할 때 규칙 상수를 검사한다. `id` 중복, 비어 있거나 공백뿐인 표현, 고립 surrogate, 같은 규칙 안의 중복 표현과 모든 필수 설명 및 사례의 빈 배열을 실패로 처리한다. 서로 다른 규칙의 같은 표현은 원칙적으로 금지한다. 허용하면 한 출현이 어떤 판정 기준에 속하는지 중복 경고가 생기므로 실제 필요가 확인된 뒤 명시적인 정책을 추가한다.
 
-초기 후보 목록은 현재 `korean.md`와 저장소의 자연스러운 한국어 조사에서 직접 다시 살피도록 정한 literal 및 안전한 활용형만 포함한다. 정상 사례에 나온 제품명, 판정 상태, 영문 원어와 설명 문장을 자동으로 규칙으로 만들지 않는다. 후보가 없다는 결과는 문장 구조와 목록 밖 표현의 의미 검토가 끝났다는 뜻이 아니다.
+초기 후보 목록은 현재 `korean.md`에서 literal로 찾을 수 있는 후보를 빠짐없이 포함한다. 일반 산문의 U+00B7, 번역체 형태, 문맥 확인 용어, 행동을 감추기 쉬운 표현, 정보를 더하지 않을 수 있는 표현과 지칭 대상을 확인해야 하는 표현이 대상이다. 정상 사례에 나온 제품명, 판정 상태, 영문 원어와 설명 문장을 자동으로 규칙으로 만들지 않는다. 후보가 없다는 결과는 문장 구조와 목록 밖 표현의 의미 검토가 끝났다는 뜻이 아니다.
+
+`id`는 철자나 활용형이 아니라 하나의 의미 판정 기준을 나타낸다. 같은 판정 기준에 속하지만 글자가 달라지는 활용형은 그 규칙의 `expressions`에 명시한다. 예를 들어 `좁히`와 `좁혀`는 같은 규칙에 둘 수 있지만, 다른 단어에서도 흔히 나타나는 짧은 어간은 넣지 않고 실제 검토 가치가 확인된 형태만 둔다.
 
 ### 실행 대상은 내장 규칙 전체로 고정한다
 
@@ -185,7 +187,7 @@ node <skill-root>/scripts/scan-korean-expressions.mjs \
   --file docs/reference.md
 ```
 
-`--file`은 한 번 이상 사용할 수 있고 전달 순서를 유지한다. 절대 위치 또는 현재 디렉터리 기준 상대 위치를 받으며, 출력 `sourceId`와 `path`에는 호출자가 넘긴 위치를 구분자가 일정한 문자열로 정규화해 사용한다. 같은 정규화 위치를 두 번 넘기면 중복 경고를 만들지 않고 인수 오류로 끝낸다. 파일 mode에 별도 `--repo`나 source 이름 option을 추가하지 않는다.
+`--file`은 한 번 이상 사용할 수 있고 전달 순서를 유지한다. 현재 디렉터리 안의 파일을 상대 위치로 전달하면 정규화한 상대 위치를 `sourceId`와 `path`에 사용한다. 절대 위치로 전달했거나 현재 디렉터리 밖에 있는 파일은 입력 순서에 따라 `file:1`, `file:2`를 `sourceId`로 사용하고 `path`를 출력하지 않는다. 같은 실제 파일을 두 번 넘기면 중복 경고를 만들지 않고 인수 오류로 끝낸다. 파일 mode에 별도 `--repo`나 source 이름 option을 추가하지 않는다.
 
 각 파일은 같은 file handle에서 일반 파일 여부와 byte 크기를 확인하고 끝까지 읽는다. 존재 여부를 먼저 확인한 뒤 별도 읽기를 하면 두 동작 사이에 파일이 바뀔 수 있다. 읽기 실패를 빈 문자열로 바꾸거나 경로 문자열을 원문으로 검사하지 않는다.
 
@@ -213,9 +215,9 @@ printf '%s' '<review-text>' | \
 
 줄은 1부터 시작한다. `startUtf16`은 줄의 시작부터 일치 시작까지 UTF-16 code unit 수에 1을 더한 값이다. `endUtf16`은 일치 뒤 첫 열이다. LF, CRLF와 단독 CR은 줄바꿈 하나로 계산하되 원문 자체를 바꾸지 않는다. 이 단위는 Node 문자열 slice와 바로 맞고 보조평면 문자 앞에서도 결과를 다시 찾을 수 있다.
 
-입력은 `TextDecoder("utf-8", { fatal: true })`로 decode한다. 잘못된 UTF-8을 대체 문자로 바꾸면 위치와 원문이 달라지므로 textlint와 Vale보다 의도적으로 엄격한 정책이다. 선두 BOM은 표시 문자에서 제외하고 NUL이 있으면 binary 입력으로 실패한다. 파일별 byte, 전체 입력 byte, source 수, 경고 수와 출력 byte 상한은 구현 전에 승인한다.
+입력은 `TextDecoder("utf-8", { fatal: true })`로 decode한다. 잘못된 UTF-8을 대체 문자로 바꾸면 위치와 원문이 달라지므로 textlint와 Vale보다 의도적으로 엄격한 정책이다. 선두 BOM은 표시 문자에서 제외하고 NUL이 있으면 binary 입력으로 실패한다. 한 실행은 source 512개, 파일 하나 2 MiB와 전체 입력 32 MiB까지 받는다.
 
-각 경고에는 일치한 줄을 중심으로 제한된 `quote`를 넣는다. AI가 파일을 다시 열 수 없는 표준 입력도 문맥을 판단할 수 있고, 파일 입력에서도 경고 위치를 직관적으로 확인할 수 있기 때문이다. 원문 전체나 제한 없는 주변 문단은 출력하지 않는다. 줄이 상한보다 길면 일치 부분을 보존하면서 앞뒤를 잘라 낸다.
+각 경고에는 일치한 줄을 중심으로 최대 480 UTF-16 code unit의 `quote`를 넣는다. AI가 파일을 다시 열 수 없는 표준 입력도 문맥을 판단할 수 있고, 파일 입력에서도 경고 위치를 직관적으로 확인할 수 있기 때문이다. 원문 전체나 제한 없는 주변 문단은 출력하지 않는다. 줄이 상한보다 길면 일치 부분을 보존하면서 앞뒤를 잘라 낸다.
 
 ## 표준 출력 JSON
 
@@ -259,11 +261,18 @@ printf '%s' '<review-text>' | \
       "endUtf16": 11,
       "quote": "조사와 구현의 경계를 정리합니다."
     }
-  ]
+  ],
+  "summary": {
+    "total": 1,
+    "shown": 1,
+    "omitted": 0
+  }
 }
 ```
 
-`catalog`에는 스크립트가 순회한 내장 `rules` 전체의 `id`와 `expressions`를 선언 순서대로 넣는다. 호출자나 AI가 이 배열을 입력하거나 일부 항목을 고를 수 없다. AI는 빈 `warnings`가 내장 규칙 전체를 실행한 결과인지 확인할 수 있다. `rules`에는 실제 경고가 생긴 규칙의 설명, 질문과 사례만 한 번씩 넣어 결과 크기를 줄인다. `sources`에는 실제로 검사한 source를 후보가 없어도 모두 넣어 빈 `warnings`가 검사 누락을 뜻하지 않게 한다. 표준 입력 source에는 `path`를 넣지 않는다. `warnings`는 출현 하나마다 항목 하나를 둔다.
+`catalog`에는 스크립트가 순회한 내장 `rules` 전체의 `id`와 `expressions`를 선언 순서대로 넣는다. 호출자나 AI가 이 배열을 입력하거나 일부 항목을 고를 수 없다. AI는 빈 `warnings`가 내장 규칙 전체를 실행한 결과인지 확인할 수 있다. `rules`에는 실제로 발견된 규칙의 설명, 질문과 사례만 한 번씩 넣어 결과 크기를 줄인다. 상세 경고가 생략된 출현에서만 발견된 규칙도 `rules`에 포함한다. `sources`에는 실제로 검사한 source를 후보가 없어도 모두 넣어 빈 `warnings`가 검사 누락을 뜻하지 않게 한다. 표준 입력 source에는 `path`를 넣지 않는다. `warnings`에는 결정적 순서에서 출력 한도 안에 들어가는 출현을 하나씩 둔다.
+
+`summary.total`은 모든 source와 모든 규칙을 끝까지 검사해 발견한 전체 출현 수다. `summary.shown`은 `warnings` 배열의 길이이고 `summary.omitted`는 두 값의 차이다. `omitted`가 0보다 크면 `SKILL.md`는 AI 검토 결과 마지막에 `... 그 외 <N>개의 경고가 더 발견됨`을 표시한다. `truncated`와 같은 계산 가능한 boolean 및 같은 내용을 되풀이하는 message 문자열은 JSON에 넣지 않는다.
 
 `catalogs`는 사용하지 않는다. 정상 실행 한 건은 여러 catalog가 아니라 실행한 규칙의 간략 목록 하나를 만들기 때문이다. `rules`는 이 목록 전체를 반복하지 않고 경고가 생긴 규칙의 상세 자료만 담는다. 이 구분은 SARIF의 필드 구성을 복사한 것이 아니라 현재 출력의 중복을 줄이기 위한 자체 규약이다. SARIF는 도구 구성 요소의 전체 규칙을 `rules`에 두고 결과가 `ruleId`로 이를 참조한다. [SARIF 2.1.0의 `rules`와 `ruleId`](https://docs.oasis-open.org/sarif/sarif/v2.1.0/sarif-v2.1.0.html)를 확인했다.
 
@@ -277,7 +286,26 @@ printf '%s' '<review-text>' | \
 
 정상 JSON은 표준 출력으로만 보낸다. 호출자가 보관할 이유가 있을 때 자신의 도구로 redirect할 수 있지만 스크립트는 출력 위치, 기존 파일 덮어쓰기와 정리 책임을 갖지 않는다. 반복 실행으로 임시 결과 파일이 쌓이지 않고, 스킬은 명령 결과를 바로 읽을 수 있다.
 
-표준 출력도 소비 환경의 길이 제한 때문에 잘릴 수 있다. 스크립트는 직렬화한 전체 JSON의 byte 수를 출력 전에 확인한다. 승인된 상한을 넘으면 일부 JSON을 쓰지 않고 실행 실패로 처리하며, 호출자에게 `--file`로 범위를 줄이라는 짧은 안내를 표준 오류에 쓴다. 실제 작업에서 상한 초과가 반복해서 측정될 때만 pagination, JSON sequence 또는 명시적인 출력 파일 option을 추가한다.
+상세 `warnings`는 최대 50,000개까지 담고, 직렬화한 전체 JSON은 최대 64 MiB로 제한한다. 50,000개를 담기 전에 JSON 상한에 닿으면 결정적 순서의 앞부분만 남겨 64 MiB 안에 맞춘다. 상세 경고 보관을 멈춘 뒤에도 모든 source와 규칙을 끝까지 검사해 `summary.total`과 `summary.omitted`를 정확히 계산한다. 입력이나 내부 오류로 전체 검사를 마치지 못하면 정확한 생략 수를 만들지 않고 정상 JSON도 출력하지 않는다.
+
+결과가 많다는 이유만으로 JSONL을 사용하지 않는다. JSONL은 record별 처리에는 유리하지만 전체 byte와 AI 입력 token을 줄이지 않으며, `catalog`, `rules`, `sources`와 마지막 집계 record의 순서 및 중간 실패 규약을 새로 만들어야 한다. 단일 JSON의 메모리 사용량이나 첫 출력 지연이 실제 실행에서 문제가 되거나, 검사가 끝나기 전에 record를 소비해야 할 때 다시 검토한다.
+
+### 많은 결과를 처리하는 실제 사례
+
+2026년 8월 6일에 각 공식 문서와 표시한 release 또는 commit의 소스를 확인했다. 전체 결과를 센 뒤 상세 표시만 줄이는 방식이 이번 검사기의 요구와 가장 가깝다. golangci-lint v2.12.2는 수집된 issue 전체를 순회하면서 상세 결과만 제한하고 숨긴 수와 전체 수를 계산한다. 이 숫자는 verbose log에만 기록되므로 현재 검사기는 같은 집계를 JSON의 `summary`에 직접 넣는다. [golangci-lint의 linter별 제한 구현](https://github.com/golangci/golangci-lint/blob/c0d3ddc9cf3faa61a4e378e879ece580256d76e5/pkg/result/processors/max_from_linter.go#L32-L49)을 확인했다.
+
+reviewdog v0.21.0의 GitHub Check reporter는 summary 본문을 65,535 bytes로 제한하면서도 그룹 제목에는 전체 발견 수를 표시한다. 본문 한도에 닿으면 일부 결과가 빠졌다고 알리지만 정확한 생략 수는 별도 필드에 넣지 않는다. 현재 검사기는 소비자가 차이를 계산하게 두지 않고 `total`, `shown`과 `omitted`를 함께 제공한다. [reviewdog의 GitHub Check summary 구현](https://github.com/reviewdog/reviewdog/blob/df70ed74df59de7ebfd9276afabd62ea2de4d7dd/service/github/check.go#L340-L388)을 확인했다.
+
+GitHub code scanning은 SARIF 실행에서 최대 25,000개를 처리하고 중요도 순 상위 5,000개를 저장해 표시한다. [GitHub의 SARIF 결과 제한](https://docs.github.com/code-security/code-scanning/troubleshooting-sarif-uploads/results-exceed-limit)을 확인했다.
+
+SARIF 2.1.0 schema는 실행별 생략 수를 담는 표준 필드를 정하지 않는다. 현재 규칙에는 severity가 없으므로 상세 경고는 source 순서, 시작 offset, 규칙 선언 순서와 표현 선언 순서로 남긴다. [SARIF 2.1.0 schema](https://github.com/oasis-tcs/sarif-spec/blob/ed71d4f62db866ce3698a08a5ec3f7f2e775545d/sarif-2.1/schema/sarif-schema-2.1.0.json)를 확인했다.
+
+ripgrep 15.2.0의 `--max-count`와 GCC 16.1의 `-fmax-errors`는 정한 수에 도달하면 검색 또는 source 처리를 중단한다. 실행 뒤에 남은 실제 결과 수를 알 수 없으므로 정확한 `omitted`가 필요한 현재 검사기에 적용하지 않는다.
+
+- [ripgrep의 `--max-count`와 JSON 설명](https://github.com/BurntSushi/ripgrep/blob/e89fff89ac9af12e8d4ce9d5fd07beb408ca730f/crates/core/flags/defs.rs#L3872-L3920)은 선택된 결과 수에 도달한 뒤 파일 검색을 멈추는 동작을 확인하는 근거다.
+- [GCC의 `-fmax-errors`](https://gcc.gnu.org/onlinedocs/gcc-16.1.0/gcc/Warning-Options.html#index-fmax-errors)는 정한 오류 수에 도달하면 source 처리를 중단하는 동작을 확인하는 근거다.
+
+Vale v3.17.0의 규칙별 `Limit`는 초과 alert를 버리지만 전체 수나 생략 수를 유지하지 않는다. 초과 결과를 알리지 않는 동작은 모든 출현을 세어 AI에게 생략 사실을 알려야 하는 현재 요구와 맞지 않는다. [Vale의 alert 제한 구현](https://github.com/errata-ai/vale/blob/fe71481c95665a2343d81874489f8b012442a377/internal/core/file.go#L420-L437)을 확인했다.
 
 여러 경고를 `throw new Error`로 하나씩 전달하지 않는다. 첫 예외에서 실행이 멈추고, stack trace와 자유 형식 문자열은 기계적으로 읽을 결과가 아니며, 후보와 실행 실패도 구분하지 못한다. 예외는 입력을 완전히 검사할 수 없는 경우에만 사용한다.
 
@@ -318,7 +346,7 @@ MCP는 실시간 자료, 인증, 권한과 외부 시스템 작업에 맞고, �
 - 빈 표현, 공백뿐인 표현, 고립 surrogate와 중복 `id`를 거부한다.
 - 문제 사례와 정상 사례 및 판정 질문이 비어 있으면 거부한다.
 - 정상 실행 경로가 규칙 또는 표현 filter를 받지 않고 내장 `rules` 전체를 검사하는지 확인한다.
-- 처음, 중간과 마지막 규칙에만 각각 일치하는 원문에서도 모든 규칙을 순회하고 모든 출현을 남긴다.
+- 처음, 중간과 마지막 규칙에만 각각 일치하는 원문에서도 모든 규칙을 순회하고 모든 출현을 센다. 상세 경고 상한 안에서는 각 출현을 모두 남긴다.
 - 같은 줄과 여러 줄의 반복 및 겹치는 출현을 모두 찾는다.
 - `경계`, `경계를`과 `보안경계`의 substring 출현을 모두 찾는다.
 - 같은 위치에서 규칙이 다른 경고를 임의로 합치지 않는다.
@@ -339,11 +367,13 @@ MCP는 실시간 자료, 인증, 권한과 외부 시스템 작업에 맞고, �
 ### 출력과 실패
 
 - 후보가 없어도 순회한 내장 `rules` 전체에서 만든 `catalog`, 검사한 모든 source 및 빈 `rules`와 `warnings`를 가진 RFC 8259 JSON을 출력하고 `0`으로 끝난다.
-- 후보가 있으면 실행한 전체 규칙 목록과 일치한 규칙의 metadata를 각각 한 번, 모든 출현을 각각 출력하고 `0`으로 끝난다.
+- 후보가 있으면 실행한 전체 규칙 목록과 발견된 규칙의 metadata를 각각 한 번, 출력 한도 안의 상세 경고와 전체, 표시 및 생략 수를 출력하고 `0`으로 끝난다.
 - 호출자가 `catalog`, 규칙 ID나 표현 목록을 입력하는 실행 방법이 없는지 확인한다.
 - `catalog`, `rules`, `sources`와 `warnings`의 참조가 모두 연결되는지 확인한다.
 - 표준 입력 source에는 실제 파일 `path`를 만들지 않는다.
-- 직렬화 결과가 상한을 넘으면 JSON 일부를 출력하지 않고 `2`로 끝난다.
+- 상대 위치 파일은 정규화한 상대 위치를 출력하고, 절대 위치 또는 현재 디렉터리 밖의 파일은 순번 ID만 출력해 개인 절대 위치를 남기지 않는다.
+- 경고가 50,000개를 넘거나 직렬화 결과가 64 MiB에 닿아도 검사를 끝까지 수행하고, 결정적 순서의 상세 경고와 정확한 `summary`를 가진 온전한 JSON을 출력한다.
+- `summary.shown`이 `warnings` 길이와 같고 `summary.omitted`가 `summary.total - summary.shown`과 같은지 확인한다.
 - 입력 또는 내부 실패는 stdout에 정상 JSON을 남기지 않고 짧은 stderr와 `2`로 끝난다.
 - 같은 입력을 네트워크가 없는 환경에서 실행해 같은 결과를 얻는다.
 
@@ -357,16 +387,18 @@ MCP는 실시간 자료, 인증, 권한과 외부 시스템 작업에 맞고, �
 - literal 후보, 설명, 판정 질문과 대조 사례는 스크립트의 단일 `rules` 상수가 맡는다.
 - `korean.md`는 literal 검색으로 찾을 수 없는 문장과 문단의 의미 검토 기준을 맡는다.
 - 정상 실행은 외부 입력으로 규칙을 고르지 않고 내장 `rules` 전체를 순회하며, `catalog`는 실제로 순회한 전체 규칙에서 만든다.
-- 최저 버전은 Node.js 22.0.0과 Git 2.18.0이다. 지원 범위는 Node.js 22가 Tier 1로 분류한 Linux, macOS와 Windows 조합이며 세 운영체제에서 대표 실행을 확인한다.
+- 현재 `korean.md`에서 literal로 찾을 수 있는 모든 후보를 의미 단위 `id`와 명시적인 `expressions` 배열로 옮긴다.
+- `--changed`는 staged, unstaged와 untracked 일반 파일의 현재 작업 트리 원문 전체를 검사하고 삭제 파일과 submodule을 제외한다.
+- 저장소 안과 현재 디렉터리 안의 파일은 상대 위치로 식별한다. 절대 위치 또는 현재 디렉터리 밖의 파일은 순번 ID만 출력하며 `path`를 생략한다. 표준 입력은 `--source-name`을 사용한다.
+- 한 실행의 상한은 source 512개, 파일 하나 2 MiB, 전체 입력 32 MiB, 상세 경고 50,000개, `quote` 480 UTF-16 code unit와 직렬화 JSON 64 MiB다.
+- JSON은 `catalog`, `rules`, `sources`, `warnings`와 `summary`를 사용한다. 위치는 1부터 시작하는 `line`과 `startUtf16`, 일치 뒤 첫 열인 `endUtf16`으로 나타낸다.
+- 모든 출현을 끝까지 세되 상세 경고는 개수와 JSON byte 한도 안의 결정적 앞부분만 담는다. `summary`는 `total`, `shown`과 `omitted`를 제공하고, AI는 생략된 경고가 있으면 검토 결과 마지막에 생략 수를 표시한다.
+- 현재 출력은 단일 JSON 객체를 유지한다. JSONL은 메모리나 첫 출력 지연 문제가 실제로 측정되거나 완료 전 record 소비자가 생겼을 때 다시 검토한다.
+- 최저 버전은 Node.js 22.0.0과 Git 2.18.0이다. 현재 구현과 대표 실행은 macOS에서만 확인한다.
 
 다음 내용은 조사 결론이 아니라 요구사항 소유자 또는 정해진 검수자의 승인이 더 필요하다.
 
-- 초기 규칙의 `id`, literal 및 활용형, 설명, 질문, 문제 사례와 정상 사례 전체
-- `--file`의 정규화 위치를 `sourceId`와 `path`에 그대로 싣는 정책이 개인 위치를 다루는 현재 검토 입력에 맞는지
-- `--changed`가 index가 아닌 현재 작업 트리 원문을 검사하는 안
-- source 수, 파일별 byte, 전체 입력, 경고 수, `quote`와 직렬화 JSON byte 상한
-- 제안한 JSON 필드명과 UTF-16 열 단위
-- 규칙 자료와 의미 검토 절차 변경을 승인할 역할 및 대표 평가 판정자
+- 요구사항 소유자가 지정할 규칙 자료와 의미 검토 절차의 대표 평가 판정자
 
 남은 결정이 나기 전에는 그 값에 의존하는 구현을 시작하지 않는다. `korean.md`는 승인된 책임 구분에 따라 유지한다.
 
