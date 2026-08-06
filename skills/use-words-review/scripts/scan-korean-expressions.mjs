@@ -116,6 +116,34 @@ const GIT_OUTPUT_BYTES = 8 * 1024 * 1024;
 const SELF_TEST_TIMEOUT_MS = 10_000;
 /** @type {number} */
 const SELF_TEST_OUTPUT_BYTES = 1024 * 1024;
+/** @type {ReadonlySet<string>} */
+const SUPPORTED_GIT_STATUSES = new Set([
+  " M",
+  " T",
+  " A",
+  " D",
+  "M ",
+  "MM",
+  "MT",
+  "MD",
+  "T ",
+  "TM",
+  "TT",
+  "TD",
+  "A ",
+  "AM",
+  "AT",
+  "AD",
+  "D ",
+  "DD",
+  "AU",
+  "UD",
+  "UA",
+  "DU",
+  "AA",
+  "UU",
+  "??",
+]);
 
 /**
  * 검사할 literal 후보와 AI가 각 문맥을 판정할 때 사용할 질문 및 대조 사례다.
@@ -638,7 +666,7 @@ function validateTextList(values, errorCode, enforceQuoteLimit) {
     if (!isNonEmptyText(value) || unique.has(value)) {
       throw scannerError(errorCode);
     }
-    if (enforceQuoteLimit && value.length > MAX_QUOTE_UTF16) {
+    if (enforceQuoteLimit && (value.length > MAX_QUOTE_UTF16 || /[\r\n]/u.test(value))) {
       throw scannerError(errorCode);
     }
     unique.add(value);
@@ -1222,10 +1250,11 @@ function runChildFile(executable, args, options) {
 }
 
 /**
- * Git NUL 구분 status를 해석해 rename의 새 위치와 staged, unstaged 및 untracked 위치를 모은다.
+ * `--no-renames`가 적용된 Git NUL 구분 status에서 허용한 위치만 모은다.
  *
  * @param {Buffer} stdout `git status --porcelain=v1 -z`의 원시 stdout
  * @returns {ReadonlyArray<string>} 중복을 제거한 현재 작업 트리 위치
+ * @throws {Error} 허용 목록 밖 status, rename 또는 copy record, 잘못된 byte 형식, 빈 위치, 절대 위치, 정확히 `..`이거나 `../`로 시작하는 상대 위치
  */
 function parseGitStatus(stdout) {
   const decoder = new TextDecoder("utf-8", { fatal: true, ignoreBOM: true });
@@ -1245,20 +1274,14 @@ function parseGitStatus(stdout) {
         throw scannerError("git:invalid-status");
       }
       const status = record.subarray(0, 2).toString("ascii");
+      if (!SUPPORTED_GIT_STATUSES.has(status)) {
+        throw scannerError("git:invalid-status");
+      }
       const path = decoder.decode(record.subarray(3));
       if (!isValidGitRelativePath(path)) {
         throw scannerError("git:invalid-path");
       }
       paths.add(path);
-
-      if (status.includes("R") || status.includes("C")) {
-        const originalEnd = stdout.indexOf(0, cursor);
-        if (originalEnd < 0) {
-          throw scannerError("git:invalid-status");
-        }
-        decoder.decode(stdout.subarray(cursor, originalEnd));
-        cursor = originalEnd + 1;
-      }
     }
   } catch (error) {
     if (error instanceof Error && error.message.startsWith("git:")) {
@@ -1348,6 +1371,7 @@ async function provideChangedSources(repository) {
       "-z",
       "--untracked-files=all",
       "--ignore-submodules=all",
+      "--no-renames",
     ],
     {
       cwd: root,
@@ -1532,6 +1556,51 @@ async function runSelfTest() {
   );
   assert.equal(allRules.matchedRules.every((matched) => matched), true);
   assert.equal(createPublicResult(allRules, allRules.warnings.length).catalog.length, rules.length);
+  assert.throws(
+    () => validateTextList(["여러\n줄"], "rules:invalid-expression", true),
+    /rules:invalid-expression/u,
+  );
+
+  const expectedGitStatuses = [
+    " M", " T", " A", " D", "M ", "MM", "MT", "MD", "T ", "TM", "TT", "TD", "A ",
+    "AM", "AT", "AD", "D ", "DD", "AU", "UD", "UA", "DU", "AA", "UU", "??",
+  ];
+  assert.deepEqual([...SUPPORTED_GIT_STATUSES], expectedGitStatuses);
+  const everyStatus = Buffer.from(
+    expectedGitStatuses.map((status, index) => `${status} file-${index}.md\0`).join(""),
+  );
+  assert.equal(parseGitStatus(everyStatus).length, expectedGitStatuses.length);
+  assert.deepEqual(parseGitStatus(Buffer.from(" M z.md\0?? 가.md\0 M a.md\0")), [
+    "a.md", "z.md", "가.md",
+  ]);
+  const specialGitPath = "\uFEFF space\tline\n가.md";
+  assert.deepEqual(parseGitStatus(Buffer.from(`?? ${specialGitPath}\0`)), [specialGitPath]);
+  assert.deepEqual(parseGitStatus(Buffer.alloc(0)), []);
+  for (const status of [" U", "U ", "MU", "UT", "MA", "DM", "DT", "R ", "C "]) {
+    assert.throws(
+      () => parseGitStatus(Buffer.from(`${status} rejected.md\0`)),
+      /git:invalid-status/u,
+    );
+  }
+  assert.throws(() => parseGitStatus(Buffer.from("?? missing-nul.md")), /git:invalid-status/u);
+  assert.throws(
+    () => parseGitStatus(Buffer.from([0x3f, 0x3f, 0x20, 0xc3, 0x28, 0x00])),
+    /git:invalid-status/u,
+  );
+
+  assert.throws(
+    () =>
+      scanProvidedSources(
+        Array.from({ length: 17 }, (_, index) => ({
+          id: `total-limit-${index}`,
+          text: "",
+          bytes: MAX_SOURCE_BYTES,
+        })),
+        rules,
+        0,
+      ),
+    /input:total-too-large/u,
+  );
 
   await assert.rejects(
     () =>
@@ -1544,14 +1613,65 @@ async function runSelfTest() {
     /git:warning/u,
   );
 
-  async function* invalidUtf8Chunks() {
-    yield Uint8Array.from([0xc3, 0x28]);
+  /**
+   * @param {ReadonlyArray<Uint8Array>} chunks 순서대로 내보낼 입력 byte chunk
+   * @returns {AsyncGenerator<Uint8Array, void, void>} decodeChunks에 전달할 chunk stream
+   */
+  async function* chunkSequence(chunks) {
+    for (const chunk of chunks) {
+      yield chunk;
+    }
   }
-  await assert.rejects(() => decodeChunks(invalidUtf8Chunks(), 0), /input:invalid-utf8/u);
+  await assert.rejects(
+    () => decodeChunks(chunkSequence([Uint8Array.from([0xc3, 0x28])]), 0),
+    /input:invalid-utf8/u,
+  );
+  await assert.rejects(
+    () => decodeChunks(chunkSequence([Uint8Array.from([0xc3])]), 0),
+    /input:invalid-utf8/u,
+  );
+  await assert.rejects(
+    () => decodeChunks(chunkSequence([Uint8Array.from([0xa9])]), 0),
+    /input:invalid-utf8/u,
+  );
+
+  const splitUtf8 = Buffer.from("\uFEFF경계\uFEFF", "utf8");
+  const decodedSplitUtf8 = await decodeChunks(
+    chunkSequence([splitUtf8.subarray(0, 4), splitUtf8.subarray(4, 7), splitUtf8.subarray(7)]),
+    0,
+  );
+  assert.deepEqual(decodedSplitUtf8, { text: "경계\uFEFF", bytes: splitUtf8.byteLength });
+  assert.deepEqual(
+    await decodeChunks(chunkSequence([Buffer.from("\uFEFF", "utf8")]), 0),
+    { text: "", bytes: 3 },
+  );
+  await assert.rejects(
+    () => decodeChunks(chunkSequence([Uint8Array.from([0])]), 0),
+    /input:nul-byte/u,
+  );
+  assert.equal(
+    (await decodeChunks(chunkSequence([Buffer.alloc(MAX_SOURCE_BYTES, 0x61)]), 0)).bytes,
+    MAX_SOURCE_BYTES,
+  );
+  await assert.rejects(
+    () => decodeChunks(chunkSequence([Buffer.alloc(MAX_SOURCE_BYTES + 1, 0x61)]), 0),
+    /input:source-too-large/u,
+  );
+  assert.deepEqual(await decodeChunks(chunkSequence([]), MAX_TOTAL_BYTES), { text: "", bytes: 0 });
+  await assert.rejects(
+    () => decodeChunks(chunkSequence([Uint8Array.from([0x61])]), MAX_TOTAL_BYTES),
+    /input:total-too-large/u,
+  );
 
   const scriptPath = fileURLToPath(import.meta.url);
   const scriptText = await readFile(scriptPath, "utf8");
-  assert.doesNotMatch(scriptText, /\{[^}\n]*\b(?:object|any)\b[^}\n]*\}/u);
+  const forbiddenJSDocType = /\{[^}]*\b(?:object|any)\b[^}]*\}/u;
+  const jsdocBlocks = scriptText.match(/\/\*\*[\s\S]*?\*\//gu) ?? [];
+  for (const jsdocBlock of jsdocBlocks) {
+    assert.doesNotMatch(jsdocBlock, forbiddenJSDocType);
+  }
+  assert.match("/** @param {\nobject\n} value */", forbiddenJSDocType);
+  assert.match("/** @returns {Array<\nany\n>} */", forbiddenJSDocType);
 
   const fileChild = spawnSync(process.execPath, [scriptPath, "--file", scriptPath], {
     encoding: "utf8",
