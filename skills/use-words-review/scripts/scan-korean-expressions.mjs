@@ -1460,14 +1460,76 @@ async function runSelfTest() {
     kind: "stdin",
     sourceName: "sample",
   });
+  assert.deepEqual(parseCommandLine(["--changed", "."]), { kind: "changed", repository: "." });
+  assert.deepEqual(parseCommandLine(["--file", "first", "--file", "second"]), {
+    kind: "files",
+    files: ["first", "second"],
+  });
+  assert.deepEqual(parseCommandLine(["--self-test"]), { kind: "self-test" });
   assert.throws(() => parseCommandLine([]), /usage:invalid-input-mode/u);
+  const modeArguments = [
+    ["--changed", "."],
+    ["--file", "a"],
+    ["--stdin"],
+    ["--self-test"],
+  ];
+  for (let modeMask = 0; modeMask < 2 ** modeArguments.length; modeMask += 1) {
+    for (const includeSourceName of [false, true]) {
+      const args = modeArguments.flatMap((modeArgs, index) =>
+        (modeMask & (1 << index)) === 0 ? [] : modeArgs,
+      );
+      if (includeSourceName) {
+        args.push("--source-name", "sample");
+      }
+      const selectedCount = modeArguments.reduce(
+        (count, _modeArgs, index) => count + Number((modeMask & (1 << index)) !== 0),
+        0,
+      );
+      const stdinSelected = (modeMask & (1 << 2)) !== 0;
+      const isValid = selectedCount === 1 && stdinSelected === includeSourceName;
+      if (isValid) {
+        assert.doesNotThrow(() => parseCommandLine(args));
+      } else {
+        assert.throws(() => parseCommandLine(args), /usage:/u);
+      }
+    }
+  }
+  for (const args of [
+    ["--stdin", "--stdin", "--source-name", "sample"],
+    ["--changed", ".", "--changed", "."],
+    ["--stdin", "--source-name", "sample", "--source-name", "sample"],
+    ["--self-test", "--self-test"],
+  ]) {
+    assert.throws(() => parseCommandLine(args), /usage:option-repeated/u);
+  }
+  for (const args of [
+    ["--changed", ".", "--file", "a"],
+    ["--changed", ".", "--stdin", "--source-name", "sample"],
+    ["--file", "a", "--stdin", "--source-name", "sample"],
+    ["--file", "a", "--self-test"],
+    ["--stdin"],
+    ["--source-name", "sample", "--self-test"],
+  ]) {
+    assert.throws(() => parseCommandLine(args), /usage:/u);
+  }
+  for (const args of [
+    ["--changed", ""],
+    ["--file", ""],
+    ["--stdin", "--source-name", ""],
+    ["--changed", "\ud800"],
+    ["--file", "\udc00"],
+    ["--stdin", "--source-name", "\ud800"],
+  ]) {
+    assert.throws(() => parseCommandLine(args), /usage:invalid-input-name/u);
+  }
+  const maximumFileArgs = Array.from(
+    { length: MAX_SOURCES },
+    (_, index) => ["--file", `file-${index}`],
+  ).flat();
+  assert.equal(parseCommandLine(maximumFileArgs).kind, "files");
   assert.throws(
-    () => parseCommandLine(["--stdin", "--stdin", "--source-name", "sample"]),
-    /usage:option-repeated/u,
-  );
-  assert.throws(
-    () => parseCommandLine(["--file", "a", "--stdin", "--source-name", "sample"]),
-    /usage:invalid-input-mode/u,
+    () => parseCommandLine([...maximumFileArgs, "--file", "too-many"]),
+    /usage:too-many-sources/u,
   );
 
   /** @type {Rule} */
@@ -1486,6 +1548,39 @@ async function runSelfTest() {
   );
   assert.equal(overlap.total, 2);
   assert.equal(overlap.warnings.length, 2);
+  const sameOffset = scanProvidedSources(
+    [{ id: "same-offset", text: "가", bytes: Buffer.byteLength("가") }],
+    [
+      { ...overlapRule, id: "ko.same-offset-first", expressions: ["가"] },
+      { ...overlapRule, id: "ko.same-offset-second", expressions: ["가"] },
+    ],
+    MAX_WARNINGS,
+  );
+  assert.deepEqual(sameOffset.warnings.map((warning) => warning.ruleId), [
+    "ko.same-offset-first",
+    "ko.same-offset-second",
+  ]);
+
+  const baseRule = rules[0];
+  for (const invalidRule of [
+    { ...baseRule, id: "invalid" },
+    { ...baseRule, message: "" },
+    { ...baseRule, message: "\ud800" },
+    { ...baseRule, expressions: [] },
+    { ...baseRule, expressions: ["중복", "중복"] },
+    { ...baseRule, expressions: ["\ud800"] },
+    { ...baseRule, expressions: ["여러\r줄"] },
+    { ...baseRule, expressions: ["여러\n줄"] },
+    { ...baseRule, queries: [] },
+    { ...baseRule, queries: ["\ud800"] },
+    { ...baseRule, negatives: [] },
+    { ...baseRule, negatives: ["\ud800"] },
+    { ...baseRule, positives: [] },
+    { ...baseRule, positives: ["\ud800"] },
+  ]) {
+    assert.throws(() => validateRules([invalidRule]), /rules:/u);
+  }
+  assert.throws(() => validateRules([baseRule, baseRule]), /rules:invalid-id/u);
 
   const positionText = "😀경계\r\n앞 경계\r뒤 경계\n";
   const positions = scanProvidedSources(
@@ -1500,6 +1595,27 @@ async function runSelfTest() {
       [2, 3, 5],
       [3, 3, 5],
     ],
+  );
+
+  const sameLineSeparators = "a\t경계\u2028b경계\u2029c경계";
+  const sameLinePositions = scanProvidedSources(
+    [
+      {
+        id: "same-line-separators",
+        text: sameLineSeparators,
+        bytes: Buffer.byteLength(sameLineSeparators),
+      },
+    ],
+    [rules.find((rule) => rule.id === "ko.boundary") ?? rules[0]],
+    MAX_WARNINGS,
+  );
+  assert.deepEqual(
+    sameLinePositions.warnings.map((warning) => [
+      warning.line,
+      warning.startUtf16,
+      warning.endUtf16,
+    ]),
+    [[1, 3, 5], [1, 7, 9], [1, 11, 13]],
   );
 
   const empty = scanProvidedSources([{ id: "empty", text: "", bytes: 0 }], rules, MAX_WARNINGS);
@@ -1518,6 +1634,13 @@ async function runSelfTest() {
   assert.equal(limitedPublic.rules.some((rule) => rule.id === "ko.boundary"), true);
   assert.doesNotThrow(() => JSON.parse(serializeBoundedResult(limited, MAX_JSON_BYTES)));
   assert.throws(() => serializeBoundedResult(limited, 1), /output:too-large/u);
+  assert.throws(() => serializeBoundedResult({ ...limited, total: 1n }, MAX_JSON_BYTES), TypeError);
+  const cyclicWarning = { ...limited.warnings[0] };
+  cyclicWarning.quote = cyclicWarning;
+  assert.throws(
+    () => serializeBoundedResult({ ...limited, warnings: [cyclicWarning] }, MAX_JSON_BYTES),
+    TypeError,
+  );
 
   const longLine = `${"가".repeat(500)}경계${"나".repeat(500)}`;
   const quoted = scanProvidedSources(
@@ -1527,6 +1650,29 @@ async function runSelfTest() {
   );
   assert.equal(quoted.warnings[0].quote.length, MAX_QUOTE_UTF16);
   assert.equal(quoted.warnings[0].quote.includes("경계"), true);
+
+  /** @type {Rule} */
+  const maximumExpressionRule = {
+    ...overlapRule,
+    id: "ko.maximum-expression-test",
+    expressions: ["가".repeat(MAX_QUOTE_UTF16)],
+  };
+  const maximumExpression = scanProvidedSources(
+    [
+      {
+        id: "maximum-expression",
+        text: maximumExpressionRule.expressions[0],
+        bytes: Buffer.byteLength(maximumExpressionRule.expressions[0]),
+      },
+    ],
+    [maximumExpressionRule],
+    MAX_WARNINGS,
+  );
+  assert.equal(maximumExpression.warnings[0].quote.length, MAX_QUOTE_UTF16);
+  assert.throws(
+    () => validateTextList(["가".repeat(MAX_QUOTE_UTF16 + 1)], "rules:invalid-expression", true),
+    /rules:invalid-expression/u,
+  );
 
   for (const surrogateBoundaryText of [
     `😀${"가".repeat(238)}경계${"나".repeat(500)}`,
@@ -1573,6 +1719,10 @@ async function runSelfTest() {
   assert.deepEqual(parseGitStatus(Buffer.from(" M z.md\0?? 가.md\0 M a.md\0")), [
     "a.md", "z.md", "가.md",
   ]);
+  const normalizationStatus = Buffer.from("?? é.md\0?? é.md\0");
+  const originalNormalizationStatus = Buffer.from(normalizationStatus);
+  assert.deepEqual(parseGitStatus(normalizationStatus), ["é.md", "é.md"]);
+  assert.deepEqual(normalizationStatus, originalNormalizationStatus);
   const specialGitPath = "\uFEFF space\tline\n가.md";
   assert.deepEqual(parseGitStatus(Buffer.from(`?? ${specialGitPath}\0`)), [specialGitPath]);
   assert.deepEqual(parseGitStatus(Buffer.alloc(0)), []);
@@ -1601,6 +1751,89 @@ async function runSelfTest() {
       ),
     /input:total-too-large/u,
   );
+  const totalLimitSources = Array.from({ length: MAX_TOTAL_BYTES / MAX_SOURCE_BYTES }, (_, index) => ({
+    id: `total-limit-exact-${index}`,
+    text: "",
+    bytes: MAX_SOURCE_BYTES,
+  }));
+  const totalBeforeLimit = totalLimitSources.map((source, index) =>
+    index === totalLimitSources.length - 1 ? { ...source, bytes: source.bytes - 1 } : source,
+  );
+  assert.equal(scanProvidedSources(totalBeforeLimit, rules, 0).sources.length, 16);
+  assert.equal(scanProvidedSources(totalLimitSources, rules, 0).sources.length, 16);
+  assert.throws(
+    () =>
+      scanProvidedSources(
+        [...totalLimitSources, { id: "total-limit-after", text: "", bytes: 1 }],
+        rules,
+        0,
+      ),
+    /input:total-too-large/u,
+  );
+
+  const maximumSources = Array.from({ length: MAX_SOURCES }, (_, index) => ({
+    id: `source-${index}`,
+    text: "",
+    bytes: 0,
+  }));
+  assert.equal(scanProvidedSources(maximumSources, rules, 0).sources.length, MAX_SOURCES);
+  assert.throws(
+    () =>
+      scanProvidedSources(
+        [...maximumSources, { id: "too-many", text: "", bytes: 0 }],
+        rules,
+        0,
+      ),
+    /input:too-many-sources/u,
+  );
+
+  const deterministicSources = [
+    { id: "second", text: "경계", bytes: Buffer.byteLength("경계") },
+    { id: "first", text: "공개", bytes: Buffer.byteLength("공개") },
+  ];
+  const originalDeterministicSources = deterministicSources.map((source) => ({ ...source }));
+  const firstDeterministicScan = scanProvidedSources(deterministicSources, rules, MAX_WARNINGS);
+  const firstDeterministicResult = serializeBoundedResult(firstDeterministicScan, MAX_JSON_BYTES);
+  const differentDeterministicResult = serializeBoundedResult(
+    scanProvidedSources(
+      [{ id: "different", text: "계약", bytes: Buffer.byteLength("계약") }],
+      rules,
+      MAX_WARNINGS,
+    ),
+    MAX_JSON_BYTES,
+  );
+  const secondDeterministicScan = scanProvidedSources(deterministicSources, rules, MAX_WARNINGS);
+  const secondDeterministicResult = serializeBoundedResult(secondDeterministicScan, MAX_JSON_BYTES);
+  assert.equal(firstDeterministicResult, secondDeterministicResult);
+  assert.notEqual(firstDeterministicResult, differentDeterministicResult);
+  assert.notStrictEqual(firstDeterministicScan.warnings, secondDeterministicScan.warnings);
+  assert.notStrictEqual(firstDeterministicScan.matchedRules, secondDeterministicScan.matchedRules);
+  assert.notStrictEqual(firstDeterministicScan.sources, secondDeterministicScan.sources);
+  assert.deepEqual(deterministicSources, originalDeterministicSources);
+
+  assert.deepEqual(
+    sanitizeEnvironment(
+      {
+        PATH: "/usr/bin",
+        GIT_DIR: "hidden",
+        git_work_tree: "hidden",
+        LANG: "ko_KR.UTF-8",
+        LC_ALL: "ko_KR.UTF-8",
+        KEEP: "value",
+      },
+      "darwin",
+    ),
+    { PATH: "/usr/bin", KEEP: "value", LC_ALL: "C", LANG: "C" },
+  );
+  assert.deepEqual(sanitizeEnvironment({ Path: "C:\\Git", PATH: "C:\\Git" }, "win32"), {
+    PATH: "C:\\Git",
+    LC_ALL: "C",
+    LANG: "C",
+  });
+  assert.throws(
+    () => sanitizeEnvironment({ Path: "C:\\one", PATH: "C:\\two" }, "win32"),
+    /git:ambiguous-path/u,
+  );
 
   await assert.rejects(
     () =>
@@ -1611,6 +1844,26 @@ async function runSelfTest() {
         maxBuffer: SELF_TEST_OUTPUT_BYTES,
       }),
     /git:warning/u,
+  );
+  await assert.rejects(
+    () =>
+      runChildFile(process.execPath, ["-e", "setInterval(() => {}, 1_000)"], {
+        cwd: process.cwd(),
+        env: {},
+        timeout: 10,
+        maxBuffer: SELF_TEST_OUTPUT_BYTES,
+      }),
+    /git:command-failed/u,
+  );
+  await assert.rejects(
+    () =>
+      runChildFile(process.execPath, ["-e", "process.stdout.write('x'.repeat(100))"], {
+        cwd: process.cwd(),
+        env: {},
+        timeout: SELF_TEST_TIMEOUT_MS,
+        maxBuffer: 10,
+      }),
+    /git:command-failed/u,
   );
 
   /**
@@ -1658,9 +1911,25 @@ async function runSelfTest() {
     /input:source-too-large/u,
   );
   assert.deepEqual(await decodeChunks(chunkSequence([]), MAX_TOTAL_BYTES), { text: "", bytes: 0 });
+  assert.deepEqual(
+    await decodeChunks(chunkSequence([Uint8Array.from([0x61])]), MAX_TOTAL_BYTES - 2),
+    { text: "a", bytes: 1 },
+  );
+  assert.deepEqual(
+    await decodeChunks(chunkSequence([Uint8Array.from([0x61])]), MAX_TOTAL_BYTES - 1),
+    { text: "a", bytes: 1 },
+  );
   await assert.rejects(
     () => decodeChunks(chunkSequence([Uint8Array.from([0x61])]), MAX_TOTAL_BYTES),
     /input:total-too-large/u,
+  );
+  await assert.rejects(
+    () =>
+      decodeChunks(
+        chunkSequence([Buffer.alloc(MAX_SOURCE_BYTES + 1, 0x61)]),
+        MAX_TOTAL_BYTES,
+      ),
+    /input:source-too-large/u,
   );
 
   const scriptPath = fileURLToPath(import.meta.url);
@@ -1672,6 +1941,14 @@ async function runSelfTest() {
   }
   assert.match("/** @param {\nobject\n} value */", forbiddenJSDocType);
   assert.match("/** @returns {Array<\nany\n>} */", forbiddenJSDocType);
+
+  await assert.rejects(
+    () => provideFileSources([scriptPath, scriptPath]),
+    /usage:duplicate-file/u,
+  );
+  if (process.platform !== "win32") {
+    await assert.rejects(() => provideFileSources(["/dev/null"]), /input:regular-file-required/u);
+  }
 
   const fileChild = spawnSync(process.execPath, [scriptPath, "--file", scriptPath], {
     encoding: "utf8",
@@ -1717,6 +1994,31 @@ async function runSelfTest() {
   assert.equal(child.status, 2);
   assert.equal(child.stdout, "");
   assert.equal(child.stderr, "usage:invalid-arguments\n");
+
+  for (const [args, input, expectedError] of [
+    [["--stdin", "--source-name", "invalid-utf8"], Buffer.from([0xc3, 0x28]), "input:invalid-utf8\n"],
+    [["--stdin", "--source-name", "nul"], Buffer.from([0]), "input:nul-byte\n"],
+    [
+      ["--stdin", "--source-name", "too-large"],
+      Buffer.alloc(MAX_SOURCE_BYTES + 1, 0x61),
+      "input:source-too-large\n",
+    ],
+    [["--file", "missing-self-test-file"], Buffer.alloc(0), "input:file-unavailable\n"],
+    [["--changed", scriptPath], Buffer.alloc(0), "git:repository-required\n"],
+  ]) {
+    const failedChild = spawnSync(process.execPath, [scriptPath, ...args], {
+      input,
+      encoding: "buffer",
+      timeout: SELF_TEST_TIMEOUT_MS,
+      maxBuffer: SELF_TEST_OUTPUT_BYTES,
+      windowsHide: true,
+    });
+    assert.equal(failedChild.error, undefined);
+    assert.equal(failedChild.signal, null);
+    assert.equal(failedChild.status, 2);
+    assert.equal(failedChild.stdout.byteLength, 0);
+    assert.equal(failedChild.stderr.toString("utf8"), expectedError);
+  }
 
   await new Promise((resolveClosedPipe, rejectClosedPipe) => {
     const closedPipeChild = execFile(
