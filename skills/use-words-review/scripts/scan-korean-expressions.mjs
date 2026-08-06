@@ -79,8 +79,7 @@ import { parseArgs, TextDecoder } from "node:util";
 
 /**
  * @typedef {{
- *   stdout: Buffer,
- *   stderr: Buffer
+ *   stdout: Buffer
  * }} ChildResult
  */
 
@@ -810,6 +809,26 @@ function findLineEnd(text, start) {
 }
 
 /**
+ * UTF-16 code unit이 surrogate pair의 앞쪽인지 확인한다.
+ *
+ * @param {number} unit 검사할 UTF-16 code unit
+ * @returns {boolean} high surrogate 범위에 있으면 true
+ */
+function isHighSurrogate(unit) {
+  return unit >= 0xd800 && unit <= 0xdbff;
+}
+
+/**
+ * UTF-16 code unit이 surrogate pair의 뒤쪽인지 확인한다.
+ *
+ * @param {number} unit 검사할 UTF-16 code unit
+ * @returns {boolean} low surrogate 범위에 있으면 true
+ */
+function isLowSurrogate(unit) {
+  return unit >= 0xdc00 && unit <= 0xdfff;
+}
+
+/**
  * 일치 표현을 보존하면서 해당 줄에서 최대 480 UTF-16 code unit만 잘라낸다.
  *
  * @param {string} text source 원문
@@ -825,8 +844,15 @@ function makeQuote(text, lineStart, lineEnd, matchStart, matchLength) {
   }
   const remaining = MAX_QUOTE_UTF16 - matchLength;
   const preferredStart = matchStart - Math.floor(remaining / 2);
-  const start = Math.max(lineStart, Math.min(preferredStart, lineEnd - MAX_QUOTE_UTF16));
-  return text.slice(start, start + MAX_QUOTE_UTF16);
+  let start = Math.max(lineStart, Math.min(preferredStart, lineEnd - MAX_QUOTE_UTF16));
+  let end = start + MAX_QUOTE_UTF16;
+  if (isLowSurrogate(text.charCodeAt(start)) && isHighSurrogate(text.charCodeAt(start - 1))) {
+    start += 1;
+  }
+  if (isHighSurrogate(text.charCodeAt(end - 1)) && isLowSurrogate(text.charCodeAt(end))) {
+    end -= 1;
+  }
+  return text.slice(start, end);
 }
 
 /**
@@ -1164,7 +1190,7 @@ async function findGitExecutable(pathValue, platform) {
  * @param {string} executable 신뢰 경로에서 찾은 실행 파일
  * @param {ReadonlyArray<string>} args 자식 process 인수
  * @param {ChildOptions} options cwd, 환경, 시간과 stream 상한
- * @returns {Promise<ChildResult>} 성공 상태의 두 출력 stream
+ * @returns {Promise<ChildResult>} stderr가 비어 있는 성공 상태의 stdout
  */
 function runChildFile(executable, args, options) {
   return new Promise((resolveResult, rejectResult) => {
@@ -1184,7 +1210,12 @@ function runChildFile(executable, args, options) {
           rejectResult(scannerError("git:command-failed", error));
           return;
         }
-        resolveResult({ stdout: Buffer.from(stdout), stderr: Buffer.from(stderr) });
+        const stderrBuffer = Buffer.from(stderr);
+        if (stderrBuffer.byteLength !== 0) {
+          rejectResult(scannerError("git:warning"));
+          return;
+        }
+        resolveResult({ stdout: Buffer.from(stdout) });
       },
     );
   });
@@ -1364,8 +1395,11 @@ async function provideChangedSources(repository) {
  */
 function writeText(stream, text) {
   return new Promise((resolveWrite, rejectWrite) => {
+    const onError = (error) => rejectWrite(error);
+    stream.once("error", onError);
     stream.write(text, (error) => {
       if (error === null || error === undefined) {
+        stream.off("error", onError);
         resolveWrite();
       } else {
         rejectWrite(error);
@@ -1470,6 +1504,46 @@ async function runSelfTest() {
   assert.equal(quoted.warnings[0].quote.length, MAX_QUOTE_UTF16);
   assert.equal(quoted.warnings[0].quote.includes("경계"), true);
 
+  for (const surrogateBoundaryText of [
+    `😀${"가".repeat(238)}경계${"나".repeat(500)}`,
+    `${"가".repeat(500)}경계${"나".repeat(238)}😀${"다".repeat(500)}`,
+  ]) {
+    const surrogateBoundary = scanProvidedSources(
+      [
+        {
+          id: "surrogate-boundary",
+          text: surrogateBoundaryText,
+          bytes: Buffer.byteLength(surrogateBoundaryText),
+        },
+      ],
+      [rules.find((rule) => rule.id === "ko.boundary") ?? rules[0]],
+      MAX_WARNINGS,
+    );
+    assert.equal(surrogateBoundary.warnings[0].quote.isWellFormed(), true);
+    assert.equal(surrogateBoundary.warnings[0].quote.includes("경계"), true);
+    assert.equal(surrogateBoundary.warnings[0].quote.length <= MAX_QUOTE_UTF16, true);
+  }
+
+  const allExpressions = rules.flatMap((rule) => rule.expressions).join("\n");
+  const allRules = scanProvidedSources(
+    [{ id: "all-rules", text: allExpressions, bytes: Buffer.byteLength(allExpressions) }],
+    rules,
+    MAX_WARNINGS,
+  );
+  assert.equal(allRules.matchedRules.every((matched) => matched), true);
+  assert.equal(createPublicResult(allRules, allRules.warnings.length).catalog.length, rules.length);
+
+  await assert.rejects(
+    () =>
+      runChildFile(process.execPath, ["-e", "process.stderr.write('warning')"], {
+        cwd: process.cwd(),
+        env: {},
+        timeout: SELF_TEST_TIMEOUT_MS,
+        maxBuffer: SELF_TEST_OUTPUT_BYTES,
+      }),
+    /git:warning/u,
+  );
+
   async function* invalidUtf8Chunks() {
     yield Uint8Array.from([0xc3, 0x28]);
   }
@@ -1478,6 +1552,40 @@ async function runSelfTest() {
   const scriptPath = fileURLToPath(import.meta.url);
   const scriptText = await readFile(scriptPath, "utf8");
   assert.doesNotMatch(scriptText, /\{[^}\n]*\b(?:object|any)\b[^}\n]*\}/u);
+
+  const fileChild = spawnSync(process.execPath, [scriptPath, "--file", scriptPath], {
+    encoding: "utf8",
+    timeout: SELF_TEST_TIMEOUT_MS,
+    maxBuffer: SELF_TEST_OUTPUT_BYTES,
+    windowsHide: true,
+  });
+  const stdinChild = spawnSync(
+    process.execPath,
+    [scriptPath, "--stdin", "--source-name", "self-test-source"],
+    {
+      input: scriptText,
+      encoding: "utf8",
+      timeout: SELF_TEST_TIMEOUT_MS,
+      maxBuffer: SELF_TEST_OUTPUT_BYTES,
+      windowsHide: true,
+    },
+  );
+  for (const successfulChild of [fileChild, stdinChild]) {
+    assert.equal(successfulChild.error, undefined);
+    assert.equal(successfulChild.signal, null);
+    assert.equal(successfulChild.status, 0);
+    assert.equal(successfulChild.stderr, "");
+  }
+  const fileOutput = JSON.parse(fileChild.stdout);
+  const stdinOutput = JSON.parse(stdinChild.stdout);
+  assert.deepEqual(fileOutput.catalog, stdinOutput.catalog);
+  assert.deepEqual(fileOutput.rules, stdinOutput.rules);
+  assert.deepEqual(fileOutput.summary, stdinOutput.summary);
+  assert.deepEqual(
+    fileOutput.warnings.map((warning) => ({ ...warning, sourceId: "" })),
+    stdinOutput.warnings.map((warning) => ({ ...warning, sourceId: "" })),
+  );
+
   const child = spawnSync(process.execPath, [scriptPath, "--invalid-self-test-argument"], {
     encoding: "utf8",
     timeout: SELF_TEST_TIMEOUT_MS,
@@ -1489,6 +1597,31 @@ async function runSelfTest() {
   assert.equal(child.status, 2);
   assert.equal(child.stdout, "");
   assert.equal(child.stderr, "usage:invalid-arguments\n");
+
+  await new Promise((resolveClosedPipe, rejectClosedPipe) => {
+    const closedPipeChild = execFile(
+      process.execPath,
+      [scriptPath, "--stdin", "--source-name", "closed-pipe"],
+      {
+        encoding: "buffer",
+        timeout: SELF_TEST_TIMEOUT_MS,
+        maxBuffer: SELF_TEST_OUTPUT_BYTES,
+        windowsHide: true,
+      },
+      (error, stdout, stderr) => {
+        try {
+          assert.equal(error?.code, 2);
+          assert.equal(stdout.byteLength > 0, true);
+          assert.equal(stderr.toString("utf8"), "internal:unexpected\n");
+          resolveClosedPipe();
+        } catch (assertionError) {
+          rejectClosedPipe(assertionError);
+        }
+      },
+    );
+    closedPipeChild.stdout?.once("data", () => closedPipeChild.stdout?.destroy());
+    closedPipeChild.stdin?.end("경계".repeat(5_000));
+  });
 }
 
 /**
