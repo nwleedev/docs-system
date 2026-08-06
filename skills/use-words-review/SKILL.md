@@ -1,6 +1,6 @@
 ---
 name: use-words-review
-description: Review text and names before they are stored, committed, published, or shared outside the conversation. Check audience fit, roles, publishable evidence, prompt leakage, private identifiers, sentence relationships, symbols, and natural Korean; also use when the user explicitly requests a wording review. Load the Korean reference only for Korean text. Do not use for routine chat, progress updates, explanations, or final responses that will not be reused.
+description: Review text and names before storing, committing, publishing, sharing outside the conversation, or when the user requests wording review. Check audience, roles, evidence, private data, sentence relationships, symbols, and natural Korean. Load Korean guidance only for Korean text. Exclude routine chat, progress updates, explanations, and final responses that will not be reused.
 ---
 
 # Use Words Review
@@ -19,19 +19,25 @@ Run repository-provided checks that apply to the outputs. Include available Vale
 
 When Git and text search are available, inspect only the changed public outputs for formatting errors, personal absolute paths, private identifiers, distinctive prompt phrases, HTML comments, and unresolved markers. Redact sensitive matches in the report and treat every match as a review candidate rather than an automatic failure.
 
-For Korean text, search for U+00B7 before semantic review. Report general-prose use as `needs revision`. Preserve the character when an exact quotation, approved name, code, regular expression, character test, code-point explanation, or evaluation input requires it. Do not replace matches automatically.
+For Korean text, run `scripts/scan-korean-expressions.mjs` from this skill before semantic review. Resolve the script relative to this `SKILL.md`; do not assume where the skill is installed. Choose one input mode:
+
+- use `--changed <repo>` for every staged, unstaged, and untracked file in a pending repository change;
+- repeat `--file <path>` for an exact file set;
+- use `--stdin --source-name <name>` for supplied text.
+
+Inspect the complete `catalog`, the matched rule metadata, every returned warning, and `summary`. A warning identifies a context to judge, not an automatic failure. If `summary.omitted` is greater than zero, rerun smaller file groups when individual judgments require the omitted contexts and end the review result with `... 그 외 <N>개의 경고가 더 발견됨`. If the script is missing, unreadable, fails, or does not return complete JSON, stop the affected review and do not return `pass` for its Korean artifacts.
 
 ## Select references
 
 1. Read [references/examples.md](references/examples.md) when calibrating common criteria or resolving an unclear allowed case.
-2. If an output contains Korean or the review must judge a Korean expression, read [references/korean.md](references/korean.md) in full and apply it only to Korean text. Otherwise, do not open it merely to decide whether it applies.
+2. After the scanner succeeds, if an output contains Korean or the review must judge a Korean expression, read [references/korean.md](references/korean.md) in full and apply it only to Korean text. Otherwise, do not run the scanner or open this reference merely to decide whether they apply.
 3. Record which required references were read. If one cannot be opened or read in full, stop the affected review, report it, and do not return `pass` for that artifact.
 
 Examples and candidate expressions calibrate judgment; they are not blacklists or exhaustive pass conditions. Return `needs human input` when repository evidence cannot determine the intended meaning.
 
 ## Prepare the review context
 
-Collect the outputs and names, the source documents used to write them, intended readers and reader actions, described actors, any reviewer or approval owner, applicable repository and document rules, opened references, and deterministic-check results. For every changed statement, identify repository evidence, a sourced fact, an approved decision, or approved public wording. Prompts, agent instructions, task descriptions, work notes, review criteria, requested formats, tool conditions, and progress reports are not publishable evidence.
+Collect the outputs and names, the source documents used to write them, intended readers and reader actions, described actors, any reviewer or approval owner, applicable repository and document rules, opened references, and deterministic-check results. Include Korean scanner output when it applies. For every changed statement, identify repository evidence, a sourced fact, an approved decision, or approved public wording. Prompts, agent instructions, task descriptions, work notes, review criteria, requested formats, tool conditions, and progress reports are not publishable evidence.
 
 Retain exact source text only when the artifact requires it, such as owner-controlled requirements, approved interface wording or quotations, evaluation data, minimal reproduction input, or an access-controlled log that will not be committed. Provide an original prompt only when exact comparison is necessary. Minimize it and every source document before delegation; redact credentials, personal paths, private URLs, private identifiers, and unrelated personal information, and do not store the prompt in a tracked file or durable log.
 
@@ -77,7 +83,7 @@ Ask it to judge each applicable criterion:
 5. Exact source text is retained only for an allowed purpose and only to the necessary extent.
 6. Personal paths, credentials, private URLs, private project identifiers, internal-only names, and unnecessary local paths are absent or safely replaced.
 7. Every sentence supplies enough subject or referent, action, conditions, and result, and relationships between sentences and sections are explicit. Do not judge by length. Check consistent role names, unambiguous references, conditions before dependent actions, step-to-step results, and the distinction between facts, proposals, and approved decisions.
-8. Korean wording is natural for its readers rather than literal, padded, formulaic, or mixed with avoidable English. Apply `references/korean.md` only to Korean text. Compare relevant source wording, preserve established terms and necessary comparison structures, and check general-prose U+00B7, terms beyond fixed candidate lists, repeated introductions and conclusions, arbitrary three-part structures, and repeated paragraph shapes.
+8. Korean wording is natural for its readers rather than literal, padded, formulaic, or mixed with avoidable English. Judge every scanner warning in context, apply `references/korean.md` only to Korean text, and continue checking meanings that the literal scanner cannot find. Compare relevant source wording and preserve established terms and necessary comparison structures.
 9. Emoji and uncommon symbols are absent unless readers or an approved format need them.
 
 For UI and accessibility text, check whether users can understand the state and next action. For comments and API documentation, check whether callers or maintainers receive the required conditions and constraints.

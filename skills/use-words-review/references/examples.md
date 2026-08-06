@@ -63,7 +63,7 @@ Plain punctuation is sufficient:
 
 > Complete the setup, save the content, and share it with your team.
 
-Keep symbols when readers need the exact notation, such as in a formula, trademark, approved interface label, or accessibility instruction. The problematic example shows decorative compression, not a language-wide ban inferred from this common reference. Apply a language-specific punctuation rule only when the applicable language reference defines it; for example, preserve `The parser rejects U+00B7 (·) in prose` because the code point and character are the subject of the sentence.
+Keep symbols when readers need the exact notation, such as in a formula, trademark, approved interface label, or accessibility instruction. The problematic example shows decorative compression, not a language-wide ban inferred from this common reference. Apply language-specific punctuation rules only when the applicable language material defines them.
 
 ## Personal paths and paths that readers need
 
