@@ -105,15 +105,12 @@ After context compaction, reread AGENTS.md, especially **Core Principles**, and 
 ### Writing Korean Chat Responses
 
 - Apply the Writing rules above to routine chat, progress updates, confirmations, and explanatory responses. Do not load `references/korean.md` or run `use-words-review` merely because the response is written in Korean.
-- In a progress update, state only the verified fact and the next action.
 - In general Korean prose, do not use U+00B7. Preserve the exact character only when a quotation, approved name, code, regular expression, character test, code-point explanation, or evaluation input requires it. For example, rewrite `설계·구현·검증 결과를 기록합니다` as `설계, 구현과 검증 결과를 기록합니다`.
 - `계약`, `경로`, `공개`, `좁히다`, `박다`, `제품`, `포화`, `경계`, and `소유` are signals to check context, not prohibited terms. Apply the same check to terms outside this list. Keep terms that are precise in the field; otherwise state the actual rule or action, and ask the user when evidence cannot determine the meaning.
 
 ### Reviewing Text That Will Be Stored or Delivered
 
-- When AI will create or revise Korean text or a name for storage, commit, publication, or sharing outside the conversation, read the installed `use-words-review` skill's `references/korean.md` in full before drafting. Apply the reference only to Korean text.
-- After completing the text, group changes from the same sharing unit and run `use-words-review` once immediately before the actual storage, commit, publication, or sharing action.
-- When wording drafted in chat will be stored, published, or delivered verbatim outside the conversation, review it once per sharing unit immediately before the actual storage or delivery action. Sending an ordinary chat response does not by itself make it a review target.
+- When AI-created or revised Korean text or a name will be stored, committed, published, or shared outside the conversation, group the changes from the same sharing unit and run the installed `use-words-review` once immediately before that action. Include chat wording that will be stored or delivered verbatim, but do not review an ordinary chat response merely because it is sent.
 - When the user explicitly requests a review of particular wording or a public output, group all wording named in that request into one review unit and run `use-words-review` once, even when no file changed. Treat a later request to review revised wording as a new review unit.
 - If the current run cannot find or read the skill, do not claim completion of work that requires the review. When the reviewed output contains Korean, also do not claim completion if `references/korean.md` cannot be found or read in full. Report whether the observed gap is a missing installation or a missing reference, to the extent that the current run can determine it.
 <!-- END USE WORDS REVIEW -->
@@ -122,7 +119,6 @@ After context compaction, reread AGENTS.md, especially **Core Principles**, and 
 
 - Read `docs/designs/README.md` before creating, reviewing, planning, implementing from, or validating documents under `docs/designs/**`.
 - If the target work has a `requirements.md`, read it in full, then read only the references, decisions, plan, and repository evidence needed for the current question.
-- Connect references, decisions, work units, and verification results to the requirements file through descriptive headings.
 - When the work is complete, check the documents and actual results again against the criteria in `docs/designs/README.md`.
 
 ### Development Guidance
