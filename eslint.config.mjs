@@ -30,6 +30,8 @@ export default defineConfig([
       "no-eval": "error",
       "no-implied-eval": "error",
       "no-new-func": "error",
+      "no-param-reassign": ["error", { props: true }],
+      "no-var": "error",
       "no-restricted-imports": [
         "error",
         {
@@ -113,6 +115,14 @@ export default defineConfig([
       "no-restricted-syntax": [
         "error",
         {
+          selector: "Program > VariableDeclaration[kind='let']",
+          message: "Keep mutable state inside a call.",
+        },
+        {
+          selector: "Program > ExportNamedDeclaration > VariableDeclaration[kind='let']",
+          message: "Keep mutable state inside a call.",
+        },
+        {
           selector: "ImportExpression",
           message: "Keep imports static and limited to Node.js built-ins.",
         },
@@ -186,6 +196,7 @@ export default defineConfig([
         },
       ],
       "no-throw-literal": "error",
+      "no-shadow": ["error", { builtinGlobals: true }],
       "no-unreachable-loop": "error",
       "no-unused-vars": [
         "error",

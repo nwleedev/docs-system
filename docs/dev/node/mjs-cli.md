@@ -80,7 +80,10 @@ const inputNames = [
 ].filter((value) => value !== undefined);
 
 for (const value of inputNames) {
-  if (value.length === 0 || !value.isWellFormed()) {
+  if (value.length === 0) {
+    throw new UsageError("invalid-input-name");
+  }
+  if (!value.isWellFormed()) {
     throw new UsageError("invalid-input-name");
   }
 }
@@ -95,14 +98,32 @@ const stdinMode = parsed.values.stdin === true;
 const selfTestMode = parsed.values["self-test"] === true;
 const sourceName = parsed.values["source-name"];
 
-const validMode =
-  (changedMode && !fileMode && !stdinMode && !selfTestMode && sourceName === undefined) ||
-  (!changedMode && fileMode && !stdinMode && !selfTestMode && sourceName === undefined) ||
-  (!changedMode && !fileMode && stdinMode && !selfTestMode && sourceName !== undefined) ||
-  (!changedMode && !fileMode && !stdinMode && selfTestMode && sourceName === undefined);
+const selectedModes = [];
+if (changedMode) {
+  selectedModes.push("changed");
+}
+if (fileMode) {
+  selectedModes.push("file");
+}
+if (stdinMode) {
+  selectedModes.push("stdin");
+}
+if (selfTestMode) {
+  selectedModes.push("self-test");
+}
 
-if (!validMode) {
+if (selectedModes.length !== 1) {
   throw new UsageError("invalid-input-mode");
+}
+
+const selectedMode = selectedModes[0];
+const hasSourceName = sourceName !== undefined;
+if (selectedMode === "stdin") {
+  if (!hasSourceName) {
+    throw new UsageError("source-name-required");
+  }
+} else if (hasSourceName) {
+  throw new UsageError("source-name-without-stdin");
 }
 ```
 
@@ -199,8 +220,13 @@ if (lexicalStats.isSymbolicLink() || !lexicalStats.isFile()) {
 const realCandidate = await realpath(candidate);
 if (mode === "changed") {
   const relativePath = relative(realRoot, realCandidate);
-  if (relativePath === "" || relativePath === ".." ||
-      relativePath.startsWith(`..${pathSeparator}`) || isAbsolute(relativePath)) {
+  const isRepositoryRoot = relativePath === "";
+  const isParent = relativePath === "..";
+  const isNestedParent = relativePath.startsWith(`..${pathSeparator}`);
+  if (isRepositoryRoot || isParent) {
+    throw new InputError("outside-repository");
+  }
+  if (isNestedParent || isAbsolute(relativePath)) {
     throw new InputError("outside-repository");
   }
 }
@@ -257,24 +283,32 @@ import { promisify } from "node:util";
 function sanitizeEnvironment(environment, platform) {
   const sanitized = {};
   let windowsPath;
+  const isWindows = platform === "win32";
 
   for (const [name, value] of Object.entries(environment)) {
     const upperName = name.toUpperCase();
-    if (upperName.startsWith("GIT_") ||
-        upperName === "LC_ALL" || upperName === "LANG") {
+    const isGitVariable = upperName.startsWith("GIT_");
+    const isLcAllVariable = upperName === "LC_ALL";
+    const isLangVariable = upperName === "LANG";
+    const isLocaleVariable = isLcAllVariable || isLangVariable;
+    if (isGitVariable || isLocaleVariable) {
       continue;
     }
-    if (platform === "win32" && upperName === "PATH") {
-      if (windowsPath !== undefined && windowsPath !== value) {
+    const isWindowsPath = isWindows && upperName === "PATH";
+    if (isWindowsPath) {
+      if (windowsPath === undefined) {
+        windowsPath = value;
+        continue;
+      }
+      if (windowsPath !== value) {
         throw new GitInputError("ambiguous-path");
       }
-      windowsPath = value;
       continue;
     }
     sanitized[name] = value;
   }
 
-  if (platform === "win32" && windowsPath !== undefined) {
+  if (isWindows && windowsPath !== undefined) {
     sanitized.PATH = windowsPath;
   }
   sanitized.LC_ALL = "C";
@@ -394,8 +428,13 @@ const unmergedStatuses = new Set(["DD", "AU", "UD", "UA", "DU", "AA", "UU"]);
 
 function validateStatus(x, y) {
   const status = String.fromCharCode(x, y);
-  if (status === "??" || ordinaryStatuses.has(status) ||
-      unmergedStatuses.has(status)) {
+  if (status === "??") {
+    return;
+  }
+  if (ordinaryStatuses.has(status)) {
+    return;
+  }
+  if (unmergedStatuses.has(status)) {
     return;
   }
   throw new GitInputError("invalid-status");
@@ -458,9 +497,13 @@ new TextDecoder("utf-8", { fatal: true }).decode(pathBytes);
 
 ```mjs
 function findAll(text, expression) {
-  if (!expression.isWellFormed() ||
-      expression.length === 0 ||
-      /[\r\n]/u.test(expression)) {
+  if (!expression.isWellFormed()) {
+    throw new RuleDataError("invalid-expression");
+  }
+  if (expression.length === 0) {
+    throw new RuleDataError("invalid-expression");
+  }
+  if (/[\r\n]/u.test(expression)) {
     throw new RuleDataError("invalid-expression");
   }
 
@@ -530,10 +573,12 @@ const quote = lineText.slice(matchStart - context, matchEnd + context);
 
 **적용 조건과 관찰 결과.** `--file`은 입력 순서를 유지한다. Git 위치는 strict UTF-8로 해석한 뒤 원래 UTF-8 byte의 `Buffer.compare()`로 정렬한다. 규칙과 표현은 선언 순서, 출현은 숫자 offset 순서를 쓴다. 순서가 의미 있는 집합은 배열로 표현하며 Unicode normalization은 적용하지 않는다.
 
-**권장 코드.** 정렬 key를 한 번 만들고 byte 비교만 한다.
+**권장 코드.** 호출자가 전달한 배열은 바꾸지 않고 byte 비교로 새 배열을 만든다.
 
 ```mjs
-gitSources.sort((left, right) => Buffer.compare(left.pathBytes, right.pathBytes));
+const orderedGitSources = gitSources.toSorted(
+  (left, right) => Buffer.compare(left.pathBytes, right.pathBytes),
+);
 ```
 
 **피해야 할 코드.** 다음 결과는 실행 환경에 따라 달라질 수 있다.
@@ -542,7 +587,7 @@ gitSources.sort((left, right) => Buffer.compare(left.pathBytes, right.pathBytes)
 sources.sort((left, right) => left.path.localeCompare(right.path));
 ```
 
-**검증.** ASCII, 비 ASCII, 정규화 형태가 다른 위치와 입력 순서를 self-test에서 반복 실행해 byte가 같은 JSON을 확인한다. `sort-keys` 같은 ESLint 규칙은 필요한 domain 순서를 증명하지 못하므로 사용하지 않는다.
+**검증.** ASCII, 비 ASCII, 정규화 형태가 다른 위치와 입력 순서를 self-test에서 반복 실행해 byte가 같은 JSON을 확인한다. 정렬 전후의 입력 배열이 같고 반환값은 새 배열인지도 확인한다. 지역에서 새로 만들었고 아직 외부에 전달하지 않은 배열의 `sort()`는 허용하므로 method 자체를 정적 규칙으로 막지 않는다. `sort-keys` 같은 ESLint 규칙은 검사 결과에 필요한 순서를 증명하지 못하므로 사용하지 않는다.
 
 ## JSON은 전체 크기를 확인한 뒤 한 번 쓴다
 
@@ -604,6 +649,9 @@ process.exit(0);
 try {
   return await readGitSources(repo);
 } catch (error) {
+  if (error instanceof InputError) {
+    throw error;
+  }
   throw new InputError("changed-input-failed", { cause: error });
 }
 ```
@@ -619,7 +667,281 @@ try {
 }
 ```
 
-**검증.** 인수, Git, 파일, UTF-8, 제한과 직렬화 실패마다 상태 `2`, 빈 stdout, 한 줄 stderr 및 원문과 절대 위치 부재를 자식 프로세스로 확인한다. ESLint의 `no-console`, `no-unused-vars`와 `preserve-caught-error`는 일부 코드 형태만 검사한다.
+**검증.** 인수, Git, 파일, UTF-8, 제한과 직렬화 실패마다 상태 `2`, 빈 stdout, 한 줄 stderr 및 원문과 절대 위치 부재를 자식 프로세스로 확인한다. 이미 분류한 `InputError`는 상위 조정 함수를 지나도 같은 오류 객체와 오류 코드를 유지하고, 원시 오류만 가장 가까운 I/O 접점에서 한 번 바뀌어야 한다. ESLint의 `no-console`, `no-unused-vars`와 `preserve-caught-error`는 일부 코드 형태만 검사한다. `preserve-caught-error`의 기본 설정은 기본 제공 오류만 인식하므로 사용자 정의 오류의 변환 횟수와 `cause`는 구현 검토와 실행 검사에서도 확인한다.
+
+## 계산 함수는 입력과 실행 환경을 바꾸지 않는다
+
+**막을 실패.** literal 탐색이나 위치 계산이 전달받은 객체, module 범위 배열 또는 global 및 sticky 정규식의 상태를 바꾸면 같은 입력을 다시 검사한 결과가 달라질 수 있다. 의존 함수를 인수로 받는다는 사실만으로 함수가 순수해지지는 않는다. 전달받은 함수가 파일, Git 또는 stream을 읽으면 해당 호출은 부수 효과를 가진다.
+
+**적용 조건과 관찰 결과.** 규칙 검증, literal 탐색, 위치와 quote 계산 및 결과 조립은 같은 문자열과 규칙 자료에 같은 계산 결과를 반환한다. 이 함수들은 호출자의 입력, module 상태, process, 파일과 stream을 바꾸지 않는다. 함수 안에서 새로 만든 지역 배열에 값을 추가하는 것은 호출 밖에서 관찰할 상태를 남기지 않으므로 허용한다. 파일, Git, stdin, stdout과 stderr를 사용하는 함수는 이름과 인수에서 그 부수 효과를 드러낸다. `main()`과 source 제공 함수를 호출하는 조정 함수는 순수 함수로 분류하지 않는다.
+
+**권장 코드.** `findAll()`이 빈 표현과 줄바꿈을 검사하므로 같은 탐색 반복을 다시 작성하지 않는다. 한 규칙의 모든 표현을 순회하고 호출마다 새 결과를 만든다.
+
+```mjs
+function scanRule(source, rule) {
+  return rule.expressions.flatMap((expression) =>
+    findAll(source.text, expression).map((offsetUtf16) => ({
+      expression,
+      offsetUtf16,
+      ruleId: rule.id,
+    })),
+  );
+}
+```
+
+**피해야 할 코드.** `const`는 배열과 정규식의 내부 상태를 고정하지 않는다. `sort()`는 전달받은 배열을 바꾸고 global 정규식의 `lastIndex`는 실행 사이에 남는다.
+
+```mjs
+const candidatePattern = /candidate/g;
+const findings = [];
+
+function scanSource(source, rules) {
+  rules.sort(compareRules);
+  if (candidatePattern.test(source.text)) {
+    findings.push(source.name);
+  }
+  return findings;
+}
+
+class SharedFindings {
+  static values = [];
+
+  static add(value) {
+    this.values.push(value);
+  }
+}
+```
+
+**검증.** 같은 입력을 두 번 호출해 결과가 같고 서로 다른 결과 배열을 반환하는지 확인한다. 호출 전후의 입력도 `assert.deepEqual()`로 대조한다. 실행 순서를 A, B, A로 바꿔도 두 A 결과가 같아야 한다. ESLint의 `no-param-reassign`, `no-var`와 module `let` 제한은 인수의 별칭, 변경 함수로 전달한 인수, `rules.sort()`, 외부 Map, 정규식 상태, class의 static field와 I/O를 판정하지 못하므로 self-test와 구현 검토를 함께 사용한다.
+
+## 함수는 한 결과나 한 부수 효과 접점을 맡는다
+
+**막을 실패.** 한 함수가 인수 해석, Git 실행, 파일 읽기, literal 탐색, 위치 계산과 JSON 출력을 직접 수행하면 한 정책만 바뀌어도 같은 함수를 수정해야 한다. 반대로 문장 수나 줄 수만 줄이려고 한 번 쓰는 표현식을 helper로 옮기면 이름과 호출부만 늘어난다. `processData()`나 `handleItem()`처럼 넓은 이름은 입력, 반환값과 부수 효과를 드러내지 않는다.
+
+**적용 조건과 관찰 결과.** 함수는 한 계산 결과를 만들거나 한 종류의 I/O 접점을 맡는다. CLI 한 번을 조정하는 `main()`은 여러 함수를 순서대로 호출할 수 있지만 각 단계의 내부 규칙을 다시 구현하지 않는다. 함수 이름은 `parseCliRequest()`, `readChangedSources()`, `findAll()`, `serializeResult()`와 `writeText()`처럼 행동과 대상을 드러낸다. 주석은 이름과 코드를 되풀이하지 않고 운영체제 차이, 보안 제한과 UTF-16 같은 이유를 설명할 때만 사용한다.
+
+**권장 코드.** 각 변경 원인과 실패 종류를 해당 단계에 둔다.
+
+```mjs
+async function main(args) {
+  const request = parseCliRequest(args);
+  const result = await scanSources({
+    provideSources: () => provideSources(request),
+  });
+
+  await writeText(
+    process.stdout,
+    serializeResult(result, maxOutputBytes),
+  );
+}
+```
+
+**피해야 할 코드.** 다음 함수는 이름이 역할을 설명하지 않고 서로 다른 실패 규칙을 한곳에 모은다.
+
+```mjs
+async function processData(args) {
+  const values = parseArgs({ args, options });
+  const gitOutput = await runGit(values.changed);
+  const findings = await readAndScan(gitOutput);
+  process.stdout.write(JSON.stringify(findings));
+}
+```
+
+**검증.** 함수 이름과 호출부만 읽고 입력, 반환 결과와 부수 효과를 설명할 수 있는지 검토한다. 인수 규칙, Git 형식, 탐색 방식 또는 출력 schema 중 하나를 바꿀 때 무관한 함수도 함께 바꿔야 하면 분리 대상을 다시 찾는다. `max-lines-per-function`, `max-statements`, `complexity`와 `max-depth`는 줄, 문장, 실행 경로와 중첩만 세므로 하나의 기능을 증명하지 않는다. 구현 분포와 승인된 상한이 없으므로 이 규칙들은 활성화하지 않는다. `no-shadow`는 같은 이름으로 바깥 값을 가리는 코드만 보조적으로 거부한다.
+
+## 비동기 반복은 작업의 독립성과 자원 상한으로 고른다
+
+**막을 실패.** `for await...of`는 병렬 반복이 아니다. 일반 `for...of` 또는 `for await...of`로 미리 시작한 Promise 배열을 차례로 기다리면 앞 Promise를 기다리는 동안 뒤 Promise의 rejection이 처리되지 않을 수 있다. 반대로 `paths.map()`에서 파일 읽기를 전부 시작한 뒤 `Promise.all()`로 결과를 기다리면 동시에 열린 파일과 메모리 사용량이 source 수에 비례해 늘 수 있다. 최악에는 source 수만큼 파일을 함께 열 수 있다. 한 작업이 먼저 실패해도 이미 시작된 나머지 작업은 취소되지 않는다. `Promise.allSettled()`의 rejected 결과를 확인하지 않으면 실패를 정상 결과처럼 넘길 수 있다.
+
+**적용 조건과 관찰 결과.** stdin과 Readable의 chunk는 순서, backpressure와 중단 시 stream 정리가 필요하므로 `for await...of`로 소비한다. 여러 파일은 입력 순서, 누적 byte 예산, 한 번에 여는 파일 수와 첫 실패를 함께 통제하므로 현재는 한 파일씩 읽는다. `Promise.all()`과 `Promise.allSettled()`는 작업을 시작하지 않고 iterable에서 받은 Promise를 관찰한다. `Promise.all()`은 시작 수가 작게 제한되고 서로 독립적이며 하나라도 실패하면 전체가 실패해야 하는 작업에만 사용한다. `Promise.allSettled()`는 모든 독립 작업의 성공과 실패를 끝까지 수집해야 한다는 요구가 있을 때만 사용하고 rejected 결과를 전부 검사한다. 두 method의 결과 배열은 입력 순서를 유지한다. `Promise.all()`은 등록한 rejection handler가 먼저 실행된 이유로 reject하며 이미 시작한 다른 작업을 취소하지 않는다. 서로 다른 실패를 공개 결과에서 구분해야 하면 순차 실행하거나 `allSettled()` 결과에서 입력 순서로 실패를 선택한다.
+
+**권장 코드.** 순차 처리가 필요하면 Promise를 미리 만들지 않고 반복 안에서 작업을 시작한다.
+
+```mjs
+async function readSources(paths, limits) {
+  const sources = [];
+  let committedTotalBytes = 0;
+
+  for (const sourcePath of paths) {
+    const source = await readSource(sourcePath, {
+      committedTotalBytes,
+      maxSourceBytes: limits.maxSourceBytes,
+      maxTotalBytes: limits.maxTotalBytes,
+    });
+    committedTotalBytes += source.bytes;
+    sources.push(source);
+  }
+
+  return sources;
+}
+
+```
+
+stdin과 Readable은 앞의 `decodeSource()`처럼 `for await...of`로 소비한다. 일반 배열이 값을 공급하고 본문도 동기식이면 일반 반복을 사용한다.
+
+```mjs
+for (const sourcePath of paths) {
+  validateSourcePath(sourcePath);
+}
+```
+
+작업이 서로 독립적이고 호출 수가 승인된 상한 안이면 호출을 모두 시작한 직후 `Promise.all()`로 관찰한다.
+
+```mjs
+const pending = checks.map(
+  (check) => Promise.resolve().then(check),
+);
+const results = await Promise.all(pending);
+```
+
+`Promise.resolve().then(check)`는 일반 함수의 동기 예외를 rejection으로 바꾸고, 모든 Promise를 만든 뒤 집계 handler가 연결되도록 callback 실행을 미룬다. 모든 callback이 `async function`이며 호출 중 예외도 rejected Promise가 된다는 조건을 확인했다면 직접 호출해도 된다.
+
+모든 독립 실패를 모아야 한다는 요구가 생기면 다음처럼 rejected 결과를 명시적으로 처리한다.
+
+```mjs
+async function runIndependentChecks(checks) {
+  const pending = checks.map(
+    (check) => Promise.resolve().then(check),
+  );
+  const outcomes = await Promise.allSettled(pending);
+  const failures = outcomes.filter(
+    (outcome) => outcome.status === "rejected",
+  );
+  if (failures.length > 0) {
+    const reasons = failures.map((failure) => failure.reason);
+    throw new AggregateError(reasons);
+  }
+}
+```
+
+**피해야 할 코드.** 다음 코드는 작업을 모두 시작하거나 rejected 결과를 버린다.
+
+```mjs
+const sources = await Promise.all(
+  paths.map((sourcePath) => readSource(sourcePath, budget)),
+);
+
+const pending = paths.map((sourcePath) => readSource(sourcePath, budget));
+for (const promise of pending) {
+  sources.push(await promise);
+}
+
+for await (const source of pending) {
+  sources.push(source);
+}
+
+for await (const sourcePath of paths) {
+  validateSourcePath(sourcePath);
+}
+
+const outcomes = await Promise.allSettled(tasks);
+return outcomes
+  .filter((outcome) => outcome.status === "fulfilled")
+  .map((outcome) => outcome.value);
+```
+
+**검증.** stream은 chunk 순서, UTF-8 sequence 분할, byte 상한과 중단 뒤 종료를 검사한다. 병렬 처리를 승인한 경우에는 시간 차이 대신 최대 동시 실행 수, 입력 순서의 성공 결과, 먼저 관찰된 실패와 여러 실패 및 부분 출력 부재를 검사한다. 여러 작업의 실패 순서를 바꿔도 외부 오류 코드와 stderr가 같아야 한다. 취소가 요구되면 같은 `AbortSignal`을 전달하는 것만으로 끝내지 않고 시작된 작업의 정리까지 별도로 설계한다. 현재 self-test는 process와 stream 상태를 사용하므로 사례를 순서대로 실행한다. ESLint의 `no-await-in-loop`는 올바른 순차 파일 처리를 거부하면서 `for await...of`와 그 본문의 `await`는 보고하지 않는다. `no-restricted-syntax`로 async 반복이나 Promise combinator를 일괄 거부해도 정상 사례를 함께 막는다. 작업 독립성, 자원 상한과 실패 정책은 정적 규칙이 판정하지 못하므로 해당 규칙을 활성화하지 않는다.
+
+## 복합 판단식은 이름이 있는 단계로 나눈다
+
+**막을 실패.** 여러 mode boolean, 부정, 비교와 `sourceName` 조건을 한 표현식에 넣으면 어떤 조합이 통과하는지 직접 확인하기 어렵다. 모든 JavaScript 연산자를 같은 상한으로 세면 단순한 byte 계산과 index 이동까지 불필요하게 나뉘므로 이 지침은 복합 판단식의 논리, 비교와 부정 연산에 제한을 적용한다.
+
+**적용 조건과 관찰 결과.** 한 판단식에는 `&&`, `||`, `??`, 비교 연산자와 `!`를 합쳐 두 개까지만 둔다. 조건이 더 많으면 각 사실에 이름을 붙이거나 guard clause로 나눈다. 네 mode boolean을 다른 함수로 전달하지 않고 인수 해석 단계에서 하나의 `kind`로 바꾼다. 산술, byte 합계, index 증가와 bit flag 조합은 각 계산 규칙이 설명하며 이 상한만을 이유로 나누지 않는다.
+
+**권장 코드.** 먼저 선택된 mode 수를 검사한 뒤 `sourceName` 조건을 별도 guard로 확인한다.
+
+```mjs
+function resolveMode(values) {
+  const selectedModes = [];
+
+  if (values.changed !== undefined) {
+    selectedModes.push("changed");
+  }
+  if ((values.file?.length ?? 0) > 0) {
+    selectedModes.push("file");
+  }
+  if (values.stdin === true) {
+    selectedModes.push("stdin");
+  }
+  if (values["self-test"] === true) {
+    selectedModes.push("self-test");
+  }
+
+  if (selectedModes.length !== 1) {
+    throw new UsageError("invalid-input-mode");
+  }
+
+  const kind = selectedModes[0];
+  const hasSourceName = values.sourceName !== undefined;
+  if (kind === "stdin") {
+    if (!hasSourceName) {
+      throw new UsageError("source-name-required");
+    }
+  } else if (hasSourceName) {
+    throw new UsageError("source-name-without-stdin");
+  }
+
+  return { kind, sourceName: values.sourceName };
+}
+```
+
+**피해야 할 코드.** 다음 식은 서로 다른 유효 상태를 한꺼번에 열거한다.
+
+```mjs
+const validMode =
+  (changedMode && !fileMode && !stdinMode && sourceName === undefined) ||
+  (!changedMode && fileMode && !stdinMode && sourceName === undefined) ||
+  (!changedMode && !fileMode && stdinMode && sourceName !== undefined);
+```
+
+**검증.** 네 mode의 모든 조합과 `sourceName` 유무는 self-test로 실행해 승인된 상태만 통과하는지 확인한다. 연산자 개수는 JavaScript source의 AST를 읽어야 하므로 구현 검토가 맡는다. ESLint core에는 임의 표현식의 연산자 총수를 세는 규칙이 없다. `complexity`는 함수 전체의 분기와 logical expression을 함께 세고 top-level 및 산술 연산을 같은 방식으로 검사하지 않으므로 이 상한과 동치가 아니다. `no-restricted-syntax` selector도 연산자가 양쪽 subtree에 나뉜 경우를 정확히 집계하지 못한다.
+
+## 의존 기능은 필요한 함수만 전달한다
+
+**막을 실패.** 기능 수가 늘었다는 이유로 class나 공용 dependency container를 만들면 순수 계산 함수도 파일을 읽고 Git을 실행하거나 process 객체에 접근할 수 있으며 실제 의존 관계가 인수에서 보이지 않는다. 상태가 없는 class는 표준 함수 호출을 한 단계 감쌀 뿐이다. 상태가 있는 class의 method를 함수 값으로 떼어 전달하면 receiver를 잃어 private field 접근이 실패할 수 있다.
+
+**적용 조건과 관찰 결과.** 현재 `scanSources({ provideSources })`처럼 필요한 기능 하나를 함수로 전달하는 방식은 유지한다. 기능이 늘어나도 파일이나 Git을 읽는 함수에는 실제로 호출할 함수만 이름으로 전달하고, 순수 함수에는 계산할 값만 전달한다. class는 여러 호출에서 같은 상태나 자원을 유지하거나, 여러 method가 같은 조건, 호출 순서 또는 `close()` 같은 종료 절차를 함께 지켜야 하며 함수나 기존 Node.js 객체로 해결할 수 없을 때 다시 검토한다. 기능 또는 method 수만 늘어난 것은 전환 근거가 아니다. Node.js `FileHandle`처럼 이미 상태와 종료 동작을 제공하는 객체는 별도 객체로 감싸지 않고 사용한다.
+
+**권장 코드.** 함수가 실제로 사용하는 두 기능만 전달한다.
+
+```mjs
+async function readChangedSources(
+  { repository },
+  { runGit, readFileSource },
+) {
+  const paths = await runGit(repository);
+  return readSourcesInOrder(paths, readFileSource);
+}
+```
+
+**피해야 할 코드.** 다음 class는 상태, 불변 조건과 수명주기 없이 호출을 전달하고, 큰 container는 숨은 I/O를 허용한다.
+
+```mjs
+class ScannerDependencies {
+  readFile(path) {
+    return readFileSource(path);
+  }
+
+  runGit(repository) {
+    return runGitStatus(repository);
+  }
+}
+
+async function scanSources(context) {
+  const paths = await context.git.run();
+  return context.fs.read(paths);
+}
+```
+
+class를 승인한 뒤 method를 callback으로 전달해야 한다면 receiver를 보존한다.
+
+```mjs
+const provideSources = () => provider.provideSources();
+```
+
+`provideSources: provider.provideSources`처럼 method만 떼어 전달하면 `this`가 필요한 구현은 실패한다.
+
+**검증.** 새 class 제안에는 여러 호출에서 유지할 상태나 자원, 여러 method가 함께 지킬 조건, 호출 순서 또는 수명주기 가운데 필요한 항목과 기존 함수 또는 Node.js 객체로 해결할 수 없는 이유를 제시한다. 근거가 없으면 함수나 필요한 함수만 담은 작은 객체를 유지한다. class가 승인되면 method를 분리해 전달하는 사례도 실행해 호출 대상 객체가 유지되는지 확인한다. ESLint core는 class가 필요한 시점, 여러 의존 기능을 묶은 객체의 범위와 분리된 method의 호출 대상 객체를 판정하지 못하므로 class 관련 규칙은 추가하지 않는다.
 
 ## self-test는 순수 검사와 실제 프로세스를 나눈다
 
@@ -636,6 +958,9 @@ import process from "node:process";
 import { fileURLToPath } from "node:url";
 
 await assert.rejects(() => readInvalidUtf8(), InputError);
+assert.deepEqual(parseStatus(Buffer.from(" M file.md\0")), [
+  { status: " M", path: "file.md" },
+]);
 
 const child = spawnSync(
   process.execPath,
@@ -653,14 +978,14 @@ assert.equal(child.status, 2);
 assert.equal(child.stdout, "");
 ```
 
-**피해야 할 코드.** async 실패와 URL pathname을 직접 사용하지 않는다.
+**피해야 할 코드.** async 실패와 URL pathname을 직접 사용하지 않는다. 운영 parser와 같은 분기 및 offset 계산을 self-test용 helper에 다시 구현해도 실제 parser의 회귀를 찾지 못한다.
 
 ```mjs
 assert.throws(() => readInvalidUtf8());
 spawnSync(process.execPath, [new URL(import.meta.url).pathname, "--invalid"]);
 ```
 
-**검증.** `--self-test` 자체가 상태 `0`으로 끝나는지 직접 실행한다. Node.js 22.0.0의 Linux, macOS와 Windows에서 같은 검사와 대표 입력을 실행하기 전에는 세 운영체제에서 확인했다고 기록하지 않는다.
+**검증.** `--self-test`가 parser, literal 탐색, 위치 계산과 직렬화에 사용하는 운영 함수를 직접 호출하는지 확인한다. process와 stream 상태를 사용하는 사례는 순서대로 실행한다. `--self-test` 자체가 상태 `0`으로 끝나는지 직접 실행한다. Node.js 22.0.0의 Linux, macOS와 Windows에서 같은 검사와 대표 입력을 실행하기 전에는 세 운영체제에서 확인했다고 기록하지 않는다.
 
 ## ESLint가 맡는 코드 형태를 제한한다
 
@@ -670,6 +995,8 @@ ESLint 10.8.0과 `@eslint/js` 10.0.1은 MIT license를 사용한다. `@eslint/js
 
 - `@eslint/js` recommended는 parser 오류, 미정의 및 미사용 이름, 잘못된 반복 방향, switch의 block 누락과 fallthrough, 도달하지 않는 코드 및 ESLint 10의 원인 없는 재던지기를 검사한다.
 - `array-callback-return`, `eqeqeq`, `no-duplicate-imports`, `no-throw-literal`과 `no-unreachable-loop`는 callback 반환 누락, 느슨한 비교, 중복 import, Error가 아닌 throw와 한 번만 실행되는 loop를 거부한다.
+- `no-param-reassign`은 인수와 인수 속성의 직접 변경을 거부한다. `no-shadow`는 바깥 scope의 이름과 JavaScript 기본 전역 이름을 더 안쪽 scope에서 다시 선언하는 코드를 거부한다. 두 규칙은 순수 함수나 한 가지 기능을 증명하지 않고, 입력 변경과 이름 혼동의 일부 형태만 찾는다.
+- `no-var`는 모든 `var` 선언을 거부한다. `no-restricted-syntax`는 module의 직접 `let` 선언과 `export let`을 거부한다. 함수 내부의 지역 `let`은 허용하며 `const` 객체, 배열, Map, Set과 정규식의 내부 상태는 이 규칙으로 찾지 못한다.
 - `no-eval`, `no-implied-eval`, `no-new-func`와 `globalThis.Function` 제한은 입력 문자열을 코드로 실행하는 직접 형태를 거부한다.
 - `no-restricted-imports`와 `no-restricted-syntax`는 승인된 Node.js built-in 목록 밖의 static import, dynamic import, `node:module`, `execFile` 및 `spawnSync` 이외의 child process import, default가 아닌 `node:process` import, 이름을 바꾼 `node:process` 기본 import, 두 허용 함수의 import 별칭, 직접 표기한 `import.meta.main`, `import.meta`의 변수 할당과 구조분해, 직접 호출에 전달한 `shell` 속성과 계산된 option 속성을 거부한다.
 - `no-restricted-properties`는 식별자 이름을 유지한 `process.abort()`, `process.execve()`, `process.exit()`, `process.getBuiltinModule()`과 `process.kill()`을 거부한다. `node:process`는 default import만 허용하므로 같은 API를 named import로 가져올 수 없다.
@@ -694,9 +1021,42 @@ import assert from "node:assert/strict";
 import { execFile, spawnSync } from "node:child_process";
 import process from "node:process";
 
+export const scannerVersion = 1;
+
 assert.equal(typeof execFile, "function");
 assert.equal(typeof spawnSync, "function");
+assert.equal(scannerVersion, 1);
 process.stdout.write("");
+
+function copySource(source) {
+  return { ...source, text: "" };
+}
+
+function renameSources(source) {
+  return [source].map((candidate) => candidate.name);
+}
+
+function classify(length) {
+  if (length === 0) {
+    return "empty";
+  }
+  if (length === 1) {
+    return "single";
+  }
+  return "multiple";
+}
+
+function increment(value) {
+  let result = value;
+  result += 1;
+  return result;
+}
+
+const source = { name: "input.md", text: "candidate" };
+assert.deepEqual(copySource(source), { name: "input.md", text: "" });
+assert.deepEqual(renameSources(source), ["input.md"]);
+assert.equal(classify(source.text.length), "multiple");
+assert.equal(increment(1), 2);
 ```
 
 다음 오류 사례는 상태 `1`이어야 한다. 결과에는 `no-restricted-imports`, `no-restricted-syntax`와 `no-restricted-properties`가 모두 있어야 한다.
@@ -752,7 +1112,39 @@ for (const value of mapped) {
 }
 ```
 
-`consistent-return`, `no-await-in-loop`, `sort-keys`, `eslint-plugin-n`, `eslint-plugin-security`와 custom rule은 사용하지 않는다. error-first callback의 조기 `return`, source의 순차 처리와 domain 순서는 정상 코드일 수 있다. 현재 정적으로 판정할 사례는 ESLint core 규칙이 맡고, 실행해야 확인할 조건은 self-test와 실행 검사가 맡으므로 추가 plugin을 도입하지 않는다.
+다음 오류 사례도 상태 `1`이어야 한다. 결과에는 `no-param-reassign`, `no-shadow`, `no-var`와 module 가변 binding을 찾은 `no-restricted-syntax`가 모두 있어야 한다.
+
+```mjs
+import process from "node:process";
+
+let mutableTotal = 0;
+export let exportedTotal = 0;
+
+function countOnce() {
+  var count = 0;
+  count += 1;
+  return count;
+}
+
+function clearSource(source) {
+  source.text = "";
+  return source;
+}
+
+function renameSources(source) {
+  return [source].map((source) => source.name);
+}
+
+const source = { name: "input.md", text: "candidate" };
+mutableTotal += source.text.length;
+exportedTotal += countOnce();
+
+clearSource(source);
+renameSources(source);
+process.stdout.write(String(mutableTotal + exportedTotal));
+```
+
+`consistent-return`, `no-await-in-loop`, `no-else-return`, `no-nested-ternary`, `complexity`, `max-depth`, `max-lines-per-function`, `max-params`, `max-statements`, `sort-keys`, `eslint-plugin-n`, `eslint-plugin-security`와 custom rule은 사용하지 않는다. error-first callback의 조기 `return`, source의 순차 처리와 검사 결과의 순서는 정상 코드일 수 있다. `else`와 삼항 연산자를 사용했다는 사실만으로 판단식이 복잡하거나 함수 역할이 섞였다고 판정할 수도 없다. 줄, 문장, 인수와 실행 경로 수는 함수가 한 기능만 맡는지 또는 판단식에 연산자가 몇 개 있는지 증명하지 않는다. 현재 정적으로 판정할 사례는 ESLint core 규칙이 맡고, 실행해야 확인할 조건은 self-test와 실행 검사가 맡으므로 추가 plugin을 도입하지 않는다.
 
 ESLint가 받아들인 [`no-useless-assignment`의 try-catch 오탐 보고](https://github.com/eslint/eslint/issues/19245)는 `try` 안의 `return` 때문에 `catch`의 사용 지점이 이어지지 않는 code-path 사례를 설명한다. 같은 구조에서 경고가 나오면 최소 재현으로 오탐인지 확인하고 control flow를 먼저 단순화한다. 규칙을 미리 끄거나 전체 파일에서 disable하지 않는다.
 
@@ -774,4 +1166,6 @@ pnpm lint
 - [Node.js child process 문서](https://nodejs.org/download/release/v22.18.0/docs/api/child_process.html), [process 환경 변수 문서](https://nodejs.org/download/release/v22.18.0/docs/api/process.html#processenv), [process 종료 상태 문서](https://nodejs.org/download/release/v22.18.0/docs/api/process.html#processexitcode), [`abort()`](https://nodejs.org/download/release/v22.18.0/docs/api/process.html#processabort), [`execve()`](https://nodejs.org/download/release/v22.18.0/docs/api/process.html#processexecvefile-args-env), [`kill()`](https://nodejs.org/download/release/v22.18.0/docs/api/process.html#processkillpid-signal)과 [stream 문서](https://nodejs.org/download/release/v22.18.0/docs/api/stream.html#writablewritechunk-encoding-callback)는 환경 key, shell, 출력 상한, 즉시 종료 및 process 교체, signal과 stream 완료 동작을 정의한다.
 - [Git 2.18 status 문서](https://git-scm.com/docs/git-status/2.18.0), [Git 2.18 `diff.h`](https://github.com/git/git/blob/v2.18.0/diff.h#L381-L388), [Git 2.18 `wt-status.c`](https://github.com/git/git/blob/v2.18.0/wt-status.c#L1737-L1752), [Git 2.18 config 문서](https://git-scm.com/docs/git-config/2.18.0), [Git 2.18 update-index 문서](https://git-scm.com/docs/git-update-index/2.18.0), [Git 2.18 ls-files 문서](https://git-scm.com/docs/git-ls-files/2.18.0)와 [Git 2.18 rev-parse 문서](https://git-scm.com/docs/git-rev-parse/2.18.0)는 porcelain status, type change, untracked cache, `assume-unchanged`, `skip-worktree`와 저장소 루트 판정의 근거다.
 - [ESLint flat config 문서](https://eslint.org/docs/latest/use/configure/configuration-files), [recommended 규칙 소스](https://github.com/eslint/eslint/blob/v10.8.0/packages/js/src/configs/eslint-recommended.js), [`no-restricted-imports`](https://eslint.org/docs/latest/rules/no-restricted-imports)와 [`no-restricted-properties`](https://eslint.org/docs/latest/rules/no-restricted-properties)는 현재 정적 검사 구성의 근거다.
+- [ECMAScript `for await...of`](https://tc39.es/ecma262/2026/multipage/ecmascript-language-statements-and-declarations.html#sec-for-in-and-for-of-statements), [`Promise.all()`](https://tc39.es/ecma262/2026/multipage/control-abstraction-objects.html#sec-promise.all)과 [`Promise.allSettled()`](https://tc39.es/ecma262/2026/multipage/control-abstraction-objects.html#sec-promise.allsettled)는 비동기 반복과 Promise 결과 수집의 실행 규칙을 정의한다. [Node.js stream async iterator 문서](https://nodejs.org/download/release/v22.18.0/docs/api/stream.html#readablesymbolasynciterator)는 Readable의 반복 중단 시 stream 정리를 정의한다.
+- [ESLint `no-await-in-loop`](https://eslint.org/docs/latest/rules/no-await-in-loop), [`complexity`](https://eslint.org/docs/latest/rules/complexity), [`no-param-reassign`](https://eslint.org/docs/latest/rules/no-param-reassign), [`no-shadow`](https://eslint.org/docs/latest/rules/no-shadow)와 [`no-nested-ternary`](https://eslint.org/docs/latest/rules/no-nested-ternary)는 각 규칙이 검사하는 syntax와 예외를 확인하는 근거다.
 - [ESLint 10.8.0 package](https://github.com/eslint/eslint/blob/v10.8.0/package.json)와 [`@eslint/js` 10.0.1 package](https://github.com/eslint/eslint/blob/v10.8.0/packages/js/package.json)는 engine, peer dependency, license와 package dependency를 확인하는 근거다.
