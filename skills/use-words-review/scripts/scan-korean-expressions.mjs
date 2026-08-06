@@ -1349,7 +1349,7 @@ async function provideChangedSources(repository) {
   const git = await findGitExecutable(environment.PATH, process.platform);
   const rootResult = await runChildFile(
     git,
-    ["--no-optional-locks", "-c", "core.fsmonitor=false", "-c", "core.untrackedCache=false", "rev-parse", "--show-toplevel"],
+    ["--no-optional-locks", "rev-parse", "--show-toplevel"],
     {
       cwd: requestedCwd,
       env: environment,
@@ -1363,7 +1363,7 @@ async function provideChangedSources(repository) {
     [
       "--no-optional-locks",
       "-c",
-      "core.fsmonitor=false",
+      "core.fsmonitor=",
       "-c",
       "core.untrackedCache=false",
       "status",
@@ -1858,6 +1858,16 @@ async function runSelfTest() {
   await assert.rejects(
     () =>
       runChildFile(process.execPath, ["-e", "process.stdout.write('x'.repeat(100))"], {
+        cwd: process.cwd(),
+        env: {},
+        timeout: SELF_TEST_TIMEOUT_MS,
+        maxBuffer: 10,
+      }),
+    /git:command-failed/u,
+  );
+  await assert.rejects(
+    () =>
+      runChildFile(process.execPath, ["-e", "process.stderr.write('x'.repeat(100))"], {
         cwd: process.cwd(),
         env: {},
         timeout: SELF_TEST_TIMEOUT_MS,
