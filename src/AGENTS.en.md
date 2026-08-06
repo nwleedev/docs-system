@@ -110,6 +110,7 @@ After context compaction, reread AGENTS.md, especially **Core Principles**, and 
 
 ### Reviewing Text That Will Be Stored or Delivered
 
+- Before drafting AI-created or revised Korean text or a name that will be stored, committed, published, or shared outside the conversation, read the installed `use-words-review` skill's `references/korean.md` in full. Apply the reference only to Korean text.
 - When AI-created or revised Korean text or a name will be stored, committed, published, or shared outside the conversation, group the changes from the same sharing unit and run the installed `use-words-review` once immediately before that action. Include chat wording that will be stored or delivered verbatim, but do not review an ordinary chat response merely because it is sent.
 - When the user explicitly requests a review of particular wording or a public output, group all wording named in that request into one review unit and run `use-words-review` once, even when no file changed. Treat a later request to review revised wording as a new review unit.
 - If the current run cannot find or read the skill, do not claim completion of work that requires the review. When the reviewed output contains Korean, also do not claim completion if `references/korean.md` cannot be found or read in full. Report whether the observed gap is a missing installation or a missing reference, to the extent that the current run can determine it.
