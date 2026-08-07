@@ -108,7 +108,7 @@ Git 프로젝트는 LTS 계열을 지정하지 않는다. 따라서 Git 최저 �
 
 ### 현재 파일은 literal 표현 검사에 맞춰져 있다
 
-현재 [표현 검사기](../../../../skills/use-words-review/scripts/scan-korean-expressions.mjs)는 각 규칙에 `expressions`를 요구하고, 첫 UTF-16 code unit으로 만든 색인에서 모든 substring 출현을 찾는다. 공개 결과도 `catalog`에 규칙별 `expressions`를 넣고 각 경고에 `expression`, `startUtf16`과 `endUtf16`을 제공한다. Markdown node 종류를 구분하지 않으므로 code fence, 표와 제목의 literal도 같은 방식으로 찾는다.
+이전 `scan-korean-expressions.mjs`는 각 규칙에 `expressions`를 요구하고, 첫 UTF-16 code unit으로 만든 색인에서 모든 substring 출현을 찾았다. 공개 결과도 `catalog`에 규칙별 `expressions`를 넣고 각 경고에 `expression`, `startUtf16`과 `endUtf16`을 제공했다. Markdown node 종류를 구분하지 않아 code fence, 표와 제목의 literal도 같은 방식으로 찾았다.
 
 문단 검사는 빈 줄과 Markdown block marker 및 fence 상태로 최상위 플레인 텍스트 문단을 구분하고, 각 문단을 `Intl.Segmenter`로 나눠 문장 수를 센다. 경고에는 일치 표현과 끝 열이 아니라 문장 수와 문단 시작 위치가 필요하다. 이 차이를 기존 규칙의 `kind` 분기로 흡수하면 규칙 검증, 탐색, 직렬화와 자체 검사마다 서로 사용하지 않는 속성을 조건부로 처리해야 한다.
 
