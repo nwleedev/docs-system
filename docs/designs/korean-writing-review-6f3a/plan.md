@@ -8,6 +8,8 @@
 
 요구사항 소유자는 검사기 구현 전에 Node.js `.mjs` 명령줄 스크립트 개발 지침과 ESLint 검사를 준비하고, 후속 작업에서 기존 `src`, `skills`, `docs` 파일을 갱신하며 `skills/use-words-review/scripts/scan-korean-expressions.mjs`를 만들도록 요청했다. 준비 작업은 `docs/dev/README.md`, `docs/dev/node/mjs-cli.md`, `eslint.config.mjs`, `package.json`과 `pnpm-lock.yaml`을 만들거나 갱신할 수 있다. 후속 구현에서 새로 만드는 실행 파일은 `scan-korean-expressions.mjs` 하나이며, 루트 `README.md`, `README.ko.md`와 루트 `AGENTS.md`는 이번 구현에 포함하지 않는다.
 
+[후보 검사기 소스 조사](./references/korean-candidate-expression-linter-research.md#실행-진입점과-탐지-모듈-분리-검토)는 현재 표현 검사와 긴 문단 검사의 탐지 단위가 달라 실행 진입점 하나와 탐지 모듈 두 개로 나누는 방안을 권고한다. 이 방안은 단일 파일과 단일 `rules` 배열을 정한 현재 요구사항을 바꾸므로 승인 전에는 문단 탐지 구현과 파일명 변경을 중단한다. 표현 검사기의 현재 동작과 나머지 문서 작업은 영향을 받지 않는다.
+
 [지침 중복 감사](./references/instruction-duplication-audit.md)에 따른 AGENTS 감축 작업은 `src/AGENTS.ko.md`와 `src/AGENTS.en.md`만 바꾼다. 이어지는 스킬 변경은 `skills/use-words-review/SKILL.md`, `references/korean.md`, `references/examples.md`와 `scripts/scan-korean-expressions.mjs`만 바꾼다. 두 작업을 분리하고, 이미 반영된 용어 판정, 검토 범위와 중단 동작은 바꾸지 않는다. 두 문서 지침은 각 문서 작업의 독립된 기준을 맡으므로 두 감축 작업에서 수정하지 않는다.
 
 ## 변경 원칙
@@ -223,6 +225,8 @@ Node.js 22.0.0 이상과 Git 2.18.0 이상을 먼저 확인하고 macOS 구현 �
 
 [한국어 문서 검토 재발 방지 요구사항](./requirements.md)의 `목표`와 `완료 증거`에 따라 문단 길이를 검토 신호로 사용하되 글자 수나 문장 수만으로 실패를 확정하지 않는다. 한 문단에 서로 다른 중심 내용, 근거, 조건, 결정 상태 또는 후속 행동이 들어 있어 독자가 관계를 다시 구성해야 하면 각 의미 단위를 플레인 텍스트 문단으로 나눈다. 각 문단은 중심 내용을 먼저 밝히고 문단 사이의 적용 순서와 의존 관계를 유지한다.
 
+문단 탐지 구현은 파일 구성을 정할 때까지 중단한다. 현재 승인안은 `scan-korean-expressions.mjs` 한 파일과 단일 `rules` 배열을 사용하지만, 조사 자료는 `scan.mjs` 진입점이 `korean-expressions.mjs`와 `korean-paragraphs.mjs`를 정적 import하는 구성을 권고한다. 이 세 이름과 검사별 JSON 구분은 아직 승인된 기준이 아니며 구현 담당자가 임의로 선택하지 않는다.
+
 `scan-korean-expressions.mjs`의 단일 `rules` 상수에 문단 후보 검사를 추가하고 모든 실행에서 함께 순회한다. Markdown 플레인 텍스트 문단이 일곱 문장 이상이면 문단 시작 위치, 관찰한 문장 수와 제한된 원문 일부를 경고로 출력한다. 이 값은 장문 기술 문서 지침에서 선택했지만 검사 대상인 모든 Markdown 산문 문단에 적용하는 초기 기준이며 오류 기준이 아니다. 한국어 글자 수나 영어 단어 수 기준은 추가하지 않는다. 후보가 있어도 종료 상태는 `0`이고, 출력에 같은 뜻의 `severity`나 `requiresReview` 필드를 반복하지 않는다.
 
 문단은 빈 줄로 구분하고 단순 줄바꿈은 같은 문단으로 센다. 제목, 표, 목록, 인용문, HTML, front matter, fenced 및 들여쓴 코드처럼 플레인 텍스트 산문이 아닌 Markdown 블록은 문장 수 계산에서 제외한다. 외부 parser를 추가하지 않고 현재 구분할 블록을 결정적인 줄 검사와 fence 상태로 식별한다. 중첩된 Markdown 구조를 정확히 해석해야만 판정할 수 있는 입력은 후보를 만들지 않으며 의미 검토에서 계속 확인한다.
@@ -240,6 +244,7 @@ Markdown 결과물에서는 빈 줄로 구분된 문단인지 확인한다. 단�
 - 한국어 저장 결과물 작업에서 스킬을 찾을 수 없으면 설치 방법을 바로 추정해 바꾸지 않고 현재 설치 상태를 보고한다.
 - 후보 표현이 정확한 전문용어인지 저장소 근거로 정할 수 없으면 단어를 임의로 바꾸지 않고 `needs human input`으로 남긴다.
 - 기존 문구가 승인된 공개 표현인지 알 수 없으면 재사용하지 않고 승인 근거를 요청한다.
+- 실행 진입점, 표현 모듈과 문단 모듈을 나누는 구성 및 파일명과 검사별 출력 상한 계산이 승인되기 전에는 문단 탐지 구현과 현재 검사기 이름 변경을 시작하지 않는다.
 - 모델이나 추론 설정을 바꾸려면 같은 평가 묶음의 비교 결과와 선택 권한이 필요하다. 이번 계획은 모델 교체를 승인하지 않는다.
 - 원본 사례 집계를 다시 검증할 역할과 안전한 보관 방식은 이번 계획에서 정하지 않는다. 갱신한 체계를 적용한 뒤 후속 작업에서 다시 검토한다.
 
