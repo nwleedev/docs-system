@@ -19,3 +19,5 @@ The `skills` directory exists for research, not for distributing ready-to-use sk
 This repository is not intended for developing a conventional web service or application.
 
 Do not infer or develop an application merely because it relates to a task requester's prompt.
+
+Additional issues may arise in other repositories that use this system. When addressing those issues in this repository, do not include information from the other repositories—such as local paths or file contents—verbatim in commits.
