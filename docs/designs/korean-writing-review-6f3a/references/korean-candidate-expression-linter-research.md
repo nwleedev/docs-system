@@ -216,6 +216,49 @@ Agent Skills는 `scripts/`에 여러 실행 자료를 둘 수 있고 스킬 루�
 
 이 결정이 없으면 현재 표현 검사기는 유지할 수 있지만 문단 탐지 구현과 파일명 변경은 시작하지 않는다. 조사 자료는 권고 근거만 제공하며 승인된 기준을 자동으로 바꾸지 않는다.
 
+## import, 의존 기능 전달과 모듈 책임 조사
+
+세 파일 구성을 승인한다면 진입점은 두 탐지 모듈을 정적으로 가져오고, 의존 기능 전달은 source를 제공하는 I/O 접점에만 사용한다. 탐지 모듈은 각각 표현 규칙과 문단 정책을 내부에서 관리하며 같은 source 값을 받는다. 공용 파일은 두 탐지기가 같은 의미와 변경 이유를 가진 계산을 실제로 중복할 때만 추가한다. 적용 코드와 오류 사례는 [Node.js MJS 명령줄 검사기의 제안 지침](../../../dev/node/mjs-cli.md#모듈-분리안을-승인하면-고정-모듈을-정적으로-가져온다)에 기록했다.
+
+### 고정된 두 탐지기에는 정적 import가 맞다
+
+정적 import는 module graph를 연결하면서 요청한 module과 named export를 확인한다. 동적 import는 표현식을 실행할 때 specifier를 평가하고 Promise를 반환한다. 사용자가 탐지기를 선택하지 않고 모든 내장 검사를 항상 실행해야 하므로 실행 중 선택, 지연 적재와 선택 설치가 필요한 상황이 아니다. 따라서 `scan.mjs`가 `./korean-expressions.mjs`와 `./korean-paragraphs.mjs`를 정적으로 가져오는 구성이 요구사항과 오류 시점을 모두 명확하게 한다.
+
+- [ECMAScript module 명세](https://tc39.es/ecma262/2026/multipage/ecmascript-language-scripts-and-modules.html)는 import entry를 module graph의 연결과 binding 초기화에 사용한다. 2026년 8월 7일에 확인했다.
+- [ECMAScript import call 명세](https://tc39.es/ecma262/2025/multipage/ecmascript-language-expressions.html#sec-import-calls)는 동적 import가 실행 시점에 specifier를 평가하고 Promise로 완료된다고 정의한다. 2026년 8월 7일에 확인했다.
+- [Node.js 22 ESM 문서](https://nodejs.org/download/release/v22.18.0/docs/api/esm.html)는 ES module의 정적 import와 동적 import를 지원하며 상대 specifier에 확장자를 요구한다. 2026년 8월 7일에 확인했다.
+
+동적 import를 금지하는 이유는 문법 자체가 나빠서가 아니다. 사용자 선택 plugin, 선택 설치 module 또는 실제로 실행하지 않을 큰 기능처럼 module을 실행 중에 정해야 하는 요구가 생기면 다시 검토할 수 있다. 현재 검사기는 이 조건이 없으며 동적 import가 규칙 선택 입력과 추가 비동기 실패만 만든다.
+
+### 의존 기능은 I/O 접점에만 좁게 전달한다
+
+현재 구현의 `scanSources({ provideSources })`는 Git, 파일 또는 stdin에서 source를 만드는 부수 효과를 함수 하나로 전달한다. 이 경계는 self-test가 실제 파일을 만들지 않고도 같은 탐색을 실행하게 하며, 계산 함수에는 source 값만 보낸다. 모듈 분리 뒤에도 두 탐지 함수를 다시 주입하지 않고 정적으로 가져와 호출한다. 탐지기를 주입하면 테스트나 호출자가 내장 검사를 빼거나 다른 구현으로 바꿀 수 있어 모든 규칙을 실행한다는 조건을 약화한다.
+
+module 전체를 바꾸는 test double도 필요하지 않다. Node.js의 module mock은 22.3.0에 추가되어 최저 지원 버전인 22.0.0부터 22.2.x까지 사용할 수 없고, 22.18.0에서도 `--experimental-test-module-mocks` flag가 필요하다. 현재 self-test는 별도 test runner 없이 실행한다. source 제공 함수 하나를 전달하고 순수 탐지 함수에 값을 직접 넣는 현재 방식이 실행 환경과 배포 파일을 늘리지 않는다. [Node.js 22 test runner의 module mock 문서](https://nodejs.org/download/release/v22.18.0/docs/api/test.html#mockmodulespecifier-options)를 확인했다.
+
+textlint와 ESLint도 개별 규칙에 실행기 전체를 주지 않고 source 조회, 보고와 AST 방문에 필요한 context를 전달한다. 이 사례는 이 검사기에 framework나 공용 container를 도입하라는 근거가 아니라, 함수가 실제로 쓰는 기능만 보이게 전달하는 설계의 대조 자료다.
+
+- [textlint 규칙 문서](https://textlint.org/docs/rule/)는 규칙이 `getSource`, `report`와 syntax 정보를 가진 context를 받는 구조를 설명한다. 2026년 8월 7일에 확인했다.
+- [ESLint custom rule 문서](https://eslint.org/docs/latest/extend/custom-rules)는 규칙의 `create(context)`가 AST visitor를 반환하는 구조를 설명한다. 2026년 8월 7일에 확인했다.
+
+### 파일은 실행 조정, 표현 탐지와 문단 탐지로만 나눈다
+
+`scan.mjs`는 CLI, 입력, 전체 제한, 공개 오류, JSON과 stream을 맡는다. `korean-expressions.mjs`는 외부에 공개하지 않는 `rules` 상수와 literal 탐색을 맡고, `korean-paragraphs.mjs`는 Markdown 문단 및 문장 수 탐색을 맡는다. 탐지 모듈은 process, 파일, Git과 표준 stream을 읽지 않는다. 이 방향은 실행기가 rule과 processor를 조립하고 각 module이 자기 탐색을 맡는 textlint와 ESLint의 구조에서도 확인된다. [ESLint plugin 문서](https://eslint.org/docs/latest/extend/plugins)와 [textlint 15.8.0 kernel task 소스](https://github.com/textlint/textlint/blob/v15.8.0/packages/%40textlint/kernel/src/task/linter-task.ts)를 확인했다.
+
+재사용 가능성을 예상해 `common.mjs`, `utils.mjs`, barrel `index.mjs`를 먼저 만들지는 않는다. 두 탐지기가 같은 UTF-16 위치 계산처럼 입력, 반환 의미와 변경 이유가 같은 코드를 실제로 공유하게 되면 `source-locations.mjs`처럼 역할을 드러내는 leaf module로 옮길 수 있다. 이때 import는 진입점에서 탐지 모듈로, 탐지 모듈에서 leaf로만 향해야 하며 leaf가 진입점이나 탐지 모듈을 다시 가져오지 않는다. Agent Skills가 여러 스크립트를 상대 위치로 배치할 수 있다는 사실은 배포를 가능하게 하지만 공용 파일을 미리 만들 근거는 아니다. [Agent Skills의 스크립트 안내](https://agentskills.io/skill-creation/using-scripts)를 확인했다.
+
+### 현재 ESLint 설정은 로컬 정적 import도 막는다
+
+현재 `eslint.config.mjs`는 `ImportExpression`을 거부하는 동시에, 허용한 Node.js built-in 이외의 모든 정적 import를 `no-restricted-imports` pattern으로 거부한다. `./korean-expressions.mjs`의 정적 import와 같은 위치를 동적 import하는 사례를 각각 stdin으로 검사했으며 둘 다 상태 `1`로 끝났다. 정적 사례는 `no-restricted-imports`, 동적 사례는 `no-restricted-syntax`가 보고했다.
+
+따라서 세 파일 구성을 승인할 때에는 진입점에서 두 정확한 상대 위치만 허용하고, 탐지 모듈에서는 진입점과 다른 탐지 모듈 import를 계속 막는 파일별 ESLint 설정이 필요하다. `no-restricted-imports`는 동적 import에 적용되지 않으므로 `ImportExpression` 제한도 유지한다. 이 변경은 모듈 분리 승인에 따르는 개발 설정 변경이며 이번 조사에서는 적용하지 않는다. [ESLint `no-restricted-imports` 문서](https://eslint.org/docs/latest/rules/no-restricted-imports)와 [`no-restricted-syntax` 문서](https://eslint.org/docs/latest/rules/no-restricted-syntax)를 대조했다.
+
+### 연속 두 관점에서 새 정보가 없어 조사를 끝냈다
+
+첫째, ECMAScript와 Node.js 실행 관점에서 정적 연결과 동적 import의 비동기 실패 차이를 확인했다. 둘째, 현재 ESLint와 Node.js test runner 관점에서 로컬 import 제한과 실험적인 module mock 조건을 새로 확인했다. 셋째, textlint와 ESLint 규칙 실행 관점에서 필요한 context만 규칙에 전달하는 구조를 확인했다.
+
+넷째, Agent Skills 배포 관점은 여러 script를 상대 위치로 둘 수 있다는 기존 결론을 확인했지만 import 선택, 의존 기능 전달과 책임 분리에 새 제약을 추가하지 않았다. 다섯째, 현재 검사기와 기존 개발 지침을 다시 대조한 관점도 `provideSources` 함수 전달과 실제 중복이 생긴 뒤 공용 책임을 추출한다는 결론을 바꾸지 않았다. 서로 다른 관점에서 새 설계 정보가 없는 상황이 두 번 연속 발생했으므로 조사를 종료했다.
+
 ## 긴 문단은 비차단 검토 후보로 알린다
 
 길이 검사는 문단의 의미 오류를 판정하지 못하지만 검토할 위치를 찾는 첫 단계로 사용할 수 있다. 검사기는 기준을 넘은 문단마다 경고를 만들고 정상 종료하며, AI가 전체 문단을 읽어 중심 내용과 문장 사이의 관계를 판정한다. 경고 자체를 `needs revision`으로 바꾸거나 문단을 자동 분리하지 않는다.
