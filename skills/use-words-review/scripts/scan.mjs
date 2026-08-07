@@ -42,6 +42,16 @@ import { scanParagraphs } from "./long-paragraphs.mjs";
 
 /**
  * @typedef {{
+ *   id: string,
+ *   catalog: ReadonlyArray<Readonly<Record<string, unknown>>>,
+ *   rules: ReadonlyArray<Readonly<Record<string, unknown>>>,
+ *   warnings: ReadonlyArray<Readonly<Record<string, unknown>>>,
+ *   summary: {total: number, shown: number, omitted: number}
+ * }} Check
+ */
+
+/**
+ * @typedef {{
  *   stdout: Buffer
  * }} ChildResult
  */
@@ -210,7 +220,7 @@ function isValidInputName(value) {
  * @param {Readonly<{provideSources: SourceProvider}>} dependencies source를 읽는 I/O 기능
  * @returns {Promise<{
  *   sources: ReadonlyArray<SourceMetadata>,
- *   checks: ReadonlyArray<object>
+ *   checks: ReadonlyArray<Check>
  * }>} 공통 source metadata와 표현 및 문단 검사 결과
  * @remarks 탐지 함수는 주입받지 않고 정적 import한 함수를 직접 호출한다.
  */
@@ -257,20 +267,14 @@ function validateSources(sources) {
 /**
  * 한 검사 결과를 byte 상한 안의 가장 긴 결정적 경고 앞부분으로 줄인다.
  *
- * @param {{
- *   id: string,
- *   catalog: ReadonlyArray<object>,
- *   rules: ReadonlyArray<object>,
- *   warnings: ReadonlyArray<object>,
- *   summary: {total: number, shown: number, omitted: number}
- * }} check 탐지 모듈이 모든 source를 검사한 결과
+ * @param {Check} check 탐지 모듈이 모든 source를 검사한 결과
  * @param {number} maxBytes 직렬화한 검사 결과의 최대 UTF-8 byte
- * @returns {object} 전체 집계와 byte 상한 안의 상세 경고
+ * @returns {Check} 전체 집계와 byte 상한 안의 상세 경고
  */
 function limitCheckByBytes(check, maxBytes) {
   /**
    * @param {number} shown 포함할 상세 경고 수
-   * @returns {object} 표시 및 생략 수를 다시 계산한 검사 결과
+   * @returns {Check} 표시 및 생략 수를 다시 계산한 검사 결과
    */
   const select = (shown) => ({
     id: check.id,
@@ -874,6 +878,47 @@ async function runSelfTest() {
     scanParagraphs([makeTestSource("heading-paragraph", headingThenParagraph)]).summary.total,
     1,
   );
+  const thematicBreakThenParagraph = `---\n${sevenSentences}`;
+  assert.equal(
+    scanParagraphs([
+      makeTestSource("thematic-break-paragraph", thematicBreakThenParagraph),
+    ]).summary.total,
+    1,
+  );
+  const frontMatterThenParagraph = `---\ntitle: 예시\n---\n${sevenSentences}`;
+  assert.equal(
+    scanParagraphs([makeTestSource("front-matter-paragraph", frontMatterThenParagraph)]).summary
+      .total,
+    1,
+  );
+  const indentedThematicBreak = `   ---\n${sevenSentences}\n...`;
+  const indentedThematicResult = scanParagraphs([
+    makeTestSource("indented-thematic-break", indentedThematicBreak),
+  ]);
+  assert.deepEqual(
+    [indentedThematicResult.summary.total, indentedThematicResult.warnings[0].count],
+    [1, 7],
+  );
+  assert.equal(
+    scanParagraphs([makeTestSource("punctuation-only", `${sixSentences}\n...`)]).summary.total,
+    0,
+  );
+  const excludedBlockThenHeading = `- 목록\n# 제목\n${sevenSentences}`;
+  assert.equal(
+    scanParagraphs([makeTestSource("excluded-heading", excludedBlockThenHeading)]).summary.total,
+    1,
+  );
+  const htmlBlockWithMarkdown = `<div>\n# HTML 내부\n---\n${sevenSentences}\n</div>`;
+  assert.equal(
+    scanParagraphs([makeTestSource("html-markdown", htmlBlockWithMarkdown)]).summary.total,
+    0,
+  );
+  assert.equal(
+    scanParagraphs([
+      makeTestSource("html-then-paragraph", `${htmlBlockWithMarkdown}\n\n${sevenSentences}`),
+    ]).summary.total,
+    1,
+  );
 
   const positionedParagraph = scanParagraphs([
     makeTestSource("positioned", "\n\n  하나. 둘. 셋. 넷. 다섯. 여섯. 일곱."),
@@ -956,6 +1001,40 @@ async function runSelfTest() {
     () => decodeChunks([Buffer.from([0xc3, 0x28])], 0),
     /input:invalid-utf8/u,
   );
+  await assert.rejects(
+    () =>
+      runChildFile(process.execPath, ["-e", "process.stderr.write('warning')"], {
+        cwd: process.cwd(),
+        env: {},
+        timeout: SELF_TEST_TIMEOUT_MS,
+        maxBuffer: SELF_TEST_OUTPUT_BYTES,
+      }),
+    /git:warning/u,
+  );
+  for (const options of [
+    { code: "setInterval(() => {}, 1_000)", timeout: 10, maxBuffer: SELF_TEST_OUTPUT_BYTES },
+    {
+      code: "process.stdout.write('x'.repeat(100))",
+      timeout: SELF_TEST_TIMEOUT_MS,
+      maxBuffer: 10,
+    },
+    {
+      code: "process.stderr.write('x'.repeat(100))",
+      timeout: SELF_TEST_TIMEOUT_MS,
+      maxBuffer: 10,
+    },
+  ]) {
+    await assert.rejects(
+      () =>
+        runChildFile(process.execPath, ["-e", options.code], {
+          cwd: process.cwd(),
+          env: {},
+          timeout: options.timeout,
+          maxBuffer: options.maxBuffer,
+        }),
+      /git:command-failed/u,
+    );
+  }
 
   const scriptPath = fileURLToPath(import.meta.url);
   const scriptInput = await readFile(scriptPath);
@@ -964,8 +1043,12 @@ async function runSelfTest() {
     ["--stdin", "--source-name", "same-script"],
     scriptInput,
   );
-  assert.equal(fileChild.status, 0);
-  assert.equal(stdinChild.status, 0);
+  for (const successfulChild of [fileChild, stdinChild]) {
+    assert.equal(successfulChild.error, undefined);
+    assert.equal(successfulChild.signal, null);
+    assert.equal(successfulChild.status, 0);
+    assert.equal(successfulChild.stderr, "");
+  }
   const fileOutput = JSON.parse(fileChild.stdout);
   const stdinOutput = JSON.parse(stdinChild.stdout);
   const normalizeSourceIds = (checks) =>
@@ -984,10 +1067,53 @@ async function runSelfTest() {
   assert.equal(invalidChild.stdout, "");
   assert.match(invalidChild.stderr, /^usage:[a-z0-9-]+\n$/u);
 
-  const missingChild = runScannerProcess(["--file", "missing-self-test-file"]);
-  assert.equal(missingChild.status, 2);
-  assert.equal(missingChild.stdout, "");
-  assert.equal(missingChild.stderr, "input:file-unavailable\n");
+  for (const [args, input, expectedError] of [
+    [
+      ["--stdin", "--source-name", "invalid-utf8"],
+      Buffer.from([0xc3, 0x28]),
+      "input:invalid-utf8\n",
+    ],
+    [["--stdin", "--source-name", "nul"], Buffer.from([0]), "input:nul-byte\n"],
+    [
+      ["--stdin", "--source-name", "too-large"],
+      Buffer.alloc(MAX_SOURCE_BYTES + 1, 0x61),
+      "input:source-too-large\n",
+    ],
+    [["--file", "missing-self-test-file"], undefined, "input:file-unavailable\n"],
+    [["--changed", scriptPath], undefined, "git:repository-required\n"],
+  ]) {
+    const failedChild = runScannerProcess(args, input);
+    assert.equal(failedChild.error, undefined);
+    assert.equal(failedChild.signal, null);
+    assert.equal(failedChild.status, 2);
+    assert.equal(failedChild.stdout, "");
+    assert.equal(failedChild.stderr, expectedError);
+  }
+
+  await new Promise((resolveClosedPipe, rejectClosedPipe) => {
+    const closedPipeChild = execFile(
+      process.execPath,
+      [scriptPath, "--stdin", "--source-name", "closed-pipe"],
+      {
+        encoding: "buffer",
+        timeout: SELF_TEST_TIMEOUT_MS,
+        maxBuffer: SELF_TEST_OUTPUT_BYTES,
+        windowsHide: true,
+      },
+      (error, stdout, stderr) => {
+        try {
+          assert.equal(error?.code, 2);
+          assert.equal(stdout.byteLength > 0, true);
+          assert.equal(stderr.toString("utf8"), "internal:unexpected\n");
+          resolveClosedPipe();
+        } catch (assertionError) {
+          rejectClosedPipe(assertionError);
+        }
+      },
+    );
+    closedPipeChild.stdout?.once("data", () => closedPipeChild.stdout?.destroy());
+    closedPipeChild.stdin?.end("경계".repeat(5_000));
+  });
 
   const tempParent = join(process.cwd(), "temps");
   await mkdir(tempParent, { recursive: true });

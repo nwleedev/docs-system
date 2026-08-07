@@ -143,8 +143,15 @@ function collectPlainTextParagraphs(text) {
   /** @type {Array<{text: string, line: number}>} */
   let current = [];
   let fence = null;
-  let frontMatter = lines.length > 0 && lines[0].text.trim() === "---";
-  let excludedBlock = false;
+  const frontMatterEnd =
+    lines[0]?.text === "---"
+      ? lines.findIndex(
+          (entry, index) =>
+            index > 0 && (entry.text === "---" || entry.text === "..."),
+        )
+      : -1;
+  /** @type {"html" | "other" | null} */
+  let excludedBlock = null;
 
   const flush = () => {
     if (current.length === 0) {
@@ -159,12 +166,16 @@ function collectPlainTextParagraphs(text) {
     current = [];
   };
 
-  for (const entry of lines) {
+  for (const [index, entry] of lines.entries()) {
     const trimmed = entry.text.trim();
 
-    if (frontMatter) {
-      if (entry.line > 1 && (trimmed === "---" || trimmed === "...")) {
-        frontMatter = false;
+    if (index <= frontMatterEnd) {
+      continue;
+    }
+
+    if (excludedBlock === "html") {
+      if (trimmed.length === 0) {
+        excludedBlock = null;
       }
       continue;
     }
@@ -183,30 +194,37 @@ function collectPlainTextParagraphs(text) {
     if (fenceMarker !== null) {
       flush();
       fence = fenceMarker;
-      excludedBlock = false;
+      excludedBlock = null;
       continue;
     }
 
     if (trimmed.length === 0) {
       flush();
-      excludedBlock = false;
+      excludedBlock = null;
       continue;
     }
 
     if (isSetextUnderline(entry.text) && current.length > 0) {
       current = [];
-      excludedBlock = false;
+      excludedBlock = null;
       continue;
     }
 
     if (/^ {0,3}#{1,6}(?:\s|$)/u.test(entry.text)) {
       flush();
+      excludedBlock = null;
       continue;
     }
 
-    if (excludedBlock || isExcludedBlockStart(entry.text)) {
+    if (/^ {0,3}(?:(?:\*\s*){3,}|(?:-\s*){3,}|(?:_\s*){3,})$/u.test(entry.text)) {
       flush();
-      excludedBlock = true;
+      excludedBlock = null;
+      continue;
+    }
+
+    if (excludedBlock !== null || isExcludedBlockStart(entry.text)) {
+      flush();
+      excludedBlock = /^ {0,3}</u.test(entry.text) ? "html" : "other";
       continue;
     }
 
@@ -268,7 +286,7 @@ function isSetextUnderline(line) {
 }
 
 /**
- * Intl.Segmenter가 반환한 비어 있지 않은 문장 수를 센다.
+ * Intl.Segmenter가 문장 단위로 나눈 구간 중 문자나 숫자가 포함된 구간의 수를 센다.
  *
  * @param {Intl.Segmenter} segmenter 한국어 문장 분리기
  * @param {string} text 문단 원문
@@ -277,7 +295,7 @@ function isSetextUnderline(line) {
 function countSentences(segmenter, text) {
   let count = 0;
   for (const part of segmenter.segment(text)) {
-    if (part.segment.trim().length > 0) {
+    if (/[\p{L}\p{N}]/u.test(part.segment)) {
       count += 1;
     }
   }
