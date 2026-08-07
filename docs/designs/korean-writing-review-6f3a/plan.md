@@ -229,7 +229,7 @@ Node.js 22.0.0 이상과 Git 2.18.0 이상을 먼저 확인하고 macOS 구현 �
 
 구현 전에 `docs/dev/node/mjs-cli.md`의 조건부 모듈 분리 지침을 승인된 파일명과 검사별 출력 상한에 맞추고 `eslint.config.mjs`도 함께 갱신한다. 기존 import 제한은 저장소의 다른 파일에 그대로 적용하고, `scan.mjs`의 정확한 위치에만 별도 설정을 둬 `./korean-expressions.mjs`와 `./long-paragraphs.mjs`의 정적 import를 허용한다. `scripts/**/*.mjs`처럼 이후 파일까지 포함하는 pattern으로 예외를 넓히지 않는다. 외부 package import와 동적 import 제한은 세 스크립트에서도 유지한다.
 
-ESLint 정상 사례는 승인된 스크립트에서 허용한 상대 위치를 정적으로 가져와야 한다. 오류 사례는 같은 import를 대상 밖의 `.mjs` 파일에서 사용하거나 승인되지 않은 상대 위치, 외부 package 또는 동적 import를 사용해야 한다. 각 사례의 통과와 거부를 확인하기 전에는 import 제한 변경을 완료로 판단하지 않는다. 적용 기준은 [Node.js MJS 명령줄 검사기](../../dev/node/mjs-cli.md#모듈-분리안을-승인하면-고정-모듈을-정적으로-가져온다)를 따른다.
+ESLint 정상 사례는 승인된 스크립트에서 허용한 상대 위치를 정적으로 가져와야 한다. 오류 사례는 같은 import를 대상 밖의 `.mjs` 파일에서 사용하거나 승인되지 않은 상대 위치, 외부 package 또는 동적 import를 사용해야 한다. 각 사례의 통과와 거부를 확인하기 전에는 import 제한 변경을 완료로 판단하지 않는다. 적용 기준은 [Node.js MJS 명령줄 검사기](../../dev/node/mjs-cli.md#고정된-두-탐지-모듈을-정적으로-가져온다)를 따른다.
 
 `long-paragraphs.mjs`의 단일 `policy`에 문단 후보 기준을 둔다. Markdown 플레인 텍스트 문단이 일곱 문장 이상이면 문단 시작 위치, 관찰한 문장 수와 제한된 원문 일부를 경고로 출력한다. 이 값은 장문 기술 문서 지침에서 선택했지만 검사 대상인 모든 Markdown 산문 문단에 적용하는 초기 기준이며 오류 기준이 아니다. 한국어 글자 수나 영어 단어 수 기준은 추가하지 않는다. 후보가 있어도 종료 상태는 `0`이고, 출력에 같은 뜻의 `severity`나 `requiresReview` 필드를 반복하지 않는다.
 

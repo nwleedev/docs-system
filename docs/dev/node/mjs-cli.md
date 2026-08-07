@@ -1,6 +1,6 @@
 # Node.js MJS 명령줄 검사기
 
-이 문서는 저장소에서 배포할 단독 `.mjs` 검사기의 현재 개발 지침이다. 후속 `scan-korean-expressions.mjs`는 Node.js 22.0.0 이상에서 외부 패키지와 네트워크 없이 실행한다. 저장소의 ESLint는 개발할 때만 사용하며 Node.js `^20.19.0 || ^22.13.0 || >=24`, ESLint 10.8.0과 `@eslint/js` 10.0.1을 요구한다. 실행 파일을 스킬에 복사할 때 `package.json`, lock 파일, ESLint와 `node_modules`는 함께 배포하지 않는다.
+이 문서는 저장소에서 배포할 `.mjs` 검사기의 현재 개발 지침이다. `scan.mjs`, `korean-expressions.mjs`와 `long-paragraphs.mjs`는 Node.js 22.0.0 이상에서 외부 패키지와 네트워크 없이 실행한다. 저장소의 ESLint는 개발할 때만 사용하며 Node.js `^20.19.0 || ^22.13.0 || >=24`, ESLint 10.8.0과 `@eslint/js` 10.0.1을 요구한다. 세 스크립트를 스킬에 복사할 때 `package.json`, lock 파일, ESLint와 `node_modules`는 함께 배포하지 않는다.
 
 이 지침은 [검사기 설계 계획](../../designs/korean-writing-review-6f3a/plan.md)과 현재 `eslint.config.mjs`를 근거로 한다. `.mjs`는 가까운 `package.json`의 `type`과 무관하게 ES module로 해석된다. Node.js API 동작은 22.x 공식 문서와 소스, Git 입력은 Git 2.18.0 이상에서 사용할 수 있는 공식 명령과 형식을 기준으로 확인했다.
 
@@ -896,9 +896,7 @@ const validMode =
 
 **검증.** 네 mode의 모든 조합과 `sourceName` 유무는 self-test로 실행해 승인된 상태만 통과하는지 확인한다. 연산자 개수는 JavaScript source의 AST를 읽어야 하므로 구현 검토가 맡는다. ESLint core에는 임의 표현식의 연산자 총수를 세는 규칙이 없다. `complexity`는 함수 전체의 분기와 logical expression을 함께 세고 top-level 및 산술 연산을 같은 방식으로 검사하지 않으므로 이 상한과 동치가 아니다. `no-restricted-syntax` selector도 연산자가 양쪽 subtree에 나뉜 경우를 정확히 집계하지 못한다.
 
-## 모듈 분리안을 승인하면 고정 모듈을 정적으로 가져온다
-
-이 절은 `scan.mjs`, `korean-expressions.mjs`와 `korean-paragraphs.mjs`로 나누는 제안이 승인된 뒤에 적용할 지침이다. 현재 단일 파일 기준을 바꾸지는 않는다.
+## 고정된 두 탐지 모듈을 정적으로 가져온다
 
 **막을 실패.** 고정된 두 탐지기를 `import()`로 읽으면 필요한 파일이나 named export가 없어도 module graph를 연결할 때 확인하지 못하고 해당 표현식을 실행한 뒤에야 rejected Promise로 드러난다. 입력값으로 module specifier를 만들면 배포한 스킬 밖의 코드까지 읽을 수 있는 새로운 입력 경계도 생긴다. 조건에 따라 탐지기 하나를 읽지 않는 코드는 내장 검사 전체를 항상 실행한다는 요구사항과 어긋난다.
 
@@ -908,7 +906,7 @@ const validMode =
 
 ```mjs
 import { scanExpressions } from "./korean-expressions.mjs";
-import { scanParagraphs } from "./korean-paragraphs.mjs";
+import { scanParagraphs } from "./long-paragraphs.mjs";
 
 function scanContent(sources) {
   return {
@@ -921,29 +919,29 @@ function scanContent(sources) {
 **피해야 할 코드.** 고정된 파일을 이름 목록과 동적 import로 우회하지 않는다. 한 탐지기를 조건부로 생략하지도 않는다.
 
 ```mjs
-const detectorNames = ["korean-expressions", "korean-paragraphs"];
+const detectorNames = ["korean-expressions", "long-paragraphs"];
 const detectors = await Promise.all(
   detectorNames.map((name) => import(`./${name}.mjs`)),
 );
 
 if (options.paragraphs) {
-  await import("./korean-paragraphs.mjs");
+  await import("./long-paragraphs.mjs");
 }
 ```
 
-현재 `eslint.config.mjs`의 `no-restricted-imports` pattern은 허용한 Node.js built-in 이외의 정적 import를 모두 거부하고, `ImportExpression` selector는 동적 import를 거부한다. 분리안을 승인하면 `scan.mjs`에서 두 로컬 위치만 허용하는 파일별 설정으로 정적 import 제한을 갱신해야 한다. 탐지 모듈이 진입점이나 서로를 가져오지 못하게 하는 방향 제한은 별도 파일 범위로 유지한다. `no-restricted-imports`는 동적 import를 검사하지 않으므로 기존 `ImportExpression` 제한도 유지한다.
+현재 `eslint.config.mjs`의 `no-restricted-imports` pattern은 허용한 Node.js built-in 이외의 정적 import를 모두 거부한다. `scan.mjs`의 정확한 위치에만 뒤쪽 설정을 적용해 `./korean-expressions.mjs`와 `./long-paragraphs.mjs`를 추가로 허용한다. 탐지 모듈이 진입점이나 서로를 가져오지 못하게 하는 방향 제한은 다른 스크립트의 공통 설정으로 유지한다. `no-restricted-imports`는 동적 import를 검사하지 않으므로 기존 `ImportExpression` 제한도 유지한다.
 
 **검증.** ESLint 정상 사례에는 진입점의 두 정적 import를 넣고, 오류 사례에는 계산된 specifier와 literal specifier의 동적 import를 모두 넣는다. 세 배포 파일 중 하나가 없거나 export 이름이 다를 때 CLI가 탐색을 시작하기 전에 실패하는지 자식 process로 확인한다. 고정 module graph, 모든 탐지기 호출과 외부 위치를 입력으로 받지 않는 조건은 구현 검토에서도 확인한다. [Node.js 22 ESM 문서](https://nodejs.org/download/release/v22.18.0/docs/api/esm.html), [ECMAScript module 명세](https://tc39.es/ecma262/2026/multipage/ecmascript-language-scripts-and-modules.html), [ECMAScript import call 명세](https://tc39.es/ecma262/2025/multipage/ecmascript-language-expressions.html#sec-import-calls), [ESLint `no-restricted-imports`](https://eslint.org/docs/latest/rules/no-restricted-imports)와 [`no-restricted-syntax`](https://eslint.org/docs/latest/rules/no-restricted-syntax)를 대조했다.
 
-## 모듈 분리안은 실행 조정과 두 탐지 책임만 나눈다
+## 실행 조정과 두 탐지 책임만 나눈다
 
-이 절도 세 파일 구성이 승인된 뒤에 적용한다. 파일 수를 먼저 정하고 코드를 맞추지 않고, 현재 파일에서 확인한 세 가지 변경 이유에 맞춰 나눈다.
+세 파일은 현재 검사기에서 확인한 세 가지 변경 이유에 맞춰 나눈다.
 
 - `scan.mjs`는 인수, Git과 파일 입력, 전체 상한, 공개 오류, 검사별 결과 조립, JSON 직렬화, stream 기록과 process self-test를 맡는다.
 - `korean-expressions.mjs`는 외부에서 선택할 수 없는 단일 `rules` 상수, 규칙 검증, literal 색인과 모든 출현 탐색을 맡는다. `rules` 자체는 export하지 않고 실제로 순회한 규칙에서 `catalog`를 만든다.
-- `korean-paragraphs.mjs`는 Markdown 플레인 텍스트 문단 구분, 문장 분리와 긴 문단 후보 탐색을 맡는다. 파일, Git, process와 표준 stream은 읽지 않는다.
+- `long-paragraphs.mjs`는 Markdown 플레인 텍스트 문단 구분, 문장 분리와 긴 문단 후보 탐색을 맡는다. 파일, Git, process와 표준 stream은 읽지 않는다.
 
-탐지 모듈은 source 값과 상한처럼 계산에 필요한 값만 받고 검사별 자료를 반환한다. 진입점은 원문을 한 번 읽은 뒤 같은 source 배열을 두 함수에 전달한다. 검사별 경고 상한을 둘지 전체 상한을 공유할지 승인되기 전에는 반환 schema와 상한 인수를 확정하지 않는다.
+탐지 모듈은 source 값처럼 계산에 필요한 값만 받고 검사별 자료를 반환한다. 진입점은 원문을 한 번 읽은 뒤 같은 source 배열을 두 함수에 전달한다. 각 검사 결과는 `id`, `catalog`, `rules`, `warnings`와 `summary`를 가지며, 상세 경고 20,000개와 직렬화 결과 32 MiB의 상한을 각각 적용한다.
 
 **권장 코드.** 각 탐지 모듈은 자기 정책을 내부에 두고 하나의 named function만 공개한다. 아래 예시의 `scanLiteralRules`와 `scanPlainTextParagraphs`는 같은 파일에 남는 비공개 helper를 나타낸다.
 
@@ -965,7 +963,7 @@ export function scanExpressions(sources) {
 ```
 
 ```mjs
-// korean-paragraphs.mjs
+// long-paragraphs.mjs
 const longParagraphPolicy = {
   id: "ko.long-paragraph",
   minSentences: 7,
@@ -988,7 +986,7 @@ export function scanParagraphs(sources) {
 // index.mjs
 export * from "./scan.mjs";
 export * from "./korean-expressions.mjs";
-export * from "./korean-paragraphs.mjs";
+export * from "./long-paragraphs.mjs";
 
 // korean-expressions.mjs
 export let rules = [];
@@ -999,21 +997,11 @@ export function setRules(nextRules) {
 
 **검증.** import graph는 `scan.mjs`에서 두 탐지 모듈로만 향해야 한다. 탐지 모듈은 진입점이나 서로를 가져오지 않으며 최상위 I/O와 process 상태 변경이 없어야 한다. self-test는 두 탐지 함수에 같은 source를 직접 전달하고, CLI 검사는 세 파일을 함께 배치한 상태에서 진입점을 자식 process로 실행한다. [textlint 규칙 문서](https://textlint.org/docs/rule/)와 [ESLint custom rule 문서](https://eslint.org/docs/latest/extend/custom-rules)는 실행기가 제공한 문맥을 개별 규칙이 받아 검사하고 보고하는 구조를 설명한다. [ESLint plugin 문서](https://eslint.org/docs/latest/extend/plugins)는 규칙과 processor를 분리된 module로 묶고 설정 진입점에서 가져오는 구성을 설명한다.
 
-## 공용 모듈은 같은 규칙을 두 곳에서 실제로 사용할 때만 만든다
+## 추가 공용 모듈을 만들지 않는다
 
-세 파일을 나누는 시점에는 `common.mjs`, `utils.mjs`, `helpers.mjs` 또는 barrel `index.mjs`를 추가하지 않는다. 한 탐지기에서만 쓰는 규칙 검증과 helper는 그 파일에 둔다. 두 탐지기가 같은 UTF-16 위치 계산처럼 이름, 입력, 오류와 변경 이유가 같은 동작을 실제로 중복하게 될 때에만 해당 동작을 `source-locations.mjs`처럼 책임을 드러내는 leaf module로 옮긴다.
+현재 배포 단위와 import 제한은 `scan.mjs`, `korean-expressions.mjs`와 `long-paragraphs.mjs` 세 파일만 허용한다. 한 탐지기에서만 쓰는 규칙 검증과 helper는 해당 파일에 둔다. 두 탐지기에서 비슷한 UTF-16 위치 계산이 보여도 Markdown 문단 시작과 literal 일치 범위처럼 입력 및 반환 의미가 다르면 각각 유지한다.
 
-leaf module은 진입점과 탐지 모듈을 가져오지 않고 계산 함수만 named export한다. 두 탐지 모듈이 그 leaf를 가져오는 단방향 graph를 유지한다. 비슷해 보이지만 Markdown block 상태와 literal 일치 위치처럼 조건과 변경 이유가 다른 코드는 같은 helper에 boolean option을 추가해 합치지 않는다.
-
-**권장 코드.** 공용 동작이 확인된 뒤에는 필요한 함수만 정확한 이름으로 가져온다.
-
-```mjs
-import { locateUtf16 } from "./source-locations.mjs";
-
-const location = locateUtf16(source.text, candidate.startOffsetUtf16);
-```
-
-**피해야 할 코드.** 넓은 namespace와 mode flag로 관련 없는 동작을 공용 helper에 모으지 않는다.
+**피해야 할 코드.** 별도 공용 파일이나 넓은 namespace와 mode flag로 동작을 모으지 않는다.
 
 ```mjs
 import * as utils from "./utils.mjs";
@@ -1023,7 +1011,7 @@ const location = utils.processText(source.text, {
 });
 ```
 
-**검증.** 새 공용 파일을 제안할 때에는 현재 두 호출 위치, 두 위치에서 같아야 할 입력과 반환 의미, 함께 바뀌어야 할 이유를 제시한다. 이 근거가 없으면 기존 module의 비공개 함수로 유지한다. `scan.mjs`를 다시 가져오는 cycle, wildcard import, 사용하지 않는 export와 공용 함수의 mode flag는 구현 검토로 확인한다. Agent Skills는 여러 스크립트를 스킬 루트 기준 상대 위치로 배치할 수 있지만, 이는 공용 파일을 미리 만들 근거가 아니다. [Agent Skills의 스크립트 안내](https://agentskills.io/skill-creation/using-scripts)를 확인했다.
+**검증.** import graph에 세 파일 이외의 스크립트가 들어가거나 탐지 모듈에 import 선언이 생기면 현재 설계와 ESLint 검사를 통과하지 못한다. 두 탐지기에서 입력, 반환 의미, 오류와 변경 이유가 모두 같은 계산이 실제로 중복돼 공용 파일이 필요해지면 먼저 설계 결정과 import 제한을 다시 검토한다. Agent Skills가 여러 스크립트를 배치할 수 있다는 사실만으로 파일을 추가하지 않는다. [Agent Skills의 스크립트 안내](https://agentskills.io/skill-creation/using-scripts)를 확인했다.
 
 ## 의존 기능은 필요한 함수만 전달한다
 
@@ -1031,7 +1019,7 @@ const location = utils.processText(source.text, {
 
 **적용 조건과 관찰 결과.** 현재 `scanSources({ provideSources })`처럼 필요한 기능 하나를 함수로 전달하는 방식은 유지한다. 기능이 늘어나도 파일이나 Git을 읽는 함수에는 실제로 호출할 함수만 이름으로 전달하고, 순수 함수에는 계산할 값만 전달한다. class는 여러 호출에서 같은 상태나 자원을 유지하거나, 여러 method가 같은 조건, 호출 순서 또는 `close()` 같은 종료 절차를 함께 지켜야 하며 함수나 기존 Node.js 객체로 해결할 수 없을 때 다시 검토한다. 기능 또는 method 수만 늘어난 것은 전환 근거가 아니다. Node.js `FileHandle`처럼 이미 상태와 종료 동작을 제공하는 객체는 별도 객체로 감싸지 않고 사용한다.
 
-모듈 분리안을 승인하더라도 두 탐지 함수는 정적으로 가져와 직접 호출한다. 이 함수들을 다시 주입하면 실제 module graph와 다른 탐지기를 실행할 수 있어 모든 내장 검사를 항상 실행한다는 조건을 약화한다. 테스트에서 바꿔야 하는 I/O 경계인 `provideSources`만 전달하고, 탐지 함수는 같은 source 값으로 직접 검사한다. Node.js의 module mock은 22.3.0에 추가되어 최저 지원 버전인 22.0.0부터 22.2.x까지 사용할 수 없고, 22.18.0에서도 실험 flag가 필요하다. 현재 self-test를 위해 loader나 module mock을 도입하지 않는다. [Node.js 22 test runner의 module mock 문서](https://nodejs.org/download/release/v22.18.0/docs/api/test.html#mockmodulespecifier-options)를 확인했다.
+두 탐지 함수는 정적으로 가져와 직접 호출한다. 이 함수들을 다시 주입하면 실제 module graph와 다른 탐지기를 실행할 수 있어 모든 내장 검사를 항상 실행한다는 조건을 약화한다. 테스트에서 바꿔야 하는 I/O 경계인 `provideSources`만 전달하고, 탐지 함수는 같은 source 값으로 직접 검사한다. Node.js의 module mock은 22.3.0에 추가되어 최저 지원 버전인 22.0.0부터 22.2.x까지 사용할 수 없고, 22.18.0에서도 실험 flag가 필요하다. 현재 self-test를 위해 loader나 module mock을 도입하지 않는다. [Node.js 22 test runner의 module mock 문서](https://nodejs.org/download/release/v22.18.0/docs/api/test.html#mockmodulespecifier-options)를 확인했다.
 
 **권장 코드.** 함수가 실제로 사용하는 두 기능만 전달한다.
 
@@ -1134,7 +1122,7 @@ spawnSync(process.execPath, [new URL(import.meta.url).pathname, "--invalid"]);
 
 ## ESLint가 맡는 코드 형태를 제한한다
 
-`eslint.config.mjs`는 코드를 실행하지 않고도 정확히 찾을 수 있으며 현재 한 파일 설계에 해당하는 형태만 거부한다. 현재 규칙은 다음 항목을 맡는다.
+`eslint.config.mjs`는 코드를 실행하지 않고도 정확히 찾을 수 있는 형태를 거부한다. `scan.mjs`의 두 로컬 정적 import만 파일별 예외로 허용하고, 세 스크립트의 나머지 제한은 공통으로 적용한다. 현재 규칙은 다음 항목을 맡는다.
 
 ESLint 10.8.0과 `@eslint/js` 10.0.1은 MIT license를 사용한다. `@eslint/js`에는 runtime dependency가 없으며, 현재 lock 파일을 대상으로 한 audit에서는 알려진 취약점이 보고되지 않았다. 의존성을 갱신할 때 engine, peer dependency, license, audit와 아래 code-path 문제를 다시 확인한다.
 
@@ -1143,7 +1131,7 @@ ESLint 10.8.0과 `@eslint/js` 10.0.1은 MIT license를 사용한다. `@eslint/js
 - `no-param-reassign`은 인수와 인수 속성의 직접 변경을 거부한다. `no-shadow`는 바깥 scope의 이름과 JavaScript 기본 전역 이름을 더 안쪽 scope에서 다시 선언하는 코드를 거부한다. 두 규칙은 순수 함수나 한 가지 기능을 증명하지 않고, 입력 변경과 이름 혼동의 일부 형태만 찾는다.
 - `no-var`는 모든 `var` 선언을 거부한다. `no-restricted-syntax`는 module의 직접 `let` 선언과 `export let`을 거부한다. 함수 내부의 지역 `let`은 허용하며 `const` 객체, 배열, Map, Set과 정규식의 내부 상태는 이 규칙으로 찾지 못한다.
 - `no-eval`, `no-implied-eval`, `no-new-func`와 `globalThis.Function` 제한은 입력 문자열을 코드로 실행하는 직접 형태를 거부한다.
-- `no-restricted-imports`와 `no-restricted-syntax`는 승인된 Node.js built-in 목록 밖의 static import, dynamic import, `node:module`, `execFile` 및 `spawnSync` 이외의 child process import, default가 아닌 `node:process` import, 이름을 바꾼 `node:process` 기본 import, 두 허용 함수의 import 별칭, 직접 표기한 `import.meta.main`, `import.meta`의 변수 할당과 구조분해, 직접 호출에 전달한 `shell` 속성과 계산된 option 속성을 거부한다.
+- `no-restricted-imports`와 `no-restricted-syntax`는 `scan.mjs`의 승인된 두 로컬 위치와 Node.js built-in 목록 밖의 static import, dynamic import, `node:module`, `execFile` 및 `spawnSync` 이외의 child process import, default가 아닌 `node:process` import, 이름을 바꾼 `node:process` 기본 import, 두 허용 함수의 import 별칭, 직접 표기한 `import.meta.main`, `import.meta`의 변수 할당과 구조분해, 직접 호출에 전달한 `shell` 속성과 계산된 option 속성을 거부한다. 두 로컬 import는 다른 스크립트에서 계속 거부한다.
 - `no-restricted-properties`는 식별자 이름을 유지한 `process.abort()`, `process.execve()`, `process.exit()`, `process.getBuiltinModule()`과 `process.kill()`을 거부한다. `node:process`는 default import만 허용하므로 같은 API를 named import로 가져올 수 없다.
 - 같은 규칙은 `globalThis.process`, `globalThis.Function`, `globalThis.fetch`, `globalThis.WebSocket`과 `globalThis.console` 직접 접근도 거부한다.
 - `no-console`은 전역 `console`을 직접 사용하는 출력을 거부한다.

@@ -124,7 +124,7 @@ export default defineConfig([
         },
         {
           selector: "ImportExpression",
-          message: "Keep imports static and limited to Node.js built-ins.",
+          message: "Dynamic imports are not allowed; keep every import static and auditable.",
         },
         {
           selector: "MemberExpression[object.type='MetaProperty'][object.meta.name='import'][computed=false][property.name='main']",
@@ -204,6 +204,41 @@ export default defineConfig([
           vars: "all",
           args: "after-used",
           caughtErrors: "all",
+        },
+      ],
+    },
+  },
+  {
+    name: "words-review-scanner-entrypoint-imports",
+    files: ["skills/use-words-review/scripts/scan.mjs"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          paths: [
+            {
+              name: "node:child_process",
+              allowImportNames: ["execFile", "spawnSync"],
+              message: "Import only execFile and spawnSync from node:child_process.",
+            },
+            {
+              name: "child_process",
+              message: "Import the required API from node:child_process.",
+            },
+            {
+              name: "node:process",
+              allowImportNames: ["default"],
+              message: "Import node:process only as the default process binding.",
+            },
+          ],
+          patterns: [
+            {
+              regex:
+                "^(?!(?:node:(?:assert/strict|buffer|child_process|fs|fs/promises|path|process|url|util)|\\./(?:korean-expressions|long-paragraphs)\\.mjs)$)",
+              message:
+                "Import only the required Node.js built-ins and the two scanner detector modules.",
+            },
+          ],
         },
       ],
     },

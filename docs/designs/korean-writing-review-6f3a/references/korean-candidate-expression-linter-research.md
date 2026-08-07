@@ -219,7 +219,7 @@ source 상한은 진입점이 한 번 적용한다. 각 검사는 모든 후보�
 
 ## import, 의존 기능 전달과 모듈 책임 조사
 
-승인된 세 파일 구성에서 진입점은 두 탐지 모듈을 정적으로 가져오고, 의존 기능 전달은 source를 제공하는 I/O 접점에만 사용한다. 탐지 모듈은 각각 표현 규칙과 문단 정책을 내부에서 관리하며 같은 source 값을 받는다. 공용 파일은 두 탐지기가 같은 의미와 변경 이유를 가진 계산을 실제로 중복할 때만 추가한다. 적용 코드와 오류 사례는 [Node.js MJS 명령줄 검사기의 제안 지침](../../../dev/node/mjs-cli.md#모듈-분리안을-승인하면-고정-모듈을-정적으로-가져온다)에 기록했다.
+승인된 세 파일 구성에서 진입점은 두 탐지 모듈을 정적으로 가져오고, 의존 기능 전달은 source를 제공하는 I/O 접점에만 사용한다. 탐지 모듈은 각각 표현 규칙과 문단 정책을 내부에서 관리하며 같은 source 값을 받는다. 현재 구성에는 공용 파일을 추가하지 않는다. 두 탐지기에서 입력, 반환 의미와 변경 이유가 모두 같은 계산이 실제로 중복돼 추가 파일이 필요해지면 설계 결정과 import 제한을 먼저 다시 검토한다. 적용 코드와 오류 사례는 [Node.js MJS 명령줄 검사기](../../../dev/node/mjs-cli.md#고정된-두-탐지-모듈을-정적으로-가져온다)에 기록했다.
 
 ### 고정된 두 탐지기에는 정적 import가 맞다
 
@@ -246,19 +246,19 @@ textlint와 ESLint도 개별 규칙에 실행기 전체를 주지 않고 source 
 
 `scan.mjs`는 CLI, 입력, 전체 실행, 표준 오류 메시지, JSON과 stream을 맡는다. `korean-expressions.mjs`는 외부에 공개하지 않는 `rules` 상수와 literal 탐색을 맡고, `long-paragraphs.mjs`는 Markdown 문단 및 문장 수 탐색을 맡는다. 탐지 모듈은 process, 파일, Git과 표준 stream을 읽지 않는다. 이 방향은 실행기가 rule과 processor를 조립하고 각 module이 자기 탐색을 맡는 textlint와 ESLint의 구조에서도 확인된다. [ESLint plugin 문서](https://eslint.org/docs/latest/extend/plugins)와 [textlint 15.8.0 kernel task 소스](https://github.com/textlint/textlint/blob/v15.8.0/packages/%40textlint/kernel/src/task/linter-task.ts)를 확인했다.
 
-재사용 가능성을 예상해 `common.mjs`, `utils.mjs`, barrel `index.mjs`를 먼저 만들지는 않는다. 두 탐지기가 같은 UTF-16 위치 계산처럼 입력, 반환 의미와 변경 이유가 같은 코드를 실제로 공유하게 되면 `source-locations.mjs`처럼 역할을 드러내는 leaf module로 옮길 수 있다. 이때 import는 진입점에서 탐지 모듈로, 탐지 모듈에서 leaf로만 향해야 하며 leaf가 진입점이나 탐지 모듈을 다시 가져오지 않는다. Agent Skills가 여러 스크립트를 상대 위치로 배치할 수 있다는 사실은 배포를 가능하게 하지만 공용 파일을 미리 만들 근거는 아니다. [Agent Skills의 스크립트 안내](https://agentskills.io/skill-creation/using-scripts)를 확인했다.
+현재 배포 단위에는 `common.mjs`, `utils.mjs`, barrel `index.mjs`와 leaf module을 추가하지 않는다. 한 탐지기에만 필요한 계산은 해당 파일의 비공개 함수로 둔다. 두 탐지기에서 입력, 반환 의미와 변경 이유가 모두 같은 계산을 실제로 공유해야 하는 상황이 생기면 설계 결정과 import 제한을 먼저 다시 검토한다. Agent Skills가 여러 스크립트를 상대 위치로 배치할 수 있다는 사실만으로 파일을 추가하지 않는다. [Agent Skills의 스크립트 안내](https://agentskills.io/skill-creation/using-scripts)를 확인했다.
 
-### 현재 ESLint 설정은 로컬 정적 import도 막는다
+### ESLint 설정은 진입점의 두 정적 import만 허용한다
 
-현재 `eslint.config.mjs`는 `ImportExpression`을 거부하는 동시에, 허용한 Node.js built-in 이외의 모든 정적 import를 `no-restricted-imports` pattern으로 거부한다. `./korean-expressions.mjs`의 정적 import와 같은 위치를 동적 import하는 사례를 각각 stdin으로 검사했으며 둘 다 상태 `1`로 끝났다. 정적 사례는 `no-restricted-imports`, 동적 사례는 `no-restricted-syntax`가 보고했다.
+`eslint.config.mjs`는 공통 설정에서 허용한 Node.js built-in 이외의 정적 import와 모든 `ImportExpression`을 거부한다. `scan.mjs`의 정확한 위치에만 뒤쪽 설정을 적용해 `./korean-expressions.mjs`와 `./long-paragraphs.mjs`의 정적 import를 추가로 허용한다.
 
-따라서 구현 전에 진입점에서 두 정확한 상대 위치만 허용하고, 탐지 모듈에서는 진입점과 다른 탐지 모듈 import를 계속 막는 파일별 ESLint 설정이 필요하다. `no-restricted-imports`는 동적 import에 적용되지 않으므로 `ImportExpression` 제한도 유지한다. 이 변경은 승인된 모듈 분리에 따르는 개발 설정 변경이며 이번 조사에서는 적용하지 않는다. [ESLint `no-restricted-imports` 문서](https://eslint.org/docs/latest/rules/no-restricted-imports)와 [`no-restricted-syntax` 문서](https://eslint.org/docs/latest/rules/no-restricted-syntax)를 대조했다.
+진입점의 두 정적 import는 상태 `0`으로 통과하고, 같은 import를 다른 스크립트에서 사용하거나 진입점에서 승인되지 않은 로컬 위치, 외부 package 또는 동적 import를 사용하면 상태 `1`로 끝나야 한다. `no-restricted-imports`는 동적 import에 적용되지 않으므로 `ImportExpression` 제한도 유지한다. [ESLint `no-restricted-imports` 문서](https://eslint.org/docs/latest/rules/no-restricted-imports)와 [`no-restricted-syntax` 문서](https://eslint.org/docs/latest/rules/no-restricted-syntax)를 대조했다.
 
 ### 연속 두 관점에서 새 정보가 없어 조사를 끝냈다
 
 첫째, ECMAScript와 Node.js 실행 관점에서 정적 연결과 동적 import의 비동기 실패 차이를 확인했다. 둘째, 현재 ESLint와 Node.js test runner 관점에서 로컬 import 제한과 실험적인 module mock 조건을 새로 확인했다. 셋째, textlint와 ESLint 규칙 실행 관점에서 필요한 context만 규칙에 전달하는 구조를 확인했다.
 
-넷째, Agent Skills 배포 관점은 여러 script를 상대 위치로 둘 수 있다는 기존 결론을 확인했지만 import 선택, 의존 기능 전달과 책임 분리에 새 제약을 추가하지 않았다. 다섯째, 현재 검사기와 기존 개발 지침을 다시 대조한 관점도 `provideSources` 함수 전달과 실제 중복이 생긴 뒤 공용 책임을 추출한다는 결론을 바꾸지 않았다. 서로 다른 관점에서 새 설계 정보가 없는 상황이 두 번 연속 발생했으므로 조사를 종료했다.
+넷째, Agent Skills 배포 관점은 여러 script를 상대 위치로 둘 수 있다는 기존 결론을 확인했지만 import 선택, 의존 기능 전달과 책임 분리에 새 제약을 추가하지 않았다. 다섯째, 현재 검사기와 기존 개발 지침을 다시 대조한 관점도 `provideSources` 함수만 전달하고, 공용 파일이 필요해지면 설계 결정과 import 제한을 먼저 다시 검토해야 한다는 결론을 바꾸지 않았다. 서로 다른 관점에서 새 설계 정보가 없는 상황이 두 번 연속 발생했으므로 조사를 종료했다.
 
 ## 긴 문단은 비차단 검토 후보로 알린다
 
