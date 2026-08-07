@@ -402,7 +402,7 @@ node <skill-root>/scripts/scan.mjs --changed <repo>
 
 `git diff` 하나로는 staged와 untracked 파일을 모두 얻을 수 없다. porcelain v1 `-z` 출력은 상태와 저장소 상대 경로를 NUL로 구분하므로 공백과 newline이 있는 경로를 줄 단위 parser 없이 처리할 수 있다. rename을 끄고 추가와 삭제로 받으면 두 경로 record 분기를 피할 수 있다. [Git status porcelain v1](https://git-scm.com/docs/git-status#_porcelain_format_version_1)과 [Git diff](https://git-scm.com/docs/git-diff)를 확인했다.
 
-모든 Git 명령은 `--changed`로 받은 위치에서 shell 없이 실행한다. `git rev-parse --show-toplevel`이 반환한 루트를 파일 확인과 출력 ID에 같이 사용한다. `GIT_DIR`, `GIT_WORK_TREE`, `GIT_COMMON_DIR`, `GIT_INDEX_FILE`처럼 다른 저장소나 index를 가리킬 수 있는 환경변수가 있으면 실행을 거부한다. 경로는 NUL 구분 byte를 엄격한 UTF-8로 decode하고 저장소 루트 밖 실제 위치, symbolic link, submodule과 특수 파일은 읽지 않는다.
+모든 Git 명령은 `--changed`로 받은 위치에서 shell 없이 실행한다. `git rev-parse --show-toplevel`이 반환한 루트를 파일 확인과 출력 ID에 같이 사용한다. 자식 프로세스 환경에서는 `GIT_DIR`, `GIT_WORK_TREE`, `GIT_COMMON_DIR`, `GIT_INDEX_FILE`처럼 `GIT_`로 시작하는 변수를 대소문자와 관계없이 제거해 다른 저장소나 index를 가리키지 못하게 한다. 경로는 NUL 구분 byte를 엄격한 UTF-8로 decode하고 저장소 루트 밖 실제 위치, symbolic link, submodule과 특수 파일은 읽지 않는다.
 
 index와 작업 트리가 모두 바뀐 파일도 현재 작업 트리 내용을 검사한다. AI가 실제로 읽고 고칠 원문과 검사 결과를 맞추기 위해서다.
 

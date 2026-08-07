@@ -1,6 +1,6 @@
 ---
 name: use-words-review
-description: Review text and names before they are stored, committed, published, shared, or explicitly submitted for wording review. Check audience, evidence, private data, sentence relationships, symbols, and natural Korean. Exclude routine chat and responses that will not be reused.
+description: Review text and names before they are stored, committed, published, shared, or explicitly submitted for wording review. Check audience, evidence, private data, sentence relationships, symbols, and natural Korean when present. Exclude routine chat and responses that will not be reused.
 ---
 
 # Use Words Review
