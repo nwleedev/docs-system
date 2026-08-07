@@ -2,19 +2,19 @@
 
 ## 결론
 
-현재 구현된 `scan-korean-expressions.mjs`는 literal 후보를 원문 전체에서 찾는 표현 검사기다. 긴 플레인 텍스트 문단 검사는 Markdown block 판별과 한국어 문장 분리가 필요하므로 같은 `rules` 배열의 다른 종류로 넣기보다 별도 탐지 모듈로 나누는 편이 책임과 결과 구조를 분명하게 만든다. 다만 두 독립 명령이 입력과 JSON 처리를 복제하지 않도록 실행 진입점 하나가 원문을 한 번 읽고 표현 및 문단 모듈을 호출하는 구성을 권장한다.
+현재 구현된 `scan-korean-expressions.mjs`는 literal 후보를 원문 전체에서 찾는 표현 검사기다. 긴 플레인 텍스트 문단 검사는 Markdown block 판별과 한국어 문장 분리가 필요하므로 별도 탐지 모듈로 나누는 편이 책임과 결과 구조를 분명하게 만든다. 요구사항 소유자는 `scan.mjs`가 원문을 한 번 읽고 `korean-expressions.mjs`와 `long-paragraphs.mjs`를 호출하는 구성을 승인했다.
 
-이 구성은 요구사항 소유자가 승인한 단일 파일 기준을 바꾸는 제안이다. 파일 수, 이름과 JSON의 검사별 구분을 승인받기 전에는 현재 구현을 이름 변경하거나 문단 검사를 추가하지 않는다. 승인 여부와 관계없이 textlint, Vale와 reviewdog를 실행 의존성으로 넣지 않고 Node.js 표준 기능만 사용하며, 후보는 확정 오류가 아니라 AI가 문맥을 읽을 검토 위치로 제공한다.
+`scan.mjs`만 두 탐지 모듈의 정확한 상대 위치를 정적 import한다. 표현 검사와 긴 문단 검사는 각각 상세 경고 20,000개와 직렬화 결과 32 MiB를 상한으로 사용하고, 각 결과에 전체, 표시 및 생략 수를 제공한다. textlint, Vale와 reviewdog는 실행 의존성으로 넣지 않고 Node.js 표준 기능만 사용하며, 후보는 확정 오류가 아니라 AI가 문맥을 읽을 검토 위치로 제공한다. 승인된 결정과 다시 검토할 조건은 [한국어 검사기의 모듈과 출력 상한](../decisions/scanner-modules-and-output-limits.md)에 기록했다.
 
 규칙의 `reference` 필드는 제거하는 편이 맞다. 스킬은 사용자 홈, 저장소 내부, 관리 환경 또는 다른 호스트에 설치될 수 있다. 실행 결과를 이해할 때마다 별도 파일을 찾아 읽게 하면 설치 위치 해석과 추가 문맥 사용이 필요하다. literal로 찾을 규칙은 `id`, `expressions`, `message`, `queries`, `negatives`, `positives`를 스크립트 상수 하나에 둔다. 출력은 일치한 규칙의 설명과 사례를 규칙마다 한 번만 싣고, 출현별 위치와 원문 일부를 별도 배열에 둔다.
 
 `reference` 제거와 `korean.md` 제거는 같은 결정이 아니다. `korean.md`에는 literal 검색으로 만들 수 없는 문장 판정 절차가 있다. 영어식 무생물 주어, 행동 주체가 빠진 피동문, 명사 나열, 지칭 대상 변화, 근거 없이 이어받은 표현과 반복되는 문단 구조는 내장 후보 목록만으로 전수 탐색할 수 없다. 따라서 `korean.md`를 없애지 않고 이러한 의미 검토 기준만 남긴다. literal 후보, 판정 질문과 대조 사례는 스크립트로 옮겨 두 파일이 같은 자료를 중복 관리하지 않게 한다.
 
-입력은 `--changed <repo>`, 반복 가능한 `--file <path>`, `--stdin --source-name <name>` 가운데 정확히 하나만 사용한다. 각 입력 어댑터가 `Source`를 만들고 같은 `scanSources` 함수가 원문을 검사한다. 현재 구현에서는 파일 선택과 문자열 탐색을 한 파일의 함수로 분리하며, 모듈 분리안을 승인하더라도 진입점이 같은 입력 형식을 유지한다. 원문 문자열을 명령행 인수로 직접 받는 `--text`는 shell quoting과 인수 길이 문제 때문에 두지 않는다.
+입력은 `--changed <repo>`, 반복 가능한 `--file <path>`, `--stdin --source-name <name>` 가운데 정확히 하나만 사용한다. 각 입력 어댑터가 `Source`를 만들고 같은 `scanSources` 함수가 원문을 검사한다. `scan.mjs`가 파일 선택과 입력 정규화를 맡고 같은 source를 두 탐지 모듈에 전달한다. 원문 문자열을 명령행 인수로 직접 받는 `--text`는 shell quoting과 인수 길이 문제 때문에 두지 않는다.
 
 정상 결과는 표준 출력에 JSON 객체 하나로 쓴다. 후보가 있거나 없어도 종료 상태는 `0`이다. Git 실행, 인수, 파일 읽기, 인코딩, 크기 또는 직렬화가 실패하면 예외를 최상위에서 한 번 잡아 짧은 메시지를 표준 오류에 쓰고 종료 상태를 `2`로 정한다. 후보를 `throw new Error`로 전달하면 모든 출현을 모으지 못하고 실행 실패와 검토 대상을 구분할 수 없으므로 사용하지 않는다.
 
-이 안은 [요구사항의 목표](../requirements.md#목표)에 있는 `korean.md` 유지 여부, 모든 후보 출현의 경고 방식과 스크립트 설계를 구체화한다. 요구사항 소유자는 `skills/use-words-review/scripts/scan-korean-expressions.mjs` 한 파일을 새로 만들고, literal 후보 자료와 의미 검토 기준의 책임을 나누는 방안을 승인했다.
+이 안은 [요구사항의 목표](../requirements.md#목표)에 있는 `korean.md` 유지 여부, 모든 후보 출현의 경고 방식과 스크립트 설계를 구체화한다. 요구사항 소유자는 세 파일을 한 배포 단위로 사용하고, literal 후보 자료와 의미 검토 기준의 책임을 나누는 방안을 승인했다.
 
 ## 조사 질문과 확인 범위
 
@@ -74,10 +74,12 @@ use-words-review/
 │   ├── examples.md
 │   └── korean.md
 └── scripts/
-    └── scan-korean-expressions.mjs
+    ├── scan.mjs
+    ├── korean-expressions.mjs
+    └── long-paragraphs.mjs
 ```
 
-`package.json`, lock 파일, `node_modules`, `assets/`, `agents/openai.yaml`과 설정 파일은 표준 기능만 쓰는 한 파일의 실행 결과에 필요하지 않다. `.mjs`는 가까운 `package.json`의 `type` 값과 무관하게 ES module로 해석된다. [Node.js package 문서](https://nodejs.org/api/packages.html#packagejson-and-file-extensions)가 이 동작을 정의한다.
+`package.json`, lock 파일, `node_modules`, `assets/`, `agents/openai.yaml`과 설정 파일은 표준 기능만 쓰는 세 스크립트의 실행에 필요하지 않다. `.mjs`는 가까운 `package.json`의 `type` 값과 무관하게 ES module로 해석된다. [Node.js package 문서](https://nodejs.org/api/packages.html#packagejson-and-file-extensions)가 이 동작을 정의한다.
 
 ### `korean.md`는 의미 검토 자료로 유지한다
 
@@ -102,7 +104,7 @@ Git 프로젝트는 LTS 계열을 지정하지 않는다. 따라서 Git 최저 �
 
 ## 실행 진입점과 탐지 모듈 분리 검토
 
-표현 검사와 문단 검사는 탐지 단위와 경고 속성이 다르지만 입력, 상한, 오류 및 출력 처리는 같다. 따라서 탐지 코드는 파일로 나누고 AI가 실행할 명령은 하나로 유지하는 구성이 가장 적은 중복으로 두 책임을 구분한다. 이는 후속 결정을 위한 권고이며 현재 승인된 단일 파일 기준을 대신하지 않는다.
+표현 검사와 문단 검사는 탐지 단위와 경고 속성이 다르지만 입력, 오류 및 출력 처리는 같다. 따라서 탐지 코드는 파일로 나누고 AI가 실행할 명령은 하나로 유지한다. 이 구성과 검사별 출력 상한은 [승인된 결정](../decisions/scanner-modules-and-output-limits.md)을 따른다.
 
 ### 현재 파일은 literal 표현 검사에 맞춰져 있다
 
@@ -110,9 +112,9 @@ Git 프로젝트는 LTS 계열을 지정하지 않는다. 따라서 Git 최저 �
 
 문단 검사는 빈 줄과 Markdown block marker 및 fence 상태로 최상위 플레인 텍스트 문단을 구분하고, 각 문단을 `Intl.Segmenter`로 나눠 문장 수를 센다. 경고에는 일치 표현과 끝 열이 아니라 문장 수와 문단 시작 위치가 필요하다. 이 차이를 기존 규칙의 `kind` 분기로 흡수하면 규칙 검증, 탐색, 직렬화와 자체 검사마다 서로 사용하지 않는 속성을 조건부로 처리해야 한다.
 
-### 한 파일에 두 탐지기를 넣는 방법은 현재 승인안이다
+### 한 파일에 두 탐지기를 넣는 방법은 이전 기준이었다
 
-현재 승인안은 한 번 읽은 source와 JSON 출력을 그대로 활용하며 추가 파일을 만들지 않는다. 반면 `scan-korean-expressions.mjs`라는 이름이 문단 검사까지 설명하지 못하고, literal 규칙과 paragraph 규칙의 서로 다른 속성이 한 배열에 섞인다. 실제 구현 전에 선택한 단일 파일 제약은 현재 코드가 표현 탐지와 실행 기반을 함께 가진 상태에서 다시 검토할 근거가 생겼다.
+이전 기준은 한 번 읽은 source와 JSON 출력을 그대로 활용하며 추가 파일을 만들지 않았다. 반면 `scan-korean-expressions.mjs`라는 이름이 문단 검사까지 설명하지 못하고, literal 규칙과 paragraph 규칙의 서로 다른 속성이 한 배열에 섞인다. 요구사항 소유자는 이 문제를 확인한 뒤 세 파일 구성을 승인했다.
 
 ### 독립 실행 파일 두 개는 공통 처리를 복제한다
 
@@ -131,7 +133,7 @@ use-words-review/
 └── scripts/
     ├── scan.mjs
     ├── korean-expressions.mjs
-    └── korean-paragraphs.mjs
+    └── long-paragraphs.mjs
 ```
 
 ```text
@@ -141,7 +143,7 @@ use-words-review/
     ├── literal 표현 탐지
     └── Markdown 문단 탐지
     ↓
-검사별 결과 조립, 전체 상한 적용 및 JSON 한 건 출력
+검사별 결과 조립, 검사별 상한 적용 및 JSON 한 건 출력
 ```
 
 이 구조는 개별 규칙 또는 탐지기가 source를 받고 공통 실행기가 결과를 모으는 기존 린터 구조와도 맞는다.
@@ -175,7 +177,7 @@ Agent Skills는 `scripts/`에 여러 실행 자료를 둘 수 있고 스킬 루�
 
 #### 진입점만 줄인다
 
-`scan.mjs`, `korean-expressions.mjs`, `korean-paragraphs.mjs`는 실행 명령을 짧게 만들면서 두 내부 모듈의 한국어 검사 책임을 드러낸다. 다른 스킬에도 `scan.mjs`가 있을 수 있지만 실행할 때에는 항상 스킬 루트를 기준으로 위치를 해석하므로 충돌하지 않는다. 현재 조건에서는 이 조합을 권장한다.
+`scan.mjs`와 `korean-expressions.mjs`는 실행 명령과 표현 검사 책임을 짧게 드러낸다. `korean-paragraphs.mjs`도 문법적으로 가능하지만 한국어 문단 전체를 처리하는 것처럼 보인다. 실제 책임은 길이 기준에 해당하는 Markdown 플레인 텍스트 문단 탐지이므로 `long-paragraphs.mjs`가 더 정확하다. 다른 스킬에도 `scan.mjs`가 있을 수 있지만 실행할 때에는 항상 스킬 루트를 기준으로 위치를 해석하므로 충돌하지 않는다.
 
 #### 모든 이름을 가장 짧게 만든다
 
@@ -185,44 +187,43 @@ Agent Skills는 `scripts/`에 여러 실행 자료를 둘 수 있고 스킬 루�
 
 ### 결과는 한 JSON 안에서 검사별로 구분한다
 
-진입점은 `sources`를 한 번만 제공하고 표현과 문단 결과를 서로 다른 속성에 둔다. 표현 결과는 전체 literal 규칙을 증명할 `catalog`와 발견된 규칙 자료가 필요하다. 문단 결과는 현재 정책 하나와 문단 경고만 필요하므로 같은 `rules` 배열 모양을 강제하지 않는다.
+진입점은 `sources`를 한 번만 제공하고 표현과 문단 결과를 `checks` 배열에서 구분한다. 배열 순서는 표현 검사와 긴 문단 검사로 고정한다. 각 결과는 실제로 순회한 규칙 또는 정책을 담은 `catalog`, 발견된 규칙 자료인 `rules`, 상세 경고와 독립된 집계를 제공한다.
 
 ```json
 {
   "sources": [],
-  "expressions": {
-    "catalog": [],
-    "rules": [],
-    "warnings": [],
-    "summary": { "total": 0, "shown": 0, "omitted": 0 }
-  },
-  "paragraphs": {
-    "policy": { "id": "ko.long-paragraph", "minSentences": 7 },
-    "warnings": [],
-    "summary": { "total": 0, "shown": 0, "omitted": 0 }
-  }
+  "checks": [
+    {
+      "id": "expressions",
+      "catalog": [],
+      "rules": [],
+      "warnings": [],
+      "summary": { "total": 0, "shown": 0, "omitted": 0 }
+    },
+    {
+      "id": "paragraphs",
+      "catalog": [],
+      "rules": [],
+      "warnings": [],
+      "summary": { "total": 0, "shown": 0, "omitted": 0 }
+    }
+  ]
 }
 ```
 
-전체 JSON byte 상한과 source 상한은 진입점이 한 번 적용한다. 각 검사의 상세 경고 상한과 생략 수를 따로 둘지 전체 경고 수를 함께 제한할지는 출력 소비 방법을 바꾸므로 요구사항 소유자의 결정이 필요하다.
+source 상한은 진입점이 한 번 적용한다. 각 검사는 모든 후보를 끝까지 세고 상세 경고를 최대 20,000개까지 제공한다. `id`, `catalog`, `rules`, `warnings`와 `summary`를 합친 검사 결과의 직렬화 크기는 각각 32 MiB를 넘지 않는다. 한도에 닿으면 해당 검사의 결정적 순서 앞부분만 남기고 `summary.total`, `summary.shown`과 `summary.omitted`를 정확히 계산한다.
 
-### 단일 파일 기준을 바꾸기 전까지 구현을 멈춘다
+### 승인된 구성을 구현 기준으로 사용한다
 
-현재 요구사항과 승인된 구현 기준은 `scan-korean-expressions.mjs` 한 파일과 단일 `rules` 배열을 정한다. 권장안을 채택하려면 요구사항 소유자가 다음 세 가지를 결정해야 한다.
-
-- 실행 진입점 하나와 탐지 모듈 두 개를 배포 단위로 허용할지
-- `scan.mjs`, `korean-expressions.mjs`, `korean-paragraphs.mjs`를 사용할지
-- 한 JSON에서 `expressions`와 `paragraphs`를 구분하고 경고 상한을 검사별 또는 전체 중 어느 방식으로 계산할지
-
-이 결정이 없으면 현재 표현 검사기는 유지할 수 있지만 문단 탐지 구현과 파일명 변경은 시작하지 않는다. 조사 자료는 권고 근거만 제공하며 승인된 기준을 자동으로 바꾸지 않는다.
+요구사항 소유자는 실행 진입점 하나와 탐지 모듈 두 개를 같은 배포 단위로 두고, `scan.mjs`, `korean-expressions.mjs`와 `long-paragraphs.mjs`를 사용하며, 검사별 경고 수와 byte 상한을 적용하는 방안을 승인했다. 구현은 [요구사항](../requirements.md)과 [결정 기록](../decisions/scanner-modules-and-output-limits.md)을 함께 기준으로 삼는다.
 
 ## import, 의존 기능 전달과 모듈 책임 조사
 
-세 파일 구성을 승인한다면 진입점은 두 탐지 모듈을 정적으로 가져오고, 의존 기능 전달은 source를 제공하는 I/O 접점에만 사용한다. 탐지 모듈은 각각 표현 규칙과 문단 정책을 내부에서 관리하며 같은 source 값을 받는다. 공용 파일은 두 탐지기가 같은 의미와 변경 이유를 가진 계산을 실제로 중복할 때만 추가한다. 적용 코드와 오류 사례는 [Node.js MJS 명령줄 검사기의 제안 지침](../../../dev/node/mjs-cli.md#모듈-분리안을-승인하면-고정-모듈을-정적으로-가져온다)에 기록했다.
+승인된 세 파일 구성에서 진입점은 두 탐지 모듈을 정적으로 가져오고, 의존 기능 전달은 source를 제공하는 I/O 접점에만 사용한다. 탐지 모듈은 각각 표현 규칙과 문단 정책을 내부에서 관리하며 같은 source 값을 받는다. 공용 파일은 두 탐지기가 같은 의미와 변경 이유를 가진 계산을 실제로 중복할 때만 추가한다. 적용 코드와 오류 사례는 [Node.js MJS 명령줄 검사기의 제안 지침](../../../dev/node/mjs-cli.md#모듈-분리안을-승인하면-고정-모듈을-정적으로-가져온다)에 기록했다.
 
 ### 고정된 두 탐지기에는 정적 import가 맞다
 
-정적 import는 module graph를 연결하면서 요청한 module과 named export를 확인한다. 동적 import는 표현식을 실행할 때 specifier를 평가하고 Promise를 반환한다. 사용자가 탐지기를 선택하지 않고 모든 내장 검사를 항상 실행해야 하므로 실행 중 선택, 지연 적재와 선택 설치가 필요한 상황이 아니다. 따라서 `scan.mjs`가 `./korean-expressions.mjs`와 `./korean-paragraphs.mjs`를 정적으로 가져오는 구성이 요구사항과 오류 시점을 모두 명확하게 한다.
+정적 import는 module graph를 연결하면서 요청한 module과 named export를 확인한다. 동적 import는 표현식을 실행할 때 specifier를 평가하고 Promise를 반환한다. 사용자가 탐지기를 선택하지 않고 모든 내장 검사를 항상 실행해야 하므로 실행 중 선택, 지연 적재와 선택 설치가 필요한 상황이 아니다. 따라서 `scan.mjs`가 `./korean-expressions.mjs`와 `./long-paragraphs.mjs`를 정적으로 가져오는 구성이 요구사항과 오류 시점을 모두 명확하게 한다.
 
 - [ECMAScript module 명세](https://tc39.es/ecma262/2026/multipage/ecmascript-language-scripts-and-modules.html)는 import entry를 module graph의 연결과 binding 초기화에 사용한다. 2026년 8월 7일에 확인했다.
 - [ECMAScript import call 명세](https://tc39.es/ecma262/2025/multipage/ecmascript-language-expressions.html#sec-import-calls)는 동적 import가 실행 시점에 specifier를 평가하고 Promise로 완료된다고 정의한다. 2026년 8월 7일에 확인했다.
@@ -243,7 +244,7 @@ textlint와 ESLint도 개별 규칙에 실행기 전체를 주지 않고 source 
 
 ### 파일은 실행 조정, 표현 탐지와 문단 탐지로만 나눈다
 
-`scan.mjs`는 CLI, 입력, 전체 제한, 공개 오류, JSON과 stream을 맡는다. `korean-expressions.mjs`는 외부에 공개하지 않는 `rules` 상수와 literal 탐색을 맡고, `korean-paragraphs.mjs`는 Markdown 문단 및 문장 수 탐색을 맡는다. 탐지 모듈은 process, 파일, Git과 표준 stream을 읽지 않는다. 이 방향은 실행기가 rule과 processor를 조립하고 각 module이 자기 탐색을 맡는 textlint와 ESLint의 구조에서도 확인된다. [ESLint plugin 문서](https://eslint.org/docs/latest/extend/plugins)와 [textlint 15.8.0 kernel task 소스](https://github.com/textlint/textlint/blob/v15.8.0/packages/%40textlint/kernel/src/task/linter-task.ts)를 확인했다.
+`scan.mjs`는 CLI, 입력, 전체 실행, 표준 오류 메시지, JSON과 stream을 맡는다. `korean-expressions.mjs`는 외부에 공개하지 않는 `rules` 상수와 literal 탐색을 맡고, `long-paragraphs.mjs`는 Markdown 문단 및 문장 수 탐색을 맡는다. 탐지 모듈은 process, 파일, Git과 표준 stream을 읽지 않는다. 이 방향은 실행기가 rule과 processor를 조립하고 각 module이 자기 탐색을 맡는 textlint와 ESLint의 구조에서도 확인된다. [ESLint plugin 문서](https://eslint.org/docs/latest/extend/plugins)와 [textlint 15.8.0 kernel task 소스](https://github.com/textlint/textlint/blob/v15.8.0/packages/%40textlint/kernel/src/task/linter-task.ts)를 확인했다.
 
 재사용 가능성을 예상해 `common.mjs`, `utils.mjs`, barrel `index.mjs`를 먼저 만들지는 않는다. 두 탐지기가 같은 UTF-16 위치 계산처럼 입력, 반환 의미와 변경 이유가 같은 코드를 실제로 공유하게 되면 `source-locations.mjs`처럼 역할을 드러내는 leaf module로 옮길 수 있다. 이때 import는 진입점에서 탐지 모듈로, 탐지 모듈에서 leaf로만 향해야 하며 leaf가 진입점이나 탐지 모듈을 다시 가져오지 않는다. Agent Skills가 여러 스크립트를 상대 위치로 배치할 수 있다는 사실은 배포를 가능하게 하지만 공용 파일을 미리 만들 근거는 아니다. [Agent Skills의 스크립트 안내](https://agentskills.io/skill-creation/using-scripts)를 확인했다.
 
@@ -251,7 +252,7 @@ textlint와 ESLint도 개별 규칙에 실행기 전체를 주지 않고 source 
 
 현재 `eslint.config.mjs`는 `ImportExpression`을 거부하는 동시에, 허용한 Node.js built-in 이외의 모든 정적 import를 `no-restricted-imports` pattern으로 거부한다. `./korean-expressions.mjs`의 정적 import와 같은 위치를 동적 import하는 사례를 각각 stdin으로 검사했으며 둘 다 상태 `1`로 끝났다. 정적 사례는 `no-restricted-imports`, 동적 사례는 `no-restricted-syntax`가 보고했다.
 
-따라서 세 파일 구성을 승인할 때에는 진입점에서 두 정확한 상대 위치만 허용하고, 탐지 모듈에서는 진입점과 다른 탐지 모듈 import를 계속 막는 파일별 ESLint 설정이 필요하다. `no-restricted-imports`는 동적 import에 적용되지 않으므로 `ImportExpression` 제한도 유지한다. 이 변경은 모듈 분리 승인에 따르는 개발 설정 변경이며 이번 조사에서는 적용하지 않는다. [ESLint `no-restricted-imports` 문서](https://eslint.org/docs/latest/rules/no-restricted-imports)와 [`no-restricted-syntax` 문서](https://eslint.org/docs/latest/rules/no-restricted-syntax)를 대조했다.
+따라서 구현 전에 진입점에서 두 정확한 상대 위치만 허용하고, 탐지 모듈에서는 진입점과 다른 탐지 모듈 import를 계속 막는 파일별 ESLint 설정이 필요하다. `no-restricted-imports`는 동적 import에 적용되지 않으므로 `ImportExpression` 제한도 유지한다. 이 변경은 승인된 모듈 분리에 따르는 개발 설정 변경이며 이번 조사에서는 적용하지 않는다. [ESLint `no-restricted-imports` 문서](https://eslint.org/docs/latest/rules/no-restricted-imports)와 [`no-restricted-syntax` 문서](https://eslint.org/docs/latest/rules/no-restricted-syntax)를 대조했다.
 
 ### 연속 두 관점에서 새 정보가 없어 조사를 끝냈다
 
@@ -308,11 +309,10 @@ textlint와 ESLint도 개별 규칙에 실행기 전체를 주지 않고 source 
 
 ## 규칙 schema
 
-아래 schema는 현재 승인된 단일 파일과 표현 검사 결과를 기준으로 한다. 모듈 분리안과 검사별 결과 구분을 승인하면 앞에서 제안한 JSON 구조를 기준으로 이 절과 요구사항을 먼저 갱신해야 한다.
-
-규칙은 별도 JSON이나 YAML을 읽지 않고 스크립트 상수로 둔다. 별도 파일을 두면 설치 산출물, loader, schema 버전과 파일 누락 검사가 늘어난다. 현재 규칙을 독립적으로 편집하거나 여러 실행기가 공유해야 한다는 요구는 없다.
+표현 규칙과 긴 문단 정책은 각 탐지 모듈의 상수로 둔다. 별도 JSON이나 YAML을 읽으면 설치 산출물, loader, schema 버전과 파일 누락 검사가 늘어난다. 현재 규칙을 독립적으로 편집하거나 여러 실행기가 공유해야 한다는 요구는 없다.
 
 ```js
+// korean-expressions.mjs
 const rules = [
   {
     id: "ko.boundary",
@@ -327,26 +327,24 @@ const rules = [
     negatives: ["조사와 구현의 경계를 정리합니다."],
     positives: ["두 시스템의 보안 경계에서 요청을 다시 인증합니다."],
   },
-  {
-    id: "ko.long-paragraph",
-    kind: "paragraph",
-    min: 7,
-    message:
-      "이 문단에 서로 다른 중심 내용이나 후속 행동이 섞였는지 확인합니다.",
-    queries: [
-      "모든 문장이 하나의 중심 내용을 설명합니까?",
-      "근거, 조건과 후속 행동의 관계를 문단 안에서 확인할 수 있습니까?",
-    ],
-    negatives: ["서로 독립된 확인 사항 세 가지를 한 문단에서 설명합니다."],
-    positives: ["일곱 문장이 하나의 변환 절차를 순서대로 설명합니다."],
-  },
 ];
+
+// long-paragraphs.mjs
+const policy = {
+  id: "ko.long-paragraph",
+  kind: "paragraph",
+  min: 7,
+  message: "이 문단에 서로 다른 중심 내용이나 후속 행동이 섞였는지 확인합니다.",
+  queries: ["모든 문장이 하나의 중심 내용을 설명합니까?"],
+  negatives: ["서로 독립된 확인 사항 세 가지를 한 문단에서 설명합니다."],
+  positives: ["일곱 문장이 하나의 변환 절차를 순서대로 설명합니다."],
+};
 ```
 
 예시는 자료 모양만 보여 주며 표현, 문장과 `id`의 승인을 대신하지 않는다. 각 필드는 다음 책임을 가진다.
 
 - `id`는 출력의 경고와 규칙 자료를 연결하는 안정된 식별자다.
-- `kind`는 literal 출현과 플레인 텍스트 문단 검사를 구분한다. 현재 허용값은 `literal`과 `paragraph`뿐이다.
+- `kind`는 표현 규칙의 literal 출현과 긴 문단 정책을 구분한다. 현재 허용값은 `literal`과 `paragraph`뿐이다.
 - `expressions`는 `literal` 규칙이 원문에서 그대로 찾을 비어 있지 않은 문자열이다. 활용형이 달라져 공통 substring이 안전하지 않으면 승인된 형태를 각각 둔다.
 - `min`은 `paragraph` 규칙이 경고를 시작할 최소 문장 수다. 첫 구현에서는 `7` 하나만 사용한다.
 - `message`는 후보를 다시 봐야 하는 이유를 한 문장으로 설명한다. 자동 오류나 일괄 치환을 선언하지 않는다.
@@ -355,7 +353,7 @@ const rules = [
 
 `reference`, `severity`, `replacement`, 도움말 URL과 자동 수정 자료는 넣지 않는다. literal 후보와 긴 문단은 정상 용례일 수 있어 고정 치환값과 오류 등급이 없다. AI는 규칙 질문과 원문을 함께 읽어 `pass`, `needs revision`, `needs human input`을 판단한다.
 
-스크립트가 시작할 때 규칙 상수를 검사한다. `id` 중복, 알 수 없는 `kind`, literal 규칙의 비어 있거나 공백뿐인 표현, 고립 surrogate, 같은 규칙 안의 중복 표현, paragraph 규칙의 유효하지 않은 `min`과 모든 필수 설명 및 사례의 빈 배열을 실패로 처리한다. 서로 다른 literal 규칙의 같은 표현은 원칙적으로 금지한다. 허용하면 한 출현이 어떤 판정 기준에 속하는지 중복 경고가 생기므로 실제 필요가 확인된 뒤 명시적인 정책을 추가한다.
+진입점의 self-test는 표현 규칙과 긴 문단 정책을 검사한다. `id` 중복, 알 수 없는 `kind`, literal 규칙의 비어 있거나 공백뿐인 표현, 고립 surrogate, 같은 규칙 안의 중복 표현, 문단 정책의 유효하지 않은 `min`과 모든 필수 설명 및 사례의 빈 배열을 실패로 처리한다. 서로 다른 literal 규칙의 같은 표현은 원칙적으로 금지한다. 허용하면 한 출현이 어떤 판정 기준에 속하는지 중복 경고가 생기므로 실제 필요가 확인된 뒤 명시적인 정책을 추가한다.
 
 초기 후보 목록은 현재 `korean.md`에서 literal로 찾을 수 있는 후보를 빠짐없이 포함한다. 일반 산문의 U+00B7, 번역체 형태, 문맥 확인 용어, 행동을 감추기 쉬운 표현, 정보를 더하지 않을 수 있는 표현과 지칭 대상을 확인해야 하는 표현이 대상이다. 정상 사례에 나온 제품명, 판정 상태, 영문 원어와 설명 문장을 자동으로 규칙으로 만들지 않는다. 후보가 없다는 결과는 문장 구조와 목록 밖 표현의 의미 검토가 끝났다는 뜻이 아니다.
 
@@ -363,9 +361,9 @@ const rules = [
 
 ### 실행 대상은 내장 규칙 전체로 고정한다
 
-정상 실행에서 검사할 literal 표현과 문단 길이 기준은 위 `rules` 상수 하나가 결정한다. CLI와 스킬 호출자는 규칙 ID, 표현, 길이 기준, 일부 규칙을 고르는 filter 또는 외부 규칙 자료를 전달할 수 없다. 스크립트는 입력 source마다 모든 규칙을 선언 순서대로 검사한다. AI는 실행 대상을 고르지 않고, 스크립트가 보고한 각 후보의 원문과 규칙 자료를 읽어 유지할지, 고칠지 또는 추가 확인을 요청할지만 판단한다.
+정상 실행에서 검사할 literal 표현은 `korean-expressions.mjs`의 `rules`, 문단 길이 기준은 `long-paragraphs.mjs`의 `policy`가 결정한다. CLI와 스킬 호출자는 규칙 ID, 표현, 길이 기준, 일부 규칙을 고르는 filter 또는 외부 규칙 자료를 전달할 수 없다. 진입점은 같은 source로 두 탐지 모듈을 항상 호출한다. AI는 실행 대상을 고르지 않고, 스크립트가 보고한 각 후보의 원문과 규칙 자료를 읽어 유지할지, 고칠지 또는 추가 확인을 요청할지만 판단한다.
 
-`catalog`도 호출자가 제공하지 않는다. 스크립트는 시작할 때 `rules` 전체를 검증하고 순회하면서 각 항목의 `id`, `kind` 및 literal 규칙의 `expressions` 또는 paragraph 규칙의 `min`을 만든다. 일부 규칙의 검증이나 순회를 마치지 못하면 정상 JSON을 출력하지 않고 실행 실패로 끝낸다. 따라서 `catalog`는 AI가 선택한 규칙 목록이 아니라, 해당 실행이 사용한 내장 규칙 전체를 확인하는 자료다. 다만 내장 목록에 없는 표현과 길이 기준에 닿지 않은 의미 문제까지 찾았다는 증거는 아니므로 `korean.md`의 의미 검토를 계속 수행한다.
+`catalog`도 호출자가 제공하지 않는다. 표현 검사는 `rules` 전체를 순회해 표현 검사 결과의 `catalog`를 만들고, 긴 문단 검사는 `policy`를 적용해 문단 검사 결과의 `catalog`를 만든다. 규칙 또는 정책의 검증과 순회를 마치지 못하면 정상 JSON을 출력하지 않고 실행 실패로 끝낸다. 따라서 각 `catalog`는 AI가 선택한 목록이 아니라 해당 검사가 사용한 내장 기준을 확인하는 자료다. 다만 내장 목록에 없는 표현과 길이 기준에 닿지 않은 의미 문제까지 찾았다는 증거는 아니므로 `korean.md`의 의미 검토를 계속 수행한다.
 
 ## 입력 schema와 함수 경계
 
@@ -390,14 +388,14 @@ SourceProvider = () => AsyncIterable<Source>
 scanSources({ provideSources });
 ```
 
-`provideSources`만 함수 인수로 넘기고 `scanSources`는 같은 module의 `rules`를 사용한다. class, DI framework, 공용 interface 파일, factory와 registry는 만들지 않는다. 어댑터가 세 개라는 사실만으로 확장 framework가 필요하지 않으며, 같은 파일의 순수 함수 경계면 테스트와 실행 경로 분리에 충분하다.
+`provideSources`만 함수 인수로 넘긴다. `scanSources`는 `scan.mjs`가 정적으로 가져온 두 탐지 함수를 직접 호출하며 탐지 함수는 주입받지 않는다. class, DI framework, 공용 interface 파일, factory와 registry는 만들지 않는다. 어댑터가 세 개라는 사실만으로 확장 framework가 필요하지 않으며, source 제공 함수와 탐지 함수의 분리만으로 입력 방식과 검사 책임을 확인할 수 있다.
 
 textlint에서 확인한 것처럼 입력 차이를 `Source` 뒤에 숨겨서는 안 된다. Git 어댑터는 변경 파일 선정과 저장소 상대 위치를, 파일 어댑터는 호출자가 정한 순서와 표시 위치를, 표준 입력 어댑터는 `source-name`과 byte 상한을 각각 책임진다. 공통 값은 탐색에 필요한 최소 부분뿐이다.
 
 ### 변경 파일 입력
 
 ```text
-node <skill-root>/scripts/scan-korean-expressions.mjs --changed <repo>
+node <skill-root>/scripts/scan.mjs --changed <repo>
 ```
 
 `--changed`의 저장소 위치는 절대 위치 또는 현재 디렉터리 기준 상대 위치로 받는다. 저장소 전체를 순회하지 않고, 지정한 Git 작업 트리에서 staged, unstaged와 untracked 상태로 보고된 파일을 합친다. 삭제되지 않은 일반 파일의 현재 작업 트리 내용을 한 번씩 검사한다. 변경 hunk만 검사하지 않고 선택된 파일의 현재 원문 전체를 검사한다. 파일에 새로 추가되지 않은 `경계`도 같은 파일의 문맥 검토 대상이기 때문이다. 변경 파일이 없으면 빈 `sources`와 `warnings`를 가진 정상 JSON을 출력한다.
@@ -411,7 +409,7 @@ index와 작업 트리가 모두 바뀐 파일도 현재 작업 트리 내용을
 ### 지정 파일 입력
 
 ```text
-node <skill-root>/scripts/scan-korean-expressions.mjs \
+node <skill-root>/scripts/scan.mjs \
   --file docs/guide.md \
   --file docs/reference.md
 ```
@@ -424,7 +422,7 @@ node <skill-root>/scripts/scan-korean-expressions.mjs \
 
 ```text
 printf '%s' '<review-text>' | \
-  node <skill-root>/scripts/scan-korean-expressions.mjs \
+  node <skill-root>/scripts/scan.mjs \
   --stdin --source-name draft.md
 ```
 
@@ -456,87 +454,61 @@ printf '%s' '<review-text>' | \
 
 ```json
 {
-  "catalog": [
-    {
-      "id": "ko.boundary",
-      "kind": "literal",
-      "expressions": ["경계"]
-    },
-    {
-      "id": "ko.long-paragraph",
-      "kind": "paragraph",
-      "min": 7
-    }
-  ],
-  "rules": [
-    {
-      "id": "ko.boundary",
-      "kind": "literal",
-      "message": "이 표현이 실제 구분 기준이나 책임이 바뀌는 지점을 뜻하는지 확인합니다.",
-      "queries": [
-        "무엇과 무엇을 나누는지 문장에서 알 수 있습니까?",
-        "정확한 분야 용어라면 그대로 유지할 근거가 있습니까?"
-      ],
-      "negatives": ["조사와 구현의 경계를 정리합니다."],
-      "positives": ["두 시스템의 보안 경계에서 요청을 다시 인증합니다."]
-    },
-    {
-      "id": "ko.long-paragraph",
-      "kind": "paragraph",
-      "min": 7,
-      "message": "이 문단에 서로 다른 중심 내용이나 후속 행동이 섞였는지 확인합니다.",
-      "queries": [
-        "모든 문장이 하나의 중심 내용을 설명합니까?",
-        "근거, 조건과 후속 행동의 관계를 문단 안에서 확인할 수 있습니까?"
-      ],
-      "negatives": ["서로 독립된 확인 사항 세 가지를 한 문단에서 설명합니다."],
-      "positives": ["일곱 문장이 하나의 변환 절차를 순서대로 설명합니다."]
-    }
-  ],
   "sources": [
     {
       "id": "docs/example.md",
       "path": "docs/example.md"
     }
   ],
-  "warnings": [
+  "checks": [
     {
-      "ruleId": "ko.boundary",
-      "expression": "경계",
-      "sourceId": "docs/example.md",
-      "line": 3,
-      "startUtf16": 9,
-      "endUtf16": 11,
-      "quote": "조사와 구현의 경계를 정리합니다."
+      "id": "expressions",
+      "catalog": [{ "id": "ko.boundary", "kind": "literal", "expressions": ["경계"] }],
+      "rules": [{ "id": "ko.boundary", "kind": "literal" }],
+      "warnings": [
+        {
+          "ruleId": "ko.boundary",
+          "expression": "경계",
+          "sourceId": "docs/example.md",
+          "line": 3,
+          "startUtf16": 9,
+          "endUtf16": 11,
+          "quote": "조사와 구현의 경계를 정리합니다."
+        }
+      ],
+      "summary": { "total": 1, "shown": 1, "omitted": 0 }
     },
     {
-      "ruleId": "ko.long-paragraph",
-      "count": 7,
-      "sourceId": "docs/example.md",
-      "line": 8,
-      "startUtf16": 1,
-      "quote": "변환기는 입력 행을 검사합니다. 먼저 입력값이 비어 있는지 확인합니다."
+      "id": "paragraphs",
+      "catalog": [{ "id": "ko.long-paragraph", "kind": "paragraph", "min": 7 }],
+      "rules": [{ "id": "ko.long-paragraph", "kind": "paragraph" }],
+      "warnings": [
+        {
+          "ruleId": "ko.long-paragraph",
+          "count": 7,
+          "sourceId": "docs/example.md",
+          "line": 8,
+          "startUtf16": 1,
+          "quote": "변환기는 입력 행을 검사합니다. 먼저 입력값이 비어 있는지 확인합니다."
+        }
+      ],
+      "summary": { "total": 1, "shown": 1, "omitted": 0 }
     }
-  ],
-  "summary": {
-    "total": 2,
-    "shown": 2,
-    "omitted": 0
-  }
+  ]
 }
 ```
 
-`catalog`에는 스크립트가 순회한 내장 `rules` 전체의 `id`, `kind`와 탐지 조건을 선언 순서대로 넣는다. literal 규칙은 `expressions`, paragraph 규칙은 `min`을 사용한다. 호출자나 AI가 이 배열을 입력하거나 일부 항목을 고를 수 없다. AI는 빈 `warnings`가 내장 규칙 전체를 실행한 결과인지 확인할 수 있다. `rules`에는 실제로 발견된 규칙의 설명, 질문과 사례만 한 번씩 넣어 결과 크기를 줄인다. 상세 경고가 생략된 출현에서만 발견된 규칙도 `rules`에 포함한다. `sources`에는 실제로 검사한 source를 후보가 없어도 모두 넣어 빈 `warnings`가 검사 누락을 뜻하지 않게 한다. 표준 입력 source에는 `path`를 넣지 않는다. `warnings`에는 결정적 순서에서 출력 한도 안에 들어가는 출현을 하나씩 둔다.
+각 검사 결과의 `catalog`에는 해당 탐지 모듈이 실제로 순회한 규칙 또는 정책의 `id`, `kind`와 탐지 조건을 선언 순서대로 넣는다. literal 규칙은 `expressions`, paragraph 규칙은 `min`을 사용한다. 호출자나 AI가 이 배열을 입력하거나 일부 항목을 고를 수 없다. AI는 빈 `warnings`가 해당 검사를 실행한 결과인지 확인할 수 있다. `rules`에는 해당 검사에서 실제로 발견된 규칙의 설명, 질문과 사례만 한 번씩 넣어 결과 크기를 줄인다. 상세 경고가 생략된 출현에서만 발견된 규칙도 `rules`에 포함한다. `sources`에는 실제로 검사한 source를 후보가 없어도 모두 넣어 빈 `warnings`가 검사 누락을 뜻하지 않게 한다. 표준 입력 source에는 `path`를 넣지 않는다.
 
 literal 경고는 지금처럼 `expression`과 같은 줄의 시작 및 끝 열을 제공한다. paragraph 경고는 `expression`과 `endUtf16` 대신 관찰한 문장 수인 `count`와 문단 첫 글자의 `line` 및 `startUtf16`을 제공한다. `quote`는 문단 앞부분을 현재 상한 안에서 보여 주며, AI는 검토 대상 파일이나 표준 입력 원문에서 문단 전체를 읽는다. 파일이나 입력 원문 없이 JSON만 전달하는 호출은 문단 의미 판정을 완료할 자료가 없으므로 지원하지 않는다.
 
-`summary.total`은 모든 source와 모든 규칙을 끝까지 검사해 발견한 전체 출현 수다. `summary.shown`은 `warnings` 배열의 길이이고 `summary.omitted`는 두 값의 차이다. `omitted`가 0보다 크면 `SKILL.md`는 AI 검토 결과 마지막에 `... 그 외 <N>개의 경고가 더 발견됨`을 표시한다. `truncated`와 같은 계산 가능한 boolean 및 같은 내용을 되풀이하는 message 문자열은 JSON에 넣지 않는다.
+각 `summary.total`은 해당 검사가 모든 source와 규칙 또는 정책을 끝까지 검사해 발견한 전체 출현 수다. `summary.shown`은 같은 검사 결과의 `warnings` 배열 길이이고 `summary.omitted`는 두 값의 차이다. `omitted`가 0보다 크면 `SKILL.md`는 AI 검토 결과 마지막에 검사 종류와 생략 수를 표시한다. `truncated`와 같은 계산 가능한 boolean 및 같은 내용을 되풀이하는 message 문자열은 JSON에 넣지 않는다.
 
-`catalogs`는 사용하지 않는다. 정상 실행 한 건은 여러 catalog가 아니라 실행한 규칙의 간략 목록 하나를 만들기 때문이다. `rules`는 이 목록 전체를 반복하지 않고 경고가 생긴 규칙의 상세 자료만 담는다. 이 구분은 SARIF의 필드 구성을 복사한 것이 아니라 현재 출력의 중복을 줄이기 위한 자체 규약이다. SARIF는 도구 구성 요소의 전체 규칙을 `rules`에 두고 결과가 `ruleId`로 이를 참조한다. [SARIF 2.1.0의 `rules`와 `ruleId`](https://docs.oasis-open.org/sarif/sarif/v2.1.0/sarif-v2.1.0.html)를 확인했다.
+`catalogs`는 사용하지 않는다. 검사별 결과는 하나의 `catalog`를 가지며, `rules`는 이 목록 전체를 반복하지 않고 경고가 생긴 규칙의 상세 자료만 담는다. 이 구분은 SARIF의 필드 구성을 복사한 것이 아니라 현재 출력의 중복을 줄이기 위한 자체 규약이다. SARIF는 도구 구성 요소의 전체 규칙을 `rules`에 두고 결과가 `ruleId`로 이를 참조한다. [SARIF 2.1.0의 `rules`와 `ruleId`](https://docs.oasis-open.org/sarif/sarif/v2.1.0/sarif-v2.1.0.html)를 확인했다.
 
 literal 경고의 위치는 `startUtf16`과 `endUtf16`으로 시작과 끝을 같은 방식으로 이름 붙인다. 두 값이 원문 전체 offset이 아니라 `line` 안의 열이라는 점과 1부터 시작하는 계산 방식은 앞 절의 규칙으로 고정한다. paragraph 경고는 문단 첫 글자의 `line`과 `startUtf16`만 사용한다. ESLint와 Language Server Protocol도 위치 범위를 `start`와 `end` 쌍으로 표현하지만, 현재 문단 경고 소비자는 전체 범위가 아니라 문단을 다시 찾을 시작 위치만 필요하다. [ESLint의 `loc`](https://eslint.org/docs/latest/extend/custom-rules#reporting-problems)와 [Language Server Protocol의 `Range`](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.18/specification/#range)를 확인했다.
 
-배열 순서는 같은 입력에서 같은 결과가 나오도록 고정한다. `sources`는 Git이 반환한 위치를 byte 순서로 정렬하거나 `--file` 전달 순서와 표준 입력 한 건의 순서를 유지한다. `warnings`는 source 순서, 시작 offset, 규칙 선언 순서와 literal 규칙의 표현 선언 순서로 정렬한다. `catalog`와 `rules`는 규칙 선언 순서대로 둔다. 정렬 방식은 자연어 locale이나 사용자 환경에 의존하지 않는다.
+배열 순서는 같은 입력에서 같은 결과가 나오도록 고정한다. `checks`는 표현 검사와 긴 문단 검사 순서를 유지한다. `sources`는 Git이 반환한 위치를 byte 순서로 정렬하거나 `--file` 전달 순서와 표준 입력 한 건의 순서를 유지한다. 각 `warnings`는 source 순서, 시작 offset, 규칙 선언 순서와 literal 규칙의 표현 선언 순서로 정렬한다. `catalog`와 `rules`는 규칙 선언 순서대로 둔다. 정렬 방식은 자연어 locale이나 사용자 환경에 의존하지 않는다.
 
 이 구조는 외부 표준이 아니라 현재 AI 소비자에게 필요한 최소 자료다. RFC 8259는 JSON 문법을 정하지만 후보 검사의 필드 의미는 정하지 않는다. [RFC 8259](https://www.rfc-editor.org/rfc/rfc8259)을 확인했다.
 
@@ -544,7 +516,7 @@ literal 경고의 위치는 `startUtf16`과 `endUtf16`으로 시작과 끝을 �
 
 정상 JSON은 표준 출력으로만 보낸다. 호출자가 보관할 이유가 있을 때 자신의 도구로 redirect할 수 있지만 스크립트는 출력 위치, 기존 파일 덮어쓰기와 정리 책임을 갖지 않는다. 반복 실행으로 임시 결과 파일이 쌓이지 않고, 스킬은 명령 결과를 바로 읽을 수 있다.
 
-상세 `warnings`는 최대 50,000개까지 담고, 직렬화한 전체 JSON은 최대 64 MiB로 제한한다. 50,000개를 담기 전에 JSON 상한에 닿으면 결정적 순서의 앞부분만 남겨 64 MiB 안에 맞춘다. 상세 경고 보관을 멈춘 뒤에도 모든 source와 규칙을 끝까지 검사해 `summary.total`과 `summary.omitted`를 정확히 계산한다. 입력이나 내부 오류로 전체 검사를 마치지 못하면 정확한 생략 수를 만들지 않고 정상 JSON도 출력하지 않는다.
+표현 검사와 긴 문단 검사의 `warnings`는 각각 최대 20,000개까지 담고, 직렬화한 각 검사 결과는 최대 32 MiB로 제한한다. 경고 수 상한에 닿기 전에 검사 결과의 byte 상한에 닿으면 해당 검사의 결정적 순서 앞부분만 남긴다. 상세 경고 보관을 멈춘 뒤에도 해당 검사는 모든 source와 규칙 또는 정책을 끝까지 확인해 `summary.total`과 `summary.omitted`를 정확히 계산한다. 입력이나 내부 오류로 전체 검사를 마치지 못하면 정상 JSON을 출력하지 않는다.
 
 결과가 많다는 이유만으로 JSONL을 사용하지 않는다. JSONL은 record별 처리에는 유리하지만 전체 byte와 AI 입력 token을 줄이지 않으며, `catalog`, `rules`, `sources`와 마지막 집계 record의 순서 및 중간 실패 규약을 새로 만들어야 한다. 단일 JSON의 메모리 사용량이나 첫 출력 지연이 실제 실행에서 문제가 되거나, 검사가 끝나기 전에 record를 소비해야 할 때 다시 검토한다.
 
@@ -597,7 +569,7 @@ MCP는 실시간 자료, 인증, 권한과 외부 시스템 작업에 맞고, �
 
 ## 최소 검증
 
-같은 `.mjs` 파일의 self-test에는 규칙 상수와 순수 탐색만 넣는다. Git 저장소와 파일 I/O 검증은 구현 작업에서 별도 명령으로 실행한다. 외부 test framework와 fixture 파일은 필요하지 않다.
+`scan.mjs`의 self-test는 두 탐지 모듈이 export한 실제 함수와 운영 조립 함수를 호출한다. Git 저장소와 파일 I/O 검증은 구현 작업에서 별도 명령으로 실행한다. 외부 test framework와 fixture 파일은 필요하지 않다.
 
 ### 규칙과 탐색
 
@@ -627,14 +599,14 @@ MCP는 실시간 자료, 인증, 권한과 외부 시스템 작업에 맞고, �
 
 ### 출력과 실패
 
-- 후보가 없어도 순회한 내장 `rules` 전체에서 `kind`별 탐지 조건을 담아 만든 `catalog`, 검사한 모든 source 및 빈 `rules`와 `warnings`를 가진 RFC 8259 JSON을 출력하고 `0`으로 끝난다.
-- 후보가 있으면 실행한 전체 규칙 목록과 발견된 규칙의 metadata를 각각 한 번, 출력 한도 안의 상세 경고와 전체, 표시 및 생략 수를 출력하고 `0`으로 끝난다.
+- 후보가 없어도 검사한 모든 source와 두 `checks`를 가진 RFC 8259 JSON을 출력하고 `0`으로 끝난다. 각 검사 결과는 실제로 순회한 규칙 또는 정책의 `catalog`, 빈 `rules`와 `warnings` 및 0인 `summary`를 가진다.
+- 후보가 있으면 각 검사 결과에 실행한 전체 규칙 또는 정책의 `catalog`, 발견된 규칙의 metadata를 각각 한 번, 출력 한도 안의 상세 경고와 전체, 표시 및 생략 수를 담고 `0`으로 끝난다.
 - 호출자가 `catalog`, 규칙 ID나 표현 목록을 입력하는 실행 방법이 없는지 확인한다.
-- `catalog`, `rules`, `sources`와 `warnings`의 참조가 모두 연결되는지 확인한다.
+- `sources`, `checks`, 각 `catalog`, `rules`와 `warnings`의 참조가 모두 연결되는지 확인한다.
 - literal 경고에는 `expression`과 같은 줄의 시작 및 끝 열이 있고, paragraph 경고에는 `count`와 문단 시작 위치가 있으며 서로의 전용 필드를 섞지 않는지 확인한다.
 - 표준 입력 source에는 실제 파일 `path`를 만들지 않는다.
 - 상대 위치 파일은 정규화한 상대 위치를 출력하고, 절대 위치 또는 현재 디렉터리 밖의 파일은 순번 ID만 출력해 개인 절대 위치를 남기지 않는다.
-- 경고가 50,000개를 넘거나 직렬화 결과가 64 MiB에 닿아도 검사를 끝까지 수행하고, 결정적 순서의 상세 경고와 정확한 `summary`를 가진 온전한 JSON을 출력한다.
+- 한 검사의 경고가 20,000개를 넘거나 직렬화한 검사 결과가 32 MiB에 닿아도 해당 검사를 끝까지 수행하고, 결정적 순서의 상세 경고와 정확한 `summary`를 가진 온전한 JSON을 출력한다.
 - `summary.shown`이 `warnings` 길이와 같고 `summary.omitted`가 `summary.total - summary.shown`과 같은지 확인한다.
 - 입력 또는 내부 실패는 stdout에 정상 JSON을 남기지 않고 짧은 stderr와 `2`로 끝난다.
 - 같은 입력을 네트워크가 없는 환경에서 실행해 같은 결과를 얻는다.
@@ -645,24 +617,24 @@ MCP는 실시간 자료, 인증, 권한과 외부 시스템 작업에 맞고, �
 
 요구사항 소유자는 다음 내용을 승인했다.
 
-- 새 파일은 `skills/use-words-review/scripts/scan-korean-expressions.mjs` 하나만 만든다.
-- literal 후보와 긴 문단 후보의 탐지 조건, 설명, 판정 질문과 대조 사례는 스크립트의 단일 `rules` 상수가 맡는다.
+- `skills/use-words-review/scripts/scan.mjs`, `korean-expressions.mjs`와 `long-paragraphs.mjs`를 같은 배포 단위로 만든다.
+- literal 후보의 탐지 조건, 설명, 판정 질문과 대조 사례는 `korean-expressions.mjs`의 `rules`가 맡고, 긴 문단 후보의 기준과 사례는 `long-paragraphs.mjs`의 `policy`가 맡는다.
 - `korean.md`는 literal 검색으로 찾을 수 없는 문장과 문단의 의미 검토 기준을 맡는다.
-- 정상 실행은 외부 입력으로 규칙을 고르지 않고 내장 `rules` 전체를 순회하며, `catalog`는 실제로 순회한 전체 규칙에서 만든다.
+- 정상 실행은 외부 입력으로 검사를 고르지 않고 두 탐지 모듈을 항상 호출한다. 각 `catalog`는 해당 검사가 실제로 순회한 규칙 또는 정책에서 만든다.
 - 긴 플레인 텍스트 문단은 오류가 아니라 의미 검토 후보로 경고하고 후보가 있어도 `0`으로 끝난다.
 - 현재 `korean.md`에서 literal로 찾을 수 있는 모든 후보를 의미 단위 `id`와 명시적인 `expressions` 배열로 옮긴다.
 - `--changed`는 staged, unstaged와 untracked 일반 파일의 현재 작업 트리 원문 전체를 검사하고 삭제 파일과 submodule을 제외한다.
 - 저장소 안과 현재 디렉터리 안의 파일은 상대 위치로 식별한다. 절대 위치 또는 현재 디렉터리 밖의 파일은 순번 ID만 출력하며 `path`를 생략한다. 표준 입력은 `--source-name`을 사용한다.
-- 한 실행의 상한은 source 512개, 파일 하나 2 MiB, 전체 입력 32 MiB, 상세 경고 50,000개, `quote` 480 UTF-16 code unit와 직렬화 JSON 64 MiB다.
-- JSON은 `catalog`, `rules`, `sources`, `warnings`와 `summary`를 사용한다. literal 위치는 1부터 시작하는 `line`과 `startUtf16`, 일치 뒤 첫 열인 `endUtf16`으로 나타내고 paragraph 위치는 문단 시작의 `line`과 `startUtf16`으로 나타낸다.
-- 모든 출현을 끝까지 세되 상세 경고는 개수와 JSON byte 한도 안의 결정적 앞부분만 담는다. `summary`는 `total`, `shown`과 `omitted`를 제공하고, AI는 생략된 경고가 있으면 검토 결과 마지막에 생략 수를 표시한다.
+- 한 실행의 입력 상한은 source 512개, 파일 하나 2 MiB와 전체 32 MiB다. 상세 경고와 직렬화 결과의 상한은 검사마다 20,000개와 32 MiB이며 `quote`는 480 UTF-16 code unit까지 제공한다.
+- JSON은 공통 `sources`와 검사별 결과를 담은 `checks`를 사용한다. 각 검사 결과는 `id`, `catalog`, `rules`, `warnings`와 `summary`를 가진다. literal 위치는 1부터 시작하는 `line`과 `startUtf16`, 일치 뒤 첫 열인 `endUtf16`으로 나타내고 paragraph 위치는 문단 시작의 `line`과 `startUtf16`으로 나타낸다.
+- 각 검사는 모든 출현을 끝까지 세되 상세 경고는 해당 검사의 개수와 byte 한도 안의 결정적 앞부분만 담는다. 각 `summary`는 `total`, `shown`과 `omitted`를 제공하고, AI는 생략된 경고가 있으면 검토 결과 마지막에 검사 종류와 생략 수를 표시한다.
 - 현재 출력은 단일 JSON 객체를 유지한다. JSONL은 메모리나 첫 출력 지연 문제가 실제로 측정되거나 완료 전 record 소비자가 생겼을 때 다시 검토한다.
 - 최저 버전은 Node.js 22.0.0과 Git 2.18.0이다. 현재 구현과 대표 실행은 macOS에서만 확인한다.
 
-실행 진입점과 탐지 모듈을 나누는 안 및 간소한 파일명은 이 기준을 대체하지 않은 후속 제안이다. 요구사항 소유자가 파일 구성, 이름과 출력 상한 계산을 승인하면 요구사항과 계획을 먼저 갱신한다.
+`scan.mjs`만 `./korean-expressions.mjs`와 `./long-paragraphs.mjs`를 정적 import한다. 다른 로컬 위치, 외부 package와 동적 import는 허용하지 않는다. ESLint 예외는 진입점의 정확한 위치에만 적용한다.
 
 ## 조사 한계
 
 완성된 기존 도구가 없다는 판단은 2026년 8월 5일부터 8월 7일까지 확인한 공식 문서와 tag 소스에 한정된다. 조사한 도구의 전체 기능을 재현하는 목적이 아니므로 editor, CI와 Pull Request 연결 기능은 비교하지 않았다.
 
-이번 조사 갱신에서는 스크립트, package file, bundle, 규칙 자료와 테스트를 바꾸지 않았다. 일곱 문장은 장문 기술 문서 지침에서 선택해 모든 검사 대상 Markdown 산문 문단에 적용하는 초기 경고값이며 한국어 문단의 품질 기준이 아니다. 중첩된 Markdown 문단과 한 문장에 여러 생각을 압축한 글은 자동 경고로 찾지 못하며 AI 의미 검토가 맡는다. 현재 구현과 제안 모두 표준 출력 결과를 한 번에 메모리에 직렬화하므로 승인된 출력 상한 안에서만 사용한다. 실제 결과가 반복해서 상한을 넘거나 다른 소비자가 생기면 측정 결과를 근거로 출력 방식과 변환기를 다시 검토해야 한다.
+일곱 문장은 장문 기술 문서 지침에서 선택해 모든 검사 대상 Markdown 산문 문단에 적용하는 초기 경고값이며 한국어 문단의 품질 기준이 아니다. 중첩된 Markdown 문단과 한 문장에 여러 생각을 압축한 글은 자동 경고로 찾지 못하며 AI 의미 검토가 맡는다. 현재 구현과 제안 모두 표준 출력 결과를 한 번에 메모리에 직렬화하므로 승인된 출력 상한 안에서만 사용한다. 실제 결과가 반복해서 상한을 넘거나 다른 소비자가 생기면 측정 결과를 근거로 출력 방식과 변환기를 다시 검토해야 한다.

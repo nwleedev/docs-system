@@ -6,17 +6,17 @@
 
 후속 사례에서는 지침을 적용한 뒤에도 `포화`, `경계`, `소유`, `반증`과 반복 결론이 한국어 문서에 남았다. [후속 사례 조사](./references/comparable-cases-and-repository-evidence.md)는 기존 문서와 새 문서의 어휘 중복, 현재 워크트리에서 발견되지 않은 스킬과 공유 전 검토를 확인할 증거가 없었다는 사실을 함께 확인했다. 이 계획은 특정 단어를 금지하거나 특정 모델을 교체하는 대신, 현재 저장소에서 배포하는 `src`, `skills`, 설치 문서와 설계 문서의 책임을 맞춘다.
 
-요구사항 소유자는 검사기 구현 전에 Node.js `.mjs` 명령줄 스크립트 개발 지침과 ESLint 검사를 준비하고, 후속 작업에서 기존 `src`, `skills`, `docs` 파일을 갱신하며 `skills/use-words-review/scripts/scan-korean-expressions.mjs`를 만들도록 요청했다. 준비 작업은 `docs/dev/README.md`, `docs/dev/node/mjs-cli.md`, `eslint.config.mjs`, `package.json`과 `pnpm-lock.yaml`을 만들거나 갱신할 수 있다. 후속 구현에서 새로 만드는 실행 파일은 `scan-korean-expressions.mjs` 하나이며, 루트 `README.md`, `README.ko.md`와 루트 `AGENTS.md`는 이번 구현에 포함하지 않는다.
+요구사항 소유자는 검사기 구현 전에 Node.js `.mjs` 명령줄 스크립트 개발 지침과 ESLint 검사를 준비하고, 후속 작업에서 기존 `src`, `skills`, `docs` 파일을 갱신하도록 요청했다. 준비 작업은 `docs/dev/README.md`, `docs/dev/node/mjs-cli.md`, `eslint.config.mjs`, `package.json`과 `pnpm-lock.yaml`을 만들거나 갱신할 수 있다. 후속 구현에서는 `skills/use-words-review/scripts/scan.mjs`, `korean-expressions.mjs`와 `long-paragraphs.mjs`를 같은 배포 단위로 만들며, 루트 `README.md`, `README.ko.md`와 루트 `AGENTS.md`는 이번 구현에 포함하지 않는다.
 
-[후보 검사기 소스 조사](./references/korean-candidate-expression-linter-research.md#실행-진입점과-탐지-모듈-분리-검토)는 현재 표현 검사와 긴 문단 검사의 탐지 단위가 달라 실행 진입점 하나와 탐지 모듈 두 개로 나누는 방안을 권고한다. 이 방안은 단일 파일과 단일 `rules` 배열을 정한 현재 요구사항을 바꾸므로 승인 전에는 문단 탐지 구현과 파일명 변경을 중단한다. 표현 검사기의 현재 동작과 나머지 문서 작업은 영향을 받지 않는다.
+[후보 검사기 소스 조사](./references/korean-candidate-expression-linter-research.md#실행-진입점과-탐지-모듈-분리-검토)는 현재 표현 검사와 긴 문단 검사의 탐지 단위가 다르다는 점을 확인했다. [한국어 검사기의 모듈과 출력 상한](./decisions/scanner-modules-and-output-limits.md)에 따라 `scan.mjs`가 두 탐지 모듈을 정적 import하고, 각 검사가 독립된 상세 경고 및 byte 상한과 집계를 제공한다.
 
-[지침 중복 감사](./references/instruction-duplication-audit.md)에 따른 AGENTS 감축 작업은 `src/AGENTS.ko.md`와 `src/AGENTS.en.md`만 바꾼다. 이어지는 스킬 변경은 `skills/use-words-review/SKILL.md`, `references/korean.md`, `references/examples.md`와 `scripts/scan-korean-expressions.mjs`만 바꾼다. 두 작업을 분리하고, 이미 반영된 용어 판정, 검토 범위와 중단 동작은 바꾸지 않는다. 두 문서 지침은 각 문서 작업의 독립된 기준을 맡으므로 두 감축 작업에서 수정하지 않는다.
+[지침 중복 감사](./references/instruction-duplication-audit.md)에 따른 AGENTS 감축 작업은 `src/AGENTS.ko.md`와 `src/AGENTS.en.md`만 바꾼다. 이어지는 스킬 변경은 `skills/use-words-review/SKILL.md`, `references/korean.md`, `references/examples.md`와 `scripts/scan.mjs`, `korean-expressions.mjs` 및 `long-paragraphs.mjs`만 바꾼다. 두 작업을 분리하고, 이미 반영된 용어 판정, 검토 범위와 중단 동작은 바꾸지 않는다. 두 문서 지침은 각 문서 작업의 독립된 기준을 맡으므로 두 감축 작업에서 수정하지 않는다.
 
 ## 변경 원칙
 
 - AGENTS는 일반 채팅에 항상 적용할 짧은 작성 행동과 저장 결과물의 스킬 호출 조건을 맡는다.
 - `SKILL.md`는 저장하거나 공유할 한국어 결과물의 검토 순서와 보고 방법을 맡는다.
-- `scan-korean-expressions.mjs`의 단일 `rules` 상수는 literal 후보와 긴 문단 후보의 탐지 조건, 경고 설명, 판정 질문과 한국어 대조 사례를 맡는다.
+- `korean-expressions.mjs`의 `rules`는 literal 후보의 탐지 조건, 경고 설명, 판정 질문과 한국어 대조 사례를 맡고, `long-paragraphs.mjs`의 `policy`는 긴 문단 후보의 기준과 대조 사례를 맡는다.
 - `references/korean.md`는 literal 검색으로 찾을 수 없는 한국어 문장 및 문단의 의미 검토를 맡고, `references/examples.md`는 언어 공통 사례만 맡는다.
 - 설치 문서는 배포 원본과 Codex가 실제로 탐색하는 위치를 구분하고 워크트리별 확인 방법을 설명한다.
 - 설계 지침은 기존 문서에서 사실, 결정과 구조를 확인하되 표현을 자동으로 재사용하지 않게 한다.
@@ -41,48 +41,48 @@
 - Markdown 플레인 텍스트 문단이 일곱 문장 이상이면 긴 문단 후보 하나를 경고한다. 이 기준은 의미 오류나 수정 명령이 아니며 후보가 있어도 종료 상태 `0`을 유지한다.
 - `--changed`는 staged, unstaged와 untracked 일반 파일을 합쳐 각 파일의 현재 작업 트리 원문 전체를 검사한다. 삭제 파일과 submodule은 제외하고 rename은 새 위치의 현재 파일을 검사한다.
 - `--changed`와 현재 디렉터리 안의 상대 위치 파일은 정규화한 상대 위치를 `sourceId`와 `path`에 사용한다. 절대 위치 또는 현재 디렉터리 밖의 `--file` 입력은 `file:1` 형식의 순번 ID를 사용하고 `path`를 생략한다. 표준 입력은 `--source-name`만 식별자로 사용한다.
-- 한 실행은 source 512개, 파일 하나 2 MiB와 전체 입력 32 MiB까지 받는다. 상세 경고는 최대 50,000개, `quote`는 최대 480 UTF-16 code unit, 직렬화한 JSON은 최대 64 MiB다.
-- JSON은 `catalog`, `rules`, `sources`, `warnings`와 `summary`를 사용한다. literal 위치는 1부터 시작하는 `line`과 `startUtf16`, 일치 뒤 첫 열인 `endUtf16`으로 나타낸다. 문단 경고는 `count`와 문단 시작의 `line` 및 `startUtf16`을 사용한다. 객체 속성 순서가 아니라 배열의 결정적 순서를 규약으로 사용한다.
-- 상세 경고가 개수나 JSON byte 한도에 닿아도 검사를 끝까지 수행한다. `summary`의 `total`, `shown`과 `omitted`에 전체, 표시 및 생략 수를 기록하고, AI는 생략된 경고가 있으면 검토 결과 마지막에 `... 그 외 <N>개의 경고가 더 발견됨`을 표시한다.
+- 한 실행은 source 512개, 파일 하나 2 MiB와 전체 입력 32 MiB까지 받는다. 상세 경고는 검사마다 최대 20,000개, `quote`는 최대 480 UTF-16 code unit, 직렬화한 검사 결과는 각각 최대 32 MiB다.
+- JSON은 공통 `sources`와 검사별 결과 배열인 `checks`를 사용한다. 각 검사 결과는 `id`, `catalog`, `rules`, `warnings`와 `summary`를 가진다. literal 위치는 1부터 시작하는 `line`과 `startUtf16`, 일치 뒤 첫 열인 `endUtf16`으로 나타낸다. 문단 경고는 `count`와 문단 시작의 `line` 및 `startUtf16`을 사용한다. 객체 속성 순서가 아니라 배열의 결정적 순서를 규약으로 사용한다.
+- 상세 경고가 해당 검사의 개수나 byte 한도에 닿아도 검사를 끝까지 수행한다. 각 `summary`의 `total`, `shown`과 `omitted`에 전체, 표시 및 생략 수를 기록하고, AI는 생략된 경고가 있으면 검토 결과 마지막에 검사 종류와 `... 그 외 <N>개의 경고가 더 발견됨`을 표시한다.
 - 출력은 단일 JSON 객체로 유지한다. JSONL은 단일 JSON의 메모리 사용량이나 첫 출력 지연이 실제로 문제가 되거나 완료 전 record 소비자가 생겼을 때 다시 검토한다.
 - 현재 구현과 대표 실행은 macOS에서 확인한다. Linux와 Windows 동작은 이번 완료 증거에 포함하지 않는다.
 
-**완료 증거.** 승인된 값이 요구사항, 조사 자료와 이 계획에서 같은 동작을 설명하고, 문서 검사가 충돌이나 미정 값을 보고하지 않아야 한다. 4단계의 실행 검사에서 세 입력 방식, JSON의 다섯 최상위 항목과 종료 상태를 확인한다. 경고 수와 JSON byte 상한을 각각 넘는 입력에서도 전체 출현 수, 표시 수와 생략 수가 맞고 온전한 JSON 한 건만 출력돼야 한다.
+**완료 증거.** 승인된 값이 요구사항, 조사 자료와 이 계획에서 같은 동작을 설명하고, 문서 검사가 충돌이나 미정 값을 보고하지 않아야 한다. 4단계의 실행 검사에서 세 입력 방식, 공통 `sources`, 고정된 두 `checks`와 종료 상태를 확인한다. 각 검사의 경고 수와 byte 상한을 넘는 입력에서도 해당 검사의 전체 출현 수, 표시 수와 생략 수가 맞고 온전한 JSON 한 건만 출력돼야 한다.
 
-5단계에 명시한 literal 후보와 12단계의 긴 문단 후보는 모두 단일 `rules` 상수에 있어야 한다. 각 규칙은 `id`, `kind`, `message`, `queries`, 문제 사례와 정상 사례를 가진다. literal 규칙은 `expressions`, paragraph 규칙은 최소 문장 수인 `min`을 가진다. 자체 검사는 필수 값, 중복 ID, `kind`별 탐지 조건과 전체 규칙 순회를 확인한다. 이후 AI 작업에서 새 후보를 발견하면 같은 구조의 규칙을 추가하거나 기존 규칙의 조건과 사례를 조정할 수 있어야 하며, 변경한 전체 규칙은 같은 자체 검사를 통과해야 한다.
+5단계에 명시한 literal 후보는 `korean-expressions.mjs`의 단일 `rules` 상수에 있어야 하고, 12단계의 긴 문단 기준은 `long-paragraphs.mjs`의 `policy`가 맡는다. 각 규칙과 정책은 `id`, `kind`, `message`, `queries`, 문제 사례와 정상 사례를 가진다. literal 규칙은 `expressions`, paragraph 정책은 최소 문장 수인 `min`을 가진다. 자체 검사는 필수 값, 중복 ID, `kind`별 탐지 조건, 전체 표현 규칙 순회와 긴 문단 정책 적용을 확인한다. 이후 AI 작업에서 새 후보를 발견하면 같은 구조의 규칙을 추가하거나 기존 규칙 및 정책의 조건과 사례를 조정할 수 있어야 하며, 변경한 전체 기준은 같은 자체 검사를 통과해야 한다.
 
 ### 3. `.mjs` 개발 지침과 ESLint 검사를 먼저 준비한다
 
-검사기 코드를 작성하기 전에 `docs/dev/node/mjs-cli.md`를 현재 개발 지침으로 추가한다. 이 문서는 Node.js 22.0.0에서 단독 실행하는 `.mjs` 파일을 대상으로 하며, CLI 인수, byte 제한, 엄격한 UTF-8, 파일과 Git 입력, literal 탐색, Markdown 플레인 텍스트 문단 구분, `Intl.Segmenter`의 한국어 문장 분리, UTF-16 위치, 결정적 정렬, JSON 출력과 종료 상태를 설명한다. 후속 `scan-korean-expressions.mjs`에 함께 둘 self-test 사례와 가장 작은 검증 방법도 각 실패 조건, 적용 범위, 관찰 결과, 권장 코드 및 피해야 할 코드에 연결한다.
+검사기 코드를 작성하기 전에 `docs/dev/node/mjs-cli.md`를 현재 개발 지침으로 추가한다. 이 문서는 Node.js 22.0.0에서 실행하는 `.mjs` 검사기를 대상으로 하며, CLI 인수, byte 제한, 엄격한 UTF-8, 파일과 Git 입력, literal 탐색, Markdown 플레인 텍스트 문단 구분, `Intl.Segmenter`의 한국어 문장 분리, UTF-16 위치, 결정적 정렬, JSON 출력과 종료 상태를 설명한다. 후속 `scan.mjs`에 둘 self-test 사례와 가장 작은 검증 방법도 각 실패 조건, 적용 범위, 관찰 결과, 권장 코드 및 피해야 할 코드에 연결한다.
 
-ESLint는 개발 환경에서만 사용하는 의존성이며 배포할 스킬 파일에는 포함하지 않는다. 개발 환경은 ESLint 10.8.0이 요구하는 Node.js `^20.19.0 || ^22.13.0 || >=24`를 사용하고, 검사기 자체는 Node.js 22.0.0 이상에서 실행하는 조건을 유지한다. `eslint.config.mjs`는 ESLint core와 `@eslint/js`만 사용하고 검사기 및 설정 파일에 범위를 제한한다. `eslint-plugin-n`, `eslint-plugin-security`와 custom rule은 추가하지 않는다. 정적 규칙은 정상 및 오류 사례를 각각 실행해 의도한 코드만 거부하는지 확인한다.
+ESLint는 개발 환경에서만 사용하는 의존성이며 배포할 스킬 파일에는 포함하지 않는다. 개발 환경은 ESLint 10.8.0이 요구하는 Node.js `^20.19.0 || ^22.13.0 || >=24`를 사용하고, 검사기 자체는 Node.js 22.0.0 이상에서 실행하는 조건을 유지한다. `eslint.config.mjs`는 ESLint core와 `@eslint/js`만 사용하고 검사기 및 설정 파일에 범위를 제한한다. 기존 import 제한은 유지하되 `scan.mjs`의 정확한 위치에서 두 탐지 모듈의 정적 import만 허용한다. `eslint-plugin-n`, `eslint-plugin-security`와 custom rule은 추가하지 않는다. 정적 규칙은 정상 및 오류 사례를 각각 실행해 의도한 코드만 거부하는지 확인한다.
 
 Git 상태, symlink, 실제 byte 수, UTF-8 해석, 겹치는 문자열, 위치 계산, 출력 상한과 stream 완료는 ESLint가 코드를 실행하지 않고 판정할 수 없다. 이 조건은 4단계의 self-test 및 대표 실행에 연결하고, 정적 규칙이 증명하는 범위로 설명하지 않는다.
 
 **완료 증거.** `pnpm install --frozen-lockfile`, `pnpm lint`와 규칙별 정상 및 오류 사례 검사가 실행 가능해야 한다. 개발 지침의 각 사례는 ESLint, self-test, 대표 실행 또는 요구사항 소유자가 지정한 검수 가운데 하나와 연결돼야 한다. 여러 실행 방식, 입력, Git 및 파일 처리, 탐색, 출력과 오류 처리 관점에서 다시 조사했을 때 새 사례, 기존 사례에 추가할 조건, 코드 예시 또는 정적 규칙이 한 차례 연속으로 나오지 않아야 한다.
 
-### 4. `scan-korean-expressions.mjs`를 작성하고 같은 파일에서 검사한다
+### 4. 실행 진입점과 두 탐지 모듈을 작성하고 검사한다
 
-새 파일은 `skills/use-words-review/scripts/scan-korean-expressions.mjs` 하나만 만든다. Node.js 표준 라이브러리만 사용하고 외부 패키지 설치, 실행 중 인터넷 요청, 별도 규칙 파일, 클래스, 팩터리와 의존성 주입 프레임워크를 추가하지 않는다. 정상 실행은 한 `rules` 상수 전체를 항상 순회하며 규칙 ID, 표현, `catalog`와 필터를 입력받지 않는다.
+`skills/use-words-review/scripts/scan.mjs`, `korean-expressions.mjs`와 `long-paragraphs.mjs`를 같은 배포 단위로 만든다. Node.js 표준 라이브러리만 사용하고 외부 패키지 설치, 실행 중 인터넷 요청, 별도 규칙 파일, 클래스, 팩터리와 의존성 주입 프레임워크를 추가하지 않는다. `scan.mjs`만 두 탐지 모듈을 정적 import하고 모든 정상 실행에서 함께 호출한다. 규칙 ID, 표현, `catalog`, 검사 종류와 필터를 입력받지 않는다.
 
 - `--changed <repo>`, 반복 가능한 `--file <path>`, `--stdin --source-name <name>` 가운데 정확히 하나를 받는다. `--self-test`는 이 세 입력 방식과 함께 사용할 수 없는 별도 실행 방식이다.
-- 세 입력 처리 함수는 같은 `scanSources({ provideSources })` 함수에 `Source`를 제공한다. `--changed`는 staged, unstaged와 untracked 일반 파일의 현재 작업 트리 원문 전체를 검사하고, 변경 파일이 없으면 빈 `source` 결과를 낸다. `--file`은 호출 순서를 유지하며 같은 정규화 위치의 중복을 거부한다. 저장소 전체 순회, glob, `--text`와 변경 hunk parser는 넣지 않는다.
-- 크기가 0인 파일과 빈 표준 입력은 유효한 source다. 이 경우에도 실제로 순회한 모든 규칙의 `catalog`와 source를 출력하고 `rules`와 경고 배열은 비우며 세 집계값이 0인 `summary`와 종료 상태 `0`을 반환한다.
-- 모든 source와 모든 내장 표현의 겹치는 literal 출현까지 찾는다. 각 출현에는 1부터 시작하는 `line`, UTF-16 code unit 기준 `startUtf16`과 `endUtf16` 및 최대 480 code unit의 `quote`를 넣는다. source 512개, 파일 하나 2 MiB와 전체 입력 32 MiB를 넘으면 입력 실패로 처리한다.
-- paragraph 규칙은 빈 줄로 구분한 최상위 플레인 텍스트 문단을 `Intl.Segmenter("ko", { granularity: "sentence" })`로 센다. 제목, 표, 목록, 인용문, HTML, front matter, fenced 및 들여쓴 코드는 문단 후보에서 제외한다. 일곱 문장 이상인 문단마다 경고 하나를 만들고 `count`, 문단 시작의 `line`과 `startUtf16` 및 최대 480 UTF-16 code unit의 `quote`를 넣는다. 중첩 구조를 위해 완전한 Markdown parser나 외부 package를 추가하지 않는다.
-- 표준 출력의 JSON은 실제 순회한 전체 규칙으로 만든 `catalog`, 검사한 source, 발견된 규칙의 설명과 사례를 한 번씩 담은 `rules`, 결정적 순서의 상세 `warnings`와 `summary`를 담는다. 후보 유무와 상세 경고 생략은 실행 실패가 아니며 결과 파일을 만들지 않는다.
-- 상세 경고는 50,000개와 직렬화 JSON 64 MiB 중 먼저 닿는 한도에서 자른다. 한도에 닿은 뒤에도 모든 출현을 끝까지 세며, `summary.total`, `summary.shown`과 `summary.omitted`를 정확히 계산한다. 생략된 출현에서만 발견된 규칙도 `rules`에 포함한다.
-- 인수, Git, 파일, 인코딩, 입력 상한과 직렬화 실패만 최상위에서 한 번 처리해 원문과 개인 위치가 없는 표준 오류를 쓰고 종료 상태 `2`를 반환한다. 상세 경고를 모두 빼도 JSON이 64 MiB를 넘으면 부분 JSON을 쓰지 않고 실패한다.
+- 세 입력 처리 함수는 같은 `scanSources({ provideSources })` 함수에 `Source`를 제공한다. source 제공 함수만 I/O 경계로 전달하고 두 탐지 함수는 주입하지 않는다. `--changed`는 staged, unstaged와 untracked 일반 파일의 현재 작업 트리 원문 전체를 검사하고, 변경 파일이 없으면 빈 `source` 결과를 낸다. `--file`은 호출 순서를 유지하며 같은 정규화 위치의 중복을 거부한다. 저장소 전체 순회, glob, `--text`와 변경 hunk parser는 넣지 않는다.
+- 크기가 0인 파일과 빈 표준 입력은 유효한 source다. 이 경우에도 표현 규칙과 긴 문단 정책으로 만든 두 `catalog`와 source를 출력하고 각 `rules` 및 경고 배열은 비우며 두 `summary`의 집계값을 0으로 반환한다.
+- `korean-expressions.mjs`는 모든 source와 모든 내장 표현의 겹치는 literal 출현까지 찾는다. 각 출현에는 1부터 시작하는 `line`, UTF-16 code unit 기준 `startUtf16`과 `endUtf16` 및 최대 480 code unit의 `quote`를 넣는다. source 512개, 파일 하나 2 MiB와 전체 입력 32 MiB를 넘으면 진입점이 입력 실패로 처리한다.
+- `long-paragraphs.mjs`는 빈 줄로 구분한 최상위 플레인 텍스트 문단을 `Intl.Segmenter("ko", { granularity: "sentence" })`로 센다. 제목, 표, 목록, 인용문, HTML, front matter, fenced 및 들여쓴 코드는 문단 후보에서 제외한다. 일곱 문장 이상인 문단마다 경고 하나를 만들고 `count`, 문단 시작의 `line`과 `startUtf16` 및 최대 480 UTF-16 code unit의 `quote`를 넣는다. 중첩 구조를 위해 완전한 Markdown parser나 외부 package를 추가하지 않는다.
+- 표준 출력의 JSON은 공통 `sources`와 표현 및 문단 순서로 고정한 `checks`를 담는다. 각 검사 결과에는 실제 순회한 규칙 또는 정책으로 만든 `catalog`, 발견된 규칙의 설명과 사례를 한 번씩 담은 `rules`, 결정적 순서의 상세 `warnings`와 `summary`를 둔다. 후보 유무와 상세 경고 생략은 실행 실패가 아니며 결과 파일을 만들지 않는다.
+- 각 검사는 상세 경고 20,000개와 직렬화 결과 32 MiB 중 먼저 닿는 한도에서 경고를 자른다. 한도에 닿은 뒤에도 해당 검사의 모든 출현을 끝까지 세며, 각 `summary.total`, `summary.shown`과 `summary.omitted`를 정확히 계산한다. 생략된 출현에서만 발견된 규칙도 해당 `rules`에 포함한다.
+- 인수, Git, 파일, 인코딩, 입력 상한과 직렬화 실패만 진입점에서 한 번 처리해 원문과 개인 위치가 없는 표준 오류를 쓰고 종료 상태 `2`를 반환한다. 상세 경고를 모두 빼도 검사 결과 하나가 32 MiB를 넘으면 부분 JSON을 쓰지 않고 실패한다.
 
-같은 파일의 `--self-test`는 규칙 자료의 필수 필드와 ID 중복을 검사하고, 순수 탐색 함수로 전체 규칙 순회, 겹치는 literal 출현, 여섯 문장과 일곱 문장의 경계, Markdown 제외 block, 줄과 UTF-16 열, 빈 입력, 상세 경고 축약, `summary` 계산, 온전한 JSON 및 실패 상태를 확인한다. 단일 주제와 여러 주제인 일곱 문장 문단에서 같은 경고가 나오는지도 확인해 의미 판정이 탐색 함수에 들어가지 않게 한다. 구현 담당자는 `node skills/use-words-review/scripts/scan-korean-expressions.mjs --self-test`를 실행하며 성공은 `0`, 검사 실패는 `2`로 판정한다. 같은 원문을 `--file`과 `--stdin`으로 실행했을 때 `source` 식별 정보 이외의 규칙, 경고와 집계가 같아야 한다.
+`scan.mjs --self-test`는 두 탐지 모듈의 실제 exported function과 운영 조립 함수를 사용한다. 표현 규칙과 문단 정책의 필수 필드 및 ID 중복, 전체 표현 규칙 순회, 겹치는 literal 출현, 여섯 문장과 일곱 문장의 경계, Markdown 제외 block, 줄과 UTF-16 열, 빈 입력, 검사별 상세 경고 축약, 독립된 `summary`, 온전한 JSON 및 실패 상태를 확인한다. 단일 주제와 여러 주제인 일곱 문장 문단에서 같은 경고가 나오는지도 확인해 의미 판정이 탐색 함수에 들어가지 않게 한다. 구현 담당자는 `node skills/use-words-review/scripts/scan.mjs --self-test`를 실행하며 성공은 `0`, 검사 실패는 `2`로 판정한다. 같은 원문을 `--file`과 `--stdin`으로 실행했을 때 `source` 식별 정보 이외의 검사 결과와 집계가 같아야 한다.
 
 Node.js 22.0.0 이상과 Git 2.18.0 이상을 먼저 확인하고 macOS 구현 환경에서 자체 검사와 대표 입력을 실행한다.
 
-**완료 증거.** 새 스크립트가 존재하고 세 입력 방식, 전체 내장 규칙 순회, 모든 literal 및 긴 문단 후보의 집계, 빈 입력, 전체 `catalog`, 상세 경고의 결정적 축약, 정확한 `summary`, 종료 상태 `0`과 `2`, 입력 및 출력 상한과 자체 검사를 승인된 값으로 구현해야 한다. macOS에서 직접 실행한 자체 검사가 통과해야 한다. SARIF, reviewdog, JSONL, pre-commit, CI, Codex hook와 MCP는 현재 소비자가 없으므로 추가하지 않는다.
+**완료 증거.** 세 스크립트가 존재하고 세 입력 방식, 전체 표현 규칙 순회, 긴 문단 정책 적용, 모든 literal 및 긴 문단 후보의 독립 집계, 빈 입력, 검사별 `catalog`, 상세 경고의 결정적 축약, 정확한 두 `summary`, 종료 상태 `0`과 `2`, 입력 및 출력 상한과 자체 검사를 승인된 값으로 구현해야 한다. import graph는 `scan.mjs`에서 두 탐지 모듈로만 향해야 한다. macOS에서 직접 실행한 자체 검사가 통과해야 한다. SARIF, reviewdog, JSONL, pre-commit, CI, Codex hook와 MCP는 현재 소비자가 없으므로 추가하지 않는다.
 
 ### 5. 후보 표현 자료와 의미 검토 자료를 나눈다
 
-`skills/use-words-review/scripts/scan-korean-expressions.mjs`의 단일 `rules` 상수에 현재 `korean.md`에서 literal로 찾을 수 있는 후보를 모두 옮긴다. 각 규칙은 실패 문장과 정상 전문용례를 함께 제공한다.
+`skills/use-words-review/scripts/korean-expressions.mjs`의 단일 `rules` 상수에 현재 `korean.md`에서 literal로 찾을 수 있는 후보를 모두 옮긴다. 각 규칙은 실패 문장과 정상 전문용례를 함께 제공한다.
 
 - 일반 산문의 U+00B7을 검사하되 정확한 문자 보존 사례를 함께 제공한다.
 - 번역체 형태는 `에 대해서`, `에 의해서`, `에 있어서`, `와의`, `하지 않으면 안 된다`, `회의를 가지다`와 `사용자-facing`을 포함한다.
@@ -113,7 +113,7 @@ Node.js 22.0.0 이상과 Git 2.18.0 이상을 먼저 확인하고 macOS 구현 �
 
 스킬 범위는 AI가 만들거나 고친 한국어 문서와 저장하거나 공유할 문구 및 이름으로 유지한다. 일반 채팅에는 실행하지 않고, 사용자가 채팅 문구 검토를 명시적으로 요청한 경우만 예외로 남긴다.
 
-검토자는 입력 종류에 맞춰 `scan-korean-expressions.mjs`를 먼저 실행하고 전체 `catalog`, 상세 경고와 `summary`를 확인한 뒤 `korean.md`를 반드시 읽는다. 긴 문단 경고는 파일이나 표준 입력의 문단 전체를 다시 읽고 중심 내용, 중요한 정보의 위치와 문장 사이의 관계를 판정한다. `summary.omitted`가 0보다 크면 검토 결과 마지막에 `... 그 외 <N>개의 경고가 더 발견됨`을 표시하고, 상세 판정이 필요한 원문은 파일별로 나눠 다시 실행한다. 결과물뿐 아니라 작성에 사용한 기존 문서도 입력으로 받고, 기존 자료의 추상 명사, 영어 보통명사와 반복 결론을 새 결과물이 근거 없이 이어받았는지 확인한다. 독립 검토자는 각 후보의 실제 용례와 문장별 주체, 행동, 조건, 결과 및 필요한 반복 구조를 판정한다.
+검토자는 입력 종류에 맞춰 `scan.mjs`를 먼저 실행하고 공통 `sources`와 두 `checks`의 `catalog`, 상세 경고 및 `summary`를 확인한 뒤 `korean.md`를 반드시 읽는다. 긴 문단 경고는 파일이나 표준 입력의 문단 전체를 다시 읽고 중심 내용, 중요한 정보의 위치와 문장 사이의 관계를 판정한다. 검사별 `summary.omitted`가 0보다 크면 검토 결과 마지막에 검사 종류와 `... 그 외 <N>개의 경고가 더 발견됨`을 표시하고, 상세 판정이 필요한 원문은 파일별로 나눠 다시 실행한다. 결과물뿐 아니라 작성에 사용한 기존 문서도 입력으로 받고, 기존 자료의 추상 명사, 영어 보통명사와 반복 결론을 새 결과물이 근거 없이 이어받았는지 확인한다. 독립 검토자는 각 후보의 실제 용례와 문장별 주체, 행동, 조건, 결과 및 필요한 반복 구조를 판정한다.
 
 스킬 본문에는 새 용어별 설명을 복사하지 않는다. 한국어 결과물이 있는데 `korean.md`를 읽지 못하면 통과를 보고하지 않는다. 독립 검토자를 사용할 수 없으면 주 에이전트가 같은 기준으로 읽기 전용 검토를 수행하고 독립 검토가 아니었다는 제한을 보고한다. 스킬 자체가 발견되지 않는 상황은 실행 전에 생기는 문제이므로 AGENTS와 설치 문서가 맡는다.
 
@@ -126,7 +126,7 @@ Node.js 22.0.0 이상과 Git 2.18.0 이상을 먼저 확인하고 macOS 구현 �
 - 일반 채팅, 진행 알림과 설명 답변에는 스킬을 실행하지 않는다. 중간 메시지와 최종 답변 모두 처음부터 대상, 주체, 행동, 조건과 결과가 드러나게 쓴다.
 - AGENTS에는 `포화`, `경계`, `소유`처럼 실제 행동을 감추기 쉬운 소수 신호와 `설계·구현·검증` 같은 U+00B7 예시만 둔다. 목록이 금칙어가 아니며 새 후보에도 같은 질문을 적용한다고 적는다.
 - 기존 문서는 사실과 결정을 확인하는 자료이지 승인된 문체 예시가 아니라고 명시한다. 표현을 재사용하기 전에 실제 행동과 조건을 다시 쓴다.
-- AI가 만들거나 고친 한국어 문서, 저장하거나 공유할 문구와 이름은 작성 전에 설치된 스킬의 `references/korean.md`를 읽고 공유 전에 스킬로 검토한다. 스킬은 `scan-korean-expressions.mjs`의 전체 내장 규칙을 먼저 실행한다.
+- AI가 만들거나 고친 한국어 문서, 저장하거나 공유할 문구와 이름은 작성 전에 설치된 스킬의 `references/korean.md`를 읽고 공유 전에 스킬로 검토한다. 스킬은 `scan.mjs`를 실행해 표현 규칙과 긴 문단 정책을 모두 적용한다.
 - 사용자가 특정 채팅 문구의 검토를 명시적으로 요청하면 예외로 스킬을 실행한다. 채팅 초안을 저장하거나 전달할 때에는 실제 저장 또는 전달 직전에 한 번 실행한다.
 - 스킬이 필요한데 현재 실행에서 찾을 수 없으면 완료를 주장하지 않고 설치 누락을 보고한다.
 
@@ -181,7 +181,7 @@ Node.js 22.0.0 이상과 Git 2.18.0 이상을 먼저 확인하고 macOS 구현 �
 
 ### 10. `use-words-review`의 파일별 내부 반복을 줄인다
 
-[한국어 문서 검토 재발 방지 요구사항](./requirements.md)의 `목표`, `적용 조건`과 `완료 증거`에 따라 검토 범위, 한국어 판정과 정상 전문용례를 유지하면서 같은 절차나 사례를 다시 설명하는 부분을 줄인다. literal 후보 자료는 `scan-korean-expressions.mjs`, 목록 밖 의미 검토는 `references/korean.md`, 언어 공통 사례는 `references/examples.md`, 실행 절차는 `SKILL.md`에 한 번씩 둔다. `scan-korean-expressions.mjs` 이외의 새 파일은 만들지 않는다.
+[한국어 문서 검토 재발 방지 요구사항](./requirements.md)의 `목표`, `적용 조건`과 `완료 증거`에 따라 검토 범위, 한국어 판정과 정상 전문용례를 유지하면서 같은 절차나 사례를 다시 설명하는 부분을 줄인다. literal 후보 자료는 `korean-expressions.mjs`, 긴 문단 기준은 `long-paragraphs.mjs`, 목록 밖 의미 검토는 `references/korean.md`, 언어 공통 사례는 `references/examples.md`, 실행 절차는 `SKILL.md`에 한 번씩 둔다. 스크립트는 승인된 `scan.mjs`, `korean-expressions.mjs`와 `long-paragraphs.mjs`만 둔다.
 
 작업 전에 현재 description의 문자 수, 각 파일의 줄 수와 바이트 수를 기록한다. 수치는 감축 결과를 확인하는 보조 자료로만 사용한다. 문장이 줄었더라도 검토 범위나 판정 조건이 사라지면 통과로 판단하지 않는다. 먼저 두 참고 자료의 작은 중복을 줄이고, 그 결과를 기준으로 `SKILL.md`의 실행 절차를 재구성한다. 호출 조건을 담는 description은 본문 정리가 끝난 뒤 마지막에 줄인다.
 
@@ -201,7 +201,7 @@ Node.js 22.0.0 이상과 Git 2.18.0 이상을 먼저 확인하고 macOS 구현 �
 
 **기호 사례.** `references/examples.md`의 `Unnecessary symbols and required notation`에는 정확한 수식, 상표, 승인된 화면 이름과 접근성 안내를 보존한다는 언어 공통 원칙을 남긴다. U+00B7의 한국어 실패 사례와 보존 사례는 스크립트의 규칙으로 옮긴다. 장식 목적으로 기호를 이어 붙인 실패 사례, 일반 문장으로 고친 사례와 언어별 문장부호 규칙은 해당 언어 자료가 정한다는 조건은 유지한다.
 
-**정적 검증.** `SKILL.md`, `references/korean.md`, `references/examples.md`와 `scripts/scan-korean-expressions.mjs` 이외의 파일은 이 작업 단위에서 바꾸지 않는다. description의 문자 수가 수정 전보다 줄고 1,024자를 넘지 않는지 확인한다. Markdown 제목 단계, 목차 링크와 스킬의 상대 링크가 실제 위치를 가리키는지 검사한다. `skills-ref`가 현재 실행 환경에 있으면 스킬 디렉터리를 검증하고, 없으면 이름, description과 YAML 머리말을 Agent Skills 명세에 직접 대조한 뒤 명세 검사기를 실행하지 못했다고 기록한다.
+**정적 검증.** `SKILL.md`, `references/korean.md`, `references/examples.md`와 `scripts/scan.mjs`, `scripts/korean-expressions.mjs`, `scripts/long-paragraphs.mjs` 이외의 파일은 이 작업 단위에서 바꾸지 않는다. description의 문자 수가 수정 전보다 줄고 1,024자를 넘지 않는지 확인한다. Markdown 제목 단계, 목차 링크와 스킬의 상대 링크가 실제 위치를 가리키는지 검사한다. `skills-ref`가 현재 실행 환경에 있으면 스킬 디렉터리를 검증하고, 없으면 이름, description과 YAML 머리말을 Agent Skills 명세에 직접 대조한 뒤 명세 검사기를 실행하지 못했다고 기록한다.
 
 검토 동작은 다음 사례를 문장별로 추적한다. 일반 채팅은 검토 대상에서 빠지고, 저장하거나 대화 밖으로 전달할 문구와 사용자가 명시적으로 검토를 요청한 문구는 공유 단위마다 한 번 검토해야 한다. 한국어가 포함되면 스크립트의 내장 규칙 전체를 실행하고 `korean.md`를 전부 읽으며, 포함되지 않으면 두 절차를 실행하지 않아야 한다. 필수 스크립트나 참고 자료를 읽을 수 없으면 `pass`를 보고하지 않아야 한다. 서브에이전트를 사용할 수 없으면 주 에이전트가 읽기 전용 검토를 수행하고 제한을 밝혀야 한다. 네 판정 상태, 현재 모델 선택, 새 설정의 채택 평가와 근거 충돌 시 재검토 조건도 감축 전과 같은 결과를 내야 한다.
 
@@ -225,13 +225,13 @@ Node.js 22.0.0 이상과 Git 2.18.0 이상을 먼저 확인하고 macOS 구현 �
 
 [한국어 문서 검토 재발 방지 요구사항](./requirements.md)의 `목표`와 `완료 증거`에 따라 문단 길이를 검토 신호로 사용하되 글자 수나 문장 수만으로 실패를 확정하지 않는다. 한 문단에 서로 다른 중심 내용, 근거, 조건, 결정 상태 또는 후속 행동이 들어 있어 독자가 관계를 다시 구성해야 하면 각 의미 단위를 플레인 텍스트 문단으로 나눈다. 각 문단은 중심 내용을 먼저 밝히고 문단 사이의 적용 순서와 의존 관계를 유지한다.
 
-문단 탐지 구현은 파일 구성을 정할 때까지 중단한다. 현재 승인안은 `scan-korean-expressions.mjs` 한 파일과 단일 `rules` 배열을 사용하지만, 조사 자료는 `scan.mjs` 진입점이 `korean-expressions.mjs`와 `korean-paragraphs.mjs`를 정적 import하는 구성을 권고한다. 이 세 이름과 검사별 JSON 구분은 아직 승인된 기준이 아니며 구현 담당자가 임의로 선택하지 않는다.
+긴 문단 탐지는 `long-paragraphs.mjs`가 맡고, `scan.mjs`가 `korean-expressions.mjs`와 이 모듈을 정적 import해 모든 정상 실행에서 함께 호출한다. 표현 검사와 긴 문단 검사는 공통 `sources`를 사용하되 각자 `id`, `catalog`, `rules`, `warnings`와 `summary`를 제공한다.
 
-세 파일 구성을 승인하면 구현 전에 `eslint.config.mjs`도 함께 갱신한다. 기존 import 제한은 저장소의 다른 파일에 그대로 적용하고, 승인된 스크립트의 정확한 파일 위치에만 별도 설정을 둬 필요한 로컬 정적 import를 허용한다. `scripts/**/*.mjs`처럼 이후 파일까지 포함하는 pattern으로 예외를 넓히지 않는다. 외부 package import와 동적 import 제한은 세 스크립트에서도 유지한다.
+구현 전에 `docs/dev/node/mjs-cli.md`의 조건부 모듈 분리 지침을 승인된 파일명과 검사별 출력 상한에 맞추고 `eslint.config.mjs`도 함께 갱신한다. 기존 import 제한은 저장소의 다른 파일에 그대로 적용하고, `scan.mjs`의 정확한 위치에만 별도 설정을 둬 `./korean-expressions.mjs`와 `./long-paragraphs.mjs`의 정적 import를 허용한다. `scripts/**/*.mjs`처럼 이후 파일까지 포함하는 pattern으로 예외를 넓히지 않는다. 외부 package import와 동적 import 제한은 세 스크립트에서도 유지한다.
 
 ESLint 정상 사례는 승인된 스크립트에서 허용한 상대 위치를 정적으로 가져와야 한다. 오류 사례는 같은 import를 대상 밖의 `.mjs` 파일에서 사용하거나 승인되지 않은 상대 위치, 외부 package 또는 동적 import를 사용해야 한다. 각 사례의 통과와 거부를 확인하기 전에는 import 제한 변경을 완료로 판단하지 않는다. 적용 기준은 [Node.js MJS 명령줄 검사기](../../dev/node/mjs-cli.md#모듈-분리안을-승인하면-고정-모듈을-정적으로-가져온다)를 따른다.
 
-`scan-korean-expressions.mjs`의 단일 `rules` 상수에 문단 후보 검사를 추가하고 모든 실행에서 함께 순회한다. Markdown 플레인 텍스트 문단이 일곱 문장 이상이면 문단 시작 위치, 관찰한 문장 수와 제한된 원문 일부를 경고로 출력한다. 이 값은 장문 기술 문서 지침에서 선택했지만 검사 대상인 모든 Markdown 산문 문단에 적용하는 초기 기준이며 오류 기준이 아니다. 한국어 글자 수나 영어 단어 수 기준은 추가하지 않는다. 후보가 있어도 종료 상태는 `0`이고, 출력에 같은 뜻의 `severity`나 `requiresReview` 필드를 반복하지 않는다.
+`long-paragraphs.mjs`의 단일 `policy`에 문단 후보 기준을 둔다. Markdown 플레인 텍스트 문단이 일곱 문장 이상이면 문단 시작 위치, 관찰한 문장 수와 제한된 원문 일부를 경고로 출력한다. 이 값은 장문 기술 문서 지침에서 선택했지만 검사 대상인 모든 Markdown 산문 문단에 적용하는 초기 기준이며 오류 기준이 아니다. 한국어 글자 수나 영어 단어 수 기준은 추가하지 않는다. 후보가 있어도 종료 상태는 `0`이고, 출력에 같은 뜻의 `severity`나 `requiresReview` 필드를 반복하지 않는다.
 
 문단은 빈 줄로 구분하고 단순 줄바꿈은 같은 문단으로 센다. 제목, 표, 목록, 인용문, HTML, front matter, fenced 및 들여쓴 코드처럼 플레인 텍스트 산문이 아닌 Markdown 블록은 문장 수 계산에서 제외한다. 외부 parser를 추가하지 않고 현재 구분할 블록을 결정적인 줄 검사와 fence 상태로 식별한다. 중첩된 Markdown 구조를 정확히 해석해야만 판정할 수 있는 입력은 후보를 만들지 않으며 의미 검토에서 계속 확인한다.
 
@@ -248,16 +248,16 @@ Markdown 결과물에서는 빈 줄로 구분된 문단인지 확인한다. 단�
 - 한국어 저장 결과물 작업에서 스킬을 찾을 수 없으면 설치 방법을 바로 추정해 바꾸지 않고 현재 설치 상태를 보고한다.
 - 후보 표현이 정확한 전문용어인지 저장소 근거로 정할 수 없으면 단어를 임의로 바꾸지 않고 `needs human input`으로 남긴다.
 - 기존 문구가 승인된 공개 표현인지 알 수 없으면 재사용하지 않고 승인 근거를 요청한다.
-- 실행 진입점, 표현 모듈과 문단 모듈을 나누는 구성 및 파일명과 검사별 출력 상한 계산이 승인되기 전에는 문단 탐지 구현과 현재 검사기 이름 변경을 시작하지 않는다.
+- `scan.mjs`에 허용할 두 정적 import만 정확히 구분하지 못하고 기존 import 제한을 더 넓혀야 한다면 구현을 멈추고 정적 검사 방식을 다시 검토한다.
 - 모델이나 추론 설정을 바꾸려면 같은 평가 묶음의 비교 결과와 선택 권한이 필요하다. 이번 계획은 모델 교체를 승인하지 않는다.
 - 원본 사례 집계를 다시 검증할 역할과 안전한 보관 방식은 이번 계획에서 정하지 않는다. 갱신한 체계를 적용한 뒤 후속 작업에서 다시 검토한다.
 
 ## 커밋 단위
 
-개발 지침과 정적 검사 준비는 이미 별도 커밋으로 끝났다. 남은 변경은 실행 가능한 의존 순서로 나눈다.
+변경은 실행 가능한 의존 순서로 나눈다.
 
 1. 승인된 구현 기준을 담은 요구사항, 조사 자료와 이 계획
-2. `skills/use-words-review/SKILL.md`, `references/korean.md`, `references/examples.md`, `scripts/scan-korean-expressions.mjs`의 책임 재배치, 검사기 실행 연결과 자체 검사
+2. `skills/use-words-review/SKILL.md`, `references/korean.md`, `references/examples.md`, `scripts/scan.mjs`, `scripts/korean-expressions.mjs`와 `scripts/long-paragraphs.mjs`의 책임 재배치, 검사기 실행 연결과 자체 검사
 3. `src/AGENTS.ko.md`, `src/AGENTS.en.md`의 중복 감축과 두 배포본 대조 결과
 4. 현재 요구사항을 충족하는 데 실제 변경이 필요할 때만 `docs/designs/README.md`
 5. 긴 문단 경고, 의미 단위별 문단 분리 기준과 대표 평가 사례
