@@ -2,7 +2,7 @@
 
 ## 결론
 
-`use-words-review`의 후보 검사기는 textlint, Vale와 reviewdog를 실행 의존성으로 넣지 않고 Node.js 표준 기능만 사용하는 `.mjs` 한 파일로 구성하는 안이 가장 작다. 스크립트는 표현을 확정 오류로 판정하지 않고, 내장 규칙에 해당하는 모든 출현을 세어 출력 한도 안의 상세 경고와 정확한 생략 수를 AI에게 제공한다. 판단에 필요한 설명 및 대조 사례도 같은 표준 출력 JSON 객체에 넣는다. Markdown parser, 외부 규칙 파일, 결과 파일, formatter 추상화와 MCP는 현재 결과에 필요하지 않다.
+`use-words-review`의 후보 검사기는 textlint, Vale와 reviewdog를 실행 의존성으로 넣지 않고 Node.js 표준 기능만 사용하는 `.mjs` 한 파일로 유지한다. 스크립트는 표현과 긴 플레인 텍스트 문단을 확정 오류로 판정하지 않고 검토 후보로 알린다. 내장 규칙에 해당하는 모든 출현을 세어 출력 한도 안의 상세 경고와 정확한 생략 수를 AI에게 제공하며, 판단에 필요한 설명 및 대조 사례도 같은 표준 출력 JSON 객체에 넣는다. 완전한 Markdown parser, 외부 규칙 파일, 결과 파일, formatter 추상화와 MCP는 현재 결과에 필요하지 않다.
 
 규칙의 `reference` 필드는 제거하는 편이 맞다. 스킬은 사용자 홈, 저장소 내부, 관리 환경 또는 다른 호스트에 설치될 수 있다. 실행 결과를 이해할 때마다 별도 파일을 찾아 읽게 하면 설치 위치 해석과 추가 문맥 사용이 필요하다. literal로 찾을 규칙은 `id`, `expressions`, `message`, `queries`, `negatives`, `positives`를 스크립트 상수 하나에 둔다. 출력은 일치한 규칙의 설명과 사례를 규칙마다 한 번만 싣고, 출현별 위치와 원문 일부를 별도 배열에 둔다.
 
@@ -22,9 +22,10 @@
 - 스킬 설치 위치에 의존하지 않고 규칙 설명과 사례를 한 실행에서 전달할 수 있는가.
 - Git 변경 파일, 지정 파일과 문자열을 같은 탐색 본체에 안전하게 전달할 수 있는가.
 - 결과 파일을 만들지 않고 후보, 정상 사례와 실행 실패를 구분할 수 있는가.
-- textlint 15.8.0, Vale 3.17.0과 reviewdog 0.21.0의 실제 구현에서 재사용할 구조와 피해야 할 동작은 무엇인가.
+- 긴 문단을 확정 오류로 만들지 않고 의미 검토 후보로 빠짐없이 알릴 수 있는가.
+- textlint 15.8.0, Vale 3.17.1과 reviewdog 0.21.0의 실제 구현에서 재사용할 구조와 피해야 할 동작은 무엇인가.
 
-2026년 8월 5일에 공식 문서와 세 공식 저장소의 tag 소스를 함께 확인했다. textlint는 v15.8.0, Vale는 v3.17.0, reviewdog는 v0.21.0을 기준으로 삼았다. OpenAI와 Agent Skills의 공식 문서에서 현재 스킬 검색 위치와 `scripts/`, `references/`의 역할도 다시 대조했다.
+2026년 8월 5일부터 8월 7일까지 공식 문서와 공식 저장소의 tag 소스를 함께 확인했다. textlint는 v15.8.0, Vale는 v3.17.1, reviewdog는 v0.21.0을 기준으로 삼았다. OpenAI와 Agent Skills의 공식 문서에서 현재 스킬 검색 위치와 `scripts/`, `references/`의 역할도 다시 대조했다.
 
 ## 기존 도구에서 가져올 구조
 
@@ -38,13 +39,13 @@ textlint JSON formatter는 결과 전체를 한 번에 직렬화한다. 파일 �
 
 ### Vale는 명시적 입력 구분과 자체 규칙 형식의 필요성을 보여 준다
 
-Vale는 여러 파일, 표준 입력과 문자열을 받을 수 있지만, 위치 인수 하나가 실제 파일이 아니면 그 인수 자체를 검사 문자열로 해석한다. 파일 이름 오타나 검사 중 사라진 파일을 원문으로 오인할 수 있으므로 이 자동 판별은 가져오지 않는다. `--changed`, `--file`, `--stdin`을 명시적으로 구분하면 입력 의도를 추정할 필요가 없다. [Vale CLI 입력 처리](https://github.com/vale-cli/vale/blob/v3.17.0/cmd/vale/main.go)가 이 분기를 보여 준다.
+Vale는 여러 파일, 표준 입력과 문자열을 받을 수 있지만, 위치 인수 하나가 실제 파일이 아니면 그 인수 자체를 검사 문자열로 해석한다. 파일 이름 오타나 검사 중 사라진 파일을 원문으로 오인할 수 있으므로 이 자동 판별은 가져오지 않는다. `--changed`, `--file`, `--stdin`을 명시적으로 구분하면 입력 의도를 추정할 필요가 없다. [Vale CLI 입력 처리](https://github.com/vale-cli/vale/blob/v3.17.1/cmd/vale/main.go)가 이 분기를 보여 준다.
 
-Vale 규칙은 `Message`, `Description`, `Link`와 `Action`을 제공하지만 구조화된 문제 사례와 정상 사례 필드는 없다. 정의에 없는 YAML 필드는 규칙 로드 오류가 된다. 여러 token에 서로 다른 설명과 사례를 연결하려면 규칙을 나누거나 문자열에 합쳐야 하므로 현재 필요한 자료 구조를 Vale YAML로 대신할 수 없다. [Vale Definition](https://github.com/vale-cli/vale/blob/v3.17.0/internal/check/definition.go)과 [existence 규칙](https://github.com/vale-cli/vale/blob/v3.17.0/internal/check/existence.go)을 확인했다.
+Vale 규칙은 `Message`, `Description`, `Link`와 `Action`을 제공하지만 구조화된 문제 사례와 정상 사례 필드는 없다. 정의에 없는 YAML 필드는 규칙 로드 오류가 된다. 여러 token에 서로 다른 설명과 사례를 연결하려면 규칙을 나누거나 문자열에 합쳐야 하므로 현재 필요한 자료 구조를 Vale YAML로 대신할 수 없다. [Vale Definition](https://github.com/vale-cli/vale/blob/v3.17.1/internal/check/definition.go)과 [existence 규칙](https://github.com/vale-cli/vale/blob/v3.17.1/internal/check/existence.go)을 확인했다.
 
-Vale의 `scope: raw`도 원본 byte를 그대로 검사하지 않는다. markup parser 전의 내용을 쓰지만 CRLF 및 단독 CR과 일부 entity를 먼저 바꾼 문자열을 검사한다. 원문에서 찾은 위치를 AI에게 보여 줄 때 이 동작을 복사하면 열 위치가 달라질 수 있다. [입력 정리](https://github.com/vale-cli/vale/blob/v3.17.0/internal/core/util.go)와 [raw 검사 경로](https://github.com/vale-cli/vale/blob/v3.17.0/internal/lint/lint.go)를 확인했다.
+Vale의 `scope: raw`도 원본 byte를 그대로 검사하지 않는다. markup parser 전의 내용을 쓰지만 CRLF 및 단독 CR과 일부 entity를 먼저 바꾼 문자열을 검사한다. 원문에서 찾은 위치를 AI에게 보여 줄 때 이 동작을 복사하면 열 위치가 달라질 수 있다. [입력 정리](https://github.com/vale-cli/vale/blob/v3.17.1/internal/core/util.go)와 [raw 검사 경로](https://github.com/vale-cli/vale/blob/v3.17.1/internal/lint/lint.go)를 확인했다.
 
-Vale의 정상 JSON 결과는 표준 출력으로 가고 실행 오류는 표준 오류와 종료 상태 `2`로 분리된다. 이는 결과 파일 없이도 기계 자료와 실행 실패를 나눌 수 있다는 실제 사례다. 다만 Vale JSON은 경고가 없는 입력 파일과 실행한 규칙 전체를 보존하지 않으므로 현재 schema를 그대로 쓰지는 않는다. [Vale JSON 출력](https://github.com/vale-cli/vale/blob/v3.17.0/cmd/vale/json.go)과 [오류 출력](https://github.com/vale-cli/vale/blob/v3.17.0/cmd/vale/error.go)을 확인했다.
+Vale의 정상 JSON 결과는 표준 출력으로 가고 실행 오류는 표준 오류와 종료 상태 `2`로 분리된다. 이는 결과 파일 없이도 기계 자료와 실행 실패를 나눌 수 있다는 실제 사례다. 다만 Vale JSON은 경고가 없는 입력 파일과 실행한 규칙 전체를 보존하지 않으므로 현재 schema를 그대로 쓰지는 않는다. [Vale JSON 출력](https://github.com/vale-cli/vale/blob/v3.17.1/cmd/vale/json.go)과 [오류 출력](https://github.com/vale-cli/vale/blob/v3.17.1/cmd/vale/error.go)을 확인했다.
 
 ### reviewdog는 Git 파일 선정기나 내부 정본이 아니다
 
@@ -95,6 +96,53 @@ Git 프로젝트는 LTS 계열을 지정하지 않는다. 따라서 Git 최저 �
 
 현재 구현과 대표 실행은 macOS에서만 확인한다. Linux와 Windows 동작은 이번 완료 증거에 포함하지 않는다. 구현은 shell을 거치지 않고 Git을 실행하며 경로를 줄바꿈이 아닌 NUL byte로 구분하지만, 이 작성 방식만으로 확인하지 않은 운영체제의 동작을 주장하지 않는다. Node.js가 공개한 platform 목록은 실행 환경을 조사하는 자료이며 이번 검증 범위를 넓히는 근거로 사용하지 않는다. [Node.js 22 지원 platform 목록](https://github.com/nodejs/node/blob/v22.x/BUILDING.md#platform-list)과 저장소 루트 판정에 쓰는 [git-rev-parse 문서](https://git-scm.com/docs/git-rev-parse)를 확인했다.
 
+## 긴 문단은 비차단 검토 후보로 알린다
+
+길이 검사는 문단의 의미 오류를 판정하지 못하지만 검토할 위치를 찾는 첫 단계로 사용할 수 있다. 검사기는 기준을 넘은 문단마다 경고를 만들고 정상 종료하며, AI가 전체 문단을 읽어 중심 내용과 문장 사이의 관계를 판정한다. 경고 자체를 `needs revision`으로 바꾸거나 문단을 자동 분리하지 않는다.
+
+- **자연어 검사 도구는 경고와 실행 실패를 구분한다.** textlint는 `warning`과 `info`를 종료 상태 `0`으로 처리하고, Vale는 `suggestion`, `warning`, `error`를 나누며 오류만 비정상 종료의 원인이 된다. ESLint도 오탐 가능성이 있어 수동 검토가 필요한 규칙에는 종료 상태에 영향을 주지 않는 `warn`을 사용하라고 설명한다.
+  - [textlint의 규칙별 severity](https://textlint.org/docs/configuring/#severity-config-of-rules)는 경고가 결과를 보고하되 실행을 실패시키지 않는 동작을 설명한다. 2026년 8월 7일에 확인했다.
+  - [Vale 규칙 구조](https://vale.sh/docs/styles)는 규칙의 기본 수준을 `suggestion`으로 두고 세 수준을 구분한다. 2026년 8월 7일에 확인했다.
+  - [ESLint 규칙 severity](https://eslint.org/docs/latest/use/configure/rules)는 불확실하거나 수동 검토가 필요한 진단에 `warn`을 사용하는 이유를 직접 설명한다. 2026년 8월 7일에 확인했다.
+- **탐지와 판정은 서로 다른 상태다.** SARIF의 `kind: review`는 사람이 결과의 적합성을 판정해야 하는 상태이며, 심각도를 나타내는 `level`과 구분된다. 현재 검사기는 모든 `warnings`를 검토 후보로 정의하므로 SARIF 필드나 같은 뜻의 `severity`, `kind`, `requiresReview`를 경고마다 반복하지 않는다.
+  - [SARIF 2.1.0 Plus Errata 01의 result kind](https://docs.oasis-open.org/sarif/sarif/v2.1.0/os/sarif-v2.1.0-os.html#_Toc34317699)는 `review`와 `fail`을 별도 값으로 정의한다. 2023년 8월 28일 정오표를 2026년 8월 7일에 확인했다.
+
+### 일곱 문장은 초기 경고 기준이다
+
+긴 문단의 첫 경고 기준은 한 문단에 일곱 문장 이상으로 정한다. Google은 다섯 문장이나 여섯 문장을 넘으면 너무 많은 정보를 담았는지 확인하라고 안내하고, 호주 정부는 보고서와 같은 장문에서 보통 여섯 문장까지를 제시한다. 따라서 일곱 번째 문장은 검사 대상인 모든 Markdown 산문 문단에서 의미 검토를 시작할 보수적인 지점이며 합격선이 아니다. 한 가지 생각을 설명하고 관계가 분명하면 경고가 발생해도 `pass`다.
+
+- [Google 문단 구성](https://developers.google.com/style/paragraph-structure)은 다섯 문장이나 여섯 문장을 넘는 문단을 검토 신호로 보면서도 한 가지 생각을 설명한다면 더 길 수 있다고 명시한다. 2024년 10월 15일 갱신본을 2026년 8월 7일에 확인했다.
+- [호주 정부 문단 지침](https://www.stylemanual.gov.au/structuring-content/paragraphs)은 문서 유형별 길이를 구분하고 장문 보고서에는 보통 여섯 문장까지를 제시한다. 2025년 4월 1일 갱신본을 2026년 8월 7일에 확인했다.
+- [캐나다 정부 콘텐츠 지침](https://design.canada.ca/style-guide/)은 가독성 도구가 긴 문장처럼 고칠 후보를 찾는 첫 단계에는 유용하지만 독자의 실제 이해 여부를 판정할 수 없다고 설명한다. 2026년 3월 9일 갱신본을 2026년 8월 7일에 확인했다.
+- [W3C G153](https://www.w3.org/WAI/WCAG22/Techniques/general/G153)은 한 문단에서 하나의 주제나 하위 주제를 전개하고 문단 사이의 논리 관계를 밝히도록 안내한다. 2026년 8월 7일에 확인했다.
+
+영어 단어 수를 한국어 글자 수로 바꿀 공식 근거는 찾지 못했다. Digital.gov의 150단어 권고, Vale Microsoft 스타일의 문장당 30단어와 textlint 일본어 규칙의 100자는 각각 다른 언어와 문서 환경에서 정한 값이다. 첫 구현은 한국어 글자 수나 단어 수를 함께 적용하지 않는다. 한 문장에 여러 생각을 압축한 사례는 이 문단 경고가 아니라 `korean.md`의 문장 의미 검토가 계속 찾는다.
+
+문장 수는 Node.js 22가 제공하는 `Intl.Segmenter("ko", { granularity: "sentence" })`로 센다. 별도 자연어 처리 package를 추가하지 않고 한국어 locale을 명시할 수 있다. 실행 환경의 국제화 자료에 따라 약어, 인용문과 코드가 나뉘는 방식이 달라질 수 있으므로 여섯 문장과 일곱 문장의 대표 한국어 사례를 macOS의 승인된 Node 버전에서 고정해 검증한다. [ECMAScript Internationalization API의 Segmenter 명세](https://tc39.es/ecma402/#segmenter-objects)는 `sentence` 단위 분리를 표준 기능으로 정의한다. 2026년 8월 7일에 확인했다.
+
+### Markdown의 플레인 텍스트 문단만 센다
+
+물리적인 줄 길이는 문단 길이가 아니다. 같은 문단은 여러 줄로 쓸 수 있고 단순 줄바꿈으로 나누어도 Markdown에서는 하나의 문단으로 해석된다. 반면 제목, 목록, 표, 인용문, HTML과 코드는 문장부호가 있어도 플레인 텍스트 문단이 아니다.
+
+- [CommonMark 문단 명세](https://spec.commonmark.org/current/#paragraphs)는 다른 블록으로 해석되지 않는 연속된 비어 있지 않은 줄을 문단으로 정의한다. 현재 명세를 2026년 8월 7일에 확인했다.
+- [textlint의 TxtAST](https://textlint.org/docs/txtnode/)는 parser가 `Paragraph` node와 위치를 제공해 규칙이 문단 범위에 작동하는 선례를 보여 준다. 2026년 8월 7일에 확인했다.
+- [Vale scope](https://vale.sh/docs/scopes)는 `paragraph`, `sentence`, `heading`과 `table.cell`을 별도 범위로 구분한다. 2026년 8월 7일에 확인했다.
+
+외부 parser를 넣지 않는 현재 배포 조건에서는 CommonMark 전체를 재구현하지 않는다. 빈 줄과 Markdown block marker 및 fence 상태로 최상위 플레인 텍스트 문단을 구분한다. 중첩된 목록이나 인용문 안의 문단처럼 완전한 parser가 필요한 구조는 자동 경고의 대상에서 제외하고 AI 의미 검토에 남긴다. 이는 모든 CommonMark 문단을 찾았다는 주장이 아니라, 외부 의존성 없이 재현 가능한 산문 후보 범위다.
+
+### 조사 루프는 새 설계 정보가 없는 두 관점에서 끝냈다
+
+조사는 관점을 바꿔 여섯 차례 진행했다.
+
+1. 공공언어와 기술문서 관점에서 길이가 검토 신호이고 중심 내용이 최종 판정 기준임을 확인했다.
+2. textlint, Vale, markdownlint와 ESLint 관점에서 비차단 경고, 조정 가능한 기준과 구조별 제외를 확인했다.
+3. CommonMark와 자연어 parser 관점에서 물리적 줄이 아니라 문단 block을 식별해야 함을 확인했다.
+4. 한국어 및 다국어 관점에서 글자 수 합격선을 뒷받침할 공식 근거가 없음을 확인하고 장문 문서의 문장 수 기준을 선택했다.
+5. 진단 교환 관점에서 SARIF의 review 상태와 다른 도구의 severity를 다시 비교했지만, 현재 `warnings`와 종료 상태 `0`을 나눠 둔 설계에 추가할 정보는 나오지 않았다.
+6. 린터 운영 관점에서 confidence, 자동 수정과 오류 승격 사례를 추가로 확인했지만, 비차단 경고 뒤 의미 검토라는 결론을 바꿀 정보는 나오지 않았다.
+
+서로 다른 두 관점에서 새 설계 정보가 연속해서 나오지 않아 조사를 종료했다. 새 기준은 [요구사항의 긴 문단 경고](../requirements.md#목표), [대표 평가 사례](./korean-review-evaluation-cases.md)와 [계획의 긴 문단 작업](../plan.md#12-긴-문단을-경고하고-의미-단위별-분리-여부를-판정한다)에 반영한다.
+
 ## 규칙 schema
 
 규칙은 별도 JSON이나 YAML을 읽지 않고 스크립트 상수로 둔다. 별도 파일을 두면 설치 산출물, loader, schema 버전과 파일 누락 검사가 늘어난다. 현재 규칙을 독립적으로 편집하거나 여러 실행기가 공유해야 한다는 요구는 없다.
@@ -103,6 +151,7 @@ Git 프로젝트는 LTS 계열을 지정하지 않는다. 따라서 Git 최저 �
 const rules = [
   {
     id: "ko.boundary",
+    kind: "literal",
     expressions: ["경계"],
     message:
       "이 표현이 실제 구분 기준이나 책임이 바뀌는 지점을 뜻하는지 확인합니다.",
@@ -113,20 +162,35 @@ const rules = [
     negatives: ["조사와 구현의 경계를 정리합니다."],
     positives: ["두 시스템의 보안 경계에서 요청을 다시 인증합니다."],
   },
+  {
+    id: "ko.long-paragraph",
+    kind: "paragraph",
+    min: 7,
+    message:
+      "이 문단에 서로 다른 중심 내용이나 후속 행동이 섞였는지 확인합니다.",
+    queries: [
+      "모든 문장이 하나의 중심 내용을 설명합니까?",
+      "근거, 조건과 후속 행동의 관계를 문단 안에서 확인할 수 있습니까?",
+    ],
+    negatives: ["서로 독립된 확인 사항 세 가지를 한 문단에서 설명합니다."],
+    positives: ["일곱 문장이 하나의 변환 절차를 순서대로 설명합니다."],
+  },
 ];
 ```
 
 예시는 자료 모양만 보여 주며 표현, 문장과 `id`의 승인을 대신하지 않는다. 각 필드는 다음 책임을 가진다.
 
 - `id`는 출력의 경고와 규칙 자료를 연결하는 안정된 식별자다.
-- `expressions`는 원문에서 그대로 찾을 비어 있지 않은 문자열이다. 활용형이 달라져 공통 substring이 안전하지 않으면 승인된 형태를 각각 둔다.
+- `kind`는 literal 출현과 플레인 텍스트 문단 검사를 구분한다. 현재 허용값은 `literal`과 `paragraph`뿐이다.
+- `expressions`는 `literal` 규칙이 원문에서 그대로 찾을 비어 있지 않은 문자열이다. 활용형이 달라져 공통 substring이 안전하지 않으면 승인된 형태를 각각 둔다.
+- `min`은 `paragraph` 규칙이 경고를 시작할 최소 문장 수다. 첫 구현에서는 `7` 하나만 사용한다.
 - `message`는 후보를 다시 봐야 하는 이유를 한 문장으로 설명한다. 자동 오류나 일괄 치환을 선언하지 않는다.
 - `queries`는 현재 문맥에서 유지, 수정 또는 정보 요청을 판단하는 질문이다.
 - `negatives`와 `positives`는 같은 표현이 잘못 쓰인 경우와 정확히 쓰인 경우를 함께 보여 준다.
 
-`reference`, `severity`, `replacement`, 도움말 URL과 자동 수정 자료는 넣지 않는다. 후보 표현은 정상 전문용어일 수 있어 고정 치환값과 오류 등급이 없다. AI는 규칙 질문과 원문을 함께 읽어 `pass`, `needs revision`, `needs human input`을 판단한다.
+`reference`, `severity`, `replacement`, 도움말 URL과 자동 수정 자료는 넣지 않는다. literal 후보와 긴 문단은 정상 용례일 수 있어 고정 치환값과 오류 등급이 없다. AI는 규칙 질문과 원문을 함께 읽어 `pass`, `needs revision`, `needs human input`을 판단한다.
 
-스크립트가 시작할 때 규칙 상수를 검사한다. `id` 중복, 비어 있거나 공백뿐인 표현, 고립 surrogate, 같은 규칙 안의 중복 표현과 모든 필수 설명 및 사례의 빈 배열을 실패로 처리한다. 서로 다른 규칙의 같은 표현은 원칙적으로 금지한다. 허용하면 한 출현이 어떤 판정 기준에 속하는지 중복 경고가 생기므로 실제 필요가 확인된 뒤 명시적인 정책을 추가한다.
+스크립트가 시작할 때 규칙 상수를 검사한다. `id` 중복, 알 수 없는 `kind`, literal 규칙의 비어 있거나 공백뿐인 표현, 고립 surrogate, 같은 규칙 안의 중복 표현, paragraph 규칙의 유효하지 않은 `min`과 모든 필수 설명 및 사례의 빈 배열을 실패로 처리한다. 서로 다른 literal 규칙의 같은 표현은 원칙적으로 금지한다. 허용하면 한 출현이 어떤 판정 기준에 속하는지 중복 경고가 생기므로 실제 필요가 확인된 뒤 명시적인 정책을 추가한다.
 
 초기 후보 목록은 현재 `korean.md`에서 literal로 찾을 수 있는 후보를 빠짐없이 포함한다. 일반 산문의 U+00B7, 번역체 형태, 문맥 확인 용어, 행동을 감추기 쉬운 표현, 정보를 더하지 않을 수 있는 표현과 지칭 대상을 확인해야 하는 표현이 대상이다. 정상 사례에 나온 제품명, 판정 상태, 영문 원어와 설명 문장을 자동으로 규칙으로 만들지 않는다. 후보가 없다는 결과는 문장 구조와 목록 밖 표현의 의미 검토가 끝났다는 뜻이 아니다.
 
@@ -134,9 +198,9 @@ const rules = [
 
 ### 실행 대상은 내장 규칙 전체로 고정한다
 
-정상 실행에서 검사할 표현은 위 `rules` 상수 하나가 결정한다. CLI와 스킬 호출자는 규칙 ID, 표현, 일부 규칙을 고르는 filter 또는 외부 규칙 자료를 전달할 수 없다. 스크립트는 입력 source마다 `rules`의 모든 `expressions`를 선언 순서대로 검사한다. AI는 실행 대상을 고르지 않고, 스크립트가 보고한 각 출현의 원문과 규칙 자료를 읽어 표현을 유지할지, 고칠지 또는 추가 확인을 요청할지만 판단한다.
+정상 실행에서 검사할 literal 표현과 문단 길이 기준은 위 `rules` 상수 하나가 결정한다. CLI와 스킬 호출자는 규칙 ID, 표현, 길이 기준, 일부 규칙을 고르는 filter 또는 외부 규칙 자료를 전달할 수 없다. 스크립트는 입력 source마다 모든 규칙을 선언 순서대로 검사한다. AI는 실행 대상을 고르지 않고, 스크립트가 보고한 각 후보의 원문과 규칙 자료를 읽어 유지할지, 고칠지 또는 추가 확인을 요청할지만 판단한다.
 
-`catalog`도 호출자가 제공하지 않는다. 스크립트는 시작할 때 `rules` 전체를 검증하고 순회하면서 `catalog`의 `id`와 `expressions`를 만든다. 일부 규칙의 검증이나 순회를 마치지 못하면 정상 JSON을 출력하지 않고 실행 실패로 끝낸다. 따라서 `catalog`는 AI가 선택한 규칙 목록이 아니라, 해당 실행이 사용한 내장 규칙 전체를 확인하는 자료다. 다만 내장 목록에 없는 표현까지 찾았다는 증거는 아니므로 목록 밖 의미 문제는 `korean.md`의 문장 검토 기준으로 판정한다.
+`catalog`도 호출자가 제공하지 않는다. 스크립트는 시작할 때 `rules` 전체를 검증하고 순회하면서 각 항목의 `id`, `kind` 및 literal 규칙의 `expressions` 또는 paragraph 규칙의 `min`을 만든다. 일부 규칙의 검증이나 순회를 마치지 못하면 정상 JSON을 출력하지 않고 실행 실패로 끝낸다. 따라서 `catalog`는 AI가 선택한 규칙 목록이 아니라, 해당 실행이 사용한 내장 규칙 전체를 확인하는 자료다. 다만 내장 목록에 없는 표현과 길이 기준에 닿지 않은 의미 문제까지 찾았다는 증거는 아니므로 `korean.md`의 의미 검토를 계속 수행한다.
 
 ## 입력 schema와 함수 경계
 
@@ -230,12 +294,19 @@ printf '%s' '<review-text>' | \
   "catalog": [
     {
       "id": "ko.boundary",
+      "kind": "literal",
       "expressions": ["경계"]
+    },
+    {
+      "id": "ko.long-paragraph",
+      "kind": "paragraph",
+      "min": 7
     }
   ],
   "rules": [
     {
       "id": "ko.boundary",
+      "kind": "literal",
       "message": "이 표현이 실제 구분 기준이나 책임이 바뀌는 지점을 뜻하는지 확인합니다.",
       "queries": [
         "무엇과 무엇을 나누는지 문장에서 알 수 있습니까?",
@@ -243,6 +314,18 @@ printf '%s' '<review-text>' | \
       ],
       "negatives": ["조사와 구현의 경계를 정리합니다."],
       "positives": ["두 시스템의 보안 경계에서 요청을 다시 인증합니다."]
+    },
+    {
+      "id": "ko.long-paragraph",
+      "kind": "paragraph",
+      "min": 7,
+      "message": "이 문단에 서로 다른 중심 내용이나 후속 행동이 섞였는지 확인합니다.",
+      "queries": [
+        "모든 문장이 하나의 중심 내용을 설명합니까?",
+        "근거, 조건과 후속 행동의 관계를 문단 안에서 확인할 수 있습니까?"
+      ],
+      "negatives": ["서로 독립된 확인 사항 세 가지를 한 문단에서 설명합니다."],
+      "positives": ["일곱 문장이 하나의 변환 절차를 순서대로 설명합니다."]
     }
   ],
   "sources": [
@@ -260,25 +343,35 @@ printf '%s' '<review-text>' | \
       "startUtf16": 9,
       "endUtf16": 11,
       "quote": "조사와 구현의 경계를 정리합니다."
+    },
+    {
+      "ruleId": "ko.long-paragraph",
+      "count": 7,
+      "sourceId": "docs/example.md",
+      "line": 8,
+      "startUtf16": 1,
+      "quote": "변환기는 입력 행을 검사합니다. 먼저 입력값이 비어 있는지 확인합니다."
     }
   ],
   "summary": {
-    "total": 1,
-    "shown": 1,
+    "total": 2,
+    "shown": 2,
     "omitted": 0
   }
 }
 ```
 
-`catalog`에는 스크립트가 순회한 내장 `rules` 전체의 `id`와 `expressions`를 선언 순서대로 넣는다. 호출자나 AI가 이 배열을 입력하거나 일부 항목을 고를 수 없다. AI는 빈 `warnings`가 내장 규칙 전체를 실행한 결과인지 확인할 수 있다. `rules`에는 실제로 발견된 규칙의 설명, 질문과 사례만 한 번씩 넣어 결과 크기를 줄인다. 상세 경고가 생략된 출현에서만 발견된 규칙도 `rules`에 포함한다. `sources`에는 실제로 검사한 source를 후보가 없어도 모두 넣어 빈 `warnings`가 검사 누락을 뜻하지 않게 한다. 표준 입력 source에는 `path`를 넣지 않는다. `warnings`에는 결정적 순서에서 출력 한도 안에 들어가는 출현을 하나씩 둔다.
+`catalog`에는 스크립트가 순회한 내장 `rules` 전체의 `id`, `kind`와 탐지 조건을 선언 순서대로 넣는다. literal 규칙은 `expressions`, paragraph 규칙은 `min`을 사용한다. 호출자나 AI가 이 배열을 입력하거나 일부 항목을 고를 수 없다. AI는 빈 `warnings`가 내장 규칙 전체를 실행한 결과인지 확인할 수 있다. `rules`에는 실제로 발견된 규칙의 설명, 질문과 사례만 한 번씩 넣어 결과 크기를 줄인다. 상세 경고가 생략된 출현에서만 발견된 규칙도 `rules`에 포함한다. `sources`에는 실제로 검사한 source를 후보가 없어도 모두 넣어 빈 `warnings`가 검사 누락을 뜻하지 않게 한다. 표준 입력 source에는 `path`를 넣지 않는다. `warnings`에는 결정적 순서에서 출력 한도 안에 들어가는 출현을 하나씩 둔다.
+
+literal 경고는 지금처럼 `expression`과 같은 줄의 시작 및 끝 열을 제공한다. paragraph 경고는 `expression`과 `endUtf16` 대신 관찰한 문장 수인 `count`와 문단 첫 글자의 `line` 및 `startUtf16`을 제공한다. `quote`는 문단 앞부분을 현재 상한 안에서 보여 주며, AI는 검토 대상 파일이나 표준 입력 원문에서 문단 전체를 읽는다. 파일이나 입력 원문 없이 JSON만 전달하는 호출은 문단 의미 판정을 완료할 자료가 없으므로 지원하지 않는다.
 
 `summary.total`은 모든 source와 모든 규칙을 끝까지 검사해 발견한 전체 출현 수다. `summary.shown`은 `warnings` 배열의 길이이고 `summary.omitted`는 두 값의 차이다. `omitted`가 0보다 크면 `SKILL.md`는 AI 검토 결과 마지막에 `... 그 외 <N>개의 경고가 더 발견됨`을 표시한다. `truncated`와 같은 계산 가능한 boolean 및 같은 내용을 되풀이하는 message 문자열은 JSON에 넣지 않는다.
 
 `catalogs`는 사용하지 않는다. 정상 실행 한 건은 여러 catalog가 아니라 실행한 규칙의 간략 목록 하나를 만들기 때문이다. `rules`는 이 목록 전체를 반복하지 않고 경고가 생긴 규칙의 상세 자료만 담는다. 이 구분은 SARIF의 필드 구성을 복사한 것이 아니라 현재 출력의 중복을 줄이기 위한 자체 규약이다. SARIF는 도구 구성 요소의 전체 규칙을 `rules`에 두고 결과가 `ruleId`로 이를 참조한다. [SARIF 2.1.0의 `rules`와 `ruleId`](https://docs.oasis-open.org/sarif/sarif/v2.1.0/sarif-v2.1.0.html)를 확인했다.
 
-위치는 `startUtf16`과 `endUtf16`으로 시작과 끝을 같은 방식으로 이름 붙인다. 두 값이 원문 전체 offset이 아니라 `line` 안의 열이라는 점과 1부터 시작하는 계산 방식은 앞 절의 규칙으로 고정한다. ESLint와 Language Server Protocol도 위치 범위를 `start`와 `end` 쌍으로 표현한다. [ESLint의 `loc`](https://eslint.org/docs/latest/extend/custom-rules#reporting-problems)와 [Language Server Protocol의 `Range`](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.18/specification/#range)를 확인했다.
+literal 경고의 위치는 `startUtf16`과 `endUtf16`으로 시작과 끝을 같은 방식으로 이름 붙인다. 두 값이 원문 전체 offset이 아니라 `line` 안의 열이라는 점과 1부터 시작하는 계산 방식은 앞 절의 규칙으로 고정한다. paragraph 경고는 문단 첫 글자의 `line`과 `startUtf16`만 사용한다. ESLint와 Language Server Protocol도 위치 범위를 `start`와 `end` 쌍으로 표현하지만, 현재 문단 경고 소비자는 전체 범위가 아니라 문단을 다시 찾을 시작 위치만 필요하다. [ESLint의 `loc`](https://eslint.org/docs/latest/extend/custom-rules#reporting-problems)와 [Language Server Protocol의 `Range`](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.18/specification/#range)를 확인했다.
 
-배열 순서는 같은 입력에서 같은 결과가 나오도록 고정한다. `sources`는 Git이 반환한 위치를 byte 순서로 정렬하거나 `--file` 전달 순서와 표준 입력 한 건의 순서를 유지한다. `warnings`는 source 순서, 시작 offset, 규칙 선언 순서와 표현 선언 순서로 정렬한다. `catalog`와 `rules`는 규칙 선언 순서대로 둔다. 정렬 방식은 자연어 locale이나 사용자 환경에 의존하지 않는다.
+배열 순서는 같은 입력에서 같은 결과가 나오도록 고정한다. `sources`는 Git이 반환한 위치를 byte 순서로 정렬하거나 `--file` 전달 순서와 표준 입력 한 건의 순서를 유지한다. `warnings`는 source 순서, 시작 offset, 규칙 선언 순서와 literal 규칙의 표현 선언 순서로 정렬한다. `catalog`와 `rules`는 규칙 선언 순서대로 둔다. 정렬 방식은 자연어 locale이나 사용자 환경에 의존하지 않는다.
 
 이 구조는 외부 표준이 아니라 현재 AI 소비자에게 필요한 최소 자료다. RFC 8259는 JSON 문법을 정하지만 후보 검사의 필드 의미는 정하지 않는다. [RFC 8259](https://www.rfc-editor.org/rfc/rfc8259)을 확인했다.
 
@@ -305,7 +398,7 @@ ripgrep 15.2.0의 `--max-count`와 GCC 16.1의 `-fmax-errors`는 정한 수에 �
 - [ripgrep의 `--max-count`와 JSON 설명](https://github.com/BurntSushi/ripgrep/blob/e89fff89ac9af12e8d4ce9d5fd07beb408ca730f/crates/core/flags/defs.rs#L3872-L3920)은 선택된 결과 수에 도달한 뒤 파일 검색을 멈추는 동작을 확인하는 근거다.
 - [GCC의 `-fmax-errors`](https://gcc.gnu.org/onlinedocs/gcc-16.1.0/gcc/Warning-Options.html#index-fmax-errors)는 정한 오류 수에 도달하면 source 처리를 중단하는 동작을 확인하는 근거다.
 
-Vale v3.17.0의 규칙별 `Limit`는 초과 alert를 버리지만 전체 수나 생략 수를 유지하지 않는다. 초과 결과를 알리지 않는 동작은 모든 출현을 세어 AI에게 생략 사실을 알려야 하는 현재 요구와 맞지 않는다. [Vale의 alert 제한 구현](https://github.com/errata-ai/vale/blob/fe71481c95665a2343d81874489f8b012442a377/internal/core/file.go#L420-L437)을 확인했다.
+Vale v3.17.1의 규칙별 `Limit`는 초과 alert를 버리지만 전체 수나 생략 수를 유지하지 않는다. 초과 결과를 알리지 않는 동작은 모든 출현을 세어 AI에게 생략 사실을 알려야 하는 현재 요구와 맞지 않는다. [Vale의 alert 제한 구현](https://github.com/errata-ai/vale/blob/fe71481c95665a2343d81874489f8b012442a377/internal/core/file.go#L420-L437)을 확인했다.
 
 여러 경고를 `throw new Error`로 하나씩 전달하지 않는다. 첫 예외에서 실행이 멈추고, stack trace와 자유 형식 문자열은 기계적으로 읽을 결과가 아니며, 후보와 실행 실패도 구분하지 못한다. 예외는 입력을 완전히 검사할 수 없는 경우에만 사용한다.
 
@@ -323,7 +416,7 @@ stdout 쓰기 중 실패하면 일부 출력이 남을 수 있으므로 호출�
 
 다음 항목은 현재 결과를 만드는 데 필요하지 않다.
 
-- Markdown AST, HTML 변환과 code block 제외
+- 완전한 Markdown AST와 HTML 변환
 - 정규식 사용자 규칙, glob과 디렉터리 순회
 - 자동 수정, 고정 replacement와 suppression 주석
 - 별도 규칙 JSON 또는 YAML과 loader
@@ -343,14 +436,17 @@ MCP는 실시간 자료, 인증, 권한과 외부 시스템 작업에 맞고, �
 
 ### 규칙과 탐색
 
-- 빈 표현, 공백뿐인 표현, 고립 surrogate와 중복 `id`를 거부한다.
+- 알 수 없는 `kind`, 빈 표현, 공백뿐인 표현, 고립 surrogate, 유효하지 않은 `min`과 중복 `id`를 거부한다.
 - 문제 사례와 정상 사례 및 판정 질문이 비어 있으면 거부한다.
 - 정상 실행 경로가 규칙 또는 표현 filter를 받지 않고 내장 `rules` 전체를 검사하는지 확인한다.
 - 처음, 중간과 마지막 규칙에만 각각 일치하는 원문에서도 모든 규칙을 순회하고 모든 출현을 센다. 상세 경고 상한 안에서는 각 출현을 모두 남긴다.
 - 같은 줄과 여러 줄의 반복 및 겹치는 출현을 모두 찾는다.
 - `경계`, `경계를`과 `보안경계`의 substring 출현을 모두 찾는다.
 - 같은 위치에서 규칙이 다른 경고를 임의로 합치지 않는다.
-- code fence, inline code, link, image, HTML comment와 front matter 안의 출현도 남긴다.
+- literal 규칙은 code fence, inline code, link, image, HTML comment와 front matter 안의 출현도 남긴다.
+- paragraph 규칙은 빈 줄이 아닌 단순 줄바꿈을 같은 문단으로 세고 일곱 문장째에 경고 하나를 만든다. 제목, 표, 목록, 인용문, HTML, front matter, fenced 및 들여쓴 코드에서는 문단 경고를 만들지 않는다.
+- 여섯 문장과 일곱 문장의 경계, 여러 줄 문단, LF, CRLF와 단독 CR에서 문장 수와 문단 시작 위치가 같다.
+- 일곱 문장인 단일 주제 문단과 여러 주제 문단은 똑같이 경고하고 의미 판정을 스크립트에 넣지 않는다.
 - LF, CRLF, 단독 CR, BOM과 보조평면 문자 앞의 줄 및 UTF-16 열을 확인한다.
 - `quote`를 잘라도 일치 표현과 위치를 유지한다.
 
@@ -366,10 +462,11 @@ MCP는 실시간 자료, 인증, 권한과 외부 시스템 작업에 맞고, �
 
 ### 출력과 실패
 
-- 후보가 없어도 순회한 내장 `rules` 전체에서 만든 `catalog`, 검사한 모든 source 및 빈 `rules`와 `warnings`를 가진 RFC 8259 JSON을 출력하고 `0`으로 끝난다.
+- 후보가 없어도 순회한 내장 `rules` 전체에서 `kind`별 탐지 조건을 담아 만든 `catalog`, 검사한 모든 source 및 빈 `rules`와 `warnings`를 가진 RFC 8259 JSON을 출력하고 `0`으로 끝난다.
 - 후보가 있으면 실행한 전체 규칙 목록과 발견된 규칙의 metadata를 각각 한 번, 출력 한도 안의 상세 경고와 전체, 표시 및 생략 수를 출력하고 `0`으로 끝난다.
 - 호출자가 `catalog`, 규칙 ID나 표현 목록을 입력하는 실행 방법이 없는지 확인한다.
 - `catalog`, `rules`, `sources`와 `warnings`의 참조가 모두 연결되는지 확인한다.
+- literal 경고에는 `expression`과 같은 줄의 시작 및 끝 열이 있고, paragraph 경고에는 `count`와 문단 시작 위치가 있으며 서로의 전용 필드를 섞지 않는지 확인한다.
 - 표준 입력 source에는 실제 파일 `path`를 만들지 않는다.
 - 상대 위치 파일은 정규화한 상대 위치를 출력하고, 절대 위치 또는 현재 디렉터리 밖의 파일은 순번 ID만 출력해 개인 절대 위치를 남기지 않는다.
 - 경고가 50,000개를 넘거나 직렬화 결과가 64 MiB에 닿아도 검사를 끝까지 수행하고, 결정적 순서의 상세 경고와 정확한 `summary`를 가진 온전한 JSON을 출력한다.
@@ -377,27 +474,28 @@ MCP는 실시간 자료, 인증, 권한과 외부 시스템 작업에 맞고, �
 - 입력 또는 내부 실패는 stdout에 정상 JSON을 남기지 않고 짧은 stderr와 `2`로 끝난다.
 - 같은 입력을 네트워크가 없는 환경에서 실행해 같은 결과를 얻는다.
 
-대표 평가에서는 스크립트가 정상 전문용어도 후보로 찾고 AI가 그대로 유지하는지, 문제 표현은 질문과 사례를 근거로 고치는지, 목록에 없는 의미 문제를 `korean.md`의 기준으로 계속 찾는지를 함께 확인한다.
+대표 평가에서는 스크립트가 정상 전문용어와 일곱 문장의 단일 주제 문단도 후보로 찾고 AI가 그대로 유지하는지, 문제 표현과 여러 주제를 담은 긴 문단은 질문과 사례를 근거로 고치는지, 길이 기준에 닿지 않은 의미 문제를 `korean.md`의 기준으로 계속 찾는지를 함께 확인한다.
 
 ## 승인된 구현 기준
 
 요구사항 소유자는 다음 내용을 승인했다.
 
 - 새 파일은 `skills/use-words-review/scripts/scan-korean-expressions.mjs` 하나만 만든다.
-- literal 후보, 설명, 판정 질문과 대조 사례는 스크립트의 단일 `rules` 상수가 맡는다.
+- literal 후보와 긴 문단 후보의 탐지 조건, 설명, 판정 질문과 대조 사례는 스크립트의 단일 `rules` 상수가 맡는다.
 - `korean.md`는 literal 검색으로 찾을 수 없는 문장과 문단의 의미 검토 기준을 맡는다.
 - 정상 실행은 외부 입력으로 규칙을 고르지 않고 내장 `rules` 전체를 순회하며, `catalog`는 실제로 순회한 전체 규칙에서 만든다.
+- 긴 플레인 텍스트 문단은 오류가 아니라 의미 검토 후보로 경고하고 후보가 있어도 `0`으로 끝난다.
 - 현재 `korean.md`에서 literal로 찾을 수 있는 모든 후보를 의미 단위 `id`와 명시적인 `expressions` 배열로 옮긴다.
 - `--changed`는 staged, unstaged와 untracked 일반 파일의 현재 작업 트리 원문 전체를 검사하고 삭제 파일과 submodule을 제외한다.
 - 저장소 안과 현재 디렉터리 안의 파일은 상대 위치로 식별한다. 절대 위치 또는 현재 디렉터리 밖의 파일은 순번 ID만 출력하며 `path`를 생략한다. 표준 입력은 `--source-name`을 사용한다.
 - 한 실행의 상한은 source 512개, 파일 하나 2 MiB, 전체 입력 32 MiB, 상세 경고 50,000개, `quote` 480 UTF-16 code unit와 직렬화 JSON 64 MiB다.
-- JSON은 `catalog`, `rules`, `sources`, `warnings`와 `summary`를 사용한다. 위치는 1부터 시작하는 `line`과 `startUtf16`, 일치 뒤 첫 열인 `endUtf16`으로 나타낸다.
+- JSON은 `catalog`, `rules`, `sources`, `warnings`와 `summary`를 사용한다. literal 위치는 1부터 시작하는 `line`과 `startUtf16`, 일치 뒤 첫 열인 `endUtf16`으로 나타내고 paragraph 위치는 문단 시작의 `line`과 `startUtf16`으로 나타낸다.
 - 모든 출현을 끝까지 세되 상세 경고는 개수와 JSON byte 한도 안의 결정적 앞부분만 담는다. `summary`는 `total`, `shown`과 `omitted`를 제공하고, AI는 생략된 경고가 있으면 검토 결과 마지막에 생략 수를 표시한다.
 - 현재 출력은 단일 JSON 객체를 유지한다. JSONL은 메모리나 첫 출력 지연 문제가 실제로 측정되거나 완료 전 record 소비자가 생겼을 때 다시 검토한다.
 - 최저 버전은 Node.js 22.0.0과 Git 2.18.0이다. 현재 구현과 대표 실행은 macOS에서만 확인한다.
 
 ## 조사 한계
 
-완성된 기존 도구가 없다는 판단은 2026년 8월 5일에 확인한 공식 문서와 세 tag 소스에 한정된다. 세 도구의 전체 기능을 재현하는 목적이 아니므로 editor, CI와 Pull Request 연결 기능은 비교하지 않았다.
+완성된 기존 도구가 없다는 판단은 2026년 8월 5일부터 8월 7일까지 확인한 공식 문서와 tag 소스에 한정된다. 조사한 도구의 전체 기능을 재현하는 목적이 아니므로 editor, CI와 Pull Request 연결 기능은 비교하지 않았다.
 
-이번 작업은 스크립트, package file, bundle, 규칙 자료와 테스트를 만들지 않았다. 현재 제안은 표준 출력 결과를 한 번에 메모리에 직렬화하므로 승인된 출력 상한 안에서만 사용한다. 실제 결과가 반복해서 상한을 넘거나 다른 소비자가 생기면 측정 결과를 근거로 출력 방식과 변환기를 다시 검토해야 한다.
+이번 작업은 스크립트, package file, bundle, 규칙 자료와 테스트를 만들지 않았다. 일곱 문장은 장문 기술 문서 지침에서 선택해 모든 검사 대상 Markdown 산문 문단에 적용하는 초기 경고값이며 한국어 문단의 품질 기준이 아니다. 중첩된 Markdown 문단과 한 문장에 여러 생각을 압축한 글은 자동 경고로 찾지 못하며 AI 의미 검토가 맡는다. 현재 제안은 표준 출력 결과를 한 번에 메모리에 직렬화하므로 승인된 출력 상한 안에서만 사용한다. 실제 결과가 반복해서 상한을 넘거나 다른 소비자가 생기면 측정 결과를 근거로 출력 방식과 변환기를 다시 검토해야 한다.
