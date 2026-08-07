@@ -1,6 +1,6 @@
 ---
 name: use-words-review
-description: Review text and names before storing, committing, publishing, sharing outside the conversation, or when the user requests wording review. Check audience, roles, evidence, private data, sentence relationships, symbols, and natural Korean. Load Korean guidance only for Korean text. Exclude routine chat, progress updates, explanations, and final responses that will not be reused.
+description: Review text and names before they are stored, committed, published, shared, or explicitly submitted for wording review. Check audience, evidence, private data, sentence relationships, symbols, and natural Korean. Exclude routine chat and responses that will not be reused.
 ---
 
 # Use Words Review
@@ -19,13 +19,15 @@ Run repository-provided checks that apply to the outputs. Include available Vale
 
 When Git and text search are available, inspect only the changed public outputs for formatting errors, personal absolute paths, private identifiers, distinctive prompt phrases, HTML comments, and unresolved markers. Redact sensitive matches in the report and treat every match as a review candidate rather than an automatic failure.
 
-For Korean text, run `scripts/scan-korean-expressions.mjs` from this skill before semantic review. Resolve the script relative to this `SKILL.md`; do not assume where the skill is installed. Choose one input mode:
+For Korean text, run `scripts/scan.mjs` from this skill before semantic review. Resolve the script relative to this `SKILL.md`; do not assume where the skill is installed. Choose one input mode:
 
 - use `--changed <repo>` for every staged, unstaged, and untracked file in a pending repository change;
 - repeat `--file <path>` for an exact file set;
 - use `--stdin --source-name <name>` for supplied text.
 
-Inspect the complete `catalog`, the matched rule metadata, every returned warning, and `summary`. A warning identifies a context to judge, not an automatic failure. If `summary.omitted` is greater than zero, rerun smaller file groups when individual judgments require the omitted contexts and end the review result with `... 그 외 <N>개의 경고가 더 발견됨`. If the script is missing, unreadable, fails, or does not return complete JSON, stop the affected review and do not return `pass` for its Korean artifacts.
+Inspect the shared `sources` and both `checks`. For each check, inspect the complete `catalog`, matched `rules`, every returned warning, and `summary`. A warning identifies a context to judge, not an automatic failure. For a paragraph warning, read the complete original paragraph and judge its central ideas, placement of important information, and relationships between sentences.
+
+If one check's `summary.omitted` is greater than zero, rerun smaller file groups when individual judgments require the omitted contexts. End the review result with that check's type and `... 그 외 <N>개의 경고가 더 발견됨`. If the script is missing, unreadable, fails, or does not return one complete JSON object with both checks, stop the affected review and do not return `pass` for its Korean artifacts.
 
 ## Select references
 
