@@ -78,9 +78,10 @@ Necessary read-only work does not authorize dependency, configuration, code, or 
 ## Research dependency integration
 
 1. Before selecting or changing an external dependency, verify its purpose, exact version, official integration structure, and design patterns that materially affect the intended use. Do not invent a pattern name when official sources do not establish one.
-2. Compare the dependency with installed dependencies, platform capabilities, and an internal implementation. Check runtime and peer compatibility, maintenance, security, and licensing when relevant.
-3. After an authorized dependency change, inspect the actual additions, removals, and updates in the manifest, lockfile, and any resolved dependency-graph artifact used by the repository. Recheck unexpected transitive changes before completion.
-4. Research does not authorize changing a dependency, configuration, or check.
+2. Inventory every direct and transitive external dependency in the resolved graph. For each one, record its name, resolved version, capabilities, potential issues, and an applicable design pattern. When no pattern applies, record `not applicable` separately from the cited facts that support that conclusion.
+3. Compare the dependency with installed dependencies, platform capabilities, and an internal implementation. Check runtime and peer compatibility, maintenance, security, and licensing when relevant.
+4. After an authorized dependency change, inspect the actual additions, removals, and updates in the manifest, lockfile, and any resolved dependency-graph artifact used by the repository. Recheck unexpected transitive changes before completion.
+5. Research does not authorize changing a dependency, configuration, or check.
 
 ## Apply authorized changes
 
