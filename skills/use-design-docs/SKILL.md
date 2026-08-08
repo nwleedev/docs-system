@@ -11,10 +11,14 @@ Use the current repository's `docs/designs/README.md` as the sole authority for 
 
 ## Establish the authority
 
-1. Resolve the repository root and require `<repo-root>/docs/designs/README.md`.
-2. Read that README completely before reviewing, researching, creating, editing, planning, or validating any design document.
-3. If the file is missing, stop and report that this repository does not provide the required design-document rules. Do not substitute rules bundled with this skill or inferred from another repository.
-4. Follow applicable project instructions and the user's explicit request. Report a material conflict with the README instead of silently choosing one source.
+1. Resolve the repository root and check for `<repo-root>/docs/designs/README.md`.
+2. If the README exists, read it completely before reviewing, researching, creating, editing, planning, or validating any design document. Treat it as the repository's sole current authority and do not read or compare this skill's `references/_README.md`.
+3. If the README is missing, determine whether the requested work needs durable repository-specific design-document rules. Do not create the README merely because the skill was invoked.
+4. When those rules are needed, identify this installed skill's `references/_README.md` and the exact target `<repo-root>/docs/designs/README.md`, then ask the user whether to create it.
+5. If the user approves, create the target directory as needed and copy the bundled README content to the target without its first-line maintenance HTML comment. Re-read the new README completely before continuing.
+6. If the user declines, inspect applicable repository instructions, existing documentation locations, and the directory structure. When the request authorizes writing the originally requested document, write it only in a location supported by that evidence; ask the user when no suitable location can be established. Keep read-only requests read-only.
+7. Never overwrite an existing repository README with the bundled file or synchronize the two automatically.
+8. Follow applicable project instructions and the user's explicit request. Report a material conflict with the repository README instead of silently choosing one source.
 
 ## Select the operations required for the request
 

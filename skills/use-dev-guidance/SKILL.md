@@ -11,10 +11,14 @@ Use the current repository's `docs/dev/README.md` as the sole authority for what
 
 ## Establish the authority
 
-1. Resolve the repository root and require `<repo-root>/docs/dev/README.md`.
-2. Read that README completely before researching, applying, documenting, or validating development guidance.
-3. If the file is missing, stop and report that this repository does not provide the required development-guidance rules. Do not substitute rules bundled with this skill or inferred from another repository.
-4. Follow applicable project instructions and the user's explicit request. Report a material conflict with the README instead of silently choosing one source.
+1. Resolve the repository root and check for `<repo-root>/docs/dev/README.md`.
+2. If the README exists, read it completely before researching, applying, documenting, or validating development guidance. Treat it as the repository's sole current authority and do not read or compare this skill's `references/_README.md`.
+3. If the README is missing, determine whether the requested work needs durable repository-specific development-guidance rules. Do not create the README merely because the skill was invoked.
+4. When those rules are needed, identify this installed skill's `references/_README.md` and the exact target `<repo-root>/docs/dev/README.md`, then ask the user whether to create it.
+5. If the user approves, create the target directory as needed and copy the bundled README content to the target without its first-line maintenance HTML comment. Re-read the new README completely before continuing.
+6. If the user declines, inspect applicable repository instructions, existing documentation locations, and the directory structure. When the request authorizes writing the originally requested guidance or development file, write it only in a location supported by that evidence; ask the user when no suitable location can be established. Keep read-only requests read-only.
+7. Never overwrite an existing repository README with the bundled file or synchronize the two automatically.
+8. Follow applicable project instructions and the user's explicit request. Report a material conflict with the repository README instead of silently choosing one source.
 
 ## Select the operations required for the request
 
@@ -52,6 +56,8 @@ Necessary read-only work does not authorize dependency, configuration, code, or 
 2. Select only the guidance relevant to the current work; do not read or reorganize the entire directory without need.
 3. Treat existing code and documentation as evidence that may be stale, not automatic proof of the correct approach.
 4. Record exact technology and dependency versions when external guidance depends on them.
+5. Before changing behavior, record the observable behavior, public API, persisted data, error handling, affected callers, and connection points that the request does not authorize changing.
+6. Choose a pattern from current official guidance for the installed version, applicable repository guidance, and check results. Repetition or proximity in existing code does not make that pattern correct.
 
 ## Research relevant risks and practices
 
@@ -66,6 +72,15 @@ Necessary read-only work does not authorize dependency, configuration, code, or 
 2. Prefer a mechanical check only when it detects the intended failure with acceptable precision and cost.
 3. Use an observable test, runtime or browser check, or explicit human review when static analysis cannot establish the property reliably.
 4. Treat code examples as explanation or rule test cases, not proof that the repository complies.
+5. For user-visible UI behavior, use a browser check when that is the smallest reliable observation. For CLIs, services, and background jobs, use an applicable runtime or integration check.
+6. Use repository-defined commands. If none exists, label an inferred command as a proposal and obtain approval before running it. Stop every process that this task starts after verification.
+
+## Research dependency integration
+
+1. Before selecting or changing an external dependency, verify its purpose, exact version, official integration structure, and design patterns that materially affect the intended use. Do not invent a pattern name when official sources do not establish one.
+2. Compare the dependency with installed dependencies, platform capabilities, and an internal implementation. Check runtime and peer compatibility, maintenance, security, and licensing when relevant.
+3. After an authorized dependency change, inspect the actual additions, removals, and updates in the manifest, lockfile, and any resolved dependency-graph artifact used by the repository. Recheck unexpected transitive changes before completion.
+4. Research does not authorize changing a dependency, configuration, or check.
 
 ## Apply authorized changes
 

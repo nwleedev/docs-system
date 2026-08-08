@@ -1,3 +1,4 @@
+<!-- Compare this default with docs/dev/README.md and replace its shared rules when they change; exclude repository-specific links and guidance, and omit this comment when creating a repository README. -->
 # Development Guidance
 
 This directory contains repository-specific development guidance that remains useful across multiple changes. It is a navigation layer for current rules and approved engineering decisions, not a replacement for tests, tooling, framework documentation, or task-specific design documents.
@@ -45,8 +46,6 @@ Prefer an existing topic when its responsibility and intended readers match the 
 ## Existing Guidance
 
 Existing documents may predate this README or use a different structure. AI and contributors still use them when their scope is relevant.
-
-- [Node.js MJS command-line scanners](./node/mjs-cli.md) defines the repository's current runtime, input, Git, literal scan, output, self-test, and ESLint rules for standalone `.mjs` scanners.
 
 - Do not ignore a document because its path or headings differ from this README.
 - Do not reorganize or rewrite existing documents while only reviewing or applying their guidance.
