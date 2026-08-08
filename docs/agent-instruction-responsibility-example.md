@@ -1,106 +1,213 @@
-# AGENTS.md, Skills와 docs의 책임 분배 예시
+# 책임 재분배를 적용한 파일 예시
 
-이 예시는 여러 저장소에 공통으로 적용할 원칙을 유지하면서 세부 절차와 저장소별 정보를 분리하는 제안이다. 실제 파일에 그대로 복사하는 완성본이나 승인된 현재 정책이 아니며, 대상 저장소의 기술, 명령과 보호 브랜치를 확인한 뒤 요구사항 작성자가 책임 배분을 승인해야 한다. 제안의 근거와 확정된 전역 원칙은 [설계 결정](designs/agent-instruction-responsibilities-8c1e/decisions/cross-project-agent-policies.md)에서 확인할 수 있다.
+이 문서는 책임 재분배 작업이 끝난 뒤 사용할 파일 구성의 구현 후보를 보여준다. 요구사항 작성자가 책임 배분을 승인한 뒤에만 적용한다. AGENTS.md는 사용자 관리 영역의 최종 본문 전체를 제시하고, 기존 파일은 바뀌는 구간을 생략 없이 제시한다. 새 파일은 전체 본문을 제시한다. Compound Engineering 관리 범위는 Plugin이 생성한 원문을 유지해야 하므로 예시에 포함하지 않는다.
 
-## Codex home의 AGENTS.md가 관리할 내용
+설계 근거와 확정된 전역 원칙은 [여러 저장소에 공통으로 적용할 에이전트 작업 원칙](designs/agent-instruction-responsibilities-8c1e/decisions/cross-project-agent-policies.md)에서 확인할 수 있다.
 
-기본 위치가 `~/.codex/AGENTS.md`인 Codex 전역 파일은 모든 저장소에서 빠지면 안 되는 원칙, 금지 조건과 다음 절차를 선택하는 조건을 관리한다.
+## 작업 후 파일 구성
+
+```text
+AGENTS.md
+skills/
+  use-design-docs/
+    SKILL.md                         # 기존 본문 유지
+  use-dev-guidance/
+    SKILL.md                         # 외부 의존성 조사 절 추가
+  use-git-workflow/
+    SKILL.md                         # 새 파일
+  use-words-review/
+    SKILL.md                         # 기존 본문 유지
+docs/
+  designs/
+    README.md                        # 기존 본문 유지
+  dev/
+    README.md                        # 외부 의존성 기록 절 추가
+```
+
+`use-design-docs`, `use-words-review`와 `docs/designs/README.md`는 이미 새 책임을 수행하므로 본문을 바꾸지 않는다. 조사 순서와 Git 절차를 다른 파일로 옮긴다는 이유만으로 이 세 파일을 다시 작성하지 않는다.
+
+## `AGENTS.md`
+
+아래 내용은 승인을 받은 뒤 여러 저장소에 배포할 AGENTS.md의 사용자 관리 영역 전체다. 대상 저장소가 기술, 명령, 보호 브랜치 또는 커밋 형식을 다르게 정하면 저장소 AGENTS.md가 그 값만 구체화한다.
 
 ```markdown
+# AGENTS.md
+
+## 언어와 답변
+
+- 사용자와는 한국어로 소통하고 결론부터 작성한다.
+- 코드와 파일 이름은 영어로 작성한다.
+- 저장소가 다르게 정하지 않았다면 설계 문서와 코드 설명용 주석은 한국어로 작성한다.
+- 최종 답변에는 판단을 뒷받침하는 외부 자료, 저장소 파일, 사용자 제공 자료 또는 검사 결과를 출처로 제시한다.
+
+## 변경 권한과 안전
+
+- 설명, 조사, 검토, 진단과 계획 요청은 파일, 설정, 의존성 또는 외부 상태의 변경을 허가하지 않는다.
+- 변경 요청에서는 요청 범위의 로컬 파일만 수정하고 관련된 비파괴 검사를 실행한다.
+- 외부 쓰기, 파괴적 작업, 비용이 드는 작업과 요청 범위의 확대는 사용자의 승인을 받는다.
+- 사용자 변경사항을 되돌리거나 다른 작업의 변경사항을 커밋하지 않는다.
+- 실패를 숨기기 위해 타입 검사나 기능을 비활성화하거나 테스트를 삭제하거나 약화하지 않는다.
+- 비밀정보, 자격 증명, 비공개 URL, 개인정보와 개인 계정이 드러나는 절대 경로를 저장하거나 커밋하지 않는다.
+
 ## 조사와 출처
 
-- 사실 판단이나 최신 정보가 필요한 요청에서는 인터넷 자료를 조사한다.
-- 공식 문서, 표준, 원문과 공식 저장소 등 1차 자료를 최소 다섯 개 확보하려고 시도한다.
-- 다섯 개를 확보하지 못하면 관련성이 낮은 자료로 수를 채우지 않고 확인 범위와 한계를 밝힌다.
-- 모든 최종 답변에는 외부 자료, 저장소 파일, 사용자 제공 자료 또는 검사 결과 중 판단을 뒷받침하는 출처를 포함한다.
+- 사실 판단이나 최신 정보가 필요한 일반 요청에서는 인터넷 자료를 조사한다.
+- 블로그와 큐레이션보다 공식 문서, 표준, 원문과 공식 저장소 등 1차 자료를 우선한다.
+- 서로 독립적인 공식 자료를 최소 다섯 개 확보하려고 시도한다.
+- 다섯 개를 확보하지 못하면 관련성이 낮은 자료로 수를 채우지 않고 확인한 자료와 한계를 답변에 밝힌다.
+- 저장소 파일이나 사용자가 제공한 자료만으로 답할 때에는 그 파일이나 자료를 출처로 제시하고 외부 자료를 확인하지 않았다고 밝힌다.
+- 조사 결과가 라이선스, 정책, 검사, 문서 또는 변경을 추가할 권한을 만들지는 않는다.
 
-## 문서 작업
+## 한국어 글과 문구
 
-- 저장하거나 외부에 전달할 글과 이름을 검토할 때에는 `$use-words-review`를 실행한다.
-- 요구사항, 설계 조사, 결정, 계획 또는 설계 문서 검증에는 `$use-design-docs`를 실행한다.
-- 애플리케이션 변경을 계획, 구현, 검토, 리팩터링, 테스트 또는 문서화하거나 외부 의존성을 변경할 때에는 `$use-dev-guidance`를 실행한다.
-- 필요한 Skill이나 그 Skill이 요구하는 저장소 README를 찾을 수 없으면 대체 규칙을 추정하지 않고 중단 사유를 보고한다.
+- 저장, 커밋, 게시하거나 대화 밖에서 공유할 글과 이름을 작성하거나 고칠 때에는 `$use-words-review`의 작성 전 참고 자료를 읽는다.
+- 같은 공유 단위의 글과 이름은 저장하거나 공유하기 직전에 `$use-words-review`로 한 번 검토한다.
+- 일반 채팅과 진행 알림만을 이유로 `$use-words-review`를 실행하지 않는다.
+- Skill이나 필수 참고 자료를 읽을 수 없으면 검토가 필요한 결과의 완료를 주장하지 않는다.
 
-## 외부 의존성
+## 설계 문서
 
-- 외부 의존성을 선택하거나 변경하기 전에 공식 권장 통합 구조와 적용 가능한 디자인 패턴을 조사한다.
-- 조사만으로 의존성, 설정 또는 검사 변경 권한이 생기지는 않는다.
+- 요구사항을 구체화하거나 `docs/designs/**`를 조사, 작성, 검토, 계획 또는 검증할 때에는 `$use-design-docs`를 실행한다.
+- 요구사항과 승인된 결정은 AI의 조사 결과나 제안과 구분한다.
+- 조사나 검토 중에 발견한 문제를 문서 수정 권한으로 해석하지 않는다.
 
-## Git 작업
+## 개발 지침과 외부 의존성
 
-- 변경을 시작하기 전에 현재 브랜치, 워크트리와 기존 변경사항을 확인한다.
-- 보호 브랜치에서는 직접 수정하지 않고 작업 브랜치와 별도 워크트리를 사용한다.
-- 수동으로 워크트리를 만들 때에는 저장소 루트의 `.worktrees/<type>/<short-description>/`를 기본 위치로 사용한다. 플랫폼이 워크트리를 직접 관리하거나 저장소가 다른 위치를 정하면 해당 규칙을 따른다.
-- 변경이 승인된 작업에서 하나의 작업 단위가 검증되면 컨텍스트 압축에 대비한 커밋을 선호한다. 읽기와 검토만 요청받았거나 사용자 변경이 섞였거나 검사가 실패한 상태에서는 커밋하지 않는다.
-- 파괴적인 Git 작업을 실행하거나 사용자 변경을 되돌리지 않는다.
+- 애플리케이션 변경을 계획, 구현, 검토, 리팩터링, 테스트 또는 문서화하거나 의존성과 검사 설정을 변경할 때에는 `$use-dev-guidance`를 실행한다.
+- 외부 의존성을 선택, 추가, 교체, 제거하거나 주요 버전을 변경하기 전에 공식 권장 통합 구조와 적용 가능한 디자인 패턴을 조사한다.
+- 직접 의존성과 전이 의존성을 포함한 모든 외부 의존성을 조사한다.
+- 의존성 조사 결과를 적용하려면 사용자의 변경 요청과 저장소의 승인 절차를 별도로 확인한다.
 
-<!-- BEGIN COMPOUND CODEX TOOL MAP -->
-Compound Engineering이 관리하는 내용
-<!-- END COMPOUND CODEX TOOL MAP -->
+## Git 작업과 컨텍스트 압축
+
+- 파일을 변경하기 전에 `$use-git-workflow`를 실행한다.
+- Git 저장소가 아니거나 실행 환경이 워크트리를 직접 관리하면 Skill의 적용 가능한 절차만 따른다.
+- 변경이 승인된 작업에서 하나의 작업 단위가 검증되면 컨텍스트 압축에 대비한 커밋을 선호한다.
+- 읽기와 검토만 요청받았거나 사용자 변경이 섞였거나 검사가 실패한 상태에서는 커밋하지 않는다.
+- 컨텍스트가 압축되면 AGENTS.md, 현재 브랜치, Git 상태와 최근 작업 단위의 커밋을 다시 확인한다.
 ```
 
-관리 주석 사이의 내용은 Plugin이 관리한다. 사용자가 관리하는 앞 절은 이 범위의 도구 변환 규칙을 복제하거나 상충하는 실행 방법을 추가하지 않는다.
+사용자 관리 영역 다음에는 Plugin이 생성한 Compound Codex Tool Mapping 원문과 관리 주석을 변경 없이 유지한다. 이 예시는 해당 원문을 재현하지 않는다.
 
-## 저장소 AGENTS.md가 관리할 내용
+## `skills/use-git-workflow/SKILL.md`
 
-저장소 AGENTS.md는 해당 저장소에서 바로 확인해야 하는 값과 전역 기본값의 예외를 관리한다.
+Git과 워크트리의 반복 절차는 새 Skill이 관리한다. AGENTS.md에는 호출 조건, 변경 권한과 커밋 금지 조건만 남긴다.
 
 ```markdown
-## 저장소 목적
+---
+name: use-git-workflow
+description: Apply the repository Git policy before changing files, creating or reusing a worktree, choosing a branch, making a checkpoint commit, or recovering work after context compaction. Use for any repository mutation. Do not use for read-only inspection that cannot change repository state.
+---
 
-- 이 저장소가 제공하는 결과와 변경하면 안 되는 범위를 설명한다.
+# Use Git Workflow
 
-## 실행과 검사
+Use the current repository's AGENTS.md and contributing documentation as the authority for protected branches, branch names, worktree locations, checks, commit format, and publication rules. This Skill supplies the reusable procedure and does not replace repository policy.
 
-- 저장소에 실제로 정의된 설치, lint, typecheck, test와 build 명령을 적는다.
-- 명령이 적용되는 디렉터리와 필요한 실행 조건을 적는다.
+## Confirm mutation authority
 
-## Git
+1. Determine whether the request authorizes file changes.
+2. Stop before staging or committing when the request is limited to explanation, research, review, diagnosis, or planning.
+3. Do not treat context compaction or a completed investigation as commit authority.
 
-- 보호 브랜치와 허용하는 브랜치 이름을 적는다.
-- 전역 워크트리 위치를 사용할 수 없는 경우 저장소의 위치와 이유를 적는다.
-- 저장소의 커밋과 Pull Request 형식을 적는다.
+## Inspect the repository
 
-## 보안
+1. Confirm that the working directory belongs to a Git repository.
+2. Read the current branch, worktree list, staged changes, unstaged changes, untracked files and recent commits.
+3. Identify user changes and files owned by another active task. Do not move, stage, overwrite or revert them.
+4. Read the closest AGENTS.md and repository contribution rules before choosing a branch or commit format.
 
-- 공개하면 안 되는 저장소 경로와 데이터 종류를 적는다.
-- 저장소에서 사용하는 비밀정보 검사 명령을 적는다.
+## Select or create a worktree
+
+1. Reuse an existing worktree only when its branch and change scope match the requested work and it has no conflicting changes.
+2. Do not modify protected branches such as `main`, `master`, `develop`, `dev` and `release/*` unless the repository explicitly allows it.
+3. When a new manual worktree is required and the repository does not override the convention, create `.worktrees/<type>/<short-description>/` from the intended base revision.
+4. Name its branch `<type>/<short-description>`. Use only a type allowed by the repository.
+5. When the Codex desktop app or another host manages the worktree, use the host location and verify whether it created a branch or detached HEAD before changing files.
+
+## Create checkpoint commits
+
+1. Commit only a complete work unit that the request authorized.
+2. Run the smallest repository checks that demonstrate the work unit is coherent.
+3. Exclude unrelated user changes, ignored files, secrets, credentials, private URLs, personal paths and unresolved markers.
+4. Review stored text, file names and the candidate commit message with the applicable writing Skill.
+5. Follow the repository commit format. Do not invent an issue number, approval, author or provenance statement.
+6. If a required check cannot run, record the reason and commit only when repository policy permits that limitation.
+
+## Recover after compaction
+
+1. Re-read the applicable AGENTS.md files.
+2. Inspect the current branch, worktree status and recent commits.
+3. Compare the remaining request with the last verified work unit before continuing.
+4. Do not assume that every uncommitted change belongs to the current task.
+
+## Finish
+
+Report the worktree, branch, changed files, checks, commit and any uncommitted or user-owned changes. Do not push, open a pull request, remove a worktree or delete a branch unless the request authorizes that action.
 ```
 
-저장소 AGENTS.md는 프레임워크의 일반 사용법이나 Skill의 전체 절차를 복사하지 않는다. 하위 디렉터리만 다른 명령이나 보안 규칙을 사용하면 그 디렉터리에 가까운 AGENTS.md가 예외를 관리한다.
+## `skills/use-dev-guidance/SKILL.md`에 추가할 절
 
-## Skills가 관리할 내용
+기존 Skill의 `Execute the selected operations` 아래에 다음 절을 추가한다. 기존 inventory, research, guide, apply와 validate 절은 그대로 유지한다.
 
-### `use-words-review`
+```markdown
+### Research external dependencies
 
-이 Skill은 저장하거나 외부에 전달할 글의 검사 단위, 자동 검사, 한국어 참고 자료, 독립 검토와 결과 상태를 관리한다. Codex home의 AGENTS.md는 호출 조건만 유지한다.
+Run this operation before selecting, adding, replacing, removing, or upgrading an external dependency. Include direct and transitive dependencies in the research inventory.
 
-### `use-design-docs`
+1. Build an inventory of direct and transitive external dependencies from manifests, lockfiles, generated dependency reports and the imports used by the repository.
+2. Confirm the capability the repository needs and the exact dependency and version under consideration.
+3. Compare the dependency with the current implementation, already installed dependencies, platform features and a small internal implementation when those are realistic alternatives.
+4. Review current official documentation, release notes, compatibility information, maintenance status, security advisories and license terms that affect the repository.
+5. Identify the dependency's officially recommended integration structure and every design pattern that applies to the repository's intended use. State when official sources do not name a pattern instead of inventing one.
+6. Inspect lifecycle, initialization, resource cleanup, concurrency, error propagation, retries, serialization, security boundaries and framework integration when they are reachable in the intended use.
+7. Inspect the manifest, lockfile, configuration, generated artifacts, imports, public APIs, tests and CI affected by the proposed change.
+8. Record each dependency and version in the research result. Dependencies that share one upstream project or the same official integration guidance may share evidence, but none may be omitted from the inventory.
+9. Record repository-specific findings in the owning `docs/dev/` topic. Record a choice that changes requirements or architecture in the applicable `docs/designs/` package after the decision owner approves it.
+10. Research does not authorize dependency, configuration, guidance or check changes. Apply them only when the request includes those changes.
+```
 
-이 Skill은 저장소의 `docs/designs/README.md`를 기준으로 요구사항 확인, 조사, 결정 기록, 계획과 검증 작업의 순서를 정한다. 설계 문서의 구조와 필수 정보는 Skill이 아니라 저장소 README가 관리한다.
+## `docs/dev/README.md`에 추가할 절
 
-### `use-dev-guidance`
+Skill이 조사 순서를 맡고 이 절은 조사 결과를 저장소 문서에 기록하는 조건을 정한다. `Turn Repository Risks into Checks`의 의존성 변경 기준 다음에 추가한다.
 
-이 Skill은 저장소의 `docs/dev/README.md`를 기준으로 현재 기술과 버전, 공식 권장 사용법, 외부 의존성의 통합 패턴, 검사 도구와 검증 방법을 조사한다. 의존성을 실제로 추가하거나 설정을 바꾸는 권한은 사용자 요청에서 확인한다.
+```markdown
+### Record dependency integration guidance
 
-Git 절차가 여러 저장소에서 반복되고 AGENTS.md의 Git 절이 다시 길어지면 별도 Git Skill을 추가할 수 있다. 반복 실패가 확인되기 전에는 새 Skill을 만들지 않는다.
+Create or update a topic document only when a dependency rule applies to more than one change and future contributors cannot infer it from the manifest, code, tests or standard tooling.
 
-## docs가 관리할 내용
+The owning topic document records:
 
-### `docs/designs`
+- The direct and transitive dependencies and the versions to which the guidance applies
+- The repository capability that requires it
+- The selected integration structure and applicable design patterns
+- The official source that supports each external claim
+- Initialization, lifecycle, cleanup, error, concurrency and security conditions that affect this repository
+- Alternatives considered when they materially change maintenance or compatibility
+- Repository files and public interfaces affected by the integration
+- Static checks, tests, runtime checks or responsible review that verify the rule
+- Exceptions and the evidence that makes each exception safe
 
-작업별 요구사항, 재사용할 조사 결과, 승인된 결정과 실행 계획을 기록한다. 외부 의존성 선택이 구조나 사용자 결과를 바꾸면 선택 이유와 영향을 이 영역에서 관리한다.
+Do not copy generic dependency documentation, list patterns that the repository does not use, or present an unapproved proposal as current guidance. A dependency choice that changes requirements or architecture belongs in the applicable `docs/designs/` package. The development topic links to that approved decision instead of copying it.
+```
 
-### `docs/dev`
+## 그대로 유지할 파일
 
-여러 변경에 적용되는 저장소별 개발 규칙을 기록한다. 선택한 의존성의 버전, 이 저장소에서 채택한 통합 패턴, 예외, 정적 검사와 검증 방법은 해당 주제 문서 한 곳에서 관리한다.
+### `skills/use-design-docs/SKILL.md`
 
-docs는 홈 AGENTS.md의 전역 정책이나 Skill의 실행 단계를 복사하지 않는다. 다른 문서에서 같은 규칙이 필요하면 관리 문서로 연결한다.
+이 Skill은 이미 `docs/designs/README.md`를 유일한 문서 구조 기준으로 사용하고 review, discover, research, record, plan과 validate 작업을 선택한다. AGENTS.md에서 설계 절차를 줄여도 Skill 본문을 바꿀 필요가 없다.
 
-## 설정, Plugin과 자동 검사가 관리할 내용
+### `skills/use-words-review/SKILL.md`
 
-`~/.codex/config.toml`과 저장소의 `.codex/config.toml`은 검색 모드, 승인 정책, sandbox와 MCP 등록처럼 실행 환경을 정한다. AGENTS.md는 검색해야 하는 조건을 정하지만 검색 도구의 활성화 여부를 대신하지 않는다.
+이 Skill은 이미 저장하거나 외부에 전달할 글의 검사 범위, 한국어 검사기, 참고 자료, 독립 검토와 상태 판정을 관리한다. AGENTS.md에는 작성 전 참고 자료와 저장 직전 호출 조건만 남기므로 Skill 본문을 바꿀 필요가 없다.
 
-Plugin은 자신이 설치한 Skills, 도구와 자동 생성 범위를 관리한다. Compound Engineering이 관리하는 Codex 도구 매핑은 Plugin 책임이며 다른 문서에서 다시 정의하지 않는다.
+### `docs/designs/README.md`
 
-scripts, hooks와 CI는 문서 위치와 링크, 비밀정보, 정적 규칙, 테스트와 보호 브랜치처럼 자동으로 판정할 수 있는 조건을 확인한다. 문서와 Skill은 검사 결과를 해석하고 자동으로 판단할 수 없는 내용을 담당 검수자에게 연결한다.
+이 문서는 요구사항, 조사 자료, 승인된 결정과 계획의 구조 및 검증 기준을 이미 관리한다. AGENTS.md와 Skills의 실행 절차를 이 문서로 복사하지 않는다.
+
+## 구현 뒤 확인할 결과
+
+- AGENTS.md의 사용자 관리 영역에는 전역 정책, 변경 권한, Skill 호출 조건과 Compound 관리 범위만 남아 있다.
+- Git의 분기, 워크트리와 커밋 절차는 `use-git-workflow` 한 곳에서 관리한다.
+- 외부 의존성의 조사 순서는 `use-dev-guidance`, 재사용할 저장소 규칙은 `docs/dev`, 구조나 요구사항을 바꾸는 승인은 `docs/designs`가 관리한다.
+- `use-design-docs`, `use-words-review`와 `docs/designs/README.md`에는 같은 규칙을 복사하지 않는다.
+- Compound Engineering 관리 주석 사이의 내용은 구현 전후에 동일하거나 Plugin이 생성한 새 버전과 일치한다.
