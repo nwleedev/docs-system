@@ -1,6 +1,6 @@
 ---
 name: use-design-docs
-description: Repository workflow adapter for docs/designs/README.md that selects and orders every applicable design-document operation needed for a request. In the use-* skill family, use marks a reusable procedure bound to a repository-local authority; it does not mean generic document usage. Apply when learning how to design or refine requirements, reviewing requirements, researching requirement questions, recording references or human decisions, creating or reviewing plans, validating a docs/designs package, or assessing requirement changes.
+description: Repository workflow adapter for docs/designs/README.md that selects and orders every applicable design-document operation needed for a request. In the use-* skill family, use marks a reusable procedure bound to a repository-local authority; it does not mean generic document usage. Apply when learning how to design or refine requirements, reviewing requirements, researching requirement questions, recording references or human decisions, creating or reviewing plans, using docs/designs as implementation input, validating a docs/designs package, or assessing requirement changes.
 ---
 
 # Use Design Docs
@@ -48,6 +48,7 @@ Treat review and rewriting as separate operations. Necessary read-only work does
 1. Read only the derived documents and repository evidence needed for the requested operation.
 2. Keep the human's requirement wording separate from AI findings, sourced facts, proposals, and approved decisions.
 3. Before research or planning, separate blocking questions, optional suggestions, factual research questions, and decisions that require human judgment.
+4. When `docs/designs/**` is implementation input, read the authority README, the complete applicable `requirements.md`, and only the decisions and plan needed to establish the implementation baseline. This skill does not authorize or perform implementation; pass that baseline to the applicable development workflow.
 
 ## Execute the selected operations
 

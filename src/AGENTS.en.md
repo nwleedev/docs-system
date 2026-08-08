@@ -107,7 +107,7 @@
 
 ### Research, Cross-checking, Design, and Documentation
 
-- Run `$use-design-docs` when clarifying requirements or researching, creating, reviewing, planning, or validating `docs/designs/**`.
+- Run `$use-design-docs` when clarifying requirements; researching, creating, reviewing, planning, or validating `docs/designs/**`; or using a document under `docs/designs/**` as implementation input.
 - Keep requirements and approved decisions separate from AI research and proposals.
 - Use the repository's `docs/designs/README.md` as the authority for design-document structure, recording locations, and validation criteria.
 
