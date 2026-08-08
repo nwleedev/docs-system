@@ -2,79 +2,69 @@
 
 ## Language
 
+- **Lead every response and document with its conclusion.** When a conclusion-first structure is inappropriate, explain why in one line when the file format permits comments.
 - Write code and file names in English.
-- Write the Git commit `type` and `scope` in English, and write the title `subject` and body in English.
+- Follow the Git instructions below for commit messages.
+- Unless the repository specifies another language, write design documents, work descriptions, and explanatory code comments in English.
 - Communicate with the user in English.
-- Write design documents, work descriptions, and explanatory code comments in English.
 
-## Core Principles
+## Basic Principles
 
-**Context Compaction**
+**Responses**
 
-After context compaction, reread AGENTS.md, especially **Core Principles**, and apply it to the work.
+- Write direct, natural English. Do not preserve the structure of another language when it hides the actor, action, condition, or result.
+- Treat polished but vague abstractions as signals to inspect the context, not as automatically acceptable wording. Keep precise technical terms; otherwise state the actual rule or action and ask the user when the evidence is insufficient.
 
-**Doing the Work Correctly**
+**Context compaction**
 
-- Do not implement code unless the user explicitly asks you to implement code.
-- Do not write tests unless the user explicitly asks you to write tests.
-- Do not use TDD unless the user explicitly asks you to use TDD.
-- Do not reduce a requested change to a superficial patch that leaves the underlying problem unresolved.
-- Do not alter the scope of the work on your own.
-- Choose work that correctly addresses the request. Do not avoid a necessary fix merely because it is harder, but obtain approval before taking destructive or high-impact actions.
-- The user may require a linked worktree so that work in different areas can proceed safely at the same time.
+- After context compaction, reread the applicable AGENTS.md files, especially the **Basic Principles**, before continuing.
+- Maintain appropriate Git commits so the work can be recovered after context compaction. Inspect the Git history first when resuming.
+
+**Prohibited actions**
+
+- Do not implement code unless the user explicitly requests code implementation.
+- Do not write test code unless the user explicitly requests test-code authoring.
+- Do not perform TDD unless the user explicitly requests TDD.
+- Do not change the requested scope on your own.
 - Do not use emoji.
-- When comments are used, their explanations may drift from the behavior of the code. Write code clearly enough that each part's role can be understood.
-- Do not stop after writing code once. Check for similar code and consider whether the code can be modularized.
+- Do not remove or overwrite changes or run similarly irreversible commands without the user's approval.
+- Avoid comments when the code can express the role directly. Write code whose parts can be understood without explanatory narration.
+- After writing code, inspect similar code and consider shared implementation only when the responsibility and verification are genuinely the same.
 - Do not disable type checking to resolve an error.
-- Do not disable requirements or features stated in the design.
-- Do not delete or weaken tests to hide a test failure.
+- Do not disable a requirement or feature specified by the design.
+- Do not delete or weaken tests to hide a failure.
+- Do not write generic prose that could be pasted into any project. Reflect the current readers, repository, and decisions.
+- Remove formulaic phrases and inflated modifiers that add no meaning.
+- Do not force equal-length sections, divide content into three items without evidence, or repeat the same transition. Let the content determine the structure.
+- Do not translate word by word. Identify the source's subject, action, conditions, and responsible actor, then write natural English.
+- Do not replace established technical terms merely to avoid their original language. Keep terms that are precise in the field; otherwise describe the actual action or condition.
 
-**Writing**
+**Existing behavior and code**
 
-- Do not produce generic, formulaic text that could be reused unchanged for another project. Write for the actual reader, repository, and decision at hand.
-- Use existing documentation for verified facts, requirements, approved decisions, and established repository terminology. Do not imitate its wording, sentence patterns, paragraph structure, or section layout. Rewrite the material for the current reader and purpose unless exact text must be preserved, such as approved wording, a quotation, a code identifier, a service or application name, or an API name.
-- Make every sentence contribute evidence, a decision, an instruction, or necessary context. Remove introductions, conclusions, summaries, and transitions that only restate nearby text.
-- Prefer specific nouns and strong verbs over abstract nouns, hidden verbs, inflated claims, and decorative adjectives or adverbs.
-- Do not use words such as "pivotal," "crucial," "comprehensive," "seamless," "robust," or "delve" as decoration. Use them only when they express a precise, supported distinction.
-- Do not force every section into the same paragraph shape, repeated transition pattern, or arbitrary three-part list. Let the content determine the structure.
-- Use a natural, direct, and professional voice. Avoid promotional language, performative enthusiasm, fake quotations, and claims about what readers think or feel without evidence.
-- Review each sentence separately for an identifiable referent, actor, action, condition, and result. A natural expression still needs revision when it compresses several ideas and leaves their relationship unstated.
-- After revising individual sentences, reread the paragraph and document to confirm that role names, referents, assumptions, decisions, and step results remain connected.
-- Before publishing text, read it once for meaning and remove any sentence that sounds polished but adds no information.
-
-**Existing Behavior and Code Patterns**
-
-- Do not remove or weaken existing functionality unless the user requests that change. Determine what must remain from user-visible behavior, externally used APIs, stored data, error handling, current tests, and runtime evidence.
-- Use existing code to understand current behavior, not as a template or proof of best practice. Do not copy a pattern merely because it appears repeatedly or near the code being changed.
-- Before writing new code, check the official guidance for the technology and version in use, the development guidance that applies in this repository, configuration, and relevant check results. Choose the approach best suited to the current work, and do not repeat anti-patterns found in existing code.
-- Use the selected approach while preserving existing functionality, externally used APIs, data formats, and required compatibility. When older code requires conversion, keep that conversion at the connection point instead of spreading the older pattern through new code.
-- If the selected approach would require changing existing functionality or repository-wide architecture, explain the behavior that must remain and the expected effects, then obtain the user's approval before proceeding.
-- Tests must verify user-visible behavior and approved compatibility requirements, not whether new code reproduces the previous implementation structure.
+- Do not remove or weaken existing behavior unless the user requests that change. Determine what must remain from user-visible results, externally used APIs, stored data, error handling, current tests, and runtime evidence.
+- Use existing code only to understand current behavior. Do not copy a pattern merely because it appears in several files or near the code being changed.
+- Before writing new code, inspect current official guidance for the technology and version, the development guidance that applies in this repository, configuration, and check results. Choose the approach that fits the current work and do not repeat anti-patterns found in existing code.
+- Apply the selected approach while preserving existing behavior, externally used APIs, data formats, and required compatibility. When older code requires conversion, keep that conversion at the connection point instead of spreading the older pattern through new code.
+- If the selected approach requires changing existing behavior or repository-wide structure, explain the behavior that must remain and the expected impact, then obtain the user's approval before proceeding.
+- Tests must verify user-observable behavior and approved compatibility conditions, not whether new code reproduces the previous implementation's shape.
 
 **Research**
 
-- For every prompt, research internet sources through multiple methods and cross-check them to ensure accuracy and currency.
-- Use at least five primary sources, such as official documentation, standards, original documents, and real source code, instead of blogs or curated articles.
+- For every prompt, research internet sources through multiple methods and cross-check them for accuracy and currency.
+- Try to obtain at least five primary sources, such as official documentation, standards, original documents, and actual source code, instead of blogs or curated articles.
 - Check the latest information first and include trustworthy sources in every response.
-- Use MCP when visual research or cross-checking is necessary.
+- Use MCP when visual research or cross-checking is needed.
 - Use the `gh` CLI when researching repository files and issues on GitHub.
 - Prefer an official source repository over a personal repository when researching source code.
-- Provide sources and short quotations within permitted limits so that the user can verify the research.
-- Research requirements govern the agent's analysis and response. Do not copy citations, research notes, recommendations, or source wording into a target file unless the user requested them in that artifact and its intended readers need them.
-- Finding that the repository lacks a license, policy, check, document, or decision is not authorization to add one or to write a placeholder, warning, or maintainer instruction into the target artifact. Report the gap separately and obtain approval when it would change the requested result.
-
-**Application Verification**
-
-- Use a browser to verify how the actual application works.
-- Run the application with commands defined by the project.
-- If the project does not define a command, propose the command that best matches the project's conventions, identify it as an inference, and ask before running it.
-- When running E2E tests or verifying actual application behavior, start the development server yourself and stop it when the work is complete.
+- Provide sources and short quotations within permitted limits so the user can verify the research.
+- Apply the research rules to the agent's investigation and response. Do not copy citations, research notes, recommendations, or source wording into a target file unless the user requested them in that artifact and its intended readers need them.
+- Finding that a repository lacks a license, policy, check, document, or decision does not authorize adding one. Do not put placeholders, warnings, or maintainer tasks into the target artifact. Report the gap separately and obtain approval when it would change the requested result.
 
 ## Subagent Use
 
 - Do not use subagents for simple work, work that fits in one context, or work whose coordination cost is greater than the expected time saved.
-- When work can be divided into at least two independent units and the expected time saved is greater than the cost of assigning and reconciling the work, the main agent delegates those units to subagents.
-- Give each subagent the applicable requirements, the exact task, the paths to inspect, the allowed file-change scope, stop conditions, and the expected result.
+- When work can be divided into at least two independent units and the expected time saved is greater than the cost of assignment and reconciliation, the main agent delegates those units to subagents.
+- Give each subagent the applicable requirements, exact task, paths to inspect, allowed file-change scope, stop conditions, and expected result.
 - If the user names a specific Skill or the active Skill defines how to use subagents, follow that Skill. Do not duplicate the same role or add a separate review step outside the Skill.
 - The main agent is responsible for requirements, task allocation, dependencies, result reconciliation, conflict resolution, stop decisions, and final verification.
 - Do not treat a subagent's report as completion evidence. The main agent must inspect the actual files, changes, and check results.
@@ -84,7 +74,7 @@ After context compaction, reread AGENTS.md, especially **Core Principles**, and 
 - Independent research questions, read-only reviews from different perspectives, and unrelated log or test-result analyses may run in parallel.
 - Run implementation work in parallel only when the tasks do not overlap in modified files, public interfaces, schemas, generated files, lockfiles, configuration, development servers, databases, or test data.
 - Do not run work in parallel when one result becomes another task's input or when the affected scope is uncertain.
-- Stay within the environment's concurrency limit and queue the remaining work.
+- Stay within the environment's concurrency limit and queue remaining work.
 
 ### Sequential Execution
 
@@ -99,44 +89,35 @@ After context compaction, reread AGENTS.md, especially **Core Principles**, and 
 - Continue only unaffected work. Stop affected work or revalidate it against the changed requirements.
 - Stop all related work and ask the requirements owner when the effect is uncertain or when shared assumptions and completion criteria have changed.
 
-## Documentation Work
+## Skill Use and Work Environment
+
+**If a required Skill or repository document cannot be read, do not infer replacement rules. Stop and report the missing prerequisite.**
 
 <!-- BEGIN USE WORDS REVIEW -->
-### Writing Korean Chat Responses
+### Text and Names
 
-- Apply the Writing rules above to routine chat, progress updates, confirmations, and explanatory responses. Do not load `references/korean.md` or run `use-words-review` merely because the response is written in Korean.
-- In general Korean prose, do not use U+00B7. Preserve the exact character only when a quotation, approved name, code, regular expression, character test, code-point explanation, or evaluation input requires it. For example, rewrite `설계·구현·검증 결과를 기록합니다` as `설계, 구현과 검증 결과를 기록합니다`.
-- `포화`, `경계`, and `소유` are signals to check context, not prohibited terms. Apply the same check to terms outside this list. Keep terms that are precise in the field; otherwise state the actual rule or action, and ask the user when evidence cannot determine the meaning.
-- Carry forward only verified facts and approved decisions from existing documents. Do not treat their wording as approved style; restate the actor, action, condition, and result for the current readers.
-- Do not split a paragraph merely because it is long. Split it into plain-text paragraphs by meaning when distinct central ideas, evidence, conditions, decision states, or follow-up actions require readers to reconstruct their relationships. State each paragraph's central idea first and explain any sequence or dependency between paragraphs.
-
-### Reviewing Text That Will Be Stored or Delivered
-
-- Before drafting AI-created or revised Korean text or a name that will be stored, committed, published, or shared outside the conversation, read the installed `use-words-review` skill's `references/korean.md` in full. Apply the reference only to Korean text.
-- When AI-created or revised Korean text or a name will be stored, committed, published, or shared outside the conversation, group the changes from the same sharing unit and run the installed `use-words-review` once immediately before that action. The skill runs `scripts/scan.mjs` to apply both the expression rules and the long-paragraph policy. Include chat wording that will be stored or delivered verbatim, but do not review an ordinary chat response merely because it is sent.
-- When the user explicitly requests a review of particular wording or a public output, group all wording named in that request into one review unit and run `use-words-review` once, even when no file changed. Treat a later request to review revised wording as a new review unit.
-- If the current run cannot find or read the skill, do not claim completion of work that requires the review. When the reviewed output contains Korean, also do not claim completion if `references/korean.md` cannot be found or read in full. Report whether the observed gap is a missing installation or a missing reference, to the extent that the current run can determine it.
+- Before drafting Korean text or names that will be stored, committed, published, or shared outside the conversation, read the pre-draft reference required by `$use-words-review`.
+- Group text and names in any language by publication unit and run `$use-words-review` once immediately before storing or sharing them.
+- When the user explicitly requests review of wording or a public output, review the complete requested unit even when no file changed.
+- Do not run `$use-words-review` merely because routine chat or a progress update is sent.
+- Base every reader-facing statement on verified repository evidence, an approved decision, or approved wording. Do not use a user prompt, agent instruction, internal task description, work note, review criterion, rubric, output format, or workflow commentary as publishable source text.
+- Keep internal identifiers, private document references, implementation-only names, maintainer notes, unresolved decisions, review notes, and pre-publication checklists out of reader-facing content. Do not insert `TODO`, `TBD`, or similar placeholders unless the status itself is approved information that readers need.
 <!-- END USE WORDS REVIEW -->
 
-### Design Documents
+### Research, Cross-checking, Design, and Documentation
 
-- Read `docs/designs/README.md` before creating, reviewing, planning, implementing from, or validating documents under `docs/designs/**`.
-- If the target work has a `requirements.md`, read it in full, then read only the references, decisions, plan, and repository evidence needed for the current question.
-- When the work is complete, check the documents and actual results again against the criteria in `docs/designs/README.md`.
+- Run `$use-design-docs` when clarifying requirements or researching, creating, reviewing, planning, or validating `docs/designs/**`.
+- Keep requirements and approved decisions separate from AI research and proposals.
+- Use the repository's `docs/designs/README.md` as the authority for design-document structure, recording locations, and validation criteria.
 
-### Development Guidance
+### Development Guidance, Technology Stack, and Checks
 
-- Read `docs/dev/README.md` before planning, implementing, reviewing, refactoring, testing, or documenting an application change.
-- Do not read all of `docs/dev`. Select only the guidance relevant to the current work and list those files in the plan or equivalent execution input.
-- When the work is complete, confirm that the actual changes match the selected development guidance.
-
-### Review Principles
-
-- Document titles and structure may fit their content, but check every required item separately and cite the supporting location.
-- Report each result as `pass`, `needs revision`, `needs human input`, or `not applicable`. Do not infer what cannot be supported by evidence.
-- Keep document review and document editing as separate tasks. Do not automatically rewrite requirements, decisions, or current guidance while reviewing them.
-- Documentation alone does not prove implementation compliance. Use repository checks and explicit review by the responsible reviewer together.
-- Treat research and review findings as findings, not as permission to edit the requested artifact. When a finding requires a new decision, policy, section, or change of scope, report it separately and obtain approval before editing.
+- Run `$use-dev-guidance` when planning, implementing, reviewing, refactoring, testing, or documenting an application change, or when changing dependencies or checks.
+- Follow the repository's `docs/dev/README.md` and the topic guidance it selects for development methods, stack-specific rules, execution commands, and verification.
+- Before selecting, adding, replacing, removing, or changing the version of an external dependency, research its officially recommended integration and applicable design patterns.
+- Research every direct and transitive external dependency. For each dependency, confirm its name, version, capabilities, potential issues, and applicable design patterns.
+- Compare external dependencies with already installed dependencies, platform capabilities, and an internal implementation.
+- Research does not authorize applying a dependency change. Confirm the user's change request and the repository's approval process separately.
 
 ## Environment Variables and Sensitive Information
 
@@ -150,87 +131,60 @@ After context compaction, reread AGENTS.md, especially **Core Principles**, and 
 - Do not use a system-level directory such as `/tmp`.
 - Store temporary files under `temps/<scope>-<nonce>/` at the project root.
 - Use `scope` for the work area and a short collision-resistant identifier for `nonce`.
-- Store screenshots created by Playwright MCP or Chrome DevTools MCP under the same file-location rule.
-
-## Public Outputs
-
-- Treat repository content that is committed or shared, including file and directory names, README files, documentation, source code and comments, commit and pull-request text, issue text, release notes, user-visible and assistive text, as public outputs unless the repository explicitly classifies it otherwise.
-- Before writing a public string or name, identify its intended readers, what they must understand or do, the actor described by the text, and any reviewer or approval owner. When those roles matter, name the verified role or describe the action directly instead of using a broad label such as `person` or `human`. If repository evidence does not identify the role, report the unresolved role instead of inventing it.
-- Base every public statement on verified repository evidence, an approved decision, or previously approved public wording. Do not use a user prompt, agent instruction, internal task description, work note, review criterion, rubric, output format, or workflow commentary as publishable source text.
-- Do not quote, copy, or lightly rewrite internal source text into a public output. When the underlying information is necessary, write it again as verified behavior, usage guidance, or approved policy for the intended reader. If no public-safe source supports it, omit it and report the gap separately.
-- Keep internal identifiers, private document references, implementation-only names, maintainer reminders, unresolved decisions, review notes, and publication checklists out of public outputs. Do not insert `TODO`, `TBD`, or similar placeholders unless the status itself is approved information that readers need.
-- Do not infer unresolved ownership, support, security, compatibility, privacy, contribution, or licensing terms. Report the required decision separately and update the public output only after an approved source exists.
-- Write commit messages from the actual change and its reason. Write user-visible and assistive text from the task the user is performing, the purpose of the element, and the state the user needs to understand.
-- Keep public-output edits separate from repository-management work. Do not create an issue, planning item, policy file, or community file unless the user explicitly authorizes it.
-
-### Pre-publication Check
-
-1. List every changed public output, including changed file and directory names and the commit-message draft.
-2. Trace every added sentence or string to repository evidence, an approved decision, or approved public wording.
-3. Reject text derived from prompts, internal tasks, review criteria, output formats, or workflow commentary.
-4. Search the changed outputs for internal identifiers, private paths, distinctive prompt phrases, HTML comments, and unresolved markers such as `TODO`, `TBD`, and `FIXME`.
-5. Check claims about licensing, support, security, compatibility, ownership, features, and behavior against their approved source.
-6. Read the rendered or final form as the intended reader. Confirm that actors, reviewers, and approval owners are named only when repository evidence supports those roles. Do not publish or commit an output that still explains the agent's work rather than the project.
-
-## Dependencies
-
-- When researching a dependency, investigate its provided features, version, and potential issues as well as its name.
-- Perform dependency research during the work-design phase.
-- Compare the concrete tradeoffs of an external dependency and an internal implementation, then choose the option with the lowest complexity and maintenance cost that still meets the requirements.
-- Before introducing an external dependency, research the applicable static-analysis tools, best practices, architecture, and design patterns, then reflect them in the design and harness documents.
-
-## Comments
-
-- Research the comment conventions for the project's technology stack and reflect them in the design.
-- Use `/** ... */` JSDoc or TSDoc documentation comments for application functions, methods, and exported symbols. Use `//` line comments for implementation reasoning.
-- Documentation comments must let a first-time reader understand how to call the code. For functions, include a summary, `@param`, and `@returns` by default. Use `@remarks` or `@throws` for side effects, SSR or client boundaries, security constraints, exception propagation, and other information callers must know.
-- In TypeScript, do not repeat type names already present in the signature with forms such as `@param {Type}`. Explain the value's meaning, allowed range, default, unit, normalization rules, and the domain meaning of the return value instead.
-- Do not add unnecessary documentation comments to private or local helpers when their names and types already explain them. Do document public APIs, shared utilities, Route Handler or BFF helpers, and chart, URL, parser, or threshold policy functions.
-- If the user explicitly requests comments for every expression, write one or two lines for every expression and declaration so that a reader new to the code can understand it.
+- Store screenshots created by MCP under the same file-location rule.
 
 ## Gitignore
 
 - Do not commit files matched by `.gitignore`.
 - Before committing, check for sensitive information and credentials.
-- Check whether the "Environment Variables and Sensitive Information" section of AGENTS.md contains related rules, and consult it again if it does.
+- Recheck the applicable rules in the "Environment Variables and Sensitive Information" section of AGENTS.md.
 
 ## Git Branches
 
 - Check the current Git branch before starting work.
-- Use linked worktrees so that multiple terminals can work in parallel. Place linked worktree directories under `.worktrees/` at the repository root.
-- For linked worktrees that are no longer in use, cross-check whether they can be removed and propose removal.
-- The user may ask to continue work in an existing linked worktree or to create a new one.
-- To avoid creating unnecessary linked worktrees, use the same branch for both design and implementation. Choose a type that matches the work instead of defaulting to a `docs` branch.
-- Do not modify the repository's default, integration, release, or protected branches directly unless the user explicitly asks you to work on the current branch. Create a new work branch first.
+- Use linked worktrees so multiple terminals can work in parallel. Place manually created worktrees under `.worktrees/` at the repository root.
+- For worktree branches that are no longer in use, cross-check whether they can be removed and propose removal.
+- The user may ask to continue in an existing worktree branch or create a new one.
+- Use the same branch for design and implementation so worktrees do not multiply unnecessarily. Choose a type that matches the work instead of defaulting to `docs`.
+- Do not modify `main`, `master`, `develop`, `dev`, or `release/*` directly. Create a work branch first.
 - Work on agent environment settings under `.codex` or `.claude` may proceed without changing branches.
-- Follow the repository's existing branch-naming rules. If none exist, use `<type>/<short-description>`.
+- Name branches `<type>/<short-description>`. Reflect the branch name in the worktree path as `.worktrees/<type>/<short-description>`.
 
-Default `<type>` values:
-
-- `feature`
-- `fix`
-- `hotfix`
-  - Use `hotfix` only for actual hotfix work, not for ordinary fixes.
-- `refactor`
-- `test`
-- `docs`
-- `chore`
+Allowed `<type>` values: `feature`, `fix`, `hotfix` (only for an actual hotfix), `refactor`, `test`, `docs`, `chore`
 
 ## Git Commits
 
 - Decide whether a work unit is worth a commit and commit it when appropriate.
-- Apply the Public Outputs rules to the commit subject, body, and trailers. Describe the repository change and why it was needed. Do not mention the user prompt, agent instructions, internal task wording, review criteria, private references, or the agent's work process.
-- Use a subject line, followed by an optional body and optional trailers.
-- Follow the repository's existing commit convention. If none exists, format the subject as `<type>[optional scope][!]: <description>`.
-- When the repository does not define commit types, use `feat`, `fix`, `refactor`, `docs`, `test`, `chore`, `perf`, `ci`, or `build`.
-- If a scope is useful, write it in English and name the affected module or component.
-- Write the description as a short imperative phrase without a final period.
-- When a body is needed, write it in English and explain why the change was necessary. Let the diff show what changed.
-- Use `BREAKING CHANGE: <description>` for a breaking change under Conventional Commits.
-- On GitHub, use `Fixes #N` or `Closes #N` only when the commit should close the issue after it reaches the default branch.
-- Use `Co-authored-by: Name <email>` to credit another author on GitHub.
+- Apply these rules to the commit subject, body, and footers. Describe the actual repository change and why it was needed. Do not mention the user prompt, agent instructions, internal task wording, review criteria, private references, or the agent's work process.
+- Use a subject, body, and optional footers.
+- Format the subject as `<type>(<scope>): <subject>`.
+- Use one of `feat`, `fix`, `refactor`, `docs`, `test`, `chore`, `perf`, `ci`, or `build` for `type`.
+- Write `scope` in English and name the affected module or component.
+- Write `subject` as a lowercase English imperative without a final period.
+- Write the body in English and explain why the change was necessary. Let the diff show what changed.
+- Use `BREAKING CHANGE:`, `Fixes #N`, or `Closes #N` footers when applicable.
 
-## Prohibited Actions
+<!-- BEGIN COMPOUND CODEX TOOL MAP -->
 
-- Do not discard uncommitted changes, overwrite files, rewrite shared history, force-delete branches, or run similarly destructive commands without user approval.
-- Do not revert user-created changes on your own.
+## Compound Codex Tool Mapping (Claude Compatibility)
+
+This section maps Claude Code plugin tool references to Codex behavior.
+Only this block is managed automatically.
+
+Tool mapping:
+
+- Read: use shell reads (cat/sed) or rg
+- Write: create files via shell redirection or apply_patch
+- Edit/MultiEdit: use apply_patch
+- Bash: use shell_command
+- Grep: use rg (fallback: grep)
+- Glob: use rg --files or find
+- LS: use ls via shell_command
+- WebFetch/WebSearch: use curl or Context7 for library docs
+- AskUserQuestion/Question: present choices as a numbered list in chat and wait for a reply number. For multi-select (multiSelect: true), accept comma-separated numbers. Never skip or auto-configure — always wait for the user's response before proceeding.
+- Task (subagent dispatch) / Subagent / Parallel: run sequentially in main thread; use multi_tool_use.parallel for tool calls
+- TaskCreate/TaskUpdate/TaskList/TaskGet/TaskStop/TaskOutput (Claude Code task-tracking, current): use update_plan (Codex's task-tracking primitive)
+- TodoWrite/TodoRead (Claude Code task-tracking, legacy — deprecated, replaced by Task\* tools): use update_plan
+- Skill: open the referenced SKILL.md and follow it
+- ExitPlanMode: ignore
+<!-- END COMPOUND CODEX TOOL MAP -->
