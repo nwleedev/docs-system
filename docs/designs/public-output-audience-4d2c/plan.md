@@ -247,5 +247,4 @@
   - [GOV.UK 사용자 스토리 작성](https://www.gov.uk/service-manual/agile-delivery/writing-user-stories)은 행위자, 필요한 동작, 목표와 완료 결과를 함께 적도록 안내한다.
   - [W3C 제목 구조](https://www.w3.org/WAI/tutorials/page-structure/headings/)는 제목 계층으로 문서 구성과 절의 관계를 전달하도록 안내한다.
 - **주석으로 표시한 관리 범위.** Markdown의 HTML 주석으로 관리 범위를 표시하고 해당 부분만 바꾸거나 제거한 구현 사례가 있다.
-  - [Compound Engineering의 AGENTS 범위 제거 구현](https://github.com/EveryInc/compound-engineering-plugin/blob/a9f6d530d4446d805a3100387dedd86268d7e695/src/utils/codex-agents.ts)은 시작과 끝 주석 사이의 지침만 제거한다.
   - [terraform-docs 출력 범위 설정](https://github.com/terraform-docs/terraform-docs/blob/10965cddfa169679511f176cfe67dd0189dc935f/docs/user-guide/configuration/output.md)은 생성한 내용을 주석 범위 안에서 교체한다.

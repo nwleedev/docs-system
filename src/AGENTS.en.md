@@ -150,7 +150,6 @@
 - Do not modify `main`, `master`, `develop`, `dev`, or `release/*` directly. Create a work branch first.
 - Work on agent environment settings under `.codex` or `.claude` may proceed without changing branches.
 - Name branches `<type>/<short-description>`. Reflect the branch name in the worktree path as `.worktrees/<type>/<short-description>`.
-- Compound Skills are optional. When they are absent, use Git's worktree and commit features directly under this section and do not stop Git work merely because those skills are unavailable.
 
 Allowed `<type>` values: `feature`, `fix`, `hotfix` (only for an actual hotfix), `refactor`, `test`, `docs`, `chore`
 

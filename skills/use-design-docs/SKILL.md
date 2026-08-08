@@ -56,13 +56,6 @@ Treat review and rewriting as separate operations. Necessary read-only work does
 
 Use this operation when the user wants to learn how to design requirements, does not yet know which questions matter, or wants guided clarification before reviewing, researching, or planning.
 
-#### Select the coaching procedure
-
-1. Check the skills exposed in the current session for `compound-engineering:ce-brainstorm`. Do not inspect personal plugin directories or assume an installation from a filesystem path.
-2. When it is available, use its collaborative questioning, unfamiliar-territory mapping, approach comparison, and scope-synthesis procedure. The repository README remains authoritative: do not create its default artifact, replace the repository document model, or let it write human requirements without the approval required here.
-3. When it is unavailable, continue with the built-in procedure below. Do not reject the request, require installation, or silently substitute another optional plugin.
-4. Mention the fallback briefly only when it materially reduces the depth of the requested coaching. Suggest installing the optional plugin only if the user asks for its richer workflow.
-
 #### Built-in procedure
 
 1. Identify the user outcome, the current evidence, and the decisions that would materially change behavior, scope, protected behavior, or completion evidence.
@@ -109,7 +102,7 @@ Follow the applicable project delegation policy. Delegate independent review, re
 
 Give each delegated task the `docs/designs/README.md` path, requirements baseline, target paths, exact operation, mutation boundary, stop condition, and expected return. Do not paste the README into prompts. The main agent remains responsible for reading the actual files, reconciling results, and verifying any changes.
 
-Do not automatically chain another planning or review skill merely because it is installed. The optional Discover integration above is the only availability-based skill handoff. Follow an explicitly requested or already active skill when it does not conflict with the repository README, and avoid duplicate reviews.
+Do not automatically chain another planning or review skill merely because it is installed. Follow an explicitly requested or already active skill when it does not conflict with the repository README, and avoid duplicate reviews.
 
 ## Finish
 

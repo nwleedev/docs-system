@@ -150,7 +150,6 @@
 - 현재 브랜치가 `main`, `master`, `develop`, `dev`, `release/*`이면 직접 수정하지 않고 새 작업 브랜치를 만든다.
 - `.codex`, `.claude` 폴더 안의 에이전트 환경 설정은 브랜치를 변경하지 않고 진행할 수 있다.
 - 브랜치 이름은 `<type>/<short-description>` 형식을 사용한다. worktree 폴더 이름도 브랜치 이름을 반영해 `.worktrees/<type>/<short-description>`로 정한다.
-- Compound Skills는 선택 사항이다. 설치되지 않았으면 이 절의 규칙에 따라 Git의 worktree와 commit 기능을 직접 사용하며, 설치 여부를 이유로 Git 작업을 중단하지 않는다.
 
 허용되는 `<type>`: `feature`, `fix`, `hotfix`(실제 핫픽스 작업에만 사용), `refactor`, `test`, `docs`, `chore`
 

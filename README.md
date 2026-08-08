@@ -50,8 +50,6 @@ After selecting `use-words-review`, copy the entire section from [`src/AGENTS.en
 
 To remove a skill, delete only the skill directory that you copied. If you added the marked `use-words-review` section to an instruction file, remove that section too. Keep repository READMEs created or used by a skill, the surrounding instructions, and any `@AGENTS.md` import that remains necessary for other rules.
 
-Compound Skills are optional. Use Git's worktree and commit features directly when they are not installed. Even when Compound is available, do not copy its managed tool-mapping block into this repository's `src` examples.
-
 ## Working principles
 
 - Treat repository evidence as the source for current local rules. External guidance can support a proposal, but it does not prove that a rule applies to a particular project.
