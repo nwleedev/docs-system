@@ -13,7 +13,7 @@
 - [`src/AGENTS.ko.md`](./src/AGENTS.ko.md)는 한국어 사용자를 위한 참고 문서입니다.
 - [`docs/designs/README.md`](./docs/designs/README.md)는 모든 프로젝트에 같은 문서 틀을 강요하지 않으면서 요구사항, 조사 결과, 결정 사항, 계획과 검증 결과를 관리하는 방법을 설명합니다.
 - [`docs/dev/README.md`](./docs/dev/README.md)는 개발 지침을 조사하고 정리한 뒤 실제 작업에 적용하고 확인하는 방법을 설명합니다.
-- [`skills/use-design-docs`](./skills/use-design-docs/SKILL.md)와 [`skills/use-dev-guidance`](./skills/use-dev-guidance/SKILL.md)는 Codex와 호환되는 Skill 실행 환경에서 선택해 쓸 수 있는 어댑터입니다. Skill은 작업 순서를 안내하며, 실제 규칙은 각 README에서 관리합니다.
+- [`skills/use-design-docs`](./skills/use-design-docs/SKILL.md)와 [`skills/use-dev-guidance`](./skills/use-dev-guidance/SKILL.md)는 프로젝트에 맞게 수정해 사용하는 참고 구현입니다. 각 Skill은 작업 순서를 안내하고, 저장소 기준 README가 없을 때 사용할 시작 자료를 `references/_README.md`에 포함합니다.
 - [`skills/use-words-review`](./skills/use-words-review/SKILL.md)는 커밋하거나 공유할 글과 이름을 읽기 전용으로 검토하는 스킬입니다.
 - [`examples/nextjs-frontend.md`](./examples/nextjs-frontend.md)는 특정 기술 구성에 맞춘 조사 프롬프트 예시입니다. 다른 프로젝트의 기본값으로 사용하지 않습니다.
 
@@ -30,21 +30,27 @@
 
 `src/`에 있는 파일명과 경로는 Codex를 비롯한 여러 도구가 기본으로 찾는 지침 위치가 아닙니다. 필요한 내용을 도구가 인식하는 파일로 옮기거나 별도 설정을 해야 합니다. 이 저장소는 `AGENTS.md`를 자동으로 만들거나 합치지 않습니다. 모든 부분을 한꺼번에 합치지 마세요. 관련 있고 확인할 수 있는 규칙만 담은 짧은 지침이, 근거 없는 규칙으로 채운 완성형 문서보다 쓸모 있습니다.
 
-## use-words-review 설치와 제거
+## Skill 참고 구현 적용
 
-`skills/use-words-review/` 디렉터리 전체를 사용하는 도구가 지원하는 스킬 위치에 복사합니다.
+선택한 Skill 디렉터리 전체를 사용하는 도구가 지원하는 위치에 복사합니다. `use-design-docs`와 `use-dev-guidance`를 선택하면 각 디렉터리의 `references/_README.md`도 함께 복사됩니다. 이 저장소의 `skills/`는 사용자가 수정할 수 있는 참고 구현이며, 완성된 Plugin이나 자동 설치 및 업그레이드 기능을 제공하지 않습니다.
 
-- Codex 저장소: `.agents/skills/use-words-review/`
-- Codex 사용자: `$HOME/.agents/skills/use-words-review/`
-- Claude Code 저장소: `.claude/skills/use-words-review/`
-- Claude Code 사용자: `$HOME/.claude/skills/use-words-review/`
-- 플러그인: `<plugin-root>/skills/use-words-review/`
+- Codex 저장소: `.agents/skills/<skill-name>/`
+- Codex 사용자: `$HOME/.agents/skills/<skill-name>/`
+- Claude Code 저장소: `.claude/skills/<skill-name>/`
+- Claude Code 사용자: `$HOME/.claude/skills/<skill-name>/`
+- Plugin: `<plugin-root>/skills/<skill-name>/`
 
-현재 탐색 위치는 [Codex 스킬 문서](https://developers.openai.com/codex/skills) 또는 [Claude Code 스킬 문서](https://code.claude.com/docs/en/skills)에서 확인합니다. 이 저장소의 `skills/use-words-review/`는 배포 원본이며, 이 경로에 있다는 이유만으로 자동 탐색되지는 않습니다.
+현재 탐색 위치는 [Codex Skill 문서](https://developers.openai.com/codex/skills) 또는 [Claude Code Skill 문서](https://code.claude.com/docs/en/skills)에서 확인합니다. 이 저장소의 `skills/` 아래에 있다는 이유만으로 자동 탐색되지는 않습니다.
 
-스킬을 설치한 뒤 [`src/AGENTS.en.md`](./src/AGENTS.en.md) 또는 [`src/AGENTS.ko.md`](./src/AGENTS.ko.md)에서 `BEGIN USE WORDS REVIEW`와 `END USE WORDS REVIEW` 표시를 포함한 구간 전체를 도구가 읽는 지침 파일에 합칩니다. Codex에서는 해당 `AGENTS.md`에 추가합니다. Claude Code에서는 `CLAUDE.md`에 추가하거나, `AGENTS.md`에 둔 뒤 `CLAUDE.md`에서 `@AGENTS.md`로 불러옵니다. 대상 저장소의 기존 소제목 구성을 유지하고 실제로 적용할 규칙만 추가합니다.
+`use-design-docs` 또는 `use-dev-guidance`를 채택한 저장소에 기준 README가 이미 있으면 기존 파일을 사용합니다. 기준 README가 없고 Skill이 현재 작업에 필요하다고 판단하면, Skill은 설치된 `_README.md`와 생성할 위치를 밝히고 사용자에게 승인을 요청합니다. 승인받으면 관리용 HTML 주석을 제외한 `_README.md` 내용으로 각각 `docs/designs/README.md` 또는 `docs/dev/README.md`를 만들고 새 파일 전체를 읽습니다. `_README.md`는 기존 README를 덮어쓰거나 생성 뒤 자동으로 맞추는 자료가 아닙니다.
 
-스킬을 제거할 때에는 설치한 스킬 디렉터리와 지침 파일에 추가한 표시 구간 전체를 삭제합니다. 다른 규칙을 불러오는 데 필요한 `@AGENTS.md`와 표시 밖의 지침은 그대로 둡니다.
+사용자가 기준 README 생성을 거절하면 Skill은 저장소 지침, 기존 문서 위치와 폴더 구조를 확인합니다. 원래 요청이 파일 작성을 허용한 경우에만 근거가 있는 위치에 작성하며, 위치를 정할 저장소 근거가 없으면 사용자에게 확인합니다. 검토나 조사 요청은 파일을 변경하지 않습니다.
+
+`use-words-review`를 선택한 뒤에는 [`src/AGENTS.en.md`](./src/AGENTS.en.md) 또는 [`src/AGENTS.ko.md`](./src/AGENTS.ko.md)에서 `BEGIN USE WORDS REVIEW`와 `END USE WORDS REVIEW` 표시를 포함한 구간 전체를 도구가 읽는 지침 파일에 합칩니다. Codex에서는 해당 `AGENTS.md`에 추가합니다. Claude Code에서는 `CLAUDE.md`에 추가하거나, `AGENTS.md`에 둔 뒤 `CLAUDE.md`에서 `@AGENTS.md`로 불러옵니다. 대상 저장소의 기존 소제목 구성을 유지하고 실제로 적용할 규칙만 추가합니다.
+
+Skill을 제거할 때에는 직접 복사한 Skill 디렉터리만 삭제합니다. `use-words-review`를 위해 지침 파일에 표시 구간을 추가했다면 그 구간도 삭제합니다. Skill이 생성했거나 사용한 저장소 README와 표시 밖의 지침은 저장소 문서이므로 그대로 둡니다.
+
+Compound Skills는 선택 사항입니다. 설치되지 않은 환경에서는 Git의 worktree와 commit 기능을 직접 사용합니다. 설치돼 있더라도 Compound가 관리하는 도구 매핑 본문을 이 저장소의 `src` 예시에 복제하지 않습니다.
 
 ## 운영 원칙
 

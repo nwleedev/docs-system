@@ -13,7 +13,7 @@ The files here are starting points. Select the sections that apply to the target
 - [`src/AGENTS.ko.md`](./src/AGENTS.ko.md) is a reference document for Korean-speaking users.
 - [`docs/designs/README.md`](./docs/designs/README.md) describes how to manage requirements, research, decisions, plans, and verification without forcing every project into one document template.
 - [`docs/dev/README.md`](./docs/dev/README.md) describes how to research, organize, apply, and check development guidance.
-- [`skills/use-design-docs`](./skills/use-design-docs/SKILL.md) and [`skills/use-dev-guidance`](./skills/use-dev-guidance/SKILL.md) are optional adapters for Codex and compatible skill runners. The skills route work; the linked READMEs remain the source of the rules.
+- [`skills/use-design-docs`](./skills/use-design-docs/SKILL.md) and [`skills/use-dev-guidance`](./skills/use-dev-guidance/SKILL.md) are reference implementations to customize for a project. Each skill routes work and includes a `references/_README.md` starting point for repositories that do not yet have the corresponding authority README.
 - [`skills/use-words-review`](./skills/use-words-review/SKILL.md) is a read-only review skill for text and names that will be committed or shared.
 - [`examples/nextjs-frontend.md`](./examples/nextjs-frontend.md) shows one stack-specific research prompt. It is an example, not a default for other projects.
 
@@ -30,21 +30,27 @@ The two language documents under `src/` are maintained independently and are not
 
 The paths and names under `src/` are not default instruction locations for Codex and similar tools. Copy the selected material into a recognized file or configure the tool explicitly. This repository does not generate or merge `AGENTS.md`. Do not combine every reference section by default. A short instruction file with relevant, testable rules is more useful than a complete-looking file filled with assumptions.
 
-## Install or remove use-words-review
+## Apply a skill reference implementation
 
-Copy the entire `skills/use-words-review/` directory to a skill location supported by the tool:
+Copy the entire selected skill directory to a location supported by the tool. Selecting `use-design-docs` or `use-dev-guidance` also copies its `references/_README.md`. The `skills/` directory contains customizable reference implementations, not complete Plugins or automatic installation and upgrade tooling.
 
-- Codex repository: `.agents/skills/use-words-review/`
-- Codex user: `$HOME/.agents/skills/use-words-review/`
-- Claude Code repository: `.claude/skills/use-words-review/`
-- Claude Code user: `$HOME/.claude/skills/use-words-review/`
-- Plugin: `<plugin-root>/skills/use-words-review/`
+- Codex repository: `.agents/skills/<skill-name>/`
+- Codex user: `$HOME/.agents/skills/<skill-name>/`
+- Claude Code repository: `.claude/skills/<skill-name>/`
+- Claude Code user: `$HOME/.claude/skills/<skill-name>/`
+- Plugin: `<plugin-root>/skills/<skill-name>/`
 
-Confirm the current discovery locations in the [Codex skills documentation](https://developers.openai.com/codex/skills) or [Claude Code skills documentation](https://code.claude.com/docs/en/skills). The `skills/use-words-review/` directory in this repository is a distribution source and is not automatically discovered from this path.
+Confirm the current discovery locations in the [Codex skills documentation](https://developers.openai.com/codex/skills) or [Claude Code skills documentation](https://code.claude.com/docs/en/skills). A directory under this repository's `skills/` path is not automatically discovered.
 
-After installing the skill, copy the entire section from [`src/AGENTS.en.md`](./src/AGENTS.en.md) or [`src/AGENTS.ko.md`](./src/AGENTS.ko.md), including the `BEGIN USE WORDS REVIEW` and `END USE WORDS REVIEW` markers, into an instruction file that the tool loads. Use the applicable `AGENTS.md` for Codex. For Claude Code, add the section to `CLAUDE.md`, or keep it in `AGENTS.md` and import that file from `CLAUDE.md` with `@AGENTS.md`. Keep the target repository's existing section structure and add only the rules that apply there.
+When a repository adopting `use-design-docs` or `use-dev-guidance` already has its authority README, use the existing file. If the README is absent and the skill determines that the current work needs it, the skill identifies the installed `_README.md` and target path and asks for approval. After approval, it creates `docs/designs/README.md` or `docs/dev/README.md` from the `_README.md` content without the maintenance HTML comment, then reads the new file completely. The `_README.md` never overwrites an existing authority README and is not kept in automatic synchronization with it.
 
-To remove the skill, delete its installed directory and the marked section from the file where it was added, including both markers. Keep the surrounding instructions and any `@AGENTS.md` import that remains necessary for other rules.
+If the user declines creation, the skill inspects repository instructions, existing documentation locations, and the directory structure. It writes the originally requested file only when the request authorizes that change and the repository evidence supports the location. It asks the user when the repository does not establish a suitable location, and keeps review or research requests read-only.
+
+After selecting `use-words-review`, copy the entire section from [`src/AGENTS.en.md`](./src/AGENTS.en.md) or [`src/AGENTS.ko.md`](./src/AGENTS.ko.md), including the `BEGIN USE WORDS REVIEW` and `END USE WORDS REVIEW` markers, into an instruction file that the tool loads. Use the applicable `AGENTS.md` for Codex. For Claude Code, add the section to `CLAUDE.md`, or keep it in `AGENTS.md` and import that file from `CLAUDE.md` with `@AGENTS.md`. Keep the target repository's existing section structure and add only the rules that apply there.
+
+To remove a skill, delete only the skill directory that you copied. If you added the marked `use-words-review` section to an instruction file, remove that section too. Keep repository READMEs created or used by a skill, the surrounding instructions, and any `@AGENTS.md` import that remains necessary for other rules.
+
+Compound Skills are optional. Use Git's worktree and commit features directly when they are not installed. Even when Compound is available, do not copy its managed tool-mapping block into this repository's `src` examples.
 
 ## Working principles
 
