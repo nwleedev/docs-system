@@ -94,6 +94,7 @@
 **필요한 Skill이나 그 Skill이 요구하는 저장소 문서를 읽을 수 없으면 대체 규칙을 추정하지 않고 중단 사유를 보고한다.**
 
 <!-- BEGIN USE WORDS REVIEW -->
+
 ### 글과 문구
 
 - 저장, 커밋, 게시하거나 대화 밖에서 공유할 한국어 글과 이름을 작성하거나 고칠 때에는 `$use-words-review`가 요구하는 작성 전 참고 자료를 읽는다.
@@ -163,28 +164,3 @@
 - 제목의 `subject`는 영어 명령형으로 작성하고 마침표를 찍지 않는다. `subject`는 영어 소문자로 시작한다.
 - 본문은 변경 이유를 영어로 먼저 작성한 뒤 같은 내용을 한국어 명사형으로 작성한다. 무엇을 바꿨는지는 diff에서 확인할 수 있게 둔다.
 - 필요하면 `BREAKING CHANGE:`, `Fixes #N`, `Closes #N` footer를 사용한다.
-
-<!-- BEGIN COMPOUND CODEX TOOL MAP -->
-
-## Compound Codex Tool Mapping (Claude Compatibility)
-
-This section maps Claude Code plugin tool references to Codex behavior.
-Only this block is managed automatically.
-
-Tool mapping:
-
-- Read: use shell reads (cat/sed) or rg
-- Write: create files via shell redirection or apply_patch
-- Edit/MultiEdit: use apply_patch
-- Bash: use shell_command
-- Grep: use rg (fallback: grep)
-- Glob: use rg --files or find
-- LS: use ls via shell_command
-- WebFetch/WebSearch: use curl or Context7 for library docs
-- AskUserQuestion/Question: present choices as a numbered list in chat and wait for a reply number. For multi-select (multiSelect: true), accept comma-separated numbers. Never skip or auto-configure — always wait for the user's response before proceeding.
-- Task (subagent dispatch) / Subagent / Parallel: run sequentially in main thread; use multi_tool_use.parallel for tool calls
-- TaskCreate/TaskUpdate/TaskList/TaskGet/TaskStop/TaskOutput (Claude Code task-tracking, current): use update_plan (Codex's task-tracking primitive)
-- TodoWrite/TodoRead (Claude Code task-tracking, legacy — deprecated, replaced by Task\* tools): use update_plan
-- Skill: open the referenced SKILL.md and follow it
-- ExitPlanMode: ignore
-<!-- END COMPOUND CODEX TOOL MAP -->
