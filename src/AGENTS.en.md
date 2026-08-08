@@ -91,7 +91,7 @@
 
 ## Skill Use and Work Environment
 
-**If a required Skill or repository document cannot be read, do not infer replacement rules. Stop and report the missing prerequisite.**
+**If a required Skill or one of its required references cannot be read, do not infer replacement rules. Stop and report the missing prerequisite. When only the repository authority README is absent, follow the creation-approval and alternative-location procedure defined by `use-design-docs` or `use-dev-guidance`.**
 
 <!-- BEGIN USE WORDS REVIEW -->
 
@@ -113,7 +113,7 @@
 
 ### Development Guidance, Technology Stack, and Checks
 
-- Run `$use-dev-guidance` when planning, implementing, reviewing, refactoring, testing, or documenting an application change, or when changing dependencies or checks.
+- Run `$use-dev-guidance` when planning, implementing, reviewing, refactoring, testing, or documenting changes to source code, tests, CLIs, libraries, scripts, builds, CI, or configuration, and when changing dependencies or checks.
 - Follow the repository's `docs/dev/README.md` and the topic guidance it selects for development methods, stack-specific rules, execution commands, and verification.
 - Before selecting, adding, replacing, removing, or changing the version of an external dependency, research its officially recommended integration and applicable design patterns.
 - Research every direct and transitive external dependency. For each dependency, confirm its name, version, capabilities, potential issues, and applicable design patterns.
@@ -143,13 +143,14 @@
 ## Git Branches
 
 - Check the current Git branch before starting work.
-- Use linked worktrees so multiple terminals can work in parallel. Place manually created worktrees under `.worktrees/` at the repository root.
+- Create a new worktree branch only when the user explicitly requests one. After the request, inspect the current branch and repository rules, and place a manually created worktree under `.worktrees/` at the repository root.
 - For worktree branches that are no longer in use, cross-check whether they can be removed and propose removal.
 - The user may ask to continue in an existing worktree branch or create a new one.
 - Use the same branch for design and implementation so worktrees do not multiply unnecessarily. Choose a type that matches the work instead of defaulting to `docs`.
 - Do not modify `main`, `master`, `develop`, `dev`, or `release/*` directly. Create a work branch first.
 - Work on agent environment settings under `.codex` or `.claude` may proceed without changing branches.
 - Name branches `<type>/<short-description>`. Reflect the branch name in the worktree path as `.worktrees/<type>/<short-description>`.
+- Compound Skills are optional. When they are absent, use Git's worktree and commit features directly under this section and do not stop Git work merely because those skills are unavailable.
 
 Allowed `<type>` values: `feature`, `fix`, `hotfix` (only for an actual hotfix), `refactor`, `test`, `docs`, `chore`
 
