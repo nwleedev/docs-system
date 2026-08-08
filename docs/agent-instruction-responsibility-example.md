@@ -1,6 +1,6 @@
 # 책임 재분배를 적용한 파일 예시
 
-이 문서는 책임 재분배 작업이 끝난 뒤 사용할 파일 구성의 구현 후보를 보여준다. 요구사항 작성자가 책임 배분을 승인한 뒤에만 적용한다. AGENTS.md는 사용자 관리 영역의 최종 본문 전체를 제시하고, 기존 파일은 바뀌는 구간을 생략 없이 제시한다. 새 파일은 전체 본문을 제시한다. Compound Engineering 관리 범위는 Plugin이 생성한 원문을 유지해야 하므로 예시에 포함하지 않는다.
+이 문서는 책임 재분배 작업이 끝난 뒤 사용할 파일 구성의 구현 후보를 보여준다. 요구사항 작성자가 책임 배분을 승인한 뒤에만 적용한다. AGENTS.md는 사용자 관리 영역의 최종 본문 전체를 제시하고, 기존 파일은 바뀌는 구간을 생략 없이 제시한다. Compound Engineering 관리 범위는 Plugin이 생성한 원문을 유지해야 하므로 예시에 포함하지 않는다.
 
 설계 근거와 확정된 전역 원칙은 [여러 저장소에 공통으로 적용할 에이전트 작업 원칙](designs/agent-instruction-responsibilities-8c1e/decisions/cross-project-agent-policies.md)에서 확인할 수 있다.
 
@@ -13,8 +13,6 @@ skills/
     SKILL.md                         # 기존 본문 유지
   use-dev-guidance/
     SKILL.md                         # 외부 의존성 조사 절 추가
-  use-git-workflow/
-    SKILL.md                         # 새 파일
   use-words-review/
     SKILL.md                         # 기존 본문 유지
 docs/
@@ -24,7 +22,7 @@ docs/
     README.md                        # 외부 의존성 기록 절 추가
 ```
 
-`use-design-docs`, `use-words-review`와 `docs/designs/README.md`는 이미 새 책임을 수행하므로 본문을 바꾸지 않는다. 조사 순서와 Git 절차를 다른 파일로 옮긴다는 이유만으로 이 세 파일을 다시 작성하지 않는다.
+`use-design-docs`, `use-words-review`와 `docs/designs/README.md`는 이미 새 책임을 수행하므로 본문을 바꾸지 않는다. 외부 의존성 조사 절을 추가한다는 이유만으로 이 세 파일을 다시 작성하지 않는다. Git 작업에는 Compound Engineering이 제공하는 Skills를 사용한다.
 
 ## `AGENTS.md`
 
@@ -80,70 +78,16 @@ docs/
 
 ## Git 작업과 컨텍스트 압축
 
-- 파일을 변경하기 전에 `$use-git-workflow`를 실행한다.
-- Git 저장소가 아니거나 실행 환경이 워크트리를 직접 관리하면 Skill의 적용 가능한 절차만 따른다.
-- 변경이 승인된 작업에서 하나의 작업 단위가 검증되면 컨텍스트 압축에 대비한 커밋을 선호한다.
+- Git 저장소의 파일을 변경하기 전에 Compound Engineering의 `$ce-worktree`를 실행하여 현재 작업이 격리되었는지 확인한다.
+- 단일 변경에도 별도 작업 공간을 사용한다. 실행 환경이 worktree를 관리하면 그 위치를 사용하고, 수동 생성이 필요할 때에만 `.worktrees/<type>/<short-description>/`를 사용한다.
+- 변경이 승인된 작업에서 하나의 작업 단위가 검증되면 `$ce-commit`으로 컨텍스트 압축에 대비한 커밋을 만든다.
+- `$ce-work`를 실행 중이면 별도의 커밋 절차를 만들지 않고 그 Skill의 증분 커밋 기준을 따른다.
 - 읽기와 검토만 요청받았거나 사용자 변경이 섞였거나 검사가 실패한 상태에서는 커밋하지 않는다.
 - 컨텍스트가 압축되면 AGENTS.md, 현재 브랜치, Git 상태와 최근 작업 단위의 커밋을 다시 확인한다.
+- 필요한 Compound Engineering Skill을 사용할 수 없으면 대체 절차를 추정하지 않고 중단 사유를 보고한다.
 ```
 
 사용자 관리 영역 다음에는 Plugin이 생성한 Compound Codex Tool Mapping 원문과 관리 주석을 변경 없이 유지한다. 이 예시는 해당 원문을 재현하지 않는다.
-
-## `skills/use-git-workflow/SKILL.md`
-
-Git과 워크트리의 반복 절차는 새 Skill이 관리한다. AGENTS.md에는 호출 조건, 변경 권한과 커밋 금지 조건만 남긴다.
-
-```markdown
----
-name: use-git-workflow
-description: Apply the repository Git policy before changing files, creating or reusing a worktree, choosing a branch, making a checkpoint commit, or recovering work after context compaction. Use for any repository mutation. Do not use for read-only inspection that cannot change repository state.
----
-
-# Use Git Workflow
-
-Use the current repository's AGENTS.md and contributing documentation as the authority for protected branches, branch names, worktree locations, checks, commit format, and publication rules. This Skill supplies the reusable procedure and does not replace repository policy.
-
-## Confirm mutation authority
-
-1. Determine whether the request authorizes file changes.
-2. Stop before staging or committing when the request is limited to explanation, research, review, diagnosis, or planning.
-3. Do not treat context compaction or a completed investigation as commit authority.
-
-## Inspect the repository
-
-1. Confirm that the working directory belongs to a Git repository.
-2. Read the current branch, worktree list, staged changes, unstaged changes, untracked files and recent commits.
-3. Identify user changes and files owned by another active task. Do not move, stage, overwrite or revert them.
-4. Read the closest AGENTS.md and repository contribution rules before choosing a branch or commit format.
-
-## Select or create a worktree
-
-1. Reuse an existing worktree only when its branch and change scope match the requested work and it has no conflicting changes.
-2. Do not modify protected branches such as `main`, `master`, `develop`, `dev` and `release/*` unless the repository explicitly allows it.
-3. When a new manual worktree is required and the repository does not override the convention, create `.worktrees/<type>/<short-description>/` from the intended base revision.
-4. Name its branch `<type>/<short-description>`. Use only a type allowed by the repository.
-5. When the Codex desktop app or another host manages the worktree, use the host location and verify whether it created a branch or detached HEAD before changing files.
-
-## Create checkpoint commits
-
-1. Commit only a complete work unit that the request authorized.
-2. Run the smallest repository checks that demonstrate the work unit is coherent.
-3. Exclude unrelated user changes, ignored files, secrets, credentials, private URLs, personal paths and unresolved markers.
-4. Review stored text, file names and the candidate commit message with the applicable writing Skill.
-5. Follow the repository commit format. Do not invent an issue number, approval, author or provenance statement.
-6. If a required check cannot run, record the reason and commit only when repository policy permits that limitation.
-
-## Recover after compaction
-
-1. Re-read the applicable AGENTS.md files.
-2. Inspect the current branch, worktree status and recent commits.
-3. Compare the remaining request with the last verified work unit before continuing.
-4. Do not assume that every uncommitted change belongs to the current task.
-
-## Finish
-
-Report the worktree, branch, changed files, checks, commit and any uncommitted or user-owned changes. Do not push, open a pull request, remove a worktree or delete a branch unless the request authorizes that action.
-```
 
 ## `skills/use-dev-guidance/SKILL.md`에 추가할 절
 
@@ -207,7 +151,7 @@ Do not copy generic dependency documentation, list patterns that the repository 
 ## 구현 뒤 확인할 결과
 
 - AGENTS.md의 사용자 관리 영역에는 전역 정책, 변경 권한, Skill 호출 조건과 Compound 관리 범위만 남아 있다.
-- Git의 분기, 워크트리와 커밋 절차는 `use-git-workflow` 한 곳에서 관리한다.
+- Git의 분기와 worktree 절차는 Compound Engineering의 `ce-worktree`, 독립 커밋은 `ce-commit`, 구현 중 증분 커밋은 `ce-work`가 관리한다.
 - 외부 의존성의 조사 순서는 `use-dev-guidance`, 재사용할 저장소 규칙은 `docs/dev`, 구조나 요구사항을 바꾸는 승인은 `docs/designs`가 관리한다.
 - `use-design-docs`, `use-words-review`와 `docs/designs/README.md`에는 같은 규칙을 복사하지 않는다.
 - Compound Engineering 관리 주석 사이의 내용은 구현 전후에 동일하거나 Plugin이 생성한 새 버전과 일치한다.
