@@ -48,7 +48,7 @@ Treat review and rewriting as separate operations. Necessary read-only work does
 1. Read only the derived documents and repository evidence needed for the requested operation.
 2. Keep the human's requirement wording separate from AI findings, sourced facts, proposals, and approved decisions.
 3. Before research or planning, separate blocking questions, optional suggestions, factual research questions, and decisions that require human judgment.
-4. When `docs/designs/**` is implementation input, read the authority README, the complete applicable `requirements.md`, and only the decisions and plan needed to establish the implementation baseline. This skill does not authorize or perform implementation; pass that baseline to the applicable development workflow.
+4. When `docs/designs/**` is implementation input, use the authority established above. Read the repository README when it already existed or was created with approval. If the user declined creation, apply the repository instructions and structure established by step 6 instead. Then read the complete applicable `requirements.md` and only the decisions and plan needed for the implementation baseline. Ask the user when those sources cannot establish the required meaning or scope. This skill does not authorize or perform implementation; pass the baseline to the applicable development workflow.
 
 ## Execute the selected operations
 
