@@ -125,17 +125,17 @@ Natural grammar and familiar words do not make a sentence clear by themselves. T
 
 Heading:
 
-> Change result
+> Submission path
 
 Body:
 
-> Review it, and then apply it.
+> Separate it from the configuration code path.
 
 - **Verdict:** `needs human input`
-- **Location 1:** `Change result`
-- **Location 2:** `Review it, and then apply it`
-- **Missing relationship:** Readers cannot identify what must be reviewed or where it must be applied.
-- **Possible wording after the relationship is confirmed:** The reviewer checks the revised notification text. The interface owner then adds the approved text to the notification screen.
+- **Location 1:** `Submission path`
+- **Location 2:** `configuration code path`
+- **Missing relationship:** Readers cannot identify whether the first phrase means a registry address, artifact directory, or deployment destination, or whether the second means a file location, import connection, or execution flow. The technical modifiers classify the missing objects but do not identify them.
+- **Revision condition:** Do not draft replacement wording until evidence identifies both objects and the required separation between them.
 
 ### Different names for roles with no stated relationship
 
