@@ -28,7 +28,7 @@
 
 /** @typedef {{ruleIndex: number, declarationIndex: number, expression: string}} ExpressionDescriptor */
 
-/** @typedef {ExpressionDescriptor & {jamo: string}} JamoDescriptor */
+/** @typedef {ExpressionDescriptor & {nfd: string}} NfdDescriptor */
 
 /**
  * @typedef {{
@@ -57,7 +57,7 @@ const MAX_QUOTE_UTF16 = 480;
  *
  * @type {ReadonlySet<string>}
  */
-const JAMO_MATCHED_EXPRESSIONS = new Set(["좁히", "좁혀"]);
+const NFD_MATCHED_EXPRESSIONS = new Set(["좁히", "좁혀"]);
 
 /**
  * 검사할 literal 후보와 AI가 각 문맥을 판정할 때 사용할 질문 및 대조 사례다.
@@ -468,7 +468,7 @@ const rules = [
  */
 export function scanExpressions(sources) {
   validateRules();
-  const { syllableIndex, jamoDescriptors } = buildExpressionIndex();
+  const { syllableIndex, nfdDescriptors } = buildExpressionIndex();
   const matchedRules = rules.map(() => false);
   /** @type {Array<ExpressionWarning>} */
   const warnings = [];
@@ -478,7 +478,7 @@ export function scanExpressions(sources) {
     if (!source.text.isWellFormed()) {
       throw new Error("rules:invalid-source");
     }
-    const result = scanSource(source, syllableIndex, jamoDescriptors, warnings);
+    const result = scanSource(source, syllableIndex, nfdDescriptors, warnings);
     total += result.found;
     for (const ruleIndex of result.matchedRuleIndexes) {
       matchedRules[ruleIndex] = true;
@@ -526,7 +526,7 @@ function validateRules() {
   }
 
   const declaredExpressions = new Set(rules.flatMap((rule) => rule.expressions));
-  for (const expression of JAMO_MATCHED_EXPRESSIONS) {
+  for (const expression of NFD_MATCHED_EXPRESSIONS) {
     if (!declaredExpressions.has(expression)) {
       throw new Error("rules:invalid-expression-rule");
     }
@@ -568,27 +568,27 @@ function isNonEmptyText(value) {
 }
 
 /**
- * 음절 literal 후보는 첫 UTF-16 code unit별로, 자모 매칭 후보는 NFD 표현과 함께 선언 순서로 묶는다.
+ * 음절 literal 후보는 첫 UTF-16 code unit별로, NFD 접두 매칭 후보는 분해한 표현과 함께 선언 순서로 묶는다.
  *
  * @returns {{
  *   syllableIndex: ReadonlyMap<string, ReadonlyArray<ExpressionDescriptor>>,
- *   jamoDescriptors: ReadonlyArray<JamoDescriptor>
+ *   nfdDescriptors: ReadonlyArray<NfdDescriptor>
  * }} 두 매칭 방식의 후보 색인
  */
 function buildExpressionIndex() {
   /** @type {Map<string, Array<ExpressionDescriptor>>} */
   const syllableIndex = new Map();
-  /** @type {Array<JamoDescriptor>} */
-  const jamoDescriptors = [];
+  /** @type {Array<NfdDescriptor>} */
+  const nfdDescriptors = [];
   let declarationIndex = 0;
   for (const [ruleIndex, rule] of rules.entries()) {
     for (const expression of rule.expressions) {
-      if (JAMO_MATCHED_EXPRESSIONS.has(expression)) {
-        jamoDescriptors.push({
+      if (NFD_MATCHED_EXPRESSIONS.has(expression)) {
+        nfdDescriptors.push({
           ruleIndex,
           declarationIndex,
           expression,
-          jamo: expression.normalize("NFD"),
+          nfd: expression.normalize("NFD"),
         });
       } else {
         const firstUnit = expression[0];
@@ -599,18 +599,18 @@ function buildExpressionIndex() {
       declarationIndex += 1;
     }
   }
-  return { syllableIndex, jamoDescriptors };
+  return { syllableIndex, nfdDescriptors };
 }
 
 /**
- * 한 source의 모든 음절 및 자모 출현을 원본 UTF-16 위치의 결정적 순서로 모은다.
+ * 한 source의 모든 음절 및 NFD 접두 출현을 원본 UTF-16 위치의 결정적 순서로 모은다.
  *
  * @param {string} text 검사할 원문
  * @param {ReadonlyMap<string, ReadonlyArray<ExpressionDescriptor>>} syllableIndex 음절 후보 색인
- * @param {ReadonlyArray<JamoDescriptor>} jamoDescriptors 자모 매칭 후보
+ * @param {ReadonlyArray<NfdDescriptor>} nfdDescriptors NFD 접두 매칭 후보
  * @returns {ReadonlyArray<ExpressionMatch>} 시작 위치와 선언 순서로 정렬한 출현
  */
-function collectMatches(text, syllableIndex, jamoDescriptors) {
+function collectMatches(text, syllableIndex, nfdDescriptors) {
   /** @type {Array<ExpressionMatch>} */
   const matches = [];
   for (let offset = 0; offset < text.length; offset += 1) {
@@ -630,7 +630,7 @@ function collectMatches(text, syllableIndex, jamoDescriptors) {
       }
     }
   }
-  collectJamoMatches(text, jamoDescriptors, matches);
+  collectNfdMatches(text, nfdDescriptors, matches);
   return matches.toSorted(
     (left, right) =>
       left.start - right.start ||
@@ -640,25 +640,25 @@ function collectMatches(text, syllableIndex, jamoDescriptors) {
 }
 
 /**
- * 자모 매칭 후보의 겹치는 NFD 출현을 원본 code point 범위로 되돌려 모은다.
+ * NFD 접두 매칭 후보의 겹치는 출현을 원본 code point 범위로 되돌려 모은다.
  *
  * @param {string} text 검사할 원문
- * @param {ReadonlyArray<JamoDescriptor>} jamoDescriptors 자모 매칭 후보
+ * @param {ReadonlyArray<NfdDescriptor>} nfdDescriptors NFD 접두 매칭 후보
  * @param {Array<ExpressionMatch>} matches 출현을 추가할 배열
  * @returns {void}
  */
-function collectJamoMatches(text, jamoDescriptors, matches) {
-  if (jamoDescriptors.length === 0 || text.length === 0) {
+function collectNfdMatches(text, nfdDescriptors, matches) {
+  if (nfdDescriptors.length === 0 || text.length === 0) {
     return;
   }
   const mapping = buildNfdMapping(text);
-  for (const descriptor of jamoDescriptors) {
+  for (const descriptor of nfdDescriptors) {
     for (let from = 0; from <= mapping.nfdText.length; ) {
-      const found = mapping.nfdText.indexOf(descriptor.jamo, from);
+      const found = mapping.nfdText.indexOf(descriptor.nfd, from);
       if (found === -1) {
         break;
       }
-      const range = mapOriginalRange(mapping, found, found + descriptor.jamo.length);
+      const range = mapOriginalRange(mapping, found, found + descriptor.nfd.length);
       if (range !== null) {
         matches.push({
           ruleIndex: descriptor.ruleIndex,
@@ -749,12 +749,12 @@ function findCodePointIndex(nfdStarts, target) {
  *
  * @param {Source} source 검사할 원문
  * @param {ReadonlyMap<string, ReadonlyArray<ExpressionDescriptor>>} syllableIndex 음절 후보 색인
- * @param {ReadonlyArray<JamoDescriptor>} jamoDescriptors 자모 매칭 후보
+ * @param {ReadonlyArray<NfdDescriptor>} nfdDescriptors NFD 접두 매칭 후보
  * @param {Array<ExpressionWarning>} warnings 실행 전체의 상세 경고 앞부분
  * @returns {{found: number, matchedRuleIndexes: ReadonlySet<number>}} 출현 수와 발견 규칙 위치
  */
-function scanSource(source, syllableIndex, jamoDescriptors, warnings) {
-  const matches = collectMatches(source.text, syllableIndex, jamoDescriptors);
+function scanSource(source, syllableIndex, nfdDescriptors, warnings) {
+  const matches = collectMatches(source.text, syllableIndex, nfdDescriptors);
   const matchedRuleIndexes = new Set();
   let line = 1;
   let lineStart = 0;
