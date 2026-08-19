@@ -826,7 +826,7 @@ async function runSelfTest() {
   const expressionSource = makeTestSource("expressions", "😀 경계 경계\n출력을 확인합니다.");
   const expressionCheck = scanExpressions([expressionSource]);
   assert.equal(expressionCheck.id, "expressions");
-  assert.equal(expressionCheck.catalog.length, 46);
+  assert.equal(expressionCheck.catalog.length, 47);
   assert.deepEqual(
     expressionCheck.warnings
       .filter((warning) => warning.ruleId === "ko.boundary")
@@ -838,6 +838,44 @@ async function runSelfTest() {
   );
   assert.equal(expressionCheck.rules.some((rule) => rule.id === "ko.boundary"), true);
   assert.equal(expressionCheck.rules.some((rule) => rule.id === "ko.output"), true);
+
+  const conjugationSource = makeTestSource(
+    "conjugation",
+    "대상을 좁힘으로 정리한다.\n기준을 좁힐 계획이다. 좁힌 기준과 좁힙니다와 좁혔다.",
+  );
+  const conjugationCheck = scanExpressions([conjugationSource]);
+  assert.deepEqual(
+    conjugationCheck.warnings
+      .filter((warning) => warning.ruleId === "ko.narrow")
+      .map((warning) => [
+        warning.expression,
+        warning.line,
+        warning.startUtf16,
+        warning.endUtf16,
+      ]),
+    [
+      ["좁히", 1, 5, 7],
+      ["좁히", 2, 5, 7],
+      ["좁히", 2, 14, 16],
+      ["좁히", 2, 21, 23],
+      ["좁혀", 2, 27, 29],
+    ],
+  );
+
+  const closeSource = makeTestSource(
+    "close",
+    "이슈를 닫힘 상태로 바꾼다. 검토를 닫는다.",
+  );
+  const closeCheck = scanExpressions([closeSource]);
+  assert.deepEqual(
+    closeCheck.warnings
+      .filter((warning) => warning.ruleId === "ko.close")
+      .map((warning) => [warning.line, warning.startUtf16, warning.endUtf16]),
+    [
+      [1, 5, 6],
+      [1, 21, 22],
+    ],
+  );
 
   const sixSentences =
     "변환기는 날짜를 검사한다. 값이 비었는지 확인한다. 형식을 비교한다. 오류를 기록한다. 오류가 있으면 파일을 만들지 않는다. 모든 값이 맞으면 저장한다.";

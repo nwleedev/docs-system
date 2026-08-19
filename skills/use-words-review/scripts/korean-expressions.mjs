@@ -26,12 +26,38 @@
  * }} ExpressionWarning
  */
 
-/** @typedef {{ruleIndex: number, expression: string}} ExpressionDescriptor */
+/** @typedef {{ruleIndex: number, declarationIndex: number, expression: string}} ExpressionDescriptor */
+
+/** @typedef {ExpressionDescriptor & {jamo: string}} JamoDescriptor */
+
+/**
+ * @typedef {{
+ *   ruleIndex: number,
+ *   declarationIndex: number,
+ *   expression: string,
+ *   start: number,
+ *   end: number
+ * }} ExpressionMatch
+ */
+
+/**
+ * @typedef {{
+ *   nfdText: string,
+ *   originalStarts: ReadonlyArray<number>,
+ *   nfdStarts: ReadonlyArray<number>
+ * }} NfdMapping
+ */
 
 /** @type {number} */
 const MAX_WARNINGS = 20_000;
 /** @type {number} */
 const MAX_QUOTE_UTF16 = 480;
+/**
+ * 받침이 붙어 마지막 음절이 달라지는 활용형까지 찾도록 NFD 자모열 접두로 검사할 표현이다.
+ *
+ * @type {ReadonlySet<string>}
+ */
+const JAMO_MATCHED_EXPRESSIONS = new Set(["좁히", "좁혀"]);
 
 /**
  * 검사할 literal 후보와 AI가 각 문맥을 판정할 때 사용할 질문 및 대조 사례다.
@@ -224,6 +250,14 @@ const rules = [
     queries: ["무엇을 얼마나 줄이는지 알 수 있습니까?", "검색, 선택 또는 물리적 폭을 실제로 줄입니까?"],
     negatives: ["모듈의 경계를 좁혀 안정성을 높입니다."],
     positives: ["검색 범위를 최근 변경 파일로 좁혀 검사 시간을 줄입니다."],
+  },
+  {
+    id: "ko.close",
+    expressions: ["닫"],
+    message: "문짝이나 창처럼 여닫는 대상을 닫는 뜻인지 상태나 절차를 끝낸다는 번역인지 확인합니다.",
+    queries: ["여닫을 수 있는 물건이나 화면 요소가 문장에 있습니까?", "완료 처리, 마감 또는 종료 같은 실제 행위를 대신합니까?"],
+    negatives: ["작업을 닫힘으로 처리합니다."],
+    positives: ["더 이상 사용하지 않는 탭을 닫습니다."],
   },
   {
     id: "ko.fix-in-place",
@@ -434,7 +468,7 @@ const rules = [
  */
 export function scanExpressions(sources) {
   validateRules();
-  const expressionIndex = buildExpressionIndex();
+  const { syllableIndex, jamoDescriptors } = buildExpressionIndex();
   const matchedRules = rules.map(() => false);
   /** @type {Array<ExpressionWarning>} */
   const warnings = [];
@@ -444,7 +478,7 @@ export function scanExpressions(sources) {
     if (!source.text.isWellFormed()) {
       throw new Error("rules:invalid-source");
     }
-    const result = scanSource(source, expressionIndex, warnings);
+    const result = scanSource(source, syllableIndex, jamoDescriptors, warnings);
     total += result.found;
     for (const ruleIndex of result.matchedRuleIndexes) {
       matchedRules[ruleIndex] = true;
@@ -490,6 +524,13 @@ function validateRules() {
     validateTextList(rule.negatives, false);
     validateTextList(rule.positives, false);
   }
+
+  const declaredExpressions = new Set(rules.flatMap((rule) => rule.expressions));
+  for (const expression of JAMO_MATCHED_EXPRESSIONS) {
+    if (!declaredExpressions.has(expression)) {
+      throw new Error("rules:invalid-expression-rule");
+    }
+  }
 }
 
 /**
@@ -527,65 +568,214 @@ function isNonEmptyText(value) {
 }
 
 /**
- * 첫 UTF-16 code unit별 후보를 선언 순서로 묶는다.
+ * 음절 literal 후보는 첫 UTF-16 code unit별로, 자모 매칭 후보는 NFD 표현과 함께 선언 순서로 묶는다.
  *
- * @returns {ReadonlyMap<string, ReadonlyArray<ExpressionDescriptor>>} 첫 문자별 후보 색인
+ * @returns {{
+ *   syllableIndex: ReadonlyMap<string, ReadonlyArray<ExpressionDescriptor>>,
+ *   jamoDescriptors: ReadonlyArray<JamoDescriptor>
+ * }} 두 매칭 방식의 후보 색인
  */
 function buildExpressionIndex() {
   /** @type {Map<string, Array<ExpressionDescriptor>>} */
-  const index = new Map();
+  const syllableIndex = new Map();
+  /** @type {Array<JamoDescriptor>} */
+  const jamoDescriptors = [];
+  let declarationIndex = 0;
   for (const [ruleIndex, rule] of rules.entries()) {
     for (const expression of rule.expressions) {
-      const firstUnit = expression[0];
-      const descriptors = index.get(firstUnit) ?? [];
-      descriptors.push({ ruleIndex, expression });
-      index.set(firstUnit, descriptors);
+      if (JAMO_MATCHED_EXPRESSIONS.has(expression)) {
+        jamoDescriptors.push({
+          ruleIndex,
+          declarationIndex,
+          expression,
+          jamo: expression.normalize("NFD"),
+        });
+      } else {
+        const firstUnit = expression[0];
+        const descriptors = syllableIndex.get(firstUnit) ?? [];
+        descriptors.push({ ruleIndex, declarationIndex, expression });
+        syllableIndex.set(firstUnit, descriptors);
+      }
+      declarationIndex += 1;
     }
   }
-  return index;
+  return { syllableIndex, jamoDescriptors };
 }
 
 /**
- * 한 source의 모든 UTF-16 시작 위치에서 겹치는 출현까지 센다.
+ * 한 source의 모든 음절 및 자모 출현을 원본 UTF-16 위치의 결정적 순서로 모은다.
+ *
+ * @param {string} text 검사할 원문
+ * @param {ReadonlyMap<string, ReadonlyArray<ExpressionDescriptor>>} syllableIndex 음절 후보 색인
+ * @param {ReadonlyArray<JamoDescriptor>} jamoDescriptors 자모 매칭 후보
+ * @returns {ReadonlyArray<ExpressionMatch>} 시작 위치와 선언 순서로 정렬한 출현
+ */
+function collectMatches(text, syllableIndex, jamoDescriptors) {
+  /** @type {Array<ExpressionMatch>} */
+  const matches = [];
+  for (let offset = 0; offset < text.length; offset += 1) {
+    const descriptors = syllableIndex.get(text[offset]);
+    if (descriptors === undefined) {
+      continue;
+    }
+    for (const descriptor of descriptors) {
+      if (text.startsWith(descriptor.expression, offset)) {
+        matches.push({
+          ruleIndex: descriptor.ruleIndex,
+          declarationIndex: descriptor.declarationIndex,
+          expression: descriptor.expression,
+          start: offset,
+          end: offset + descriptor.expression.length,
+        });
+      }
+    }
+  }
+  collectJamoMatches(text, jamoDescriptors, matches);
+  return matches.toSorted(
+    (left, right) =>
+      left.start - right.start ||
+      left.declarationIndex - right.declarationIndex ||
+      left.end - right.end,
+  );
+}
+
+/**
+ * 자모 매칭 후보의 겹치는 NFD 출현을 원본 code point 범위로 되돌려 모은다.
+ *
+ * @param {string} text 검사할 원문
+ * @param {ReadonlyArray<JamoDescriptor>} jamoDescriptors 자모 매칭 후보
+ * @param {Array<ExpressionMatch>} matches 출현을 추가할 배열
+ * @returns {void}
+ */
+function collectJamoMatches(text, jamoDescriptors, matches) {
+  if (jamoDescriptors.length === 0 || text.length === 0) {
+    return;
+  }
+  const mapping = buildNfdMapping(text);
+  for (const descriptor of jamoDescriptors) {
+    for (let from = 0; from <= mapping.nfdText.length; ) {
+      const found = mapping.nfdText.indexOf(descriptor.jamo, from);
+      if (found === -1) {
+        break;
+      }
+      const range = mapOriginalRange(mapping, found, found + descriptor.jamo.length);
+      if (range !== null) {
+        matches.push({
+          ruleIndex: descriptor.ruleIndex,
+          declarationIndex: descriptor.declarationIndex,
+          expression: descriptor.expression,
+          start: range.start,
+          end: range.end,
+        });
+      }
+      from = found + 1;
+    }
+  }
+}
+
+/**
+ * code point마다 NFD를 이어 붙여 원본 위치와 NFD 위치의 대응을 만든다.
+ *
+ * @param {string} text 검사할 원문
+ * @returns {NfdMapping} NFD 원문과 code point 시작 위치 대응
+ * @remarks 마지막 항목은 두 문자열의 끝 위치를 가리키는 sentinel이다.
+ */
+function buildNfdMapping(text) {
+  /** @type {Array<number>} */
+  const originalStarts = [];
+  /** @type {Array<number>} */
+  const nfdStarts = [];
+  /** @type {Array<string>} */
+  const parts = [];
+  let nfdLength = 0;
+  for (let offset = 0; offset < text.length; ) {
+    const codePoint = text.codePointAt(offset);
+    const unitLength = codePoint > 0xffff ? 2 : 1;
+    const decomposed = text.slice(offset, offset + unitLength).normalize("NFD");
+    originalStarts.push(offset);
+    nfdStarts.push(nfdLength);
+    parts.push(decomposed);
+    nfdLength += decomposed.length;
+    offset += unitLength;
+  }
+  originalStarts.push(text.length);
+  nfdStarts.push(nfdLength);
+  return { nfdText: parts.join(""), originalStarts, nfdStarts };
+}
+
+/**
+ * NFD 일치 범위를 원본 UTF-16 범위로 바꾸고 음절 중간에서 끝난 일치는 그 음절의 끝으로 올린다.
+ *
+ * @param {NfdMapping} mapping 원본과 NFD 위치 대응
+ * @param {number} nfdStart NFD 일치 시작 위치
+ * @param {number} nfdEnd NFD 일치의 exclusive 끝 위치
+ * @returns {null | {start: number, end: number}} code point 시작에 정렬되지 않은 일치는 null
+ */
+function mapOriginalRange(mapping, nfdStart, nfdEnd) {
+  const startIndex = findCodePointIndex(mapping.nfdStarts, nfdStart);
+  if (mapping.nfdStarts[startIndex] !== nfdStart) {
+    return null;
+  }
+  const lastIndex = findCodePointIndex(mapping.nfdStarts, nfdEnd - 1);
+  return {
+    start: mapping.originalStarts[startIndex],
+    end: mapping.originalStarts[lastIndex + 1],
+  };
+}
+
+/**
+ * 목표 NFD 위치를 포함하는 code point 항목을 이분 탐색으로 찾는다.
+ *
+ * @param {ReadonlyArray<number>} nfdStarts 오름차순 NFD 시작 위치
+ * @param {number} target 찾을 NFD 위치
+ * @returns {number} `nfdStarts[index] <= target`을 만족하는 가장 큰 index
+ */
+function findCodePointIndex(nfdStarts, target) {
+  let lower = 0;
+  let upper = nfdStarts.length - 1;
+  while (lower < upper) {
+    const middle = Math.ceil((lower + upper) / 2);
+    if (nfdStarts[middle] <= target) {
+      lower = middle;
+    } else {
+      upper = middle - 1;
+    }
+  }
+  return lower;
+}
+
+/**
+ * 한 source의 모든 출현을 모아 줄과 열을 계산하고 경고 상한 안에서 기록한다.
  *
  * @param {Source} source 검사할 원문
- * @param {ReadonlyMap<string, ReadonlyArray<ExpressionDescriptor>>} expressionIndex 후보 색인
+ * @param {ReadonlyMap<string, ReadonlyArray<ExpressionDescriptor>>} syllableIndex 음절 후보 색인
+ * @param {ReadonlyArray<JamoDescriptor>} jamoDescriptors 자모 매칭 후보
  * @param {Array<ExpressionWarning>} warnings 실행 전체의 상세 경고 앞부분
  * @returns {{found: number, matchedRuleIndexes: ReadonlySet<number>}} 출현 수와 발견 규칙 위치
  */
-function scanSource(source, expressionIndex, warnings) {
-  let found = 0;
+function scanSource(source, syllableIndex, jamoDescriptors, warnings) {
+  const matches = collectMatches(source.text, syllableIndex, jamoDescriptors);
+  const matchedRuleIndexes = new Set();
   let line = 1;
   let lineStart = 0;
   let lineEnd = findLineEnd(source.text, 0);
-  const matchedRuleIndexes = new Set();
+  let cursor = 0;
 
   for (let offset = 0; offset < source.text.length; offset += 1) {
-    const descriptors = expressionIndex.get(source.text[offset]);
-    if (descriptors !== undefined) {
-      for (const descriptor of descriptors) {
-        if (source.text.startsWith(descriptor.expression, offset)) {
-          found += 1;
-          matchedRuleIndexes.add(descriptor.ruleIndex);
-          if (warnings.length < MAX_WARNINGS) {
-            const startUtf16 = offset - lineStart + 1;
-            warnings.push({
-              ruleId: rules[descriptor.ruleIndex].id,
-              expression: descriptor.expression,
-              sourceId: source.id,
-              line,
-              startUtf16,
-              endUtf16: startUtf16 + descriptor.expression.length,
-              quote: makeQuote(
-                source.text,
-                lineStart,
-                lineEnd,
-                offset,
-                descriptor.expression.length,
-              ),
-            });
-          }
-        }
+    while (cursor < matches.length && matches[cursor].start === offset) {
+      const match = matches[cursor];
+      cursor += 1;
+      matchedRuleIndexes.add(match.ruleIndex);
+      if (warnings.length < MAX_WARNINGS) {
+        warnings.push({
+          ruleId: rules[match.ruleIndex].id,
+          expression: match.expression,
+          sourceId: source.id,
+          line,
+          startUtf16: offset - lineStart + 1,
+          endUtf16: match.end - lineStart + 1,
+          quote: makeQuote(source.text, lineStart, lineEnd, offset, match.end - offset),
+        });
       }
     }
 
@@ -603,7 +793,7 @@ function scanSource(source, expressionIndex, warnings) {
     }
   }
 
-  return { found, matchedRuleIndexes };
+  return { found: matches.length, matchedRuleIndexes };
 }
 
 /**
