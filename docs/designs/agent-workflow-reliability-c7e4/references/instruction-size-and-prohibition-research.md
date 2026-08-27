@@ -12,17 +12,15 @@
 
 현재 배포 대상 파일의 줄 수와 바이트 수는 다음과 같다. 측정은 `wc -lc`로 수행했으며 토큰 수는 측정하지 않았다.
 
-| 파일 | 줄 | 바이트 | 현재 읽기 조건 |
-| --- | ---: | ---: | --- |
-| `skills/use-design-docs/SKILL.md` | 109 | 10,714 | 설계 문서 작업에서 실행 |
-| `skills/use-design-docs/references/_README.md` | 241 | 20,560 | 저장소 README가 없을 때 대체 기준으로 사용 |
-| `skills/use-dev-guidance/SKILL.md` | 104 | 9,456 | 코드와 개발 지침 작업에서 실행 |
-| `skills/use-dev-guidance/references/_README.md` | 206 | 19,776 | 저장소 README가 없을 때 대체 기준으로 사용 |
-| `skills/use-words-review/SKILL.md` | 114 | 14,152 | 저장하거나 공유할 글을 검토할 때 실행 |
-| `skills/use-words-review/references/examples.md` | 214 | 10,018 | 모든 언어의 의미 판정을 보정할 때 읽음 |
-| `skills/use-words-review/references/korean.md` | 179 | 12,112 | 한국어가 포함된 결과물을 검토할 때 읽음 |
+- **`skills/use-design-docs/SKILL.md`.** 109줄, 10,714바이트다. 설계 문서 작업에서 실행한다.
+- **`skills/use-design-docs/references/_README.md`.** 241줄, 20,560바이트다. 저장소 README가 없을 때 대체 기준으로 사용한다.
+- **`skills/use-dev-guidance/SKILL.md`.** 104줄, 9,456바이트다. 코드와 개발 지침 작업에서 실행한다.
+- **`skills/use-dev-guidance/references/_README.md`.** 206줄, 19,776바이트다. 저장소 README가 없을 때 대체 기준으로 사용한다.
+- **`skills/use-words-review/SKILL.md`.** 114줄, 14,152바이트다. 저장하거나 공유할 글을 검토할 때 실행한다.
+- **`skills/use-words-review/references/examples.md`.** 214줄, 10,018바이트다. 모든 언어의 의미 판정을 보정할 때 읽는다.
+- **`skills/use-words-review/references/korean.md`.** 179줄, 12,112바이트다. 한국어 문서나 문구를 검토할 때 읽는다.
 
-이 표는 큰 파일을 알려줄 뿐 불필요한 문장을 알려주지 않는다. 예를 들어 `_README.md`는 fallback에서만 읽으므로 평소 실행 비용에 포함되지 않을 수 있다. 반면 한국어 글을 자주 검토하면 `use-words-review` 본문과 두 참고 파일을 함께 읽는 비용이 반복된다. 최적화 우선순위는 파일 크기 순서가 아니라 실제 호출 빈도와 조건별 입력 토큰으로 정해야 한다.
+이 목록은 큰 파일을 알려줄 뿐 불필요한 문장을 알려주지 않는다. 예를 들어 `_README.md`는 fallback에서만 읽으므로 평소 실행 비용에 포함되지 않을 수 있다. 반면 한국어 글을 자주 검토하면 `use-words-review` 본문과 두 참고 파일을 함께 읽는 비용이 반복된다. 최적화 우선순위는 파일 크기 순서가 아니라 실제 호출 빈도와 조건별 입력 토큰으로 정해야 한다.
 
 ## 외부 근거
 
