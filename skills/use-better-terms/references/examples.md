@@ -1,127 +1,66 @@
-# Common Writing Review Examples
+# Common Wording Examples
 
-These examples calibrate the criteria that apply to every language: audience, evidence, context, sentence meaning, and relationships between sentences. A phrase does not fail merely because it resembles an example. Judge the phrase in its actual context. The examples use fictional projects, generic paths, and generic roles. They do not reproduce task instructions, private identifiers, or personal paths.
+Use these examples only when a common criterion or allowed case is unclear. They calibrate audience, evidence, sensitive information, symbols, sentence meaning, and relationships between sentences. Similar wording does not fail automatically; judge the actual context.
 
-## Contents
-
-- [Reader guidance and work reports](#reader-guidance-and-work-reports)
-- [Titles based on instructions and titles based on the subject](#titles-based-on-instructions-and-titles-based-on-the-subject)
-- [Unrelated decisions from one request](#unrelated-decisions-from-one-request)
-- [Unnecessary symbols and required notation](#unnecessary-symbols-and-required-notation)
-- [Personal paths and paths that readers need](#personal-paths-and-paths-that-readers-need)
-- [When not to preserve source text](#when-not-to-preserve-source-text)
-- [Verified source content and inherited wording](#verified-source-content-and-inherited-wording)
-- [Sentence meaning and relationships between sentences](#sentence-meaning-and-relationships-between-sentences)
-
-## Reader guidance and work reports
+## Keep different decisions in their responsible documents
 
 Problematic:
 
-> As requested, we implemented the notification screen. We also applied all requested colors and text.
-
-This text reports completed work to the requester instead of helping someone use the notification screen.
-
-Reader-focused:
-
-> To receive notifications, confirm your email address in Settings, and then save your changes.
-
-This text tells readers what to do and what the action enables.
-
-## Titles based on instructions and titles based on the subject
-
-Problematic title:
-
-> Request to add caching and change the error message
-
-Unless the document must preserve the original request, this title treats an instruction as the document's subject.
-
-Title based on the subject:
-
-> Search result caching and failed request messages
-
-The document and repository evidence must still show that these subjects belong in the same document.
-
-## Unrelated decisions from one request
-
-Problematic structure:
-
 > One decision record sets the log retention period, button color, and dependency update policy.
 
-These subjects do not form one decision merely because they appeared in the same request. Separate them when they have different readers, approval owners, or verification methods.
+These subjects have different readers, approval roles, and verification methods. Their appearance in one request does not make them one decision.
 
-Acceptable structure:
+Meaning-preserving alternative:
 
 > Record the log retention period in the operations decision, link the button color to the approved design, and record the dependency update in the implementation plan and verification results.
 
-## Unnecessary symbols and required notation
+## Remove decorative symbols, not required notation
 
 Problematic:
 
 > Quick setup · safe storage · easy sharing ✨
 
-Plain punctuation is sufficient:
+Natural alternative:
 
 > Complete the setup, save the content, and share it with your team.
 
-Keep symbols when readers need the exact notation, such as in a formula, trademark, approved interface label, or accessibility instruction. The problematic example shows decorative compression, not a language-wide ban inferred from this common reference. Apply language-specific punctuation rules only when the applicable language material defines them.
+Keep exact symbols in formulas, trademarks, approved interface labels, code, character tests, and accessibility instructions. The reader's need for the notation, not the symbol alone, decides the result.
 
-## Personal paths and paths that readers need
+## Replace private locations while preserving usable locations
 
 Problematic:
 
-> Find the attachment at `/home/<account>/Desktop/<project>/capture.png`.
+> Find the attachment in a named user's desktop directory.
 
-Repository path that readers can use:
+Repository-relative alternative:
 
 > See `examples/config.yml` for an example configuration.
 
-If a local input path is necessary to reproduce a result, retain only the required portion in an untracked record. Use a safe placeholder in documents read by anyone other than the person who owns that path.
+If a local input location is required to reproduce a result, retain only the necessary part in an untracked record with suitable access. Do not quote credentials, private URLs, private identifiers, or personal locations in the review result.
 
-## When not to preserve source text
-
-Do not preserve source text when:
-
-> A README uses task instructions as its introduction, title, or description of project behavior.
-
-Some artifacts require a limited amount of exact source text:
-
-- a requirement whose wording belongs to the requirements owner;
-- an approved interface message or short quotation;
-- evaluation input for prompt-processing behavior;
-- the minimum input needed to reproduce a problem;
-- an untracked execution record with defined access and retention rules.
-
-Even in these cases, remove or separately protect personal information, credentials, private paths, and private identifiers that the artifact does not need.
-
-## Verified source content and inherited wording
+## Rewrite inherited wording for the current readers
 
 Problematic:
 
-> Copy the earlier document's title, abstractions, and concluding sentence because that document supplied the facts for this one.
+> Copy the earlier document's title, abstractions, and conclusion because it supplied the facts for this document.
 
-Using a document as a factual source does not establish that its wording was approved for a new audience or purpose.
+Evidence-backed alternative:
 
-Reader-focused:
+> Retain verified facts and approved decisions from the earlier document. Explain them for the current readers by naming the actor, action, conditions, and result.
 
-> Retain the verified facts and approved decisions from the earlier document. Rewrite the explanation for the new readers, naming the actor, action, conditions, and result. Keep a repeated structure when readers need to compare the same attributes in the same order.
+An existing document can establish facts and approved decisions without making its wording suitable for a new audience. Repeated structure remains useful when readers compare the same attributes in the same order.
 
-This version preserves source content and a necessary comparison structure without treating inherited wording as a style template.
-
-## Sentence meaning and relationships between sentences
-
-Natural grammar and familiar words do not make a sentence clear by themselves. The following examples distinguish missing relationships within one sentence from missing relationships across sentences.
+## Make sentence relationships explicit
 
 ### Several judgments compressed into one sentence
 
 > Apply the review findings to clarify the approved scope and confirm that it can be released.
 
-- **Verdict:** `needs human input`
-- **Location 1:** `clarify the approved scope`
-- **Location 2:** `confirm that it can be released`
-- **Missing relationship:** The text does not identify who confirms what, whether clarifying the scope grants release approval, or whether the action only updates a document.
-- **Possible wording after the relationship is confirmed:** The reviewer confirms that the document reflects the review findings. After the approval owner approves the release scope, the release owner starts the release.
+- **Status:** `needs human input`
+- **Missing relationship:** The text does not identify who confirms what, whether the clarification grants release approval, or whether it only changes a document.
+- **Next step:** Obtain the review and approval roles before writing a replacement.
 
-### A short sentence with no identifiable object
+### Technical modifiers without identifiable objects
 
 Heading:
 
@@ -131,84 +70,29 @@ Body:
 
 > Separate it from the configuration code path.
 
-- **Verdict:** `needs human input`
-- **Location 1:** `Submission path`
-- **Location 2:** `configuration code path`
-- **Missing relationship:** Readers cannot identify whether the first phrase means a registry address, artifact directory, or deployment destination, or whether the second means a file location, import connection, or execution flow. The technical modifiers classify the missing objects but do not identify them.
-- **Revision condition:** Do not draft replacement wording until evidence identifies both objects and the required separation between them.
+- **Status:** `needs human input`
+- **Missing relationship:** The first phrase could mean a registry address, artifact directory, or deployment destination. The second could mean a file location, import connection, or execution flow.
+- **Next step:** Identify both objects and the required separation before replacing either phrase.
 
-### Different names for roles with no stated relationship
+### Roles and approval that do not connect
 
-First sentence:
+> The reviewer lists the changed items. Release only the approved scope.
 
-> The reviewer checks the changes.
+- **Status:** `needs human input`
+- **Missing relationship:** The text does not identify who approves the items, when approval occurs, or which items were approved.
+- **Possible wording after confirmation:** After the approval owner selects the items for release, the release owner publishes only those items.
 
-Next sentence:
+### One phrase with several possible referents
 
-> The administrator approves the review result.
+> Attach the review findings and the release log to the report. Retain this record for seven days.
 
-- **Verdict:** `needs human input`
-- **Location 1:** `reviewer`
-- **Location 2:** `administrator`
-- **Missing relationship:** The document does not establish whether these names refer to one role or to separate review and approval roles.
-- **Possible wording after the relationship is confirmed:** The reviewer checks the changes. The approval owner reviews the findings and decides whether to authorize the release.
+- **Status:** `needs human input`
+- **Missing relationship:** `this record` could mean the findings, the log, or the complete report.
+- **Possible wording after confirmation:** Retain the report, including the attached review findings and release log, for seven days.
 
-### A reference to approval that has not been established
+### Clear condition and result
 
-First sentence:
+> If a document contains a personal path, replace it with a repository-relative path. Confirm that the file remains accessible at the revised path before sharing the document.
 
-> The release owner lists the changed items.
-
-Next sentence:
-
-> Release only the approved scope.
-
-- **Verdict:** `needs human input`
-- **Location 1:** `lists the changed items`
-- **Location 2:** `the approved scope`
-- **Missing relationship:** The text does not identify who approves the items, when approval occurs, or which listed items belong to the approved scope.
-- **Possible wording after the relationship is confirmed:** The release owner lists the changed items. After the approval owner selects the items for release, the release owner publishes only those items.
-
-### A phrase with more than one possible referent
-
-First sentence:
-
-> Attach the review findings and the release log to the report.
-
-Next sentence:
-
-> Retain this record for seven days.
-
-- **Verdict:** `needs human input`
-- **Location 1:** `the review findings and the release log`
-- **Location 2:** `this record`
-- **Missing relationship:** Readers cannot tell whether the retention rule applies to the findings, the log, or the complete report.
-- **Possible wording after the relationship is confirmed:** Retain the report, including the attached review findings and release log, for seven days.
-
-### A proposal treated as an approved decision
-
-First sentence:
-
-> The reviewer proposed showing a warning before the operation starts.
-
-Next sentence:
-
-> Show the warning, and then continue the operation.
-
-- **Verdict:** `needs human input`
-- **Location 1:** `proposed`
-- **Location 2:** `Show the warning`
-- **Missing relationship:** The text does not say whether anyone approved the proposal or authorized the operation to continue.
-- **Possible wording after the relationship is confirmed:** The reviewer proposed showing a warning before the operation starts. If the approval owner accepts the proposal, the operator shows the warning before continuing the operation.
-
-### Clear relationships
-
-> If an input file contains a personal path, the reviewer replaces that path with a repository-relative path. The reviewer confirms that the file remains accessible at the revised path before sharing the document.
-
-- **Verdict:** `pass`
-- **Confirmed relationship:** The condition, actor, change, verification, and next step appear in order.
-
-> The reviewer checks the document title, the responsibility assigned to each section, and the verification results. When one section produces an input for the next section, the reviewer also confirms that the document states that relationship.
-
-- **Verdict:** `pass`
-- **Confirmed relationship:** Although the text contains several checks, each object and condition has an identifiable relationship to the reviewer.
+- **Status:** `pass`
+- **Reason:** The condition, change, verification, and next action appear in order.

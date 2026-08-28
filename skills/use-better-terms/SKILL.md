@@ -1,114 +1,65 @@
 ---
 name: use-better-terms
-description: Review text and names before they are stored, committed, published, shared, or explicitly submitted for wording review. Check audience, evidence, private data, sentence relationships, symbols, and natural Korean when present. Exclude routine chat and responses that will not be reused.
+description: Improve text and names before they are stored, committed, published, shared, or explicitly submitted for wording review. Apply evidence-backed replacements first, preserve exact terms only when needed, and leave unsupported meaning changes for human input. Exclude routine chat and responses that will not be reused.
 ---
 
 # Use Better Terms
 
-Review public outputs without changing them. Use one general-purpose subagent for a read-only semantic review, then verify its findings in the main agent.
+Improve one sharing unit in the current session. Prefer natural wording that preserves verified meaning. Keep required exact terms with a reason, and do not invent missing meaning, roles, or approval.
 
-## Establish the review scope
+## Set the scope
 
-1. Identify every changed output and name that belongs to the pending commit, publication, or sharing action. Include candidate commit, pull-request, issue, or release text when applicable. Treat tracked repository text as public unless a repository rule says otherwise.
-2. Group outputs from the same commit or publication into one review. Do not review each sentence while drafting.
-3. Include chat wording only when it will be stored, published, or delivered verbatim outside the conversation, or when the user explicitly requests its review. Group all wording named in one request into one review unit; a later request for revised wording is a new unit. Exclude hidden reasoning, tool traces, routine progress messages, general explanations, and responses that will not be reused.
+1. Identify every changed output and name in the pending commit, publication, or sharing action. Include candidate commit, pull-request, issue, or release text when applicable. Treat tracked repository text as shared unless a repository rule says otherwise.
+2. Group outputs from the same commit or sharing action and review the group once after drafting. Do not review each sentence while drafting.
+3. Include chat wording only when it will be stored, published, delivered verbatim outside the conversation, or explicitly submitted for review. Exclude hidden reasoning, tool traces, routine progress messages, general explanations, and responses that will not be reused.
 
-## Run available deterministic checks
+## Collect evidence and run checks
 
-Run repository-provided checks that apply to the outputs. Include available Vale or other text-lint results, but do not require a particular linter.
+Collect the intended readers and their next action, applicable repository rules, verified facts, approved decisions and wording, responsible roles, and the context needed to resolve references between sentences. When evidence does not establish a claim, role, condition, or approval state, record the gap instead of supplying it from inference.
 
-When Git and text search are available, inspect only the changed public outputs for formatting errors, personal absolute paths, private identifiers, distinctive prompt phrases, HTML comments, and unresolved markers. Redact sensitive matches in the report and treat every match as a review candidate rather than an automatic failure.
+Run repository-provided formatting and text checks that apply to the outputs. When Git and text search are available, inspect only the changed shared outputs for formatting errors, personal absolute paths, private identifiers, HTML comments, and unresolved markers. Redact sensitive matches in reports and judge every match in context.
 
-For Korean text, run `scripts/scan.mjs` from this skill before semantic review. Resolve the script relative to this `SKILL.md`; do not assume where the skill is installed. Choose one input mode:
+For Korean text, run `scripts/scan.mjs` relative to this `SKILL.md`. Choose one input mode:
 
 - use `--changed <repo>` for every staged, unstaged, and untracked file in a pending repository change;
 - repeat `--file <path>` for an exact file set;
 - use `--stdin --source-name <name>` for supplied text.
 
-Inspect the shared `sources` and both `checks`. For each check, inspect the complete `catalog`, matched `rules`, every returned warning, and `summary`. A warning identifies a context to judge, not an automatic failure. For a paragraph warning, read the complete original paragraph and judge its central ideas, placement of important information, and relationships between sentences.
+Inspect the complete `sources` and both `checks`, including each `catalog`, matched `rules`, every warning, and `summary`. A warning marks text to judge, not an automatic failure. Read the complete original paragraph for a paragraph warning. If `summary.omitted` is greater than zero, use smaller input groups when the omitted contexts need individual judgment and report the omitted count. If the script is missing, fails, or does not return one complete JSON object with both checks, stop the affected review and do not return `pass` for its Korean outputs.
 
-If one check's `summary.omitted` is greater than zero, rerun smaller file groups when individual judgments require the omitted contexts. End the review result with that check's type and `... 그 외 <N>개의 경고가 더 발견됨`. If the script is missing, unreadable, fails, or does not return one complete JSON object with both checks, stop the affected review and do not return `pass` for its Korean artifacts.
+Read references only when their conditions apply:
 
-## Select references
+- Read [references/korean.md](references/korean.md) in full after the scanner succeeds when an output contains Korean or a Korean expression needs judgment.
+- Read [references/examples.md](references/examples.md) when a common criterion or allowed case remains unclear.
 
-1. Read [references/examples.md](references/examples.md) when calibrating common criteria or resolving an unclear allowed case.
-2. After the scanner succeeds, if an output contains Korean or the review must judge a Korean expression, read [references/korean.md](references/korean.md) in full and apply it only to Korean text. Otherwise, do not run the scanner or open this reference merely to decide whether they apply.
-3. Record which required references were read. If one cannot be opened or read in full, stop the affected review, report it, and do not return `pass` for that artifact.
+If a required reference cannot be read in full, stop the affected review and report it. Examples and scanner candidates guide judgment; they are not blacklists or exhaustive pass conditions.
 
-Examples and candidate expressions calibrate judgment; they are not blacklists or exhaustive pass conditions. Return `needs human input` when repository evidence cannot determine the intended meaning.
+## Improve and judge the outputs
 
-## Prepare the review context
+For every challenged expression, first write at least one natural alternative for the actual context. If verified evidence shows that the alternative preserves the meaning and the task authorizes editing, apply it in the same work unit. If the task requests review only, return the alternative without editing. Do not perform context-free string replacement.
 
-Collect the outputs and names, the source documents used to write them, intended readers and reader actions, described actors, any reviewer or approval owner, applicable repository and document rules, opened references, and deterministic-check results. Include Korean scanner output when it applies. For every statement under review, identify repository evidence, a sourced fact, an approved decision, or approved public wording. State when no such evidence is available instead of letting a nearby technical noun stand in for it. Prompts, agent instructions, task descriptions, work notes, review criteria, requested formats, tool conditions, and progress reports are not publishable evidence.
+Retain the original expression only when it is an established term, approved name, code identifier, required notation, or the best accurate wording. Record the alternative considered and the reason for retaining it. If replacement would decide a missing meaning, actor, condition, responsibility, or approval state, do not edit the text; return `needs human input`.
 
-Retain exact source text only when the artifact requires it, such as owner-controlled requirements, approved interface wording or quotations, evaluation data, minimal reproduction input, or an access-controlled log that will not be committed. Provide an original prompt only when exact comparison is necessary. Minimize it and every source document before delegation; redact credentials, personal paths, private URLs, private identifiers, and unrelated personal information, and do not store the prompt in a tracked file or durable log.
+Judge these criteria once for each applicable output:
 
-Choose context according to the relationship under review:
+1. The title, structure, wording, and names help the intended readers act. Distinct subjects remain in the document responsible for them.
+2. Claims and roles follow verified facts, approved decisions, or approved wording. Proposals, unresolved choices, and approved decisions remain distinct.
+3. Personal paths, credentials, private URLs, private project identifiers, internal-only names, and unnecessary local paths are absent or safely replaced.
+4. Each sentence identifies enough of its subject or referent, action, conditions, and result. Role names stay consistent, and conditions and earlier results connect to dependent actions.
+5. Korean wording is natural for its readers instead of literal, padded, formulaic, or mixed with avoidable English. Apply the judgment order in `references/korean.md` to every Korean warning and continue checking meanings that the scanner cannot find.
+6. Emoji and uncommon symbols appear only when the readers or an approved format need them.
 
-- Use the changed paragraph and necessary adjacent sentences for local subjects, referents, actions, conditions, and results.
-- Use the changed section when headings, roles, responsibilities, or an earlier step's result matter.
-- Use the full file only when decisions or definitions elsewhere affect the judgment.
-- Use minimized source excerpts when inherited abstractions or wording must be compared; use the full source only when relationships elsewhere are necessary.
+For interface and accessibility text, ensure that users can understand the state and next action. For comments and API documentation, ensure that callers or maintainers receive the required conditions and constraints.
 
-Prepare a self-contained delegation message with the artifact paths or supplied text, selected context, readers, rules, opened references, check results, criteria, and result format. Do not include the writing agent's progress report, self-assessment, suspected findings, or preferred verdict.
+## Return the result
 
-## Choose the model for the current review
+Use one status for every applicable criterion and output:
 
-Choose from the readers, evidence, role clarity, and publication impact. Do not use text length or file count as the deciding factor, and do not dispatch a classifier.
-
-- Use a fast model with low reasoning effort when structure, evidence, and expected judgment are explicit.
-- Use a balanced model with medium effort when contextual judgment is needed but ownership and evidence are clear.
-- Use the strongest available model with high effort when referents are ambiguous, document responsibilities conflict, or an error could misstate privacy, security, licensing, approval, or ownership.
-
-When available in the current Codex host, map these levels to `gpt-5.6-terra` with low effort, `gpt-5.6-terra` with medium effort, and `gpt-5.6-sol` with high effort. Do not substitute a similarly named model. Do not use `xhigh`, `max`, `ultra`, or an equivalent setting by default.
-
-Resolve the levels against the controls exposed by the host. A call that changes model or effort must receive the self-contained message prepared above. If the host cannot override one invocation while preserving the required context, inherit the main agent's configuration and report the limitation.
-
-Repeat once with the strongest available model and high effort only when evidence conflicts or reconciliation finds an unsupported or omitted judgment. A `needs revision` result alone does not trigger escalation, and missing evidence or authority remains `needs human input`.
-
-## Evaluate a model setting for adoption
-
-Before adopting a different or lighter setting as the repository default, have the repository-identified responsible reviewer approve representative cases with expected statuses and findings. Include two unclear or compressed sentences; four cases with disconnected roles, referents, conditions, step results, or decision status; one case that lacks evidence and requires `needs human input`; one long clear sentence; and one set of correctly connected sentences.
-
-Use a setting only when it returns every expected status and finding without inventing a defect. Among passing settings, compare defect misses, incorrect findings, missed `needs human input` results, input, output, and total tokens, and elapsed time. Use only invocation-level values reported by the host; record unavailable values as unavailable instead of estimating them, and exclude them from measured comparisons. If repository evidence does not identify the responsible reviewer, keep the current setting and report adoption as `needs human input`.
-
-## Delegate the semantic review
-
-Use one general-purpose subagent exposed by the host. Do not create, install, or require a named reviewer. Restrict it to read-only tools when supported; otherwise state that boundary and capture repository state before and after delegation.
-
-Ask it to judge each applicable criterion:
-
-1. Titles, structure, wording, and names serve the intended readers rather than report work to the requester. Actors, reviewers, and approval owners are identified when the distinction matters.
-2. Prompts, internal instructions, progress notes, review criteria, and requested formats do not appear as repository facts, titles, decision reasons, or publishable prose.
-3. Unrelated requirements are not combined merely because they arrived in one task, and each document keeps its assigned responsibility.
-4. Claims and roles use publishable evidence, approved decisions, or approved wording; unresolved support, ownership, compatibility, security, privacy, licensing, and responsibility are not invented.
-5. Exact source text is retained only for an allowed purpose and only to the necessary extent.
-6. Personal paths, credentials, private URLs, private project identifiers, internal-only names, and unnecessary local paths are absent or safely replaced.
-7. Every sentence supplies enough subject or referent, action, conditions, and result, and relationships between sentences and sections are explicit. Do not judge by length. Check consistent role names, unambiguous references, conditions before dependent actions, step-to-step results, and the distinction between facts, proposals, and approved decisions. Treat a technical modifier as a category to investigate, not as proof that the modified noun identifies one object or action.
-8. Korean wording is natural for its readers rather than literal, padded, formulaic, or mixed with avoidable English. Judge every scanner warning in context by the judgment order in `references/korean.md`, including its alternative-search step for warned expressions; apply that reference only to Korean text, and continue checking meanings that the literal scanner cannot find. Compare relevant source wording and preserve established terms and necessary comparison structures.
-9. Emoji and uncommon symbols are absent unless readers or an approved format need them.
-
-For UI and accessibility text, check whether users can understand the state and next action. For comments and API documentation, check whether callers or maintainers receive the required conditions and constraints.
-
-## Require the result format
-
-Use one status for every applicable criterion and artifact:
-
-- `pass`: evidence supports publication as written;
-- `needs revision`: repository evidence identifies the defect and the information needed to correct it without a new owner decision;
-- `needs human input`: intent, evidence, approval, ownership, responsibility, or policy is absent or conflicting;
+- `pass`: the output can be used as written, including any authorized replacements applied in this work unit;
+- `needs revision`: evidence identifies the defect and a meaning-preserving correction, but the correction was not authorized or could not be applied;
+- `needs human input`: intent, evidence, approval, responsibility, or policy is absent or conflicting;
 - `not applicable`: the criterion does not apply, with a short reason.
 
-Each non-passing result must identify a tight location, evidence or reasoning, and the reader-facing consequence. For a compressed sentence, identify the clauses and missing relationship. For a problem across sentences or sections, identify both locations. Do not quote sensitive text.
+For each non-passing result, give a tight location, the evidence or missing relationship, a replacement when one can be written without a new decision, and the consequence for readers. For each scanner warning retained as `pass`, give the alternative considered and the evidence for retaining the original wording. Do not quote sensitive text.
 
-For each warning or other challenged expression retained as `pass`, provide the evidence required by its matched rule or review criterion. When the status depends on choosing among possible referents or meanings, also identify the concrete referent or meaning, the source location that establishes it, and the plausible alternatives that the evidence rules out. Group locations only when the same rule or criterion, evidence, and interpretation apply to every location. If required evidence cannot be established, use the applicable non-passing status.
-
-If no general-purpose subagent is available, perform the same checks in the main context as a read-only fallback. Apply every relevant Korean question. When the user requested the review result, begin it by stating why no independent review occurred. This fallback does not stop a commit, publication, or delivery. If write access could not be restricted, do not claim tool-enforced read-only review.
-
-## Reconcile and report
-
-Compare every finding with the artifact and repository rules. Reject unsupported or out-of-scope findings and conclusions based only on an example, a nearby technical term, or wording that the reviewer invented while explaining the source. For every retained warning or challenged expression, verify the evidence required by its rule or review criterion against the original material. When it had several possible referents or meanings, also verify the reported interpretation and excluded alternatives. Confirm that delegation did not change repository state, and stop before publication if it did. Resolve conflicts between deterministic and semantic checks from the actual context. The most restrictive applicable status is the overall result; do not infer a decision to lower it.
-
-When the user requested a review result, list the reviewed outputs, readers, supplied source documents, opened references, checks, model and effort when known, and per-criterion results. Include invocation-level tokens and elapsed time when available. Separate revisable defects from questions for the responsible owner, and report missing references, independent review, model overrides, checks, redactions, or evidence.
-
-Return findings for chat wording before it is stored or delivered. Do not append the internal report or model measurements to an unrelated response.
+When the user requested the result, list the reviewed outputs, intended readers, evidence, references, checks, applied or proposed replacements, retained warnings, and questions requiring a decision. Report unavailable checks and omitted warnings. Do not append this report to an unrelated response.
