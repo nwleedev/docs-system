@@ -5,100 +5,54 @@ description: Repository workflow adapter for docs/dev/README.md that selects and
 
 # Use Dev Guidance
 
-In this skill family, `use-` means binding a reusable execution procedure to a repository-local authority. It does not mean generic use of the named subject or broaden this skill beyond its README-defined scope.
-
-Use the current repository's `docs/dev/README.md` as the sole authority for what development guidance belongs in the repository, how it is supported, and how it is checked. This skill supplies only the reusable execution procedure.
+Use the current repository's `docs/dev/README.md` as the authority for durable development guidance, supporting evidence, and verification. This skill selects and orders work; it does not replace the README or authorize code, dependency, configuration, tooling, or documentation changes.
 
 ## Establish the authority
 
 1. Resolve the repository root and check for `<repo-root>/docs/dev/README.md`.
-2. If the README exists, read it completely before researching, applying, documenting, or validating development guidance. Treat it as the repository's sole current authority and do not read or compare this skill's `references/_README.md`.
-3. If the README is missing, determine whether the requested work needs durable repository-specific development-guidance rules. Do not create the README merely because the skill was invoked.
-4. When those rules are needed, identify this installed skill's `references/_README.md` and the exact target `<repo-root>/docs/dev/README.md`, then ask the user whether to create it.
-5. If the user approves, create the target directory as needed and copy the bundled README content to the target without its first-line maintenance HTML comment. Re-read the new README completely before continuing.
-6. If the user declines, inspect applicable repository instructions, existing documentation locations, and the directory structure. When the request authorizes writing the originally requested guidance or development file, write it only in a location supported by that evidence; ask the user when no suitable location can be established. Keep read-only requests read-only.
-7. Never overwrite an existing repository README with the bundled file or synchronize the two automatically.
-8. Follow applicable project instructions and the user's explicit request. Report a material conflict with the repository README instead of silently choosing one source.
+2. If it exists, read it completely. Do not compare it with this skill's `references/_README.md` or synchronize the files.
+3. If it is missing, decide whether the request needs durable repository-specific development rules. Do not create the README merely because this skill was invoked.
+4. When durable rules are needed, identify the bundled `references/_README.md` and exact target path, then ask the user whether to create the repository README.
+5. If approved, copy the bundled content without its first-line maintenance comment and read the created README completely. Never overwrite an existing README.
+6. If creation is declined, inspect repository instructions, existing documentation locations, and the directory structure. For an authorized writing request, use a location supported by that evidence; ask when none is established. Keep read-only requests read-only.
+7. Follow the user's request and applicable repository instructions. Report a material conflict with the repository README instead of choosing silently.
 
-## Select the operations required for the request
+## Select the required operations
 
-Select every operation needed to complete the user's requested outcome, not only the first matching operation. Include necessary read-only prerequisites and verification, omit operations that do not contribute to the outcome, and run the selected operations in dependency order. Add another operation after work begins only when new evidence shows that it is both necessary and within the original scope.
+Choose every operation needed for the requested outcome, including read-only prerequisites and final validation. Omit unrelated work, run dependent operations in order, and add work later only when new evidence makes it necessary within the original scope.
 
-**Inventory**
+- **Inventory:** identify the stack, exact versions, current behavior, existing guidance, checks, and repository evidence.
+- **Research:** investigate applicable patterns, anti-patterns, dependencies, risks, and verification methods.
+- **Guide:** create, update, or review durable repository guidance under the README's inclusion rules.
+- **Tool:** compare or propose static analysis, type or schema checks, tests, hooks, CI, runtime checks, or responsible review.
+- **Apply:** make an explicitly requested code, dependency, configuration, or tooling change.
+- **Validate:** verify guidance, a check, or an implementation against current evidence.
 
-Identify the current stack, versions, existing guidance, checks, and repository evidence.
+Read-only work does not authorize changes. Stop for human judgment when materially different options would change repository-wide policy, cost, compatibility, data, or behavior.
 
-**Research**
+## Inspect current and external evidence
 
-Investigate relevant code cases, recommended patterns, anti-patterns, dependencies, and verification methods.
+1. Inspect only applicable manifests, lockfiles, configuration, scripts, CI, tests, generated artifacts, code, decisions, and `docs/dev` files. Treat existing code and prose as evidence that may be stale, not as proof of the correct pattern.
+2. Record exact technology and dependency versions when external guidance depends on them. Prefer current official documentation, standards, and source repositories, and note conflicts with repository evidence.
+3. When researching pattern examples, use public open-source applications at fixed revisions together with confirmed failure or change reasons. Do not use the working application's code as the source of an anti-pattern or recommended example; use it only to establish the current stack, behavior, and connection points.
+4. Apply the repository README's required anti-pattern fields. Do not classify a code shape from appearance alone or attempt to enumerate every theoretical anti-pattern.
+5. Before behavior changes, identify observable behavior, external APIs, persisted data, error handling, affected callers, and connection points that the request does not authorize changing.
 
-**Guide**
-
-Create, update, or review durable repository guidance.
-
-**Tool**
-
-Compare or propose static analysis, type or schema checks, tests, hooks, CI, or human review.
-
-**Apply**
-
-Make an explicitly requested code, dependency, configuration, or tooling change.
-
-**Validate**
-
-Verify guidance, a check, or an implementation against current evidence.
-
-Necessary read-only work does not authorize dependency, configuration, code, or guidance changes. Treat words such as `apply`, `set up`, `configure`, `implement`, or an equally explicit instruction as mutation authorization only within the requested scope. Stop for human judgment when materially different options would change repository-wide policy, cost, compatibility, or behavior.
-
-## Establish the current repository state
-
-1. Inspect applicable manifests, lockfiles, configuration, scripts, CI, tests, generated artifacts, code, accepted decisions, and existing `docs/dev` files.
-2. Select only the guidance relevant to the current work; do not read or reorganize the entire directory without need.
-3. Treat existing code and documentation as evidence that may be stale, not automatic proof of the correct approach.
-4. Record exact technology and dependency versions when external guidance depends on them.
-5. Before changing behavior, record the observable behavior, public API, persisted data, error handling, affected callers, and connection points that the request does not authorize changing.
-6. Choose a pattern from current official guidance for the installed version, applicable repository guidance, and check results. Repetition or proximity in existing code does not make that pattern correct.
-
-## Research relevant risks and practices
-
-1. Bound research to code cases that the current stack and requested work can actually reach. Do not attempt to enumerate every theoretical anti-pattern.
-2. Prefer current official documentation, standards, and source repositories; cross-check material recommendations and note conflicts with the current repository.
-3. State the failure to prevent, affected scope, observable consequence, applicable exceptions, and available verification methods.
-4. Separate current repository practice, external recommendations, proposals, and accepted human decisions.
-
-## Select the smallest reliable check
+## Choose the least expensive reliable check
 
 1. Reuse current compiler, formatter, linter, type or schema checker, tests, hooks, and CI before adding a dependency or custom rule.
-2. Prefer a mechanical check only when it detects the intended failure with acceptable precision and cost.
-3. Use an observable test, runtime or browser check, or explicit human review when static analysis cannot establish the property reliably.
-4. Treat code examples as explanation or rule test cases, not proof that the repository complies.
-5. For user-visible UI behavior, use a browser check when that is the smallest reliable observation. For CLIs, services, and background jobs, use an applicable runtime or integration check.
-6. Use repository-defined commands. If none exists, label an inferred command as a proposal and obtain approval before running it. Stop every process that this task starts after verification.
+2. Use a mechanical check only when it detects the intended failure with acceptable precision and cost. Check new static rules with a violating and valid case or equivalent executable evidence.
+3. When static analysis cannot establish the property, use an observable test, runtime or browser check, or responsible review that can observe the failure.
+4. Use repository-defined commands. If none exists, present an inferred command as a proposal and obtain approval before running it. Stop processes started by the task after verification.
+5. Do not continue into a dependent change when an applicable required check fails or an unresolved result needs a decision that has not been approved.
 
-## Research dependency integration
+## Handle dependencies and authorized changes
 
-1. Before selecting or changing an external dependency, verify its purpose, exact version, official integration structure, and design patterns that materially affect the intended use. Do not invent a pattern name when official sources do not establish one.
-2. Inventory every direct and transitive external dependency in the resolved graph. For each one, record its name, resolved version, capabilities, potential issues, and an applicable design pattern. When no pattern applies, record `not applicable` separately from the cited facts that support that conclusion.
-3. Compare the dependency with installed dependencies, platform capabilities, and an internal implementation. Check runtime and peer compatibility, maintenance, security, and licensing when relevant.
-4. After an authorized dependency change, inspect the actual additions, removals, and updates in the manifest, lockfile, and any resolved dependency-graph artifact used by the repository. Recheck unexpected transitive changes before completion.
-5. Research does not authorize changing a dependency, configuration, or check.
-
-## Apply authorized changes
-
-- Keep changes limited to the selected risk and preserve unrelated user work and legacy guidance.
-- For a new or changed static rule, verify at least one violating case and one valid case, or provide equivalent executable evidence.
-- Run the affected checks and any repository baseline needed to detect regressions.
-- Add or update durable guidance only when the README's inclusion conditions are met and the request authorizes documentation changes.
-- Give each rule one owner and link to it instead of copying it across files.
-
-## Provide development-guidance context when delegating
-
-Follow the applicable project delegation policy. Delegate independent stack inspection, code-case research, repository exploration, and read-only validation when doing so is useful. Keep changes to shared guidance, dependencies, lockfiles, lint configuration, CI, and application code with one designated writer unless the work units share no files or state.
-
-Give each delegated task the `docs/dev/README.md` path, relevant repository paths, exact operation, dependency versions, mutation boundary, stop condition, and expected return. Do not paste the README into prompts. The main agent remains responsible for selecting applicable findings, verifying repository state, and validating changes.
-
-Do not automatically chain another planning, review, or implementation skill merely because it is installed. Follow an explicitly requested or already active skill when it does not conflict with the repository README, and avoid duplicate work.
+1. Before selecting or changing an external dependency, inspect the resolved direct and transitive graph, official integration for the selected version, applicable patterns, compatibility, maintenance, security, licensing, installed alternatives, platform capabilities, and an internal implementation.
+2. Research does not authorize a dependency, configuration, check, guidance, or code change. Apply only changes explicitly requested within scope and preserve unrelated behavior and user work.
+3. After an authorized dependency change, inspect actual manifest, lockfile, and resolved-graph changes and investigate unexpected transitive updates.
+4. Add durable guidance only when the README's inclusion conditions are met and documentation changes are authorized. Give each rule one owning document.
 
 ## Finish
 
-Re-read the applicable README checks after the work. Report what was inspected, sources and versions used, changed files, commands and results, unresolved uncertainty, and items requiring human judgment. Do not present prose guidance or an agent report as implementation proof.
+Run the applicable README and repository checks once after the work. Report inspected evidence and versions, sources, changed files, commands and results, unresolved uncertainty, and questions requiring human judgment. Do not present prose guidance or a work report as implementation proof.
