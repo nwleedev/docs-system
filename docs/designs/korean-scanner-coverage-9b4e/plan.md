@@ -36,7 +36,7 @@
 
 ### 4. 대표 실행과 최종 검증
 
-macOS에서 `node skills/use-words-review/scripts/scan.mjs --self-test`를 실행해 종료 상태 `0`을 확인하고, 재현 입력과 기존 대표 입력을 `--changed`, `--file`, `--stdin` 세 입력 방식으로 실행해 결과를 확인한다. `pnpm lint`로 import 제한과 정적 규칙을 확인한다. 변경한 한국어 문서와 규칙 사례는 커밋 전에 `use-words-review`로 검토한다.
+macOS에서 `node skills/use-better-terms/scripts/scan.mjs --self-test`를 실행해 종료 상태 `0`을 확인하고, 재현 입력과 기존 대표 입력을 `--changed`, `--file`, `--stdin` 세 입력 방식으로 실행해 반환된 JSON을 확인한다. `pnpm lint`로 import 제한과 정적 규칙을 확인한다. 변경한 한국어 문서와 규칙 사례는 커밋 전에 `use-better-terms`로 검토한다.
 
 **완료 증거.** self-test와 lint의 종료 상태, 재현 입력의 경고 목록과 검토 결과가 기록돼야 한다. 출력 JSON의 구조가 변경 전과 같은 필드를 유지하는지 변경 전후 결과를 대조한다.
 

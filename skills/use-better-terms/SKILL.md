@@ -38,6 +38,8 @@ If a required reference cannot be read in full, stop the affected review and rep
 
 For every challenged expression, first write at least one natural alternative for the actual context. If verified evidence shows that the alternative preserves the meaning and the task authorizes editing, apply it in the same work unit. If the task requests review only, return the alternative without editing. Do not perform context-free string replacement.
 
+After applying a replacement, rerun the formatting and text checks that can detect defects in the edited output. For Korean text, rerun the scanner on the final sharing unit and inspect every warning introduced by the edit before returning a status. Do not repeat judgments for text the replacement did not affect.
+
 Retain the original expression only when it is an established term, approved name, code identifier, required notation, or the best accurate wording. Record the alternative considered and the reason for retaining it. If replacement would decide a missing meaning, actor, condition, responsibility, or approval state, do not edit the text; return `needs human input`.
 
 Judge these criteria once for each applicable output:

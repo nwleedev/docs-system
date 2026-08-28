@@ -35,7 +35,7 @@ git ls-files skills/use-words-review src docs
 
 두 배포본의 일반 글쓰기 절과 한국어 채팅 절은 문장의 지칭 대상, 주체, 행동, 조건과 결과, 형식적인 도입과 결론, 임의로 만든 세 항목, 기존 문체 재사용을 함께 설명한다. [한국어 배포본의 일반 글쓰기와 채팅 규칙](../../../../src/AGENTS.ko.md)과 [영어 배포본의 일반 글쓰기와 채팅 규칙](../../../../src/AGENTS.en.md)에서 이 두 절은 해당 배포본을 적용한 실행이 함께 읽는다. 따라서 한국어 채팅 절에는 일반 규칙을 적용한다는 연결과 한국어에만 필요한 예외만 남기는 편이 맞다.
 
-AGENTS의 저장 결과물 검토 구간은 공유 단위 묶기, 검토 입력, 범용 서브에이전트, 대체 절차, 네 가지 판정 상태와 수정 분리까지 설명한다. 같은 절차는 [use-words-review 실행 지침](../../../../skills/use-words-review/SKILL.md)이 다시 정한다. AGENTS에는 호출 대상, 일반 채팅 예외, 공유 단위당 한 번이라는 조건과 스킬 또는 필수 참조 파일을 읽지 못했을 때 완료를 주장하지 않는 조건만 남긴다. 입력 구성, 위임, 판정과 보고 순서는 `SKILL.md`가 맡아야 한다.
+AGENTS의 저장 결과물 검토 구간은 공유 단위 묶기, 검토 입력, 범용 서브에이전트, 대체 절차, 네 가지 판정 상태와 수정 분리까지 설명한다. 같은 절차는 이름을 바꾸기 전 [use-words-review 실행 지침](../../../../skills/use-better-terms/SKILL.md)이 다시 정했다. AGENTS에는 호출 대상, 일반 채팅 예외, 공유 단위당 한 번이라는 조건과 스킬 또는 필수 참조 파일을 읽지 못했을 때 완료를 주장하지 않는 조건만 남긴다. 입력 구성, 위임, 판정과 보고 순서는 `SKILL.md`가 맡아야 한다.
 
 공개 가능한 근거와 민감정보 정책은 AGENTS에 남긴다. `SKILL.md`는 이 정책을 새로 선언하지 않고 검토 입력으로 전달하는 방법만 설명한다. 다만 서브에이전트가 원본 지침을 읽지 못하는 실행에서도 판정할 수 있도록 핵심 질문을 검토 요청에 포함하는 반복은 필요하다.
 
@@ -45,7 +45,7 @@ AGENTS의 저장 결과물 검토 구간은 공유 단위 묶기, 검토 입력,
 
 [채팅 답변의 한국어 품질 조사](./conversational-korean-output-research.md)는 일반 채팅과 저장 결과물의 구분, AGENTS 작성 규칙과 스킬 호출 조건을 여러 절에서 다시 설명한다. 승인 결과는 [채팅과 저장 결과물의 검토 범위 결정](../decisions/chat-and-stored-output-review-boundary.md)이, 실제 작업은 계획이 맡는다. 조사 문서는 실행 비용, 확인된 한계와 선택지 비교만 남겨도 근거 역할을 수행할 수 있다.
 
-[한국어 용어와 에이전트 예시 조사](./korean-terms-and-agent-examples-research.md)의 용어별 전체 사례 일부는 최종 [한국어 판정 자료](../../../../skills/use-words-review/references/korean.md)와 [평가 사례](./korean-review-evaluation-cases.md)에 그대로 반영됐다. 조사 문서에는 용어를 고른 근거, 전문 분야에서 유지할 조건과 사례 설계 원칙을 남기고, 최종 입력과 기대 판정은 운영 자료로 연결한다.
+[한국어 용어와 에이전트 예시 조사](./korean-terms-and-agent-examples-research.md)의 용어별 전체 사례 일부는 최종 [한국어 판정 자료](../../../../skills/use-better-terms/references/korean.md)와 [평가 사례](./korean-review-evaluation-cases.md)에 그대로 반영됐다. 조사 문서에는 용어를 고른 근거, 전문 분야에서 유지할 조건과 사례 설계 원칙을 남기고, 최종 입력과 기대 판정은 운영 자료로 연결한다.
 
 [비교 사례와 저장소 근거](./comparable-cases-and-repository-evidence.md)는 조사 결과가 적용될 방향을 끝에서 다시 요약한다. 다른 조사 문서와 계획을 되풀이하는 설명은 줄이고, 비교 사례에서 직접 확인한 사실과 이 저장소에 적용할 때의 제한만 남긴다.
 
@@ -127,9 +127,9 @@ AGENTS의 저장 결과물 검토 구간은 공유 단위 묶기, 검토 입력,
 
 ### 배포 지침과 스킬
 
-- [use-words-review 실행 지침](../../../../skills/use-words-review/SKILL.md) — `pass`. 공통 검토 절차와 독립 검토에 필요한 입력을 정하는 파일이다. AGENTS 쪽의 절차 반복을 줄여야 한다.
-- [언어 공통 사례](../../../../skills/use-words-review/references/examples.md) — `pass`. 공통 판정의 독립된 대조 입력이다.
-- [한국어 판정 자료](../../../../skills/use-words-review/references/korean.md) — `pass`. 후보별 반복은 같은 질문으로 정상 용례와 문제 사례를 비교하는 데 필요하다.
+- [이름을 바꾸기 전 use-words-review 실행 지침](../../../../skills/use-better-terms/SKILL.md) — `pass`. 공통 검토 절차와 독립 검토에 필요한 입력을 정하는 파일이다. AGENTS 쪽의 절차 반복을 줄여야 한다.
+- [언어 공통 사례](../../../../skills/use-better-terms/references/examples.md) — `pass`. 공통 판정의 독립된 대조 입력이다.
+- [한국어 판정 자료](../../../../skills/use-better-terms/references/korean.md) — `pass`. 후보별 반복은 같은 질문으로 정상 용례와 문제 사례를 비교하는 데 필요하다.
 - [영어 AGENTS 배포본](../../../../src/AGENTS.en.md) — `needs human input`. 파일 안의 중복은 줄여야 하지만 한국어 배포본과 다른 동작 중 어느 쪽을 유지할지 정해지지 않았다.
 - [한국어 AGENTS 배포본](../../../../src/AGENTS.ko.md) — `needs human input`. 파일 안의 중복은 줄여야 하지만 영어 배포본과 다른 동작 중 어느 쪽을 유지할지 정해지지 않았다.
 
