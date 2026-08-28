@@ -30,6 +30,7 @@ import { scanParagraphs } from "./long-paragraphs.mjs";
  * @typedef {{kind: "changed", repository: string} |
  *   {kind: "files", files: ReadonlyArray<string>} |
  *   {kind: "stdin", sourceName: string} |
+ *   {kind: "help"} |
  *   {kind: "self-test"}} InputMode
  */
 
@@ -85,6 +86,27 @@ const GIT_OUTPUT_BYTES = 8 * 1024 * 1024;
 const SELF_TEST_TIMEOUT_MS = 10_000;
 /** @type {number} */
 const SELF_TEST_OUTPUT_BYTES = 1024 * 1024;
+const HELP_TEXT = [
+  "한국어 글에서 검토할 표현과 긴 문단을 찾습니다.",
+  "",
+  "Usage:",
+  "  node skills/use-better-terms/scripts/scan.mjs --changed <repo>",
+  "  node skills/use-better-terms/scripts/scan.mjs --file <path> [--file <path> ...]",
+  "  node skills/use-better-terms/scripts/scan.mjs --stdin --source-name <name>",
+  "  node skills/use-better-terms/scripts/scan.mjs --self-test",
+  "  node skills/use-better-terms/scripts/scan.mjs --help",
+  "",
+  "Options:",
+  "  --changed <repo>      Git 저장소에서 변경된 텍스트 파일을 검사합니다.",
+  "  --file <path>         지정한 파일을 검사합니다. 여러 파일은 --file을 파일마다 지정합니다.",
+  "  --stdin               stdin에서 입력 하나를 읽습니다. --source-name과 함께 사용합니다.",
+  "  --source-name <name>  stdin으로 읽은 입력의 식별자를 정합니다. --stdin에만 사용합니다.",
+  "  --self-test           유지보수용 자체 검사를 실행합니다.",
+  "  --help                이 설명을 표준 출력에 쓰고 종료합니다.",
+  "",
+  "위 호출형 중 하나만 사용합니다. --source-name은 --stdin과 함께 사용합니다.",
+  "",
+].join("\n");
 /** @type {ReadonlySet<string>} */
 const SUPPORTED_GIT_STATUSES = new Set([
   " M",
@@ -142,6 +164,7 @@ function parseCommandLine(args) {
         stdin: { type: "boolean" },
         "source-name": { type: "string" },
         "self-test": { type: "boolean" },
+        help: { type: "boolean" },
       },
       strict: true,
       allowPositionals: false,
@@ -159,7 +182,7 @@ function parseCommandLine(args) {
     }
   }
 
-  for (const name of ["changed", "stdin", "source-name", "self-test"]) {
+  for (const name of ["changed", "stdin", "source-name", "self-test", "help"]) {
     if ((counts.get(name) ?? 0) > 1) {
       throw scannerError("usage:option-repeated");
     }
@@ -170,6 +193,7 @@ function parseCommandLine(args) {
   const stdin = parsed.values.stdin === true;
   const sourceName = parsed.values["source-name"];
   const selfTest = parsed.values["self-test"] === true;
+  const help = parsed.values.help === true;
 
   for (const value of [changed, ...files, sourceName]) {
     if (value !== undefined && !isValidInputName(value)) {
@@ -181,7 +205,11 @@ function parseCommandLine(args) {
   }
 
   const selected =
-    Number(changed !== undefined) + Number(files.length > 0) + Number(stdin) + Number(selfTest);
+    Number(changed !== undefined) +
+    Number(files.length > 0) +
+    Number(stdin) +
+    Number(selfTest) +
+    Number(help);
   if (selected !== 1) {
     throw scannerError("usage:invalid-input-mode");
   }
@@ -200,6 +228,9 @@ function parseCommandLine(args) {
   }
   if (stdin && sourceName !== undefined) {
     return { kind: "stdin", sourceName };
+  }
+  if (help) {
+    return { kind: "help" };
   }
   return { kind: "self-test" };
 }
@@ -813,12 +844,18 @@ async function runSelfTest() {
     files: ["first", "second"],
   });
   assert.deepEqual(parseCommandLine(["--self-test"]), { kind: "self-test" });
+  assert.deepEqual(parseCommandLine(["--help"]), { kind: "help" });
   for (const invalid of [
     [],
     ["--stdin"],
     ["--source-name", "sample"],
     ["--file", "a", "--stdin", "--source-name", "sample"],
     ["--self-test", "--file", "a"],
+    ["--help", "--file", "a"],
+    ["--file", "a", "--help"],
+    ["--help", "--help"],
+    ["-h"],
+    ["--he"],
   ]) {
     assert.throws(() => parseCommandLine(invalid), /usage:/u);
   }
@@ -1185,10 +1222,28 @@ async function runSelfTest() {
     "paragraphs",
   ]);
 
-  const invalidChild = runScannerProcess(["--invalid-self-test-argument"]);
-  assert.equal(invalidChild.status, 2);
-  assert.equal(invalidChild.stdout, "");
-  assert.match(invalidChild.stderr, /^usage:[a-z0-9-]+\n$/u);
+  const helpChild = runScannerProcess(["--help"]);
+  assert.equal(helpChild.error, undefined);
+  assert.equal(helpChild.signal, null);
+  assert.equal(helpChild.status, 0);
+  assert.equal(helpChild.stdout, HELP_TEXT);
+  assert.equal(helpChild.stderr, "");
+  assert.equal(helpChild.stdout.endsWith("\n"), true);
+  assert.throws(() => JSON.parse(helpChild.stdout));
+
+  for (const invalidArgs of [
+    ["--invalid-self-test-argument"],
+    ["-h"],
+    ["--he"],
+    ["--help", "--file", scriptPath],
+    ["--file", scriptPath, "--help"],
+    ["--help", "--help"],
+  ]) {
+    const invalidChild = runScannerProcess(invalidArgs);
+    assert.equal(invalidChild.status, 2);
+    assert.equal(invalidChild.stdout, "");
+    assert.match(invalidChild.stderr, /^usage:[a-z0-9-]+\n$/u);
+  }
 
   for (const [args, input, expectedError] of [
     [
@@ -1299,6 +1354,10 @@ function makeTestSource(id, text) {
 
 async function main(args) {
   const mode = parseCommandLine(args);
+  if (mode.kind === "help") {
+    await writeText(process.stdout, HELP_TEXT);
+    return;
+  }
   if (mode.kind === "self-test") {
     try {
       await runSelfTest();
