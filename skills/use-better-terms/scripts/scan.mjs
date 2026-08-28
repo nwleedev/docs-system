@@ -826,7 +826,7 @@ async function runSelfTest() {
   const expressionSource = makeTestSource("expressions", "😀 경계 경계\n출력을 확인합니다.");
   const expressionCheck = scanExpressions([expressionSource]);
   assert.equal(expressionCheck.id, "expressions");
-  assert.equal(expressionCheck.catalog.length, 47);
+  assert.equal(expressionCheck.catalog.length, 48);
   assert.deepEqual(
     expressionCheck.warnings
       .filter((warning) => warning.ruleId === "ko.boundary")
@@ -860,6 +860,91 @@ async function runSelfTest() {
       ["좁히", 2, 21, 23],
       ["좁혀", 2, 27, 29],
     ],
+  );
+
+  const requiredMorphologySource = makeTestSource(
+    "required-morphology",
+    "좁다\n좁은 변경이다\n좁혔다\n범위가 좁았습니다.\n코드를 박지\n목표를 박음\n값이 박혔다.",
+  );
+  const morphologyRuleIds = new Set(["ko.narrow-state", "ko.narrow", "ko.fix-in-place"]);
+  const requiredMorphologyCheck = scanExpressions([requiredMorphologySource]);
+  assert.deepEqual(
+    requiredMorphologyCheck.warnings
+      .filter((warning) => morphologyRuleIds.has(warning.ruleId))
+      .map((warning) => [
+        warning.ruleId,
+        warning.expression,
+        warning.line,
+        warning.startUtf16,
+        warning.endUtf16,
+      ]),
+    [
+      ["ko.narrow-state", "좁", 1, 1, 2],
+      ["ko.narrow-state", "좁", 2, 1, 2],
+      ["ko.narrow", "좁혀", 3, 1, 3],
+      ["ko.narrow-state", "좁았", 4, 5, 7],
+      ["ko.fix-in-place", "박", 5, 5, 6],
+      ["ko.fix-in-place", "박", 6, 5, 6],
+      ["ko.fix-in-place", "박혔", 7, 4, 6],
+    ],
+  );
+
+  const morphologyForms =
+    "좁고 좁으면 좁음 좁아지다 좁힌 좁힐 좁힙니다 좁혀서 박았다 박는 박을 박습니다 박아 두다 박힌 박힐 박힙니다 박혀 있다";
+  const morphologyFormsCheck = scanExpressions([
+    makeTestSource("morphology-forms", morphologyForms),
+  ]);
+  assert.deepEqual(
+    morphologyFormsCheck.warnings
+      .filter((warning) => morphologyRuleIds.has(warning.ruleId))
+      .map((warning) => [
+        warning.ruleId,
+        warning.expression,
+        morphologyForms.slice(warning.startUtf16 - 1, warning.endUtf16 - 1),
+      ]),
+    [
+      ["ko.narrow-state", "좁", "좁"],
+      ["ko.narrow-state", "좁", "좁"],
+      ["ko.narrow-state", "좁", "좁"],
+      ["ko.narrow-state", "좁아", "좁아"],
+      ["ko.narrow", "좁히", "좁힌"],
+      ["ko.narrow", "좁히", "좁힐"],
+      ["ko.narrow", "좁히", "좁힙"],
+      ["ko.narrow", "좁혀", "좁혀"],
+      ["ko.fix-in-place", "박았", "박았"],
+      ["ko.fix-in-place", "박", "박"],
+      ["ko.fix-in-place", "박", "박"],
+      ["ko.fix-in-place", "박", "박"],
+      ["ko.fix-in-place", "박아", "박아"],
+      ["ko.fix-in-place", "박힌", "박힌"],
+      ["ko.fix-in-place", "박히", "박힐"],
+      ["ko.fix-in-place", "박히", "박힙"],
+      ["ko.fix-in-place", "박혀", "박혀"],
+    ],
+  );
+
+  const morphologyExclusions = scanExpressions([
+    makeTestSource("morphology-exclusions", "좁쌀 박물관 박사 박수 호박 압박 대박 박지 씨"),
+  ]);
+  assert.equal(
+    morphologyExclusions.warnings.some((warning) => morphologyRuleIds.has(warning.ruleId)),
+    false,
+  );
+
+  const ambiguousMorphology = scanExpressions([
+    makeTestSource("ambiguous-morphology", "박지. 못을 박다."),
+  ]);
+  assert.deepEqual(
+    ambiguousMorphology.warnings
+      .filter((warning) => warning.ruleId === "ko.fix-in-place")
+      .map((warning) => warning.expression),
+    ["박", "박다"],
+  );
+  assert.equal(
+    scanExpressions([makeTestSource("nfd-morphology", "좁힌".normalize("NFD"))]).warnings.some(
+      (warning) => warning.ruleId === "ko.narrow",
+    ),
+    true,
   );
 
   const closeSource = makeTestSource(

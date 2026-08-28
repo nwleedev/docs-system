@@ -28,8 +28,6 @@
 
 /** @typedef {{ruleIndex: number, declarationIndex: number, expression: string}} ExpressionDescriptor */
 
-/** @typedef {ExpressionDescriptor & {nfd: string}} NfdDescriptor */
-
 /**
  * @typedef {{
  *   ruleIndex: number,
@@ -48,16 +46,40 @@
  * }} NfdMapping
  */
 
+/**
+ * @typedef {{
+ *   surface: string,
+ *   expression: string,
+ *   endingGroup: string
+ * }} MorphologyVariant
+ */
+
+/**
+ * @typedef {{
+ *   id: string,
+ *   lemma: string,
+ *   partOfSpeech: "adjective" | "verb",
+ *   ruleId: string,
+ *   variants: ReadonlyArray<MorphologyVariant>
+ * }} MorphologyMatcher
+ */
+
+/**
+ * @typedef {{
+ *   ruleIndex: number,
+ *   declarationIndex: number,
+ *   surfaceNfd: string,
+ *   expression: string,
+ *   endings: ReadonlySet<string>
+ * }} CompiledMorphologyVariant
+ */
+
+/** @typedef {{id: string, variants: ReadonlyArray<CompiledMorphologyVariant>}} CompiledMorphologyMatcher */
+
 /** @type {number} */
 const MAX_WARNINGS = 20_000;
 /** @type {number} */
 const MAX_QUOTE_UTF16 = 480;
-/**
- * 받침이 붙어 마지막 음절이 달라지는 활용형까지 찾도록 NFD 자모열 접두로 검사할 표현이다.
- *
- * @type {ReadonlySet<string>}
- */
-const NFD_MATCHED_EXPRESSIONS = new Set(["좁히", "좁혀"]);
 
 /**
  * 검사할 literal 후보와 AI가 각 문맥을 판정할 때 사용할 질문 및 대조 사례다.
@@ -244,6 +266,17 @@ const rules = [
     positives: ["관측값이 예측 구간을 벗어나면 이 가설의 반증 근거로 사용합니다."],
   },
   {
+    id: "ko.narrow-state",
+    expressions: ["좁", "좁아", "좁았"],
+    message: "실제 폭, 수량 또는 선택할 수 있는 대상이 제한된 상태인지 확인하고 더 정확한 표현을 먼저 찾습니다.",
+    queries: [
+      "무엇이 어떤 기준과 비교해 제한된 상태입니까?",
+      "실제 폭, 대상 수 또는 선택 조건을 직접 설명할 수 있습니까?",
+    ],
+    negatives: ["변경 범위가 좁습니다."],
+    positives: ["변경 파일은 결제 모듈의 두 파일로 제한됩니다."],
+  },
+  {
     id: "ko.narrow",
     expressions: ["좁히", "좁혀"],
     message: "줄어드는 대상과 이전 및 이후 기준이 드러나는지 확인합니다.",
@@ -261,10 +294,14 @@ const rules = [
   },
   {
     id: "ko.fix-in-place",
-    expressions: ["박다", "박아", "박은", "박힌", "박혀"],
-    message: "물체를 고정하는 뜻인지 규칙을 바꾸기 어렵게 만든다는 비유인지 확인합니다.",
-    queries: ["물리적으로 고정하는 대상이 있습니까?", "설정하거나 기록한다는 행동을 대신합니까?"],
-    negatives: ["지원 버전을 코드에 박아 둡니다."],
+    expressions: ["박다", "박아", "박은", "박힌", "박혀", "박", "박았", "박히", "박혔"],
+    message: "대상을 넣거나 고정한 행동인지, 대상이 한곳에 남아 굳어진 상태인지 확인하고 각 상황을 더 정확히 설명하는 표현을 먼저 찾습니다.",
+    queries: [
+      "누가 무엇을 어디에 넣거나 고정했습니까?",
+      "무엇이 어디에 남아 있거나 굳어진 상태입니까?",
+      "비유라면 설정하거나 기록한 내용 또는 바꾸기 어려운 이유를 직접 설명할 수 있습니까?",
+    ],
+    negatives: ["지원 버전을 코드에 박아 둡니다.", "규칙이 코드에 박혀 있습니다."],
     positives: ["벽에 못을 박아 안내판을 고정합니다."],
   },
   {
@@ -453,6 +490,177 @@ const rules = [
   },
 ].map((rule) => ({ kind: "literal", ...rule }));
 
+const FINAL_N = "\u11ab";
+const FINAL_L = "\u11af";
+const FINAL_M = "\u11b7";
+const FINAL_B = "\u11b8";
+
+const endingGroups = {
+  "adjective-consonant": {
+    terminal: ["다", "습니다", "습니까"],
+    connective: ["고", "지", "지만", "거나", "은데", "으면", "으니", "으며", "으면서", "도록", "게"],
+    adnominal: ["은", "을", "던"],
+    nominal: ["기", "음"],
+    prefinal: [
+      "겠다",
+      "겠고",
+      "겠지만",
+      "겠습니다",
+      "겠습니까",
+      "으시다",
+      "으시고",
+      "으시면",
+      "으십니다",
+      "으십니까",
+      "으셨다",
+      "으셨습니다",
+      "더라",
+      "더니",
+    ],
+    quotation: ["다고", "다는", "다면"],
+  },
+  "verb-consonant": {
+    terminal: ["다", "는다", "습니다", "습니까"],
+    connective: ["고", "지", "지만", "거나", "는데", "으면", "으니", "으며", "으면서", "도록", "게"],
+    adnominal: ["는", "은", "을", "던"],
+    nominal: ["기", "음"],
+    prefinal: [
+      "겠다",
+      "겠고",
+      "겠지만",
+      "겠습니다",
+      "겠습니까",
+      "으시다",
+      "으시고",
+      "으시면",
+      "으십니다",
+      "으십니까",
+      "으셨다",
+      "으셨습니다",
+      "더라",
+      "더니",
+    ],
+    quotation: ["는다고", "는다는", "는다면"],
+  },
+  "verb-vowel": {
+    terminal: [
+      "",
+      "다",
+      `${FINAL_N}다`,
+      `${FINAL_B}니다`,
+      `${FINAL_B}니까`,
+      `${FINAL_B}니다와`,
+    ],
+    connective: ["고", "지", "지만", "거나", "는데", "면", "니", "며", "면서", "도록", "게"],
+    adnominal: [FINAL_N, FINAL_L, "는", "던"],
+    nominal: ["기", FINAL_M, `${FINAL_M}으로`],
+    prefinal: [
+      "겠다",
+      "겠고",
+      "겠지만",
+      "겠습니다",
+      "겠습니까",
+      "시다",
+      "시고",
+      "시면",
+      "신다",
+      "십니다",
+      "십니까",
+      "셨다",
+      "셨습니다",
+      "더라",
+      "더니",
+    ],
+    quotation: [`${FINAL_N}다고`, `${FINAL_N}다는`, `${FINAL_N}다면`],
+  },
+  "fused-a": {
+    terminal: ["", "요"],
+    connective: ["서", "도", "야", "야만", "야지"],
+  },
+  "narrow-state-fused-a": {
+    terminal: ["", "요"],
+    connective: ["서", "도", "야", "야만", "야지"],
+    auxiliary: ["지다", "지고", "지면", "지며", "졌다", "졌습니다"],
+  },
+  "active-fused-a": {
+    terminal: ["", "요"],
+    connective: ["서", "도", "야", "야만", "야지"],
+    auxiliary: ["두다", "두고", "두면", "둔다", "놓다", "놓고", "놓으면", "놓는다"],
+  },
+  "passive-fused-eo": {
+    terminal: ["", "요"],
+    connective: ["서", "도", "야", "야만", "야지"],
+    auxiliary: ["있다", "있고", "있으면", "있으며", "있습니다", "있는", "있던"],
+  },
+  past: {
+    terminal: ["다", "어요", "습니다", "습니까"],
+    connective: ["고", "지만", "는데", "으면", "으니", "으며"],
+    adnominal: ["던"],
+    quotation: ["다고", "다는", "다면"],
+  },
+  "after-da": {
+    connective: ["", "가", "가도", "가는", "가면", "시피"],
+  },
+  "after-adnominal": {
+    adnominal: [""],
+  },
+  "after-final-n": {
+    terminal: ["", "다"],
+    quotation: ["다고", "다는", "다면"],
+  },
+};
+
+/** @type {ReadonlyArray<MorphologyMatcher>} */
+const morphologyMatchers = [
+  {
+    id: "narrow-state-adjective",
+    lemma: "좁다",
+    partOfSpeech: "adjective",
+    ruleId: "ko.narrow-state",
+    variants: [
+      { surface: "좁았", expression: "좁았", endingGroup: "past" },
+      { surface: "좁아", expression: "좁아", endingGroup: "narrow-state-fused-a" },
+      { surface: "좁", expression: "좁", endingGroup: "adjective-consonant" },
+    ],
+  },
+  {
+    id: "narrow-causative-verb",
+    lemma: "좁히다",
+    partOfSpeech: "verb",
+    ruleId: "ko.narrow",
+    variants: [
+      { surface: "좁혔", expression: "좁혀", endingGroup: "past" },
+      { surface: "좁혀", expression: "좁혀", endingGroup: "fused-a" },
+      { surface: "좁히", expression: "좁히", endingGroup: "verb-vowel" },
+    ],
+  },
+  {
+    id: "fix-active-verb",
+    lemma: "박다",
+    partOfSpeech: "verb",
+    ruleId: "ko.fix-in-place",
+    variants: [
+      { surface: "박았", expression: "박았", endingGroup: "past" },
+      { surface: "박다", expression: "박다", endingGroup: "after-da" },
+      { surface: "박아", expression: "박아", endingGroup: "active-fused-a" },
+      { surface: "박은", expression: "박은", endingGroup: "after-adnominal" },
+      { surface: "박", expression: "박", endingGroup: "verb-consonant" },
+    ],
+  },
+  {
+    id: "fix-passive-verb",
+    lemma: "박히다",
+    partOfSpeech: "verb",
+    ruleId: "ko.fix-in-place",
+    variants: [
+      { surface: "박혔", expression: "박혔", endingGroup: "past" },
+      { surface: "박힌", expression: "박힌", endingGroup: "after-final-n" },
+      { surface: "박혀", expression: "박혀", endingGroup: "passive-fused-eo" },
+      { surface: "박히", expression: "박히", endingGroup: "verb-vowel" },
+    ],
+  },
+];
+
 /**
  * 내장 표현 규칙 전체를 순회해 모든 literal 출현을 찾는다.
  *
@@ -468,7 +676,7 @@ const rules = [
  */
 export function scanExpressions(sources) {
   validateRules();
-  const { syllableIndex, nfdDescriptors } = buildExpressionIndex();
+  const { syllableIndex, compiledMorphologyMatchers } = buildExpressionIndex();
   const matchedRules = rules.map(() => false);
   /** @type {Array<ExpressionWarning>} */
   const warnings = [];
@@ -478,7 +686,7 @@ export function scanExpressions(sources) {
     if (!source.text.isWellFormed()) {
       throw new Error("rules:invalid-source");
     }
-    const result = scanSource(source, syllableIndex, nfdDescriptors, warnings);
+    const result = scanSource(source, syllableIndex, compiledMorphologyMatchers, warnings);
     total += result.found;
     for (const ruleIndex of result.matchedRuleIndexes) {
       matchedRules[ruleIndex] = true;
@@ -525,10 +733,56 @@ function validateRules() {
     validateTextList(rule.positives, false);
   }
 
-  const declaredExpressions = new Set(rules.flatMap((rule) => rule.expressions));
-  for (const expression of NFD_MATCHED_EXPRESSIONS) {
-    if (!declaredExpressions.has(expression)) {
+  validateMorphologyMatchers(ids);
+}
+
+/**
+ * 형태 matcher가 기존 진단과 검증된 어미 자료만 참조하는지 확인한다.
+ *
+ * @param {ReadonlySet<string>} ruleIds 선언된 사용자 진단 식별자
+ * @returns {void}
+ */
+function validateMorphologyMatchers(ruleIds) {
+  const matcherIds = new Set();
+  for (const matcher of morphologyMatchers) {
+    const rule = rules.find((candidate) => candidate.id === matcher.ruleId);
+    if (
+      !/^[a-z][a-z0-9-]+$/u.test(matcher.id) ||
+      matcherIds.has(matcher.id) ||
+      !isNonEmptyText(matcher.lemma) ||
+      !["adjective", "verb"].includes(matcher.partOfSpeech) ||
+      !ruleIds.has(matcher.ruleId) ||
+      rule === undefined ||
+      matcher.variants.length === 0
+    ) {
       throw new Error("rules:invalid-expression-rule");
+    }
+    matcherIds.add(matcher.id);
+
+    const surfaces = new Set();
+    for (const variant of matcher.variants) {
+      if (
+        !isNonEmptyText(variant.surface) ||
+        surfaces.has(variant.surface) ||
+        !rule.expressions.includes(variant.expression) ||
+        !Object.hasOwn(endingGroups, variant.endingGroup)
+      ) {
+        throw new Error("rules:invalid-expression-rule");
+      }
+      surfaces.add(variant.surface);
+    }
+  }
+
+  for (const group of Object.values(endingGroups)) {
+    for (const endings of Object.values(group)) {
+      if (!Array.isArray(endings) || endings.length === 0) {
+        throw new Error("rules:invalid-expression-rule");
+      }
+      for (const ending of endings) {
+        if (typeof ending !== "string" || !ending.isWellFormed()) {
+          throw new Error("rules:invalid-expression-rule");
+        }
+      }
     }
   }
 }
@@ -568,29 +822,24 @@ function isNonEmptyText(value) {
 }
 
 /**
- * 음절 literal 후보는 첫 UTF-16 code unit별로, NFD 접두 매칭 후보는 분해한 표현과 함께 선언 순서로 묶는다.
+ * literal 후보와 형태 matcher를 선언 순서 및 사용자 진단에 연결한다.
  *
  * @returns {{
  *   syllableIndex: ReadonlyMap<string, ReadonlyArray<ExpressionDescriptor>>,
- *   nfdDescriptors: ReadonlyArray<NfdDescriptor>
+ *   compiledMorphologyMatchers: ReadonlyArray<CompiledMorphologyMatcher>
  * }} 두 매칭 방식의 후보 색인
  */
 function buildExpressionIndex() {
   /** @type {Map<string, Array<ExpressionDescriptor>>} */
   const syllableIndex = new Map();
-  /** @type {Array<NfdDescriptor>} */
-  const nfdDescriptors = [];
+  const morphologyRuleIds = new Set(morphologyMatchers.map((matcher) => matcher.ruleId));
+  const ruleIndexes = new Map(rules.map((rule, index) => [rule.id, index]));
+  const declarationIndexes = new Map();
   let declarationIndex = 0;
   for (const [ruleIndex, rule] of rules.entries()) {
     for (const expression of rule.expressions) {
-      if (NFD_MATCHED_EXPRESSIONS.has(expression)) {
-        nfdDescriptors.push({
-          ruleIndex,
-          declarationIndex,
-          expression,
-          nfd: expression.normalize("NFD"),
-        });
-      } else {
+      declarationIndexes.set(`${rule.id}\0${expression}`, declarationIndex);
+      if (!morphologyRuleIds.has(rule.id)) {
         const firstUnit = expression[0];
         const descriptors = syllableIndex.get(firstUnit) ?? [];
         descriptors.push({ ruleIndex, declarationIndex, expression });
@@ -599,18 +848,51 @@ function buildExpressionIndex() {
       declarationIndex += 1;
     }
   }
-  return { syllableIndex, nfdDescriptors };
+  return {
+    syllableIndex,
+    compiledMorphologyMatchers: compileMorphologyMatchers(ruleIndexes, declarationIndexes),
+  };
 }
 
 /**
- * 한 source의 모든 음절 및 NFD 접두 출현을 원본 UTF-16 위치의 결정적 순서로 모은다.
+ * 형태 matcher의 표면형, 어미와 사용자 진단 위치를 NFD 비교 자료로 만든다.
+ *
+ * @param {ReadonlyMap<string, number>} ruleIndexes 사용자 진단 위치
+ * @param {ReadonlyMap<string, number>} declarationIndexes 표현 선언 위치
+ * @returns {ReadonlyArray<CompiledMorphologyMatcher>} 실행할 형태 matcher
+ */
+function compileMorphologyMatchers(ruleIndexes, declarationIndexes) {
+  const endingSets = new Map();
+  for (const [groupId, group] of Object.entries(endingGroups)) {
+    endingSets.set(
+      groupId,
+      new Set(Object.values(group).flat().map((ending) => ending.normalize("NFD"))),
+    );
+  }
+
+  return morphologyMatchers.map((matcher) => ({
+    id: matcher.id,
+    variants: matcher.variants
+      .map((variant) => ({
+        ruleIndex: ruleIndexes.get(matcher.ruleId),
+        declarationIndex: declarationIndexes.get(`${matcher.ruleId}\0${variant.expression}`),
+        surfaceNfd: variant.surface.normalize("NFD"),
+        expression: variant.expression,
+        endings: endingSets.get(variant.endingGroup),
+      }))
+      .toSorted((left, right) => right.surfaceNfd.length - left.surfaceNfd.length),
+  }));
+}
+
+/**
+ * 한 source의 모든 literal 및 활용형 출현을 원본 UTF-16 위치의 결정적 순서로 모은다.
  *
  * @param {string} text 검사할 원문
  * @param {ReadonlyMap<string, ReadonlyArray<ExpressionDescriptor>>} syllableIndex 음절 후보 색인
- * @param {ReadonlyArray<NfdDescriptor>} nfdDescriptors NFD 접두 매칭 후보
+ * @param {ReadonlyArray<CompiledMorphologyMatcher>} compiledMorphologyMatchers 형태 matcher
  * @returns {ReadonlyArray<ExpressionMatch>} 시작 위치와 선언 순서로 정렬한 출현
  */
-function collectMatches(text, syllableIndex, nfdDescriptors) {
+function collectMatches(text, syllableIndex, compiledMorphologyMatchers) {
   /** @type {Array<ExpressionMatch>} */
   const matches = [];
   for (let offset = 0; offset < text.length; offset += 1) {
@@ -630,7 +912,7 @@ function collectMatches(text, syllableIndex, nfdDescriptors) {
       }
     }
   }
-  collectNfdMatches(text, nfdDescriptors, matches);
+  collectMorphologyMatches(text, compiledMorphologyMatchers, matches);
   return matches.toSorted(
     (left, right) =>
       left.start - right.start ||
@@ -640,37 +922,97 @@ function collectMatches(text, syllableIndex, nfdDescriptors) {
 }
 
 /**
- * NFD 접두 매칭 후보의 겹치는 출현을 원본 code point 범위로 되돌려 모은다.
+ * 한국어 token 전체가 검증된 활용으로 해석될 때 표제어의 원본 범위를 모은다.
  *
  * @param {string} text 검사할 원문
- * @param {ReadonlyArray<NfdDescriptor>} nfdDescriptors NFD 접두 매칭 후보
+ * @param {ReadonlyArray<CompiledMorphologyMatcher>} compiledMorphologyMatchers 형태 matcher
  * @param {Array<ExpressionMatch>} matches 출현을 추가할 배열
  * @returns {void}
  */
-function collectNfdMatches(text, nfdDescriptors, matches) {
-  if (nfdDescriptors.length === 0 || text.length === 0) {
-    return;
-  }
-  const mapping = buildNfdMapping(text);
-  for (const descriptor of nfdDescriptors) {
-    for (let from = 0; from <= mapping.nfdText.length; ) {
-      const found = mapping.nfdText.indexOf(descriptor.nfd, from);
-      if (found === -1) {
+function collectMorphologyMatches(text, compiledMorphologyMatchers, matches) {
+  for (let tokenStart = 0; tokenStart < text.length; ) {
+    const codePoint = text.codePointAt(tokenStart);
+    if (!isMorphologyTokenCodePoint(codePoint)) {
+      tokenStart += codePoint > 0xffff ? 2 : 1;
+      continue;
+    }
+
+    let tokenEnd = tokenStart;
+    while (tokenEnd < text.length) {
+      const tokenCodePoint = text.codePointAt(tokenEnd);
+      if (!isMorphologyTokenCodePoint(tokenCodePoint)) {
         break;
       }
-      const range = mapOriginalRange(mapping, found, found + descriptor.nfd.length);
-      if (range !== null) {
-        matches.push({
-          ruleIndex: descriptor.ruleIndex,
-          declarationIndex: descriptor.declarationIndex,
-          expression: descriptor.expression,
-          start: range.start,
-          end: range.end,
-        });
-      }
-      from = found + 1;
+      tokenEnd += tokenCodePoint > 0xffff ? 2 : 1;
     }
+
+    const token = text.slice(tokenStart, tokenEnd);
+    if (!isExcludedMorphologyContext(text, token, tokenEnd)) {
+      const mapping = buildNfdMapping(token);
+      for (const matcher of compiledMorphologyMatchers) {
+        for (const variant of matcher.variants) {
+          if (!mapping.nfdText.startsWith(variant.surfaceNfd)) {
+            continue;
+          }
+          const ending = mapping.nfdText.slice(variant.surfaceNfd.length);
+          if (!variant.endings.has(ending)) {
+            continue;
+          }
+          const range = mapOriginalRange(mapping, 0, variant.surfaceNfd.length);
+          if (range !== null) {
+            matches.push({
+              ruleIndex: variant.ruleIndex,
+              declarationIndex: variant.declarationIndex,
+              expression: variant.expression,
+              start: tokenStart + range.start,
+              end: tokenStart + range.end,
+            });
+          }
+          break;
+        }
+      }
+    }
+    tokenStart = tokenEnd;
   }
+}
+
+/**
+ * 활용형 token에 사용할 현대 한글 음절과 정준 분해 자모인지 확인한다.
+ *
+ * @param {number | undefined} codePoint Unicode code point
+ * @returns {boolean} 형태 판정 token에 포함하면 true
+ */
+function isMorphologyTokenCodePoint(codePoint) {
+  return (
+    codePoint !== undefined &&
+    ((codePoint >= 0xac00 && codePoint <= 0xd7a3) ||
+      (codePoint >= 0x1100 && codePoint <= 0x11ff) ||
+      (codePoint >= 0xa960 && codePoint <= 0xa97f) ||
+      (codePoint >= 0xd7b0 && codePoint <= 0xd7ff))
+  );
+}
+
+/**
+ * token 뒤의 검증된 특정 문맥을 제외한다.
+ *
+ * @param {string} text 검사할 원문
+ * @param {string} token 한국어 token
+ * @param {number} tokenEnd 원문의 token 끝
+ * @returns {boolean} 형태 후보로 보고하지 않으면 true
+ */
+function isExcludedMorphologyContext(text, token, tokenEnd) {
+  if (token.normalize("NFC") !== "박지") {
+    return false;
+  }
+  let cursor = tokenEnd;
+  while (text[cursor] === " " || text[cursor] === "\t") {
+    cursor += 1;
+  }
+  if (cursor === tokenEnd || text[cursor] !== "씨") {
+    return false;
+  }
+  cursor += 1;
+  return cursor === text.length || !isMorphologyTokenCodePoint(text.codePointAt(cursor));
 }
 
 /**
@@ -749,12 +1091,12 @@ function findCodePointIndex(nfdStarts, target) {
  *
  * @param {Source} source 검사할 원문
  * @param {ReadonlyMap<string, ReadonlyArray<ExpressionDescriptor>>} syllableIndex 음절 후보 색인
- * @param {ReadonlyArray<NfdDescriptor>} nfdDescriptors NFD 접두 매칭 후보
+ * @param {ReadonlyArray<CompiledMorphologyMatcher>} compiledMorphologyMatchers 형태 matcher
  * @param {Array<ExpressionWarning>} warnings 실행 전체의 상세 경고 앞부분
  * @returns {{found: number, matchedRuleIndexes: ReadonlySet<number>}} 출현 수와 발견 규칙 위치
  */
-function scanSource(source, syllableIndex, nfdDescriptors, warnings) {
-  const matches = collectMatches(source.text, syllableIndex, nfdDescriptors);
+function scanSource(source, syllableIndex, compiledMorphologyMatchers, warnings) {
+  const matches = collectMatches(source.text, syllableIndex, compiledMorphologyMatchers);
   const matchedRuleIndexes = new Set();
   let line = 1;
   let lineStart = 0;
