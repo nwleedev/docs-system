@@ -1,9 +1,9 @@
 ---
-name: use-words-review
+name: use-better-terms
 description: Review text and names before they are stored, committed, published, shared, or explicitly submitted for wording review. Check audience, evidence, private data, sentence relationships, symbols, and natural Korean when present. Exclude routine chat and responses that will not be reused.
 ---
 
-# Use Words Review
+# Use Better Terms
 
 Review public outputs without changing them. Use one general-purpose subagent for a read-only semantic review, then verify its findings in the main agent.
 

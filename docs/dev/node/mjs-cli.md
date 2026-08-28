@@ -1144,7 +1144,7 @@ ESLint 10.8.0과 `@eslint/js` 10.0.1은 MIT license를 사용한다. `@eslint/js
 준비 범위 밖의 fixture 파일은 추가하지 않는다. 다음 명령을 실행하고 해당 사례를 표준 입력에 붙여 넣은 뒤 입력을 끝내면 다른 검수자도 같은 설정을 다시 확인할 수 있다. 가상 파일 이름은 검사기용 ESLint 범위와 일치해야 한다.
 
 ```sh
-pnpm exec eslint --stdin --stdin-filename skills/use-words-review/scripts/static-case.mjs
+pnpm exec eslint --stdin --stdin-filename skills/use-better-terms/scripts/static-case.mjs
 ```
 
 다음 정상 사례는 출력 없이 상태 `0`이어야 한다. 허용한 built-in과 child process 함수만 정적인 이름으로 가져오고, process 출력도 정의된 stream을 직접 쓴다.

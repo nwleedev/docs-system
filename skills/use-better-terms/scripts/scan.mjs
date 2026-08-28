@@ -1155,7 +1155,7 @@ async function runSelfTest() {
 
   const tempParent = join(process.cwd(), "temps");
   await mkdir(tempParent, { recursive: true });
-  const repository = await mkdtemp(join(tempParent, "words-review-self-test-"));
+  const repository = await mkdtemp(join(tempParent, "better-terms-self-test-"));
   try {
     const init = spawnSync("git", ["init", "--quiet"], {
       cwd: repository,

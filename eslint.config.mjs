@@ -12,7 +12,7 @@ export default defineConfig([
   },
   {
     name: "node-mjs-scripts",
-    files: ["skills/use-words-review/scripts/**/*.mjs"],
+    files: ["skills/use-better-terms/scripts/**/*.mjs"],
     extends: [js.configs.recommended],
     languageOptions: {
       ecmaVersion: 2024,
@@ -209,8 +209,8 @@ export default defineConfig([
     },
   },
   {
-    name: "words-review-scanner-entrypoint-imports",
-    files: ["skills/use-words-review/scripts/scan.mjs"],
+    name: "better-terms-scanner-entrypoint-imports",
+    files: ["skills/use-better-terms/scripts/scan.mjs"],
     rules: {
       "no-restricted-imports": [
         "error",

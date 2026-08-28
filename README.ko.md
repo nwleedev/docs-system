@@ -14,7 +14,7 @@
 - [`docs/designs/README.md`](./docs/designs/README.md)는 모든 프로젝트에 같은 문서 틀을 강요하지 않으면서 요구사항, 조사 결과, 결정 사항, 계획과 검증 결과를 관리하는 방법을 설명합니다.
 - [`docs/dev/README.md`](./docs/dev/README.md)는 개발 지침을 조사하고 정리한 뒤 실제 작업에 적용하고 확인하는 방법을 설명합니다.
 - [`skills/use-design-docs`](./skills/use-design-docs/SKILL.md)와 [`skills/use-dev-guidance`](./skills/use-dev-guidance/SKILL.md)는 프로젝트에 맞게 수정해 사용하는 참고 구현입니다. 각 Skill은 작업 순서를 안내하고, 저장소 기준 README가 없을 때 사용할 시작 자료를 `references/_README.md`에 포함합니다.
-- [`skills/use-words-review`](./skills/use-words-review/SKILL.md)는 커밋하거나 공유할 글과 이름을 읽기 전용으로 검토하는 스킬입니다.
+- [`skills/use-better-terms`](./skills/use-better-terms/SKILL.md)는 커밋하거나 공유할 글과 이름을 읽기 전용으로 검토하는 스킬입니다.
 - [`examples/nextjs-frontend.md`](./examples/nextjs-frontend.md)는 특정 기술 구성에 맞춘 조사 프롬프트 예시입니다. 다른 프로젝트의 기본값으로 사용하지 않습니다.
 
 `src/`의 두 언어 문서는 따로 관리하며 같은 규칙을 번역한 문서라고 보장하지 않습니다. 필요한 항목을 가져오기 전에 두 파일의 해당 내용을 비교하세요.
@@ -46,9 +46,9 @@
 
 사용자가 기준 README 생성을 거절하면 Skill은 저장소 지침, 기존 문서 위치와 폴더 구조를 확인합니다. 원래 요청이 파일 작성을 허용한 경우에만 근거가 있는 위치에 작성하며, 위치를 정할 저장소 근거가 없으면 사용자에게 확인합니다. 검토나 조사 요청은 파일을 변경하지 않습니다.
 
-`use-words-review`를 선택한 뒤에는 [`src/AGENTS.en.md`](./src/AGENTS.en.md) 또는 [`src/AGENTS.ko.md`](./src/AGENTS.ko.md)에서 `BEGIN USE WORDS REVIEW`와 `END USE WORDS REVIEW` 표시를 포함한 구간 전체를 도구가 읽는 지침 파일에 합칩니다. Codex에서는 해당 `AGENTS.md`에 추가합니다. Claude Code에서는 `CLAUDE.md`에 추가하거나, `AGENTS.md`에 둔 뒤 `CLAUDE.md`에서 `@AGENTS.md`로 불러옵니다. 대상 저장소의 기존 소제목 구성을 유지하고 실제로 적용할 규칙만 추가합니다.
+`use-better-terms`를 선택한 뒤에는 [`src/AGENTS.en.md`](./src/AGENTS.en.md) 또는 [`src/AGENTS.ko.md`](./src/AGENTS.ko.md)에서 `BEGIN USE BETTER TERMS`와 `END USE BETTER TERMS` 표시를 포함한 구간 전체를 도구가 읽는 지침 파일에 합칩니다. Codex에서는 해당 `AGENTS.md`에 추가합니다. Claude Code에서는 `CLAUDE.md`에 추가하거나, `AGENTS.md`에 둔 뒤 `CLAUDE.md`에서 `@AGENTS.md`로 불러옵니다. 대상 저장소의 기존 소제목 구성을 유지하고 실제로 적용할 규칙만 추가합니다.
 
-Skill을 제거할 때에는 직접 복사한 Skill 디렉터리만 삭제합니다. `use-words-review`를 위해 지침 파일에 표시 구간을 추가했다면 그 구간도 삭제합니다. Skill이 생성했거나 사용한 저장소 README와 표시 밖의 지침은 저장소 문서이므로 그대로 둡니다.
+Skill을 제거할 때에는 직접 복사한 Skill 디렉터리만 삭제합니다. `use-better-terms`를 위해 지침 파일에 표시 구간을 추가했다면 그 구간도 삭제합니다. Skill이 생성했거나 사용한 저장소 README와 표시 밖의 지침은 저장소 문서이므로 그대로 둡니다.
 
 ## 운영 원칙
 

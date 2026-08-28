@@ -93,17 +93,17 @@
 
 **If a required Skill or one of its required references cannot be read, do not infer replacement rules. Stop and report the missing prerequisite. When only the repository authority README is absent, follow the creation-approval and alternative-location procedure defined by `use-design-docs` or `use-dev-guidance`.**
 
-<!-- BEGIN USE WORDS REVIEW -->
+<!-- BEGIN USE BETTER TERMS -->
 
 ### Text and Names
 
-- Before drafting Korean text or names that will be stored, committed, published, or shared outside the conversation, read the pre-draft reference required by `$use-words-review`.
-- Group text and names in any language by publication unit and run `$use-words-review` once immediately before storing or sharing them.
+- Before drafting Korean text or names that will be stored, committed, published, or shared outside the conversation, read the pre-draft reference required by `$use-better-terms`.
+- Group text and names in any language by publication unit and run `$use-better-terms` once immediately before storing or sharing them.
 - When the user explicitly requests review of wording or a public output, review the complete requested unit even when no file changed.
-- Do not run `$use-words-review` merely because routine chat or a progress update is sent.
+- Do not run `$use-better-terms` merely because routine chat or a progress update is sent.
 - Base every reader-facing statement on verified repository evidence, an approved decision, or approved wording. Do not use a user prompt, agent instruction, internal task description, work note, review criterion, rubric, output format, or workflow commentary as publishable source text.
 - Keep internal identifiers, private document references, implementation-only names, maintainer notes, unresolved decisions, review notes, and pre-publication checklists out of reader-facing content. Do not insert `TODO`, `TBD`, or similar placeholders unless the status itself is approved information that readers need.
-<!-- END USE WORDS REVIEW -->
+<!-- END USE BETTER TERMS -->
 
 ### Research, Cross-checking, Design, and Documentation
 

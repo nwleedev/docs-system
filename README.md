@@ -14,7 +14,7 @@ The files here are starting points. Select the sections that apply to the target
 - [`docs/designs/README.md`](./docs/designs/README.md) describes how to manage requirements, research, decisions, plans, and verification without forcing every project into one document template.
 - [`docs/dev/README.md`](./docs/dev/README.md) describes how to research, organize, apply, and check development guidance.
 - [`skills/use-design-docs`](./skills/use-design-docs/SKILL.md) and [`skills/use-dev-guidance`](./skills/use-dev-guidance/SKILL.md) are reference implementations to customize for a project. Each skill routes work and includes a `references/_README.md` starting point for repositories that do not yet have the corresponding authority README.
-- [`skills/use-words-review`](./skills/use-words-review/SKILL.md) is a read-only review skill for text and names that will be committed or shared.
+- [`skills/use-better-terms`](./skills/use-better-terms/SKILL.md) is a read-only review skill for text and names that will be committed or shared.
 - [`examples/nextjs-frontend.md`](./examples/nextjs-frontend.md) shows one stack-specific research prompt. It is an example, not a default for other projects.
 
 The two language documents under `src/` are maintained independently and are not guaranteed to contain equivalent rules. Compare the relevant sections before adopting either one.
@@ -46,9 +46,9 @@ When a repository adopting `use-design-docs` or `use-dev-guidance` already has i
 
 If the user declines creation, the skill inspects repository instructions, existing documentation locations, and the directory structure. It writes the originally requested file only when the request authorizes that change and the repository evidence supports the location. It asks the user when the repository does not establish a suitable location, and keeps review or research requests read-only.
 
-After selecting `use-words-review`, copy the entire section from [`src/AGENTS.en.md`](./src/AGENTS.en.md) or [`src/AGENTS.ko.md`](./src/AGENTS.ko.md), including the `BEGIN USE WORDS REVIEW` and `END USE WORDS REVIEW` markers, into an instruction file that the tool loads. Use the applicable `AGENTS.md` for Codex. For Claude Code, add the section to `CLAUDE.md`, or keep it in `AGENTS.md` and import that file from `CLAUDE.md` with `@AGENTS.md`. Keep the target repository's existing section structure and add only the rules that apply there.
+After selecting `use-better-terms`, copy the entire section from [`src/AGENTS.en.md`](./src/AGENTS.en.md) or [`src/AGENTS.ko.md`](./src/AGENTS.ko.md), including the `BEGIN USE BETTER TERMS` and `END USE BETTER TERMS` markers, into an instruction file that the tool loads. Use the applicable `AGENTS.md` for Codex. For Claude Code, add the section to `CLAUDE.md`, or keep it in `AGENTS.md` and import that file from `CLAUDE.md` with `@AGENTS.md`. Keep the target repository's existing section structure and add only the rules that apply there.
 
-To remove a skill, delete only the skill directory that you copied. If you added the marked `use-words-review` section to an instruction file, remove that section too. Keep repository READMEs created or used by a skill, the surrounding instructions, and any `@AGENTS.md` import that remains necessary for other rules.
+To remove a skill, delete only the skill directory that you copied. If you added the marked `use-better-terms` section to an instruction file, remove that section too. Keep repository READMEs created or used by a skill, the surrounding instructions, and any `@AGENTS.md` import that remains necessary for other rules.
 
 ## Working principles
 
