@@ -60,34 +60,14 @@
 - Apply the research rules to the agent's investigation and response. Do not copy citations, research notes, recommendations, or source wording into a target file unless the user requested them in that artifact and its intended readers need them.
 - Finding that a repository lacks a license, policy, check, document, or decision does not authorize adding one. Do not put placeholders, warnings, or maintainer tasks into the target artifact. Report the gap separately and obtain approval when it would change the requested result.
 
-## Subagent Use
+## Work Order and Requirement Changes
 
-- Do not use subagents for simple work, work that fits in one context, or work whose coordination cost is greater than the expected time saved.
-- When work can be divided into at least two independent units and the expected time saved is greater than the cost of assignment and reconciliation, the main agent delegates those units to subagents.
-- Give each subagent the applicable requirements, exact task, paths to inspect, allowed file-change scope, stop conditions, and expected result.
-- If the user names a specific Skill or the active Skill defines how to use subagents, follow that Skill. Do not duplicate the same role or add a separate review step outside the Skill.
-- The main agent is responsible for requirements, task allocation, dependencies, result reconciliation, conflict resolution, stop decisions, and final verification.
-- Do not treat a subagent's report as completion evidence. The main agent must inspect the actual files, changes, and check results.
-
-### Parallel Execution
-
-- Independent research questions, read-only reviews from different perspectives, and unrelated log or test-result analyses may run in parallel.
-- Run implementation work in parallel only when the tasks do not overlap in modified files, public interfaces, schemas, generated files, lockfiles, configuration, development servers, databases, or test data.
-- Do not run work in parallel when one result becomes another task's input or when the affected scope is uncertain.
-- Stay within the environment's concurrency limit and queue remaining work.
-
-### Sequential Execution
-
-- Resolve questions that can change requirement behavior before finalizing the plan, then start implementation against the reviewed plan.
-- Run tasks sequentially when they modify the same file or shared state, or when one task depends on another task's result.
-- Apply review findings and run the follow-up review only after the original review is complete.
-- After an independent work unit produces a stable change or commit, implementation of the next independent unit may overlap with read-only review of the completed unit.
-
-### Requirement Changes
-
-- When requirements change, pause new task assignments and assess the effect on work in progress.
+- Resolve questions that can change required behavior before finalizing the plan, then implement against the reviewed plan.
+- Run work sequentially when it changes the same file or shared state, or when one result is another step's input. Apply review findings only after the review is complete.
+- When implementation and review use separate sessions, the review session determines its target from the Git revisions in the review request and repository rules. Do not start the affected review when required revision information is missing or conflicts with repository state.
+- When requirements change, assess the effect on work in progress before starting another dependent step.
 - Continue only unaffected work. Stop affected work or revalidate it against the changed requirements.
-- Stop all related work and ask the requirements owner when the effect is uncertain or when shared assumptions and completion criteria have changed.
+- Stop all related work and ask the requirements owner when the effect is uncertain or shared assumptions and completion criteria changed.
 
 ## Skill Use and Work Environment
 
@@ -98,11 +78,10 @@
 ### Text and Names
 
 - Before drafting Korean text or names that will be stored, committed, published, or shared outside the conversation, read the pre-draft reference required by `$use-better-terms`.
-- Group text and names in any language by publication unit and run `$use-better-terms` once immediately before storing or sharing them.
+- Group text and names in any language by storage or sharing unit and run `$use-better-terms` once immediately before storing or sharing them. Apply natural alternatives first when verified evidence preserves the meaning.
+- Retain an established term or exact name only with its reason. Ask for human input instead of replacing text when doing so would decide missing meaning, responsibility, or approval.
 - When the user explicitly requests review of wording or a public output, review the complete requested unit even when no file changed.
 - Do not run `$use-better-terms` merely because routine chat or a progress update is sent.
-- Base every reader-facing statement on verified repository evidence, an approved decision, or approved wording. Do not use a user prompt, agent instruction, internal task description, work note, review criterion, rubric, output format, or workflow commentary as publishable source text.
-- Keep internal identifiers, private document references, implementation-only names, maintainer notes, unresolved decisions, review notes, and pre-publication checklists out of reader-facing content. Do not insert `TODO`, `TBD`, or similar placeholders unless the status itself is approved information that readers need.
 <!-- END USE BETTER TERMS -->
 
 ### Research, Cross-checking, Design, and Documentation
@@ -115,10 +94,6 @@
 
 - Run `$use-dev-guidance` when planning, implementing, reviewing, refactoring, testing, or documenting changes to source code, tests, CLIs, libraries, scripts, builds, CI, or configuration, and when changing dependencies or checks.
 - Follow the repository's `docs/dev/README.md` and the topic guidance it selects for development methods, stack-specific rules, execution commands, and verification.
-- Before selecting, adding, replacing, removing, or changing the version of an external dependency, research its officially recommended integration and applicable design patterns.
-- Research every direct and transitive external dependency. For each dependency, confirm its name, version, capabilities, potential issues, and applicable design patterns.
-- Compare external dependencies with already installed dependencies, platform capabilities, and an internal implementation.
-- Research does not authorize applying a dependency change. Confirm the user's change request and the repository's approval process separately.
 
 ## Environment Variables and Sensitive Information
 
