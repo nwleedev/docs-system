@@ -5,105 +5,49 @@ description: Repository workflow adapter for docs/designs/README.md that selects
 
 # Use Design Docs
 
-In this skill family, `use-` means binding a reusable execution procedure to a repository-local authority. It does not mean generic use of the named subject or broaden this skill beyond its README-defined scope.
-
-Use the current repository's `docs/designs/README.md` as the sole authority for design-document structure, ownership, required information, prohibited content, presentation, and validation. This skill supplies only the reusable execution procedure.
+Use the current repository's `docs/designs/README.md` as the authority for design-document structure, writing permissions, required information, prohibited content, presentation, and validation. This skill selects and orders work; it does not replace the repository README or authorize implementation.
 
 ## Establish the authority
 
 1. Resolve the repository root and check for `<repo-root>/docs/designs/README.md`.
-2. If the README exists, read it completely before reviewing, researching, creating, editing, planning, or validating any design document. Treat it as the repository's sole current authority and do not read or compare this skill's `references/_README.md`.
-3. If the README is missing, determine whether the requested work needs durable repository-specific design-document rules. Do not create the README merely because the skill was invoked.
-4. When those rules are needed, identify this installed skill's `references/_README.md` and the exact target `<repo-root>/docs/designs/README.md`, then ask the user whether to create it.
-5. If the user approves, create the target directory as needed and copy the bundled README content to the target without its first-line maintenance HTML comment. Re-read the new README completely before continuing.
-6. If the user declines, inspect applicable repository instructions, existing documentation locations, and the directory structure. When the request authorizes writing the originally requested document, write it only in a location supported by that evidence; ask the user when no suitable location can be established. Keep read-only requests read-only.
-7. Never overwrite an existing repository README with the bundled file or synchronize the two automatically.
-8. Follow applicable project instructions and the user's explicit request. Report a material conflict with the repository README instead of silently choosing one source.
+2. If it exists, read it completely. Do not compare it with this skill's `references/_README.md` or synchronize the files.
+3. If it is missing, decide whether the request needs durable repository-specific design-document rules. Do not create the README merely because this skill was invoked.
+4. When durable rules are needed, identify the bundled `references/_README.md` and exact target path, then ask the user whether to create the repository README.
+5. If approved, copy the bundled content without its first-line maintenance comment and read the created README completely. Never overwrite an existing README.
+6. If creation is declined, inspect repository instructions, existing document locations, and the directory structure. For an authorized writing request, use a location supported by that evidence; ask the user when no location is established. Keep read-only requests read-only.
+7. Follow the user's request and applicable repository instructions. Report a material conflict with the repository README instead of choosing silently.
 
-## Select the operations required for the request
+## Select the required operations
 
-Select every operation needed to complete the user's requested outcome, not only the first matching operation. Include necessary read-only prerequisites and verification, omit operations that do not contribute to the outcome, and run the selected operations in dependency order. Add another operation after work begins only when new evidence shows that it is both necessary and within the original scope.
+Choose every operation needed for the requested outcome, including read-only prerequisites and final validation. Omit unrelated work, run dependent operations in order, and add work later only when new evidence makes it necessary within the original scope.
 
-- **Review:** inspect and grade an existing document without editing it.
-- **Discover:** help the user learn, decide, and express requirements without treating AI proposals as approved requirements.
-- **Research:** investigate factual questions required by the requirements or explicit work context.
-- **Record:** create or update a reference document or record a human-approved decision.
-- **Plan:** create or revise execution planning from resolved requirements and decisions.
-- **Validate:** check a package, trace requirement coverage, or assess the effect of a requirement change.
+- **Discover:** clarify outcomes and behavior-changing questions while keeping AI proposals separate from requirements and human decisions.
+- **Review:** grade an existing document without editing it and use the README's status vocabulary.
+- **Research:** investigate factual questions from the requirements or explicit work context.
+- **Record:** create or update a durable reference or human-approved decision when its README creation condition is met.
+- **Plan:** create or revise execution planning after behavior-changing questions and required decisions are resolved.
+- **Validate:** check the package, trace requirement coverage, or assess a requirement change.
 
-Treat review and rewriting as separate operations. Necessary read-only work does not imply permission to create or change files; do not perform a mutating operation unless the user explicitly requests creation, editing, application, or documentation.
+Review and rewriting are separate operations. Read-only prerequisites do not authorize file changes.
 
-## Establish or create the requirement baseline
+## Establish the requirement baseline
 
-1. Inspect the repository for the target design package and `requirements.md` before assuming they exist.
-2. If `requirements.md` exists, read it completely and use it as the baseline.
-3. If no durable package is needed, use the user's explicit request as the work context. Do not reject the task or create a package only because `requirements.md` is absent.
-4. If a durable package is needed, file creation is authorized, and `requirements.md` is absent, follow the repository's Git policy and create the package with a minimal initial `requirements.md` under the README rules.
-5. Include only outcomes, must-remain-true conditions, completion evidence, and unresolved questions explicitly stated by the user. Exclude unrelated process instructions and never infer missing requirements or decisions.
-6. Omit unsupported sections instead of adding empty headings or placeholders. Review the initial file immediately and pause only operations that depend on behavior-changing missing information.
-7. After initial creation, do not revise `requirements.md` unless the user requests the change or approves the exact wording.
+1. Inspect the target design package and `requirements.md` before assuming they exist.
+2. If `requirements.md` exists, read it completely and treat it as the baseline controlled by the requirements owner.
+3. If no durable package is needed, use the user's explicit request as the work context without creating a package.
+4. If a durable package is needed, creation is authorized, and the file is absent, create the package and a minimal initial `requirements.md` under the repository README. Include only explicitly stated outcomes, conditions, completion evidence, and unresolved questions. Omit placeholders and inferred requirements.
+5. Review a new initial file immediately. Pause only work that depends on behavior-changing missing information.
+6. After initial creation, change `requirements.md` only when the requirements owner requests the change or approves the exact wording.
 
-## Load the minimum project context
+## Execute in dependency order
 
-1. Read only the derived documents and repository evidence needed for the requested operation.
-2. Keep the human's requirement wording separate from AI findings, sourced facts, proposals, and approved decisions.
-3. Before research or planning, separate blocking questions, optional suggestions, factual research questions, and decisions that require human judgment.
-4. When `docs/designs/**` is implementation input, use the authority established above. Read the repository README when it already existed or was created with approval. If the user declined creation, apply the repository instructions and structure established by step 6 instead. Then read the complete applicable `requirements.md` and only the decisions and plan needed for the implementation baseline. Ask the user when those sources cannot establish the required meaning or scope. This skill does not authorize or perform implementation; pass the baseline to the applicable development workflow.
-
-## Execute the selected operations
-
-### Discover
-
-Use this operation when the user wants to learn how to design requirements, does not yet know which questions matter, or wants guided clarification before reviewing, researching, or planning.
-
-#### Built-in procedure
-
-1. Identify the user outcome, the current evidence, and the decisions that would materially change behavior, scope, protected behavior, or completion evidence.
-2. For territory the user cannot evaluate, inspect repository evidence and research current primary sources before asking for a decision. Separate facts already settled by evidence from choices that still require judgment.
-3. Present only realistic choices. For each choice, explain the consequence that matters here and recommend a default with its reason. Do not ask the user to choose among options they have not been given enough information to evaluate.
-4. Ask one decision question at a time. Record unanswered choices as unresolved questions or explicit AI proposals, never as human requirements.
-5. Before proposing document changes, summarize the intended outcome, conditions that must remain true, allowed and prohibited scope when relevant, observable completion evidence, approved decisions, AI proposals, and unresolved questions. Ask the user to correct the interpretation.
-6. Propose exact requirement wording and its intended location separately from the document. Apply only wording the user explicitly requests or approves; preserve all unapproved wording and ordering.
-7. After an approved edit, run Review and any applicable Validate operation as separate steps. Report remaining assumptions and questions instead of filling them to make the document appear complete.
-
-### Review
-
-- Apply every relevant README criterion and cite a short quotation or file location as evidence.
-- Report the status vocabulary required by the README.
-- Leave the document unchanged and propose exact edits separately when useful.
-
-### Research
-
-- Derive research questions from exact requirement excerpts or the explicit work context.
-- Prefer current primary sources and repository evidence, cross-check material claims, and preserve uncertainty.
-- Create a durable reference document only when the user requests documentation or the README's creation condition is met and file creation is authorized.
-
-### Record
-
-- Inspect existing files first and update the owning document instead of duplicating information.
-- Connect the new material to exact requirement excerpts and distinguish sourced facts, analysis, proposals, and human decisions.
-- Never present an AI recommendation as human approval.
-
-### Plan
-
-- Do not plan past unresolved questions or decisions that would materially change the requested outcome.
-- Use the requirement baseline, work units, dependencies, stop conditions, and verification evidence required by the README.
-- Do not invent behavior to make implementation convenient.
-
-### Validate or handle changes
-
-- Compare the current requirements with the recorded baseline.
-- Identify affected and unaffected references, decisions, work units, and verification methods.
-- Pause affected work, allow unaffected work to continue only when that conclusion is supported, and request human judgment when impact is uncertain.
-
-## Provide design-document context when delegating
-
-Follow the applicable project delegation policy. Delegate independent review, research questions, repository evidence collection, and read-only validation when doing so is useful. Keep requirements ownership, human decisions, final reconciliation, and shared-document changes with the main agent or one designated writer. Do not run record or plan operations concurrently when they depend on the same findings or may change the same files.
-
-Give each delegated task the `docs/designs/README.md` path, requirements baseline, target paths, exact operation, mutation boundary, stop condition, and expected return. Do not paste the README into prompts. The main agent remains responsible for reading the actual files, reconciling results, and verifying any changes.
-
-Do not automatically chain another planning or review skill merely because it is installed. Follow an explicitly requested or already active skill when it does not conflict with the repository README, and avoid duplicate reviews.
+1. Read only the requirements, decisions, references, repository evidence, and plan needed by the selected operations.
+2. Separate requirements and approved decisions from sourced facts, analysis, AI proposals, and unresolved questions.
+3. Before research or planning, distinguish blocking questions, optional suggestions, factual questions, and decisions requiring human judgment. Do not plan past unresolved matters that would change the outcome.
+4. Apply the repository README's creation conditions, required information, prohibited content, and validation rules to each selected operation. Update the document responsible for existing information instead of duplicating it.
+5. When requirements change, compare them with the recorded baseline, identify affected and unaffected material, pause affected work, and request human judgment when the impact is uncertain.
+6. When design documents are implementation input, read the complete applicable requirements and only the decisions, plan, and development guidance needed for the baseline. Ask when those sources do not establish the required meaning. Pass the baseline to the applicable development workflow; do not implement through this skill.
 
 ## Finish
 
-Re-read the applicable README checks after the work. Report changed files, validation evidence, unresolved blockers, and items requiring human judgment. Never claim implementation compliance from documentation alone.
+Run the applicable README checks once after the work. Report changed files, validation evidence, unresolved blockers, and questions requiring human judgment. Never claim implementation compliance from documentation alone.
