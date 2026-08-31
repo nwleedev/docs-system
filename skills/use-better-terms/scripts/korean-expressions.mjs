@@ -947,29 +947,27 @@ function collectMorphologyMatches(text, compiledMorphologyMatchers, matches) {
     }
 
     const token = text.slice(tokenStart, tokenEnd);
-    if (!isExcludedMorphologyContext(text, token, tokenEnd)) {
-      const mapping = buildNfdMapping(token);
-      for (const matcher of compiledMorphologyMatchers) {
-        for (const variant of matcher.variants) {
-          if (!mapping.nfdText.startsWith(variant.surfaceNfd)) {
-            continue;
-          }
-          const ending = mapping.nfdText.slice(variant.surfaceNfd.length);
-          if (!variant.endings.has(ending)) {
-            continue;
-          }
-          const range = mapOriginalRange(mapping, 0, variant.surfaceNfd.length);
-          if (range !== null) {
-            matches.push({
-              ruleIndex: variant.ruleIndex,
-              declarationIndex: variant.declarationIndex,
-              expression: variant.expression,
-              start: tokenStart + range.start,
-              end: tokenStart + range.end,
-            });
-          }
-          break;
+    const mapping = buildNfdMapping(token);
+    for (const matcher of compiledMorphologyMatchers) {
+      for (const variant of matcher.variants) {
+        if (!mapping.nfdText.startsWith(variant.surfaceNfd)) {
+          continue;
         }
+        const ending = mapping.nfdText.slice(variant.surfaceNfd.length);
+        if (!variant.endings.has(ending)) {
+          continue;
+        }
+        const range = mapOriginalRange(mapping, 0, variant.surfaceNfd.length);
+        if (range !== null) {
+          matches.push({
+            ruleIndex: variant.ruleIndex,
+            declarationIndex: variant.declarationIndex,
+            expression: variant.expression,
+            start: tokenStart + range.start,
+            end: tokenStart + range.end,
+          });
+        }
+        break;
       }
     }
     tokenStart = tokenEnd;
@@ -990,29 +988,6 @@ function isMorphologyTokenCodePoint(codePoint) {
       (codePoint >= 0xa960 && codePoint <= 0xa97f) ||
       (codePoint >= 0xd7b0 && codePoint <= 0xd7ff))
   );
-}
-
-/**
- * token 뒤의 검증된 특정 문맥을 제외한다.
- *
- * @param {string} text 검사할 원문
- * @param {string} token 한국어 token
- * @param {number} tokenEnd 원문의 token 끝
- * @returns {boolean} 형태 후보로 보고하지 않으면 true
- */
-function isExcludedMorphologyContext(text, token, tokenEnd) {
-  if (token.normalize("NFC") !== "박지") {
-    return false;
-  }
-  let cursor = tokenEnd;
-  while (text[cursor] === " " || text[cursor] === "\t") {
-    cursor += 1;
-  }
-  if (cursor === tokenEnd || text[cursor] !== "씨") {
-    return false;
-  }
-  cursor += 1;
-  return cursor === text.length || !isMorphologyTokenCodePoint(text.codePointAt(cursor));
 }
 
 /**

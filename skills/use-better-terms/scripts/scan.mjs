@@ -961,7 +961,7 @@ async function runSelfTest() {
   );
 
   const morphologyExclusions = scanExpressions([
-    makeTestSource("morphology-exclusions", "좁쌀 박물관 박사 박수 호박 압박 대박 박지 씨"),
+    makeTestSource("morphology-exclusions", "좁쌀 박물관 박사 박수 호박 압박 대박"),
   ]);
   assert.equal(
     morphologyExclusions.warnings.some((warning) => morphologyRuleIds.has(warning.ruleId)),
@@ -969,13 +969,13 @@ async function runSelfTest() {
   );
 
   const ambiguousMorphology = scanExpressions([
-    makeTestSource("ambiguous-morphology", "박지. 못을 박다."),
+    makeTestSource("ambiguous-morphology", "박지 씨. 박지. 못을 박다."),
   ]);
   assert.deepEqual(
     ambiguousMorphology.warnings
       .filter((warning) => warning.ruleId === "ko.fix-in-place")
       .map((warning) => warning.expression),
-    ["박", "박다"],
+    ["박", "박", "박다"],
   );
   assert.equal(
     scanExpressions([makeTestSource("nfd-morphology", "좁힌".normalize("NFD"))]).warnings.some(
