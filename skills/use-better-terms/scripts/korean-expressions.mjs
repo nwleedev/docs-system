@@ -59,6 +59,7 @@
  */
 
 /** @typedef {{rule: number, order: number, expression: string, length: number, prefix: string}} TermDescriptor */
+/** @typedef {{order: number, surface: string, expression: string}} LabelDescriptor */
 
 /** @type {number} */
 const MAX_WARNINGS = 20_000;
@@ -938,13 +939,14 @@ function buildExpressionIndex() {
   const literal = new Map();
   /** @type {Map<string, Array<TermDescriptor>>} */
   const token = new Map();
-  const orders = new Map();
   let order = 0;
   for (const [index, rule] of rules.entries()) {
+    /** @type {Array<LabelDescriptor>} */
+    const labels = [];
     for (const expression of rule.expressions) {
-      orders.set(`${index}\0${expression}`, order);
+      const surface = expression.normalize("NFD");
+      labels.push({ order, surface, expression });
       if (rule.mode === "literal") {
-        const surface = expression.normalize("NFD");
         const firstUnit = surface[0];
         const descriptors = literal.get(firstUnit) ?? [];
         descriptors.push({ rule: index, order, surface, expression });
@@ -955,11 +957,9 @@ function buildExpressionIndex() {
 
     for (const term of rule.terms ?? []) {
       const stem = term.lemma.slice(0, -1).normalize("NFD");
-      const allowstem = rule.expressions.some(
-        (expression) => expression.normalize("NFD") === stem,
-      );
-      for (const [surface, length] of buildForms(term, allowstem)) {
-        const descriptor = makeTermDescriptor(rule, index, surface, length, orders);
+      const bare = labels.some((label) => label.surface === stem);
+      for (const [surface, length] of buildForms(term, bare)) {
+        const descriptor = makeTermDescriptor(rule, index, surface, length, labels);
         addTermDescriptor(token, surface, descriptor);
       }
     }
@@ -971,15 +971,15 @@ function buildExpressionIndex() {
  * 표제어의 규칙 활용을 정규화한 token과 보고할 어간 길이로 만든다.
  *
  * @param {Term} term 표제어, 품사와 보조 용언 종류
- * @param {boolean} allowstem 선언 표현에 어간 자체가 있는지 여부
+ * @param {boolean} bare 선언 표현에 어간 자체가 있는지 여부
  * @returns {ReadonlyMap<string, number>} NFD token과 보고할 NFD 길이
  */
-function buildForms(term, allowstem) {
+function buildForms(term, bare) {
   const forms = new Map();
   const stem = term.lemma.slice(0, -1).normalize("NFD");
   const shape = hasFinalConsonant(stem) ? "consonant" : "vowel";
   addForms(forms, stem, endings[term.pos][shape]);
-  if (allowstem) {
+  if (bare) {
     forms.set(stem, stem.length);
   }
   addForms(forms, term.lemma.normalize("NFD"), endings.afterda);
@@ -1079,22 +1079,23 @@ function addFinalConsonant(surface, consonant) {
  * @param {number} index 규칙 위치
  * @param {string} surface NFD token
  * @param {number} length 보고할 어간 길이
- * @param {ReadonlyMap<string, number>} orders 표현 선언 순서
+ * @param {ReadonlyArray<LabelDescriptor>} labels 정규화한 표시 표현과 선언 순서
  * @returns {TermDescriptor} 실행용 후보
  */
-function makeTermDescriptor(rule, index, surface, length, orders) {
-  let expression = rule.expressions[0];
+function makeTermDescriptor(rule, index, surface, length, labels) {
+  let expression = labels[0].expression;
+  let order = labels[0].order;
   let matched = 0;
-  for (const candidate of rule.expressions) {
-    const normalized = candidate.normalize("NFD");
-    if (surface.startsWith(normalized) && normalized.length > matched) {
-      expression = candidate;
-      matched = normalized.length;
+  for (const label of labels) {
+    if (surface.startsWith(label.surface) && label.surface.length > matched) {
+      expression = label.expression;
+      order = label.order;
+      matched = label.surface.length;
     }
   }
   return {
     rule: index,
-    order: orders.get(`${index}\0${expression}`),
+    order,
     expression,
     length: matched === 0 ? length : matched,
     prefix: (rule.prefix ?? "").normalize("NFD"),
