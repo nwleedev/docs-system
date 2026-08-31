@@ -890,6 +890,12 @@ async function runSelfTest() {
       ["ko.flow", "흐름"],
     ],
   );
+  assert.equal(
+    scanExpressions([makeTestSource("exact-small", "작다 작습니다")]).warnings.some(
+      (warning) => warning.ruleId === "ko.small",
+    ),
+    false,
+  );
 
   for (const [ruleId, expression] of [
     ["ko.boundary", "경계"],
@@ -1028,6 +1034,42 @@ async function runSelfTest() {
       [1, 5, 6],
       [1, 21, 22],
     ],
+  );
+
+  const generalizedMorphology =
+    "닫습니다. 다룹니다. 다뤄. 회의를 가집니다. 회의를 가져.";
+  const generalizedMorphologyCheck = scanExpressions([
+    makeTestSource("generalized-morphology", generalizedMorphology),
+  ]);
+  assert.deepEqual(
+    generalizedMorphologyCheck.warnings
+      .filter((warning) =>
+        ["ko.close", "ko.cover-topic", "ko.hold-meeting"].includes(warning.ruleId),
+      )
+      .map((warning) => [
+        warning.ruleId,
+        warning.expression,
+        generalizedMorphology.slice(warning.startUtf16 - 1, warning.endUtf16 - 1),
+      ]),
+    [
+      ["ko.close", "닫", "닫"],
+      ["ko.cover-topic", "다루다", "다룹"],
+      ["ko.cover-topic", "다루다", "다뤄"],
+      ["ko.hold-meeting", "회의를 가지다", "회의를 가집"],
+      ["ko.hold-meeting", "회의를 가지다", "회의를 가져"],
+    ],
+  );
+  assert.equal(
+    scanExpressions([makeTestSource("nfd-contraction", "다뤄".normalize("NFD"))]).warnings.some(
+      (warning) => warning.ruleId === "ko.cover-topic",
+    ),
+    true,
+  );
+  assert.deepEqual(
+    Object.keys(
+      generalizedMorphologyCheck.rules.find((rule) => rule.id === "ko.cover-topic") ?? {},
+    ),
+    ["kind", "id", "expressions", "message", "queries", "negatives", "positives"],
   );
 
   const sixSentences =

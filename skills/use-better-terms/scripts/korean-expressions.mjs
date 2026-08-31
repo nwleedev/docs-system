@@ -11,6 +11,18 @@
  */
 
 /**
+ * @typedef {{lemma: string, pos: "adjective" | "verb", aux?: "active" | "passive" | "state"}} Term
+ */
+
+/**
+ * @typedef {ExpressionRule & {
+ *   mode: "literal" | "lemma" | "phrase",
+ *   terms?: ReadonlyArray<Term>,
+ *   prefix?: string
+ * }} InternalRule
+ */
+
+/**
  * @typedef {{id: string, text: string}} Source
  */
 
@@ -46,35 +58,7 @@
  * }} NfdMapping
  */
 
-/**
- * @typedef {{
- *   surface: string,
- *   expression: string,
- *   endingGroup: string
- * }} MorphologyVariant
- */
-
-/**
- * @typedef {{
- *   id: string,
- *   lemma: string,
- *   partOfSpeech: "adjective" | "verb",
- *   ruleId: string,
- *   variants: ReadonlyArray<MorphologyVariant>
- * }} MorphologyMatcher
- */
-
-/**
- * @typedef {{
- *   ruleIndex: number,
- *   declarationIndex: number,
- *   surfaceNfd: string,
- *   expression: string,
- *   endings: ReadonlySet<string>
- * }} CompiledMorphologyVariant
- */
-
-/** @typedef {{id: string, variants: ReadonlyArray<CompiledMorphologyVariant>}} CompiledMorphologyMatcher */
+/** @typedef {{rule: number, order: number, expression: string, length: number, prefix: string}} TermDescriptor */
 
 /** @type {number} */
 const MAX_WARNINGS = 20_000;
@@ -82,9 +66,9 @@ const MAX_WARNINGS = 20_000;
 const MAX_QUOTE_UTF16 = 480;
 
 /**
- * 검사할 literal 후보와 AI가 각 문맥을 판정할 때 사용할 질문 및 대조 사례다.
+ * 검사할 표현 후보와 AI가 각 문맥을 판정할 때 사용할 질문 및 대조 사례다.
  *
- * @type {ReadonlyArray<ExpressionRule>}
+ * @type {ReadonlyArray<InternalRule>}
  */
 const rules = [
   {
@@ -140,6 +124,9 @@ const rules = [
   },
   {
     id: "ko.hold-meeting",
+    mode: "phrase",
+    prefix: "회의를 ",
+    terms: [{ lemma: "가지다", pos: "verb" }],
     expressions: ["회의를 가지다"],
     message: "영어식 명사와 동사 결합을 실제 회의 행동으로 바꿀 수 있는지 확인합니다.",
     queries: ["회의를 열거나 회의한다는 뜻입니까?", "회의의 주체와 목적이 드러납니까?"],
@@ -289,6 +276,8 @@ const rules = [
   },
   {
     id: "ko.narrow-state",
+    mode: "lemma",
+    terms: [{ lemma: "좁다", pos: "adjective", aux: "state" }],
     expressions: ["좁", "좁아", "좁았"],
     message: "실제 폭, 수량 또는 선택할 수 있는 대상이 제한된 상태인지 확인하고 더 정확한 표현을 먼저 찾습니다.",
     queries: [
@@ -300,6 +289,8 @@ const rules = [
   },
   {
     id: "ko.narrow",
+    mode: "lemma",
+    terms: [{ lemma: "좁히다", pos: "verb" }],
     expressions: ["좁히", "좁혀"],
     message: "줄어드는 대상과 이전 및 이후 기준이 드러나는지 확인합니다.",
     queries: ["무엇을 얼마나 줄이는지 알 수 있습니까?", "검색, 선택 또는 물리적 폭을 실제로 줄입니까?"],
@@ -308,6 +299,11 @@ const rules = [
   },
   {
     id: "ko.close",
+    mode: "lemma",
+    terms: [
+      { lemma: "닫다", pos: "verb" },
+      { lemma: "닫히다", pos: "verb" },
+    ],
     expressions: ["닫"],
     message: "문짝이나 창처럼 여닫는 대상을 닫는 뜻인지 상태나 절차를 끝낸다는 번역인지 확인합니다.",
     queries: ["여닫을 수 있는 물건이나 화면 요소가 문장에 있습니까?", "완료 처리, 마감 또는 종료 같은 실제 행위를 대신합니까?"],
@@ -316,6 +312,11 @@ const rules = [
   },
   {
     id: "ko.fix-in-place",
+    mode: "lemma",
+    terms: [
+      { lemma: "박다", pos: "verb", aux: "active" },
+      { lemma: "박히다", pos: "verb", aux: "passive" },
+    ],
     expressions: ["박다", "박아", "박은", "박힌", "박혀", "박", "박았", "박히", "박혔"],
     message: "대상을 넣거나 고정한 행동인지, 대상이 한곳에 남아 굳어진 상태인지 확인하고 각 상황을 더 정확히 설명하는 표현을 먼저 찾습니다.",
     queries: [
@@ -352,6 +353,8 @@ const rules = [
   },
   {
     id: "ko.cover-topic",
+    mode: "lemma",
+    terms: [{ lemma: "다루다", pos: "verb" }],
     expressions: ["다루다"],
     message: "설명할 주제나 처리할 동작이 구체적인지 확인합니다.",
     queries: ["무엇을 설명하거나 처리합니까?", "여러 독립 행동을 하나로 감춘 표현입니까?"],
@@ -510,20 +513,36 @@ const rules = [
     negatives: ["해당 기능을 개선합니다."],
     positives: ["파일 업로드 기능은 CSV 파일을 받아 주문 목록을 만듭니다."],
   },
-].map((rule) => ({ kind: "literal", ...rule }));
+].map((rule) => ({ kind: "literal", mode: "literal", ...rule }));
 
 const FINAL_N = "\u11ab";
 const FINAL_L = "\u11af";
 const FINAL_M = "\u11b7";
 const FINAL_B = "\u11b8";
+const FINAL_SS = "\u11bb";
 
-const endingGroups = {
-  "adjective-consonant": {
-    terminal: ["다", "습니다", "습니까"],
-    connective: ["고", "지", "지만", "거나", "은데", "으면", "으니", "으며", "으면서", "도록", "게"],
-    adnominal: ["은", "을", "던"],
-    nominal: ["기", "음"],
-    prefinal: [
+const endings = {
+  adjective: {
+    consonant: [
+      "다",
+      "습니다",
+      "습니까",
+      "고",
+      "지",
+      "지만",
+      "거나",
+      "은데",
+      "으면",
+      "으니",
+      "으며",
+      "으면서",
+      "도록",
+      "게",
+      "은",
+      "을",
+      "던",
+      "기",
+      "음",
       "겠다",
       "겠고",
       "겠지만",
@@ -538,15 +557,72 @@ const endingGroups = {
       "으셨습니다",
       "더라",
       "더니",
+      "다고",
+      "다는",
+      "다면",
     ],
-    quotation: ["다고", "다는", "다면"],
+    vowel: [
+      "다",
+      `${FINAL_B}니다`,
+      `${FINAL_B}니까`,
+      "고",
+      "지",
+      "지만",
+      "거나",
+      `${FINAL_N}데`,
+      "면",
+      "니",
+      "며",
+      "면서",
+      "도록",
+      "게",
+      FINAL_N,
+      FINAL_L,
+      "던",
+      "기",
+      FINAL_M,
+      "겠다",
+      "겠고",
+      "겠지만",
+      "겠습니다",
+      "겠습니까",
+      "시다",
+      "시고",
+      "시면",
+      "십니다",
+      "십니까",
+      "셨다",
+      "셨습니다",
+      "더라",
+      "더니",
+      `${FINAL_N}다고`,
+      `${FINAL_N}다는`,
+      `${FINAL_N}다면`,
+    ],
   },
-  "verb-consonant": {
-    terminal: ["다", "는다", "습니다", "습니까"],
-    connective: ["고", "지", "지만", "거나", "는데", "으면", "으니", "으며", "으면서", "도록", "게"],
-    adnominal: ["는", "은", "을", "던"],
-    nominal: ["기", "음"],
-    prefinal: [
+  verb: {
+    consonant: [
+      "다",
+      "는다",
+      "습니다",
+      "습니까",
+      "고",
+      "지",
+      "지만",
+      "거나",
+      "는데",
+      "으면",
+      "으니",
+      "으며",
+      "으면서",
+      "도록",
+      "게",
+      "는",
+      "은",
+      "을",
+      "던",
+      "기",
+      "음",
       "겠다",
       "겠고",
       "겠지만",
@@ -561,22 +637,34 @@ const endingGroups = {
       "으셨습니다",
       "더라",
       "더니",
+      "는다고",
+      "는다는",
+      "는다면",
     ],
-    quotation: ["는다고", "는다는", "는다면"],
-  },
-  "verb-vowel": {
-    terminal: [
-      "",
+    vowel: [
       "다",
       `${FINAL_N}다`,
       `${FINAL_B}니다`,
       `${FINAL_B}니까`,
       `${FINAL_B}니다와`,
-    ],
-    connective: ["고", "지", "지만", "거나", "는데", "면", "니", "며", "면서", "도록", "게"],
-    adnominal: [FINAL_N, FINAL_L, "는", "던"],
-    nominal: ["기", FINAL_M, `${FINAL_M}으로`],
-    prefinal: [
+      "고",
+      "지",
+      "지만",
+      "거나",
+      "는데",
+      "면",
+      "니",
+      "며",
+      "면서",
+      "도록",
+      "게",
+      FINAL_N,
+      FINAL_L,
+      "는",
+      "던",
+      "기",
+      FINAL_M,
+      `${FINAL_M}으로`,
       "겠다",
       "겠고",
       "겠지만",
@@ -592,99 +680,38 @@ const endingGroups = {
       "셨습니다",
       "더라",
       "더니",
+      `${FINAL_N}다고`,
+      `${FINAL_N}다는`,
+      `${FINAL_N}다면`,
     ],
-    quotation: [`${FINAL_N}다고`, `${FINAL_N}다는`, `${FINAL_N}다면`],
   },
-  "fused-a": {
-    terminal: ["", "요"],
-    connective: ["서", "도", "야", "야만", "야지"],
-  },
-  "narrow-state-fused-a": {
-    terminal: ["", "요"],
-    connective: ["서", "도", "야", "야만", "야지"],
-    auxiliary: ["지다", "지고", "지면", "지며", "졌다", "졌습니다"],
-  },
-  "active-fused-a": {
-    terminal: ["", "요"],
-    connective: ["서", "도", "야", "야만", "야지"],
-    auxiliary: ["두다", "두고", "두면", "둔다", "놓다", "놓고", "놓으면", "놓는다"],
-  },
-  "passive-fused-eo": {
-    terminal: ["", "요"],
-    connective: ["서", "도", "야", "야만", "야지"],
-    auxiliary: ["있다", "있고", "있으면", "있으며", "있습니다", "있는", "있던"],
-  },
-  past: {
-    terminal: ["다", "어요", "습니다", "습니까"],
-    connective: ["고", "지만", "는데", "으면", "으니", "으며"],
-    adnominal: ["던"],
-    quotation: ["다고", "다는", "다면"],
-  },
-  "after-da": {
-    connective: ["", "가", "가도", "가는", "가면", "시피"],
-  },
-  "after-adnominal": {
-    adnominal: [""],
-  },
-  "after-final-n": {
-    terminal: ["", "다"],
-    quotation: ["다고", "다는", "다면"],
+  fused: ["", "요", "서", "도", "야", "야만", "야지"],
+  past: [
+    "다",
+    "어요",
+    "습니다",
+    "습니까",
+    "고",
+    "지만",
+    "는데",
+    "으면",
+    "으니",
+    "으며",
+    "던",
+    "다고",
+    "다는",
+    "다면",
+  ],
+  afterda: ["", "가", "가도", "가는", "가면", "시피"],
+  auxiliary: {
+    state: ["지다", "지고", "지면", "지며", "졌다", "졌습니다"],
+    active: ["두다", "두고", "두면", "둔다", "놓다", "놓고", "놓으면", "놓는다"],
+    passive: ["있다", "있고", "있으면", "있으며", "있습니다", "있는", "있던"],
   },
 };
 
-/** @type {ReadonlyArray<MorphologyMatcher>} */
-const morphologyMatchers = [
-  {
-    id: "narrow-state-adjective",
-    lemma: "좁다",
-    partOfSpeech: "adjective",
-    ruleId: "ko.narrow-state",
-    variants: [
-      { surface: "좁았", expression: "좁았", endingGroup: "past" },
-      { surface: "좁아", expression: "좁아", endingGroup: "narrow-state-fused-a" },
-      { surface: "좁", expression: "좁", endingGroup: "adjective-consonant" },
-    ],
-  },
-  {
-    id: "narrow-causative-verb",
-    lemma: "좁히다",
-    partOfSpeech: "verb",
-    ruleId: "ko.narrow",
-    variants: [
-      { surface: "좁혔", expression: "좁혀", endingGroup: "past" },
-      { surface: "좁혀", expression: "좁혀", endingGroup: "fused-a" },
-      { surface: "좁히", expression: "좁히", endingGroup: "verb-vowel" },
-    ],
-  },
-  {
-    id: "fix-active-verb",
-    lemma: "박다",
-    partOfSpeech: "verb",
-    ruleId: "ko.fix-in-place",
-    variants: [
-      { surface: "박았", expression: "박았", endingGroup: "past" },
-      { surface: "박다", expression: "박다", endingGroup: "after-da" },
-      { surface: "박아", expression: "박아", endingGroup: "active-fused-a" },
-      { surface: "박은", expression: "박은", endingGroup: "after-adnominal" },
-      { surface: "박", expression: "박", endingGroup: "verb-consonant" },
-    ],
-  },
-  {
-    id: "fix-passive-verb",
-    lemma: "박히다",
-    partOfSpeech: "verb",
-    ruleId: "ko.fix-in-place",
-    variants: [
-      { surface: "박혔", expression: "박혔", endingGroup: "past" },
-      { surface: "박힌", expression: "박힌", endingGroup: "after-final-n" },
-      { surface: "박혀", expression: "박혀", endingGroup: "passive-fused-eo" },
-      { surface: "박히", expression: "박히", endingGroup: "verb-vowel" },
-    ],
-  },
-];
-
 /**
- * 내장 표현 규칙 전체를 순회해 모든 literal 출현을 찾는다.
+ * 내장 표현 규칙 전체를 순회해 모든 고정 표현과 규칙 활용 출현을 찾는다.
  *
  * @param {ReadonlyArray<Source>} sources 입력 순서가 고정된 원문
  * @returns {{
@@ -698,7 +725,7 @@ const morphologyMatchers = [
  */
 export function scanExpressions(sources) {
   validateRules();
-  const { syllableIndex, compiledMorphologyMatchers } = buildExpressionIndex();
+  const { literal, token } = buildExpressionIndex();
   const matchedRules = rules.map(() => false);
   /** @type {Array<ExpressionWarning>} */
   const warnings = [];
@@ -708,7 +735,7 @@ export function scanExpressions(sources) {
     if (!source.text.isWellFormed()) {
       throw new Error("rules:invalid-source");
     }
-    const result = scanSource(source, syllableIndex, compiledMorphologyMatchers, warnings);
+    const result = scanSource(source, literal, token, warnings);
     total += result.found;
     for (const ruleIndex of result.matchedRuleIndexes) {
       matchedRules[ruleIndex] = true;
@@ -722,7 +749,7 @@ export function scanExpressions(sources) {
       kind: rule.kind,
       expressions: rule.expressions,
     })),
-    rules: rules.filter((rule, index) => matchedRules[index]),
+    rules: rules.filter((rule, index) => matchedRules[index]).map(makePublicRule),
     warnings,
     summary: {
       total,
@@ -739,12 +766,15 @@ export function scanExpressions(sources) {
  */
 function validateRules() {
   const ids = new Set();
+  const lemmas = new Set();
   for (const rule of rules) {
     if (
       rule.kind !== "literal" ||
+      !["literal", "lemma", "phrase"].includes(rule.mode) ||
       !/^ko\.[a-z0-9-]+$/u.test(rule.id) ||
       ids.has(rule.id) ||
-      !isNonEmptyText(rule.message)
+      !isNonEmptyText(rule.message) ||
+      !hasLowercaseKeys(rule)
     ) {
       throw new Error("rules:invalid-expression-rule");
     }
@@ -753,60 +783,112 @@ function validateRules() {
     validateTextList(rule.queries, false);
     validateTextList(rule.negatives, false);
     validateTextList(rule.positives, false);
+    validateTerms(rule, lemmas);
   }
 
-  validateMorphologyMatchers(ids);
+  validateEndings(endings);
 }
 
 /**
- * 형태 matcher가 기존 진단과 검증된 어미 자료만 참조하는지 확인한다.
+ * 검사 방식에 필요한 표제어와 구문 앞부분을 확인한다.
  *
- * @param {ReadonlySet<string>} ruleIds 선언된 사용자 진단 식별자
+ * @param {InternalRule} rule 검사할 규칙
+ * @param {Set<string>} lemmas 앞선 규칙에서 선언한 표제어
  * @returns {void}
  */
-function validateMorphologyMatchers(ruleIds) {
-  const matcherIds = new Set();
-  for (const matcher of morphologyMatchers) {
-    const rule = rules.find((candidate) => candidate.id === matcher.ruleId);
+function validateTerms(rule, lemmas) {
+  if (rule.mode === "literal") {
+    if (rule.terms !== undefined || rule.prefix !== undefined) {
+      throw new Error("rules:invalid-expression-rule");
+    }
+    return;
+  }
+
+  if (
+    !Array.isArray(rule.terms) ||
+    rule.terms.length === 0 ||
+    (rule.mode === "phrase" &&
+      (!isNonEmptyText(rule.prefix ?? "") ||
+        /[\r\n]/u.test(rule.prefix) ||
+        !rule.expressions.some((expression) => expression.startsWith(rule.prefix)))) ||
+    (rule.mode === "lemma" && rule.prefix !== undefined)
+  ) {
+    throw new Error("rules:invalid-expression-rule");
+  }
+
+  for (const term of rule.terms) {
+    const stem = term.lemma.slice(0, -1);
     if (
-      !/^[a-z][a-z0-9-]+$/u.test(matcher.id) ||
-      matcherIds.has(matcher.id) ||
-      !isNonEmptyText(matcher.lemma) ||
-      !["adjective", "verb"].includes(matcher.partOfSpeech) ||
-      !ruleIds.has(matcher.ruleId) ||
-      rule === undefined ||
-      matcher.variants.length === 0
+      !hasLowercaseKeys(term) ||
+      !term.lemma.endsWith("다") ||
+      stem.length === 0 ||
+      ![...stem].every((character) => isMorphologyTokenCodePoint(character.codePointAt(0))) ||
+      !["adjective", "verb"].includes(term.pos) ||
+      (term.aux !== undefined && !["active", "passive", "state"].includes(term.aux)) ||
+      lemmas.has(term.lemma)
     ) {
       throw new Error("rules:invalid-expression-rule");
     }
-    matcherIds.add(matcher.id);
-
-    const surfaces = new Set();
-    for (const variant of matcher.variants) {
-      if (
-        !isNonEmptyText(variant.surface) ||
-        surfaces.has(variant.surface) ||
-        !rule.expressions.includes(variant.expression) ||
-        !Object.hasOwn(endingGroups, variant.endingGroup)
-      ) {
-        throw new Error("rules:invalid-expression-rule");
-      }
-      surfaces.add(variant.surface);
-    }
+    lemmas.add(term.lemma);
   }
+}
 
-  for (const group of Object.values(endingGroups)) {
-    for (const endings of Object.values(group)) {
-      if (!Array.isArray(endings) || endings.length === 0) {
+/**
+ * 공통 어미 자료의 이름, 배열과 Unicode를 확인한다.
+ *
+ * @param {object} value 검사할 자료
+ * @returns {void}
+ */
+function validateEndings(value) {
+  if (!hasLowercaseKeys(value)) {
+    throw new Error("rules:invalid-expression-rule");
+  }
+  for (const item of Object.values(value)) {
+    if (Array.isArray(item)) {
+      const unique = new Set();
+      if (item.length === 0) {
         throw new Error("rules:invalid-expression-rule");
       }
-      for (const ending of endings) {
-        if (typeof ending !== "string" || !ending.isWellFormed()) {
+      for (const ending of item) {
+        if (typeof ending !== "string" || !ending.isWellFormed() || unique.has(ending)) {
           throw new Error("rules:invalid-expression-rule");
         }
+        unique.add(ending);
       }
+    } else if (typeof item === "object" && item !== null) {
+      validateEndings(item);
+    } else {
+      throw new Error("rules:invalid-expression-rule");
     }
   }
+}
+
+/**
+ * 비공개 자료의 속성명이 영문 소문자로만 이루어졌는지 확인한다.
+ *
+ * @param {object} value 검사할 객체
+ * @returns {boolean} 모든 속성명이 조건을 만족하면 true
+ */
+function hasLowercaseKeys(value) {
+  return Object.keys(value).every((key) => /^[a-z]+$/u.test(key));
+}
+
+/**
+ * 비공개 검사 자료를 제외하고 기존 공개 규칙 필드만 반환한다.
+ *
+ * @param {InternalRule} rule 검사 규칙
+ * @returns {ExpressionRule} 공개 JSON에 기록할 규칙
+ */
+function makePublicRule(rule) {
+  return {
+    kind: rule.kind,
+    id: rule.id,
+    expressions: rule.expressions,
+    message: rule.message,
+    queries: rule.queries,
+    negatives: rule.negatives,
+    positives: rule.positives,
+  };
 }
 
 /**
@@ -844,83 +926,214 @@ function isNonEmptyText(value) {
 }
 
 /**
- * literal 후보와 형태 matcher를 선언 순서 및 사용자 진단에 연결한다.
+ * 고정 표현과 활용형 token을 선언 순서 및 사용자 진단에 연결한다.
  *
  * @returns {{
- *   syllableIndex: ReadonlyMap<string, ReadonlyArray<ExpressionDescriptor>>,
- *   compiledMorphologyMatchers: ReadonlyArray<CompiledMorphologyMatcher>
+ *   literal: ReadonlyMap<string, ReadonlyArray<ExpressionDescriptor>>,
+ *   token: ReadonlyMap<string, ReadonlyArray<TermDescriptor>>
  * }} 두 매칭 방식의 후보 색인
  */
 function buildExpressionIndex() {
   /** @type {Map<string, Array<ExpressionDescriptor>>} */
-  const syllableIndex = new Map();
-  const morphologyRuleIds = new Set(morphologyMatchers.map((matcher) => matcher.ruleId));
-  const ruleIndexes = new Map(rules.map((rule, index) => [rule.id, index]));
-  const declarationIndexes = new Map();
-  let declarationIndex = 0;
-  for (const [ruleIndex, rule] of rules.entries()) {
+  const literal = new Map();
+  /** @type {Map<string, Array<TermDescriptor>>} */
+  const token = new Map();
+  const orders = new Map();
+  let order = 0;
+  for (const [index, rule] of rules.entries()) {
     for (const expression of rule.expressions) {
-      declarationIndexes.set(`${rule.id}\0${expression}`, declarationIndex);
-      if (!morphologyRuleIds.has(rule.id)) {
+      orders.set(`${index}\0${expression}`, order);
+      if (rule.mode === "literal") {
         const surface = expression.normalize("NFD");
         const firstUnit = surface[0];
-        const descriptors = syllableIndex.get(firstUnit) ?? [];
-        descriptors.push({ rule: ruleIndex, order: declarationIndex, surface, expression });
-        syllableIndex.set(firstUnit, descriptors);
+        const descriptors = literal.get(firstUnit) ?? [];
+        descriptors.push({ rule: index, order, surface, expression });
+        literal.set(firstUnit, descriptors);
       }
-      declarationIndex += 1;
+      order += 1;
+    }
+
+    for (const term of rule.terms ?? []) {
+      const stem = term.lemma.slice(0, -1).normalize("NFD");
+      const allowstem = rule.expressions.some(
+        (expression) => expression.normalize("NFD") === stem,
+      );
+      for (const [surface, length] of buildForms(term, allowstem)) {
+        const descriptor = makeTermDescriptor(rule, index, surface, length, orders);
+        addTermDescriptor(token, surface, descriptor);
+      }
+    }
+  }
+  return { literal, token };
+}
+
+/**
+ * 표제어의 규칙 활용을 정규화한 token과 보고할 어간 길이로 만든다.
+ *
+ * @param {Term} term 표제어, 품사와 보조 용언 종류
+ * @param {boolean} allowstem 선언 표현에 어간 자체가 있는지 여부
+ * @returns {ReadonlyMap<string, number>} NFD token과 보고할 NFD 길이
+ */
+function buildForms(term, allowstem) {
+  const forms = new Map();
+  const stem = term.lemma.slice(0, -1).normalize("NFD");
+  const shape = hasFinalConsonant(stem) ? "consonant" : "vowel";
+  addForms(forms, stem, endings[term.pos][shape]);
+  if (allowstem) {
+    forms.set(stem, stem.length);
+  }
+  addForms(forms, term.lemma.normalize("NFD"), endings.afterda);
+
+  const fused = makeFusedStem(stem);
+  if (fused !== null) {
+    addForms(forms, fused, endings.fused);
+    if (term.aux !== undefined) {
+      addForms(forms, fused, endings.auxiliary[term.aux]);
+    }
+    addForms(forms, addFinalConsonant(fused, FINAL_SS), endings.past);
+  }
+  return forms;
+}
+
+/**
+ * 한 활용 표면에 공통 어미를 붙여 중복 없는 token 자료를 추가한다.
+ *
+ * @param {Map<string, number>} forms 생성한 활용형
+ * @param {string} surface NFD 활용 표면
+ * @param {ReadonlyArray<string>} values 붙일 어미
+ * @returns {void}
+ */
+function addForms(forms, surface, values) {
+  for (const ending of values) {
+    const value = `${surface}${ending.normalize("NFD")}`;
+    forms.set(value, Math.max(forms.get(value) ?? 0, surface.length));
+  }
+}
+
+/**
+ * 받침 유무와 마지막 모음에 따라 아/어 표면을 만든다.
+ *
+ * @param {string} stem NFD 어간
+ * @returns {string | null} 지원하는 규칙으로 만든 NFD 표면
+ */
+function makeFusedStem(stem) {
+  const vowel = findLastVowel(stem);
+  if (vowel === null) {
+    return null;
+  }
+  if (hasFinalConsonant(stem)) {
+    const ending = vowel === "\u1161" || vowel === "\u1169" ? "아" : "어";
+    return `${stem}${ending.normalize("NFD")}`;
+  }
+  if (vowel === "\u1175") {
+    return `${stem.slice(0, -1)}\u1167`;
+  }
+  if (vowel === "\u116e") {
+    return `${stem.slice(0, -1)}\u116f`;
+  }
+  return null;
+}
+
+/**
+ * NFD 어간의 마지막 현대 한글 모음을 찾는다.
+ *
+ * @param {string} stem NFD 어간
+ * @returns {string | null} 마지막 중성 자모
+ */
+function findLastVowel(stem) {
+  for (let index = stem.length - 1; index >= 0; index -= 1) {
+    const codePoint = stem.codePointAt(index);
+    if (codePoint >= 0x1161 && codePoint <= 0x1175) {
+      return stem[index];
+    }
+  }
+  return null;
+}
+
+/**
+ * NFD 어간이 현대 한글 종성으로 끝나는지 확인한다.
+ *
+ * @param {string} stem NFD 어간
+ * @returns {boolean} 받침이 있으면 true
+ */
+function hasFinalConsonant(stem) {
+  const codePoint = stem.codePointAt(stem.length - 1);
+  return codePoint >= 0x11a8 && codePoint <= 0x11c2;
+}
+
+/**
+ * 모음으로 끝나는 NFD 표면에 종성을 추가한다.
+ *
+ * @param {string} surface NFD 활용 표면
+ * @param {string} consonant 종성 자모
+ * @returns {string} 종성을 붙인 NFD 표면
+ */
+function addFinalConsonant(surface, consonant) {
+  return `${surface}${consonant}`;
+}
+
+/**
+ * 생성된 token에 표시 표현, 선언 순서와 구문 앞부분을 연결한다.
+ *
+ * @param {InternalRule} rule 검사 규칙
+ * @param {number} index 규칙 위치
+ * @param {string} surface NFD token
+ * @param {number} length 보고할 어간 길이
+ * @param {ReadonlyMap<string, number>} orders 표현 선언 순서
+ * @returns {TermDescriptor} 실행용 후보
+ */
+function makeTermDescriptor(rule, index, surface, length, orders) {
+  let expression = rule.expressions[0];
+  let matched = 0;
+  for (const candidate of rule.expressions) {
+    const normalized = candidate.normalize("NFD");
+    if (surface.startsWith(normalized) && normalized.length > matched) {
+      expression = candidate;
+      matched = normalized.length;
     }
   }
   return {
-    syllableIndex,
-    compiledMorphologyMatchers: compileMorphologyMatchers(ruleIndexes, declarationIndexes),
+    rule: index,
+    order: orders.get(`${index}\0${expression}`),
+    expression,
+    length: matched === 0 ? length : matched,
+    prefix: (rule.prefix ?? "").normalize("NFD"),
   };
 }
 
 /**
- * 형태 matcher의 표면형, 어미와 사용자 진단 위치를 NFD 비교 자료로 만든다.
+ * 같은 token과 규칙의 후보는 더 긴 보고 범위 하나만 유지한다.
  *
- * @param {ReadonlyMap<string, number>} ruleIndexes 사용자 진단 위치
- * @param {ReadonlyMap<string, number>} declarationIndexes 표현 선언 위치
- * @returns {ReadonlyArray<CompiledMorphologyMatcher>} 실행할 형태 matcher
+ * @param {Map<string, Array<TermDescriptor>>} token token 색인
+ * @param {string} surface NFD token
+ * @param {TermDescriptor} descriptor 추가할 후보
+ * @returns {void}
  */
-function compileMorphologyMatchers(ruleIndexes, declarationIndexes) {
-  const endingSets = new Map();
-  for (const [groupId, group] of Object.entries(endingGroups)) {
-    endingSets.set(
-      groupId,
-      new Set(Object.values(group).flat().map((ending) => ending.normalize("NFD"))),
-    );
+function addTermDescriptor(token, surface, descriptor) {
+  const descriptors = token.get(surface) ?? [];
+  const current = descriptors.findIndex((candidate) => candidate.rule === descriptor.rule);
+  if (current === -1) {
+    descriptors.push(descriptor);
+  } else if (descriptors[current].length < descriptor.length) {
+    descriptors[current] = descriptor;
   }
-
-  return morphologyMatchers.map((matcher) => ({
-    id: matcher.id,
-    variants: matcher.variants
-      .map((variant) => ({
-        ruleIndex: ruleIndexes.get(matcher.ruleId),
-        declarationIndex: declarationIndexes.get(`${matcher.ruleId}\0${variant.expression}`),
-        surfaceNfd: variant.surface.normalize("NFD"),
-        expression: variant.expression,
-        endings: endingSets.get(variant.endingGroup),
-      }))
-      .toSorted((left, right) => right.surfaceNfd.length - left.surfaceNfd.length),
-  }));
+  token.set(surface, descriptors);
 }
 
 /**
  * 한 source의 모든 literal 및 활용형 출현을 원본 UTF-16 위치의 결정적 순서로 모은다.
  *
  * @param {string} text 검사할 원문
- * @param {ReadonlyMap<string, ReadonlyArray<ExpressionDescriptor>>} syllableIndex 음절 후보 색인
- * @param {ReadonlyArray<CompiledMorphologyMatcher>} compiledMorphologyMatchers 형태 matcher
+ * @param {ReadonlyMap<string, ReadonlyArray<ExpressionDescriptor>>} literal 고정 표현 색인
+ * @param {ReadonlyMap<string, ReadonlyArray<TermDescriptor>>} token 활용형 token 색인
  * @returns {ReadonlyArray<ExpressionMatch>} 시작 위치와 선언 순서로 정렬한 출현
  */
-function collectMatches(text, syllableIndex, compiledMorphologyMatchers) {
+function collectMatches(text, literal, token) {
   /** @type {Array<ExpressionMatch>} */
   const matches = [];
   const mapping = buildNfdMapping(text);
   for (let offset = 0; offset < mapping.nfdText.length; offset += 1) {
-    const descriptors = syllableIndex.get(mapping.nfdText[offset]);
+    const descriptors = literal.get(mapping.nfdText[offset]);
     if (descriptors === undefined) {
       continue;
     }
@@ -940,7 +1153,7 @@ function collectMatches(text, syllableIndex, compiledMorphologyMatchers) {
       }
     }
   }
-  collectMorphologyMatches(text, compiledMorphologyMatchers, matches);
+  collectTermMatches(text, mapping, token, matches);
   return matches.toSorted(
     (left, right) =>
       left.start - right.start ||
@@ -953,11 +1166,12 @@ function collectMatches(text, syllableIndex, compiledMorphologyMatchers) {
  * 한국어 token 전체가 검증된 활용으로 해석될 때 표제어의 원본 범위를 모은다.
  *
  * @param {string} text 검사할 원문
- * @param {ReadonlyArray<CompiledMorphologyMatcher>} compiledMorphologyMatchers 형태 matcher
+ * @param {NfdMapping} mapping 원문과 NFD 위치 대응
+ * @param {ReadonlyMap<string, ReadonlyArray<TermDescriptor>>} token 활용형 token 색인
  * @param {Array<ExpressionMatch>} matches 출현을 추가할 배열
  * @returns {void}
  */
-function collectMorphologyMatches(text, compiledMorphologyMatchers, matches) {
+function collectTermMatches(text, mapping, token, matches) {
   for (let tokenStart = 0; tokenStart < text.length; ) {
     const codePoint = text.codePointAt(tokenStart);
     if (!isMorphologyTokenCodePoint(codePoint)) {
@@ -974,28 +1188,24 @@ function collectMorphologyMatches(text, compiledMorphologyMatchers, matches) {
       tokenEnd += tokenCodePoint > 0xffff ? 2 : 1;
     }
 
-    const token = text.slice(tokenStart, tokenEnd);
-    const mapping = buildNfdMapping(token);
-    for (const matcher of compiledMorphologyMatchers) {
-      for (const variant of matcher.variants) {
-        if (!mapping.nfdText.startsWith(variant.surfaceNfd)) {
-          continue;
-        }
-        const ending = mapping.nfdText.slice(variant.surfaceNfd.length);
-        if (!variant.endings.has(ending)) {
-          continue;
-        }
-        const range = mapOriginalRange(mapping, 0, variant.surfaceNfd.length);
-        if (range !== null) {
-          matches.push({
-            rule: variant.ruleIndex,
-            order: variant.declarationIndex,
-            expression: variant.expression,
-            start: tokenStart + range.start,
-            end: tokenStart + range.end,
-          });
-        }
-        break;
+    const surface = text.slice(tokenStart, tokenEnd).normalize("NFD");
+    const descriptors = token.get(surface) ?? [];
+    const source = findCodePointIndex(mapping.originalStarts, tokenStart);
+    const offset = mapping.nfdStarts[source];
+    for (const descriptor of descriptors) {
+      const start = offset - descriptor.prefix.length;
+      if (start < 0 || !mapping.nfdText.startsWith(descriptor.prefix, start)) {
+        continue;
+      }
+      const range = mapOriginalRange(mapping, start, offset + descriptor.length);
+      if (range !== null) {
+        matches.push({
+          rule: descriptor.rule,
+          order: descriptor.order,
+          expression: descriptor.expression,
+          start: range.start,
+          end: range.end,
+        });
       }
     }
     tokenStart = tokenEnd;
@@ -1093,13 +1303,13 @@ function findCodePointIndex(nfdStarts, target) {
  * 한 source의 모든 출현을 모아 줄과 열을 계산하고 경고 상한 안에서 기록한다.
  *
  * @param {Source} source 검사할 원문
- * @param {ReadonlyMap<string, ReadonlyArray<ExpressionDescriptor>>} syllableIndex 음절 후보 색인
- * @param {ReadonlyArray<CompiledMorphologyMatcher>} compiledMorphologyMatchers 형태 matcher
+ * @param {ReadonlyMap<string, ReadonlyArray<ExpressionDescriptor>>} literal 고정 표현 색인
+ * @param {ReadonlyMap<string, ReadonlyArray<TermDescriptor>>} token 활용형 token 색인
  * @param {Array<ExpressionWarning>} warnings 실행 전체의 상세 경고 앞부분
  * @returns {{found: number, matchedRuleIndexes: ReadonlySet<number>}} 출현 수와 발견 규칙 위치
  */
-function scanSource(source, syllableIndex, compiledMorphologyMatchers, warnings) {
-  const matches = collectMatches(source.text, syllableIndex, compiledMorphologyMatchers);
+function scanSource(source, literal, token, warnings) {
+  const matches = collectMatches(source.text, literal, token);
   const matchedRuleIndexes = new Set();
   let line = 1;
   let lineStart = 0;
