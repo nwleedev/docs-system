@@ -863,7 +863,7 @@ async function runSelfTest() {
   const expressionSource = makeTestSource("expressions", "😀 경계 경계\n출력을 확인합니다.");
   const expressionCheck = scanExpressions([expressionSource]);
   assert.equal(expressionCheck.id, "expressions");
-  assert.equal(expressionCheck.catalog.length, 48);
+  assert.equal(expressionCheck.catalog.length, 50);
   assert.deepEqual(
     expressionCheck.warnings
       .filter((warning) => warning.ruleId === "ko.boundary")
@@ -875,6 +875,37 @@ async function runSelfTest() {
   );
   assert.equal(expressionCheck.rules.some((rule) => rule.id === "ko.boundary"), true);
   assert.equal(expressionCheck.rules.some((rule) => rule.id === "ko.output"), true);
+
+  const reviewCandidateCheck = scanExpressions([
+    makeTestSource("review-candidates", "작은 변경. 작은 부품. 업무 흐름. 물의 흐름."),
+  ]);
+  assert.deepEqual(
+    reviewCandidateCheck.warnings
+      .filter((warning) => ["ko.small", "ko.flow"].includes(warning.ruleId))
+      .map((warning) => [warning.ruleId, warning.expression]),
+    [
+      ["ko.small", "작은"],
+      ["ko.small", "작은"],
+      ["ko.flow", "흐름"],
+      ["ko.flow", "흐름"],
+    ],
+  );
+
+  for (const [ruleId, expression] of [
+    ["ko.boundary", "경계"],
+    ["ko.small", "작은"],
+    ["ko.flow", "흐름"],
+  ]) {
+    for (const form of [expression, expression.normalize("NFD")]) {
+      const warning = scanExpressions([makeTestSource("canonical", form)]).warnings.find(
+        (candidate) => candidate.ruleId === ruleId,
+      );
+      assert.deepEqual(
+        [warning?.expression, warning?.startUtf16, warning?.endUtf16, warning?.quote],
+        [expression, 1, form.length + 1, form],
+      );
+    }
+  }
 
   const conjugationSource = makeTestSource(
     "conjugation",

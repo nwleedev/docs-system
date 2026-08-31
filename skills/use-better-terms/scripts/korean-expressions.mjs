@@ -26,12 +26,12 @@
  * }} ExpressionWarning
  */
 
-/** @typedef {{ruleIndex: number, declarationIndex: number, expression: string}} ExpressionDescriptor */
+/** @typedef {{rule: number, order: number, surface: string, expression: string}} ExpressionDescriptor */
 
 /**
  * @typedef {{
- *   ruleIndex: number,
- *   declarationIndex: number,
+ *   rule: number,
+ *   order: number,
  *   expression: string,
  *   start: number,
  *   end: number
@@ -163,6 +163,17 @@ const rules = [
     positives: ["검사 범위는 변경된 Markdown 파일이며 이미지 파일은 제외합니다."],
   },
   {
+    id: "ko.small",
+    expressions: ["작은"],
+    message: "실제 크기인지 다른 수량이나 영향의 정도를 대신하는지 확인합니다.",
+    queries: [
+      "측정할 수 있는 실제 크기를 뜻합니까?",
+      "파일 수, 변경량 또는 영향처럼 다른 수량을 더 정확히 쓸 수 있습니까?",
+    ],
+    negatives: ["작은 변경을 먼저 처리합니다."],
+    positives: ["이 부품은 가로 5 mm인 작은 부품입니다."],
+  },
+  {
     id: "ko.boundary",
     expressions: ["경계"],
     message: "안과 밖 또는 책임이 바뀌는 실제 기준이 있는지 확인합니다.",
@@ -224,6 +235,17 @@ const rules = [
       "릴리스 전달 경로는 `https://packages.example.invalid/app`입니다.",
     ],
     positives: ["설정 파일 경로는 `config/app.yml`입니다."],
+  },
+  {
+    id: "ko.flow",
+    expressions: ["흐름"],
+    message: "이동하는 대상을 뜻하는지 작업 단계, 실행 순서 또는 상태 변화를 대신하는지 확인합니다.",
+    queries: [
+      "물처럼 실제로 이동하는 대상이 문장에 있습니까?",
+      "작업 단계, 실행 순서 또는 상태 변화를 직접 설명할 수 있습니까?",
+    ],
+    negatives: ["업무 흐름을 개선합니다."],
+    positives: ["하천의 물 흐름을 유량계로 측정합니다."],
   },
   {
     id: "ko.public",
@@ -840,9 +862,10 @@ function buildExpressionIndex() {
     for (const expression of rule.expressions) {
       declarationIndexes.set(`${rule.id}\0${expression}`, declarationIndex);
       if (!morphologyRuleIds.has(rule.id)) {
-        const firstUnit = expression[0];
+        const surface = expression.normalize("NFD");
+        const firstUnit = surface[0];
         const descriptors = syllableIndex.get(firstUnit) ?? [];
-        descriptors.push({ ruleIndex, declarationIndex, expression });
+        descriptors.push({ rule: ruleIndex, order: declarationIndex, surface, expression });
         syllableIndex.set(firstUnit, descriptors);
       }
       declarationIndex += 1;
@@ -895,19 +918,24 @@ function compileMorphologyMatchers(ruleIndexes, declarationIndexes) {
 function collectMatches(text, syllableIndex, compiledMorphologyMatchers) {
   /** @type {Array<ExpressionMatch>} */
   const matches = [];
-  for (let offset = 0; offset < text.length; offset += 1) {
-    const descriptors = syllableIndex.get(text[offset]);
+  const mapping = buildNfdMapping(text);
+  for (let offset = 0; offset < mapping.nfdText.length; offset += 1) {
+    const descriptors = syllableIndex.get(mapping.nfdText[offset]);
     if (descriptors === undefined) {
       continue;
     }
     for (const descriptor of descriptors) {
-      if (text.startsWith(descriptor.expression, offset)) {
+      if (!mapping.nfdText.startsWith(descriptor.surface, offset)) {
+        continue;
+      }
+      const range = mapOriginalRange(mapping, offset, offset + descriptor.surface.length);
+      if (range !== null) {
         matches.push({
-          ruleIndex: descriptor.ruleIndex,
-          declarationIndex: descriptor.declarationIndex,
+          rule: descriptor.rule,
+          order: descriptor.order,
           expression: descriptor.expression,
-          start: offset,
-          end: offset + descriptor.expression.length,
+          start: range.start,
+          end: range.end,
         });
       }
     }
@@ -916,7 +944,7 @@ function collectMatches(text, syllableIndex, compiledMorphologyMatchers) {
   return matches.toSorted(
     (left, right) =>
       left.start - right.start ||
-      left.declarationIndex - right.declarationIndex ||
+      left.order - right.order ||
       left.end - right.end,
   );
 }
@@ -960,8 +988,8 @@ function collectMorphologyMatches(text, compiledMorphologyMatchers, matches) {
         const range = mapOriginalRange(mapping, 0, variant.surfaceNfd.length);
         if (range !== null) {
           matches.push({
-            ruleIndex: variant.ruleIndex,
-            declarationIndex: variant.declarationIndex,
+            rule: variant.ruleIndex,
+            order: variant.declarationIndex,
             expression: variant.expression,
             start: tokenStart + range.start,
             end: tokenStart + range.end,
@@ -1082,10 +1110,10 @@ function scanSource(source, syllableIndex, compiledMorphologyMatchers, warnings)
     while (cursor < matches.length && matches[cursor].start === offset) {
       const match = matches[cursor];
       cursor += 1;
-      matchedRuleIndexes.add(match.ruleIndex);
+      matchedRuleIndexes.add(match.rule);
       if (warnings.length < MAX_WARNINGS) {
         warnings.push({
-          ruleId: rules[match.ruleIndex].id,
+          ruleId: rules[match.rule].id,
           expression: match.expression,
           sourceId: source.id,
           line,
