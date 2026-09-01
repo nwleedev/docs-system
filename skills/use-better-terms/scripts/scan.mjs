@@ -14,7 +14,7 @@ import {
 import process from "node:process";
 import { fileURLToPath } from "node:url";
 import { parseArgs, TextDecoder } from "node:util";
-import { scanExpressions } from "./korean-expressions.mjs";
+import { scanExpressions, selfTestExpressionRules } from "./korean-expressions.mjs";
 import { scanParagraphs } from "./long-paragraphs.mjs";
 
 /**
@@ -834,6 +834,7 @@ function publicErrorCode(error) {
  * @returns {Promise<void>} 모든 assertion이 통과하면 끝나는 Promise
  */
 async function runSelfTest() {
+  selfTestExpressionRules();
   assert.deepEqual(parseCommandLine(["--stdin", "--source-name", "sample"]), {
     kind: "stdin",
     sourceName: "sample",

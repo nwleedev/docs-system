@@ -725,9 +725,63 @@ const endings = {
  * @remarks 규칙과 표현은 외부 입력으로 선택하지 않으며 겹치는 출현도 각각 센다.
  */
 export function scanExpressions(sources) {
-  validateRules();
-  const { literal, token } = buildExpressionIndex();
-  const matchedRules = rules.map(() => false);
+  return scanExpressionRules(sources, rules);
+}
+
+/**
+ * 자체 검사가 공통 활용 규칙의 자료 추가와 잘못된 자료 거부를 직접 실행한다.
+ *
+ * @returns {void}
+ */
+export function selfTestExpressionRules() {
+  const definition = {
+    kind: "literal",
+    mode: "lemma",
+    id: "ko.test-adjective",
+    terms: [{ lemma: "차다", pos: "adjective" }],
+    expressions: ["차"],
+    message: "표제어 자료 검사용 규칙입니다.",
+    queries: ["활용형을 찾았습니까?"],
+    negatives: ["검사 전"],
+    positives: ["검사 후"],
+  };
+  const warning = scanExpressionRules([{ id: "temporary", text: "찹니다." }], [definition])
+    .warnings[0];
+  if (
+    warning?.ruleId !== "ko.test-adjective" ||
+    warning.expression !== "차" ||
+    warning.startUtf16 !== 1 ||
+    warning.endUtf16 !== 2
+  ) {
+    throw new Error("self-test:expression-rules");
+  }
+
+  try {
+    scanExpressionRules([], [
+      {
+        ...definition,
+        terms: [{ lemma: "차다", pos: "noun" }],
+      },
+    ]);
+  } catch (error) {
+    if (error instanceof Error && error.message === "rules:invalid-expression-rule") {
+      return;
+    }
+  }
+  throw new Error("self-test:expression-rules");
+}
+
+/**
+ * 전달받은 비공개 규칙 자료를 검증하고 모든 표현 출현을 찾는다.
+ *
+ * @param {ReadonlyArray<Source>} sources 입력 순서가 고정된 원문
+ * @param {ReadonlyArray<InternalRule>} definitions 검사할 규칙 자료
+ * @returns {ReturnType<typeof scanExpressions>} 전체 출현 집계와 제한된 상세 경고
+ */
+function scanExpressionRules(sources, definitions) {
+  validateRules(definitions);
+  const { literal, token } = buildExpressionIndex(definitions);
+  const matchedRules = definitions.map(() => false);
   /** @type {Array<ExpressionWarning>} */
   const warnings = [];
   let total = 0;
@@ -736,7 +790,7 @@ export function scanExpressions(sources) {
     if (!source.text.isWellFormed()) {
       throw new Error("rules:invalid-source");
     }
-    const result = scanSource(source, literal, token, warnings);
+    const result = scanSource(source, definitions, literal, token, warnings);
     total += result.found;
     for (const ruleIndex of result.matchedRuleIndexes) {
       matchedRules[ruleIndex] = true;
@@ -745,12 +799,12 @@ export function scanExpressions(sources) {
 
   return {
     id: "expressions",
-    catalog: rules.map((rule) => ({
+    catalog: definitions.map((rule) => ({
       id: rule.id,
       kind: rule.kind,
       expressions: rule.expressions,
     })),
-    rules: rules.filter((rule, index) => matchedRules[index]).map(makePublicRule),
+    rules: definitions.filter((rule, index) => matchedRules[index]).map(makePublicRule),
     warnings,
     summary: {
       total,
@@ -763,12 +817,13 @@ export function scanExpressions(sources) {
 /**
  * 규칙의 식별자와 판정 자료가 실행 가능한지 확인한다.
  *
+ * @param {ReadonlyArray<InternalRule>} definitions 검사할 규칙 자료
  * @returns {void}
  */
-function validateRules() {
+function validateRules(definitions) {
   const ids = new Set();
   const lemmas = new Set();
-  for (const rule of rules) {
+  for (const rule of definitions) {
     if (
       rule.kind !== "literal" ||
       !["literal", "lemma", "phrase"].includes(rule.mode) ||
@@ -929,18 +984,19 @@ function isNonEmptyText(value) {
 /**
  * 고정 표현과 활용형 token을 선언 순서 및 사용자 진단에 연결한다.
  *
+ * @param {ReadonlyArray<InternalRule>} definitions 검사할 규칙 자료
  * @returns {{
  *   literal: ReadonlyMap<string, ReadonlyArray<ExpressionDescriptor>>,
  *   token: ReadonlyMap<string, ReadonlyArray<TermDescriptor>>
  * }} 두 매칭 방식의 후보 색인
  */
-function buildExpressionIndex() {
+function buildExpressionIndex(definitions) {
   /** @type {Map<string, Array<ExpressionDescriptor>>} */
   const literal = new Map();
   /** @type {Map<string, Array<TermDescriptor>>} */
   const token = new Map();
   let order = 0;
-  for (const [index, rule] of rules.entries()) {
+  for (const [index, rule] of definitions.entries()) {
     /** @type {Array<LabelDescriptor>} */
     const labels = [];
     for (const expression of rule.expressions) {
@@ -1304,12 +1360,13 @@ function findCodePointIndex(nfdStarts, target) {
  * 한 source의 모든 출현을 모아 줄과 열을 계산하고 경고 상한 안에서 기록한다.
  *
  * @param {Source} source 검사할 원문
+ * @param {ReadonlyArray<InternalRule>} definitions 검사할 규칙 자료
  * @param {ReadonlyMap<string, ReadonlyArray<ExpressionDescriptor>>} literal 고정 표현 색인
  * @param {ReadonlyMap<string, ReadonlyArray<TermDescriptor>>} token 활용형 token 색인
  * @param {Array<ExpressionWarning>} warnings 실행 전체의 상세 경고 앞부분
  * @returns {{found: number, matchedRuleIndexes: ReadonlySet<number>}} 출현 수와 발견 규칙 위치
  */
-function scanSource(source, literal, token, warnings) {
+function scanSource(source, definitions, literal, token, warnings) {
   const matches = collectMatches(source.text, literal, token);
   const matchedRuleIndexes = new Set();
   let line = 1;
@@ -1324,7 +1381,7 @@ function scanSource(source, literal, token, warnings) {
       matchedRuleIndexes.add(match.rule);
       if (warnings.length < MAX_WARNINGS) {
         warnings.push({
-          ruleId: rules[match.rule].id,
+          ruleId: definitions[match.rule].id,
           expression: match.expression,
           sourceId: source.id,
           line,
