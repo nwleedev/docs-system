@@ -5,37 +5,37 @@ description: Help users discover UI preferences through visual comparison of rea
 
 # Use Progressive User Interfaces
 
-참여 프로젝트에 맞는 실제 UI를 시각적으로 비교해 사용자 선호를 확인하고, 현재 필요한 화면에서 검증한 규칙부터 축적한다. 사용자의 첫 표현은 탐색의 출발점이며 완성된 명세가 아니다.
+Discover user preferences by visually comparing real interfaces relevant to the project. Build a set of design rules from those validated in the screens the project currently needs. Treat the user's initial description as a starting point for exploration, not a complete specification.
 
-## 시작할 때 확인할 내용
+## Establish the project context
 
-프로젝트의 용도, 현재 필요한 화면이나 컴포넌트, 기존 디자인 지침과 진행 기록을 먼저 확인한다. 이미 기록된 사실을 다시 질문하지 않는다. 프로젝트나 대상 화면을 알 수 없으면 그 판단에 필요한 정보만 사용자에게 묻는다.
+First identify the project's purpose, the screens or components currently needed, and existing design guidance and progress records. Do not ask again for facts already recorded. If the project or target screen is unclear, ask only for the information needed to identify it.
 
-기존 기록이 있으면 선택한 특성, 적용 대상, 미결정 사항, 탐색 횟수와 다음 작업을 읽고 현재 요청과 비교한다. 기록을 읽을 수 없으면 이전 상태를 추정하거나 횟수를 초기화하지 않는다. 기록 위치를 정하거나 상태를 복원하고 갱신할 때에는 아래의 사용자 선택과 기록 절차를 읽는다.
+If records exist, read the selected characteristics, their scope of application, unresolved choices, exploration round count, and next action. Compare them with the current request. If the records are unavailable, do not guess the previous state or reset the count. Read the user choices and records procedure when choosing a record location, restoring state, or updating it.
 
-## 현재 작업에 필요한 절차 선택
+## Select the procedures needed now
 
-이번 작업에 필요한 문서를 아래에서 골라 끝까지 읽는다. 모든 참고 문서를 미리 읽지는 않는다.
+Select the references needed for the current task and read each one completely. Do not load every reference in advance.
 
-- [실제 UI 탐색과 후보 비교](references/discovery.md): 새 시각적 방향을 찾거나 기존 규칙과 현재 화면만으로 풀리지 않는 새로운 의문이 있을 때 읽는다. 사용자가 이미 선택한 방향을 단순히 구현하거나 검증하는 요청에는 새 탐색을 시작하지 않는다.
-- [사용자 선택과 기록](references/preferences.md): 선호를 확인하고 기록할 때, 충돌을 판단할 때, 탐색 횟수와 종료를 정할 때, 기록 위치를 정하거나 작업을 재개할 때 읽는다. 후보를 제시하기 전에 남은 횟수와 피드백 대기 여부를 확인한다.
-- [잠정 시각화와 구현 입력](references/implementation.md): 선택한 특성을 프로젝트 화면에 조합하거나, 기존 규칙을 적용할 새 화면의 구현 입력이 필요할 때 읽는다. 코드 수정 없이 메인 세션이 사용할 판단 근거와 확인 조건을 정리한다.
-- [수정 후 실제 UI 검증](references/validation.md): 메인 세션이 수정한 실행 화면을 받았거나 규칙의 재사용을 확인할 때 읽는다. 수정 후 검증 요청은 이 단계로 바로 진행하고, 최신 화면이 없으면 필요한 증거를 요청한다.
+- [Real UI discovery and candidate comparison](references/discovery.md): Read when exploring a new visual direction or a new question that existing rules and current screens cannot answer. Do not start another exploration for a request that only implements or validates a direction the user has already chosen.
+- [User choices and records](references/preferences.md): Read when confirming or recording preferences, resolving conflicts, managing exploration rounds and stopping conditions, choosing a record location, or resuming work. Before presenting candidates, check the remaining rounds and whether feedback is pending.
+- [Tentative visualization and implementation input](references/implementation.md): Read when combining selected characteristics in a project screen or preparing implementation input for a new screen that uses existing rules. Provide the main session with the reasoning and validation conditions without editing code.
+- [Post-change validation of the real UI](references/validation.md): Read when receiving a running screen changed by the main session or checking rule reuse. Route post-change validation requests directly to this procedure. If the latest screen is unavailable, request the necessary evidence.
 
-새 작업은 프로젝트 맥락과 기록 위치를 확인한 뒤 탐색으로 진행한다. 재개 작업은 기록된 다음 작업을 따르되 현재 요청이 이를 바꾸면 바뀐 부분을 확인한다. 검증에서 구현 차이가 발견되면 구현 입력으로, 선호 충돌이 발견되면 사용자 선택으로 돌아간다.
+For new work, establish the project context and record location before exploration. When resuming, follow the recorded next action and clarify any changes introduced by the current request. If validation reveals an implementation mismatch, return to implementation input. If it reveals a preference conflict, return to user choices.
 
-## 모든 단계에서 유지할 조건
+## Conditions that apply throughout
 
-- 실제 UI를 직접 시각적으로 살펴본 근거, AI 생성 시안과 출처 미확인 이미지를 구분한다. 도움말, 문서나 검색 요약만으로 실제 UI를 관찰했다고 말하지 않는다.
-- 화면 외형을 ASCII 아트, 문자 와이어프레임이나 긴 Markdown 설명으로 대신하지 않는다. 텍스트는 이미지나 실행 화면에서 볼 차이를 설명한다.
-- 사용자 선호, AI 가설, 임시 구현값과 실제 UI에서 검증한 규칙을 섞지 않는다. 선택하지 않은 속성이나 대상을 자동으로 확정하지 않는다.
-- 한 주제의 탐색은 기본 최대 3회이며, 횟수 계산과 연장은 사용자 선택과 기록 절차를 따른다. 피드백 대기나 제한 도달을 새 주제로 우회하지 않는다.
-- 애플리케이션 소스, `tokens.css`, 프레임워크 테마와 컴포넌트 파일은 이 스킬에서 수정하지 않는다. 메인 세션이 승인된 변경을 프로젝트 개발 절차로 구현하고, 이 스킬의 시각적 검증 절차를 다시 적용한다. 메인 세션은 주 대화의 코딩 에이전트이며 별도 에이전트나 기술적 권한 분리를 뜻하지 않는다.
-- 기존 규칙으로 현재 UI를 표현할 수 있는지 먼저 확인한다. 실제로 필요한 속성만 추가하며 전체 토큰 체계, 모든 컴포넌트나 UI 자료 저장 서비스를 만들지 않는다.
-- Excalidraw와 tldraw는 관찰 방법을 설명하는 예시일 뿐이다. 기본 후보, 복제할 서비스 또는 구현 대상으로 고정하지 않는다.
+- Distinguish evidence from direct visual inspection of real UI, AI-generated mockups, and images of unverified origin. Do not claim to have observed a real UI based only on help pages, documentation, or search summaries.
+- Do not substitute ASCII art, text wireframes, or lengthy Markdown descriptions for a screen's appearance. Use text to explain differences visible in images or running screens.
+- Keep user preferences, AI hypotheses, tentative implementation values, and rules validated in the real UI separate. Do not finalize characteristics or their scope of application without a user choice.
+- Exploration is limited to three rounds per topic by default. Follow the user choices and records procedure for counting and extensions. Do not bypass pending feedback or a reached limit by starting a new topic.
+- Do not edit application source code, `tokens.css`, framework themes, or component files through this skill. The main session implements approved changes through the project's development workflow and then reapplies this skill's visual validation procedure. The main session means the coding agent in the primary conversation, not a separate agent or a technical separation of permissions.
+- First check whether existing rules can express the current UI. Add only characteristics that are actually needed. Do not build a complete token system, every component, or a service for storing UI reference materials.
+- Excalidraw and tldraw are examples of how to observe interfaces, not default candidates, services to copy, or required implementation targets.
 
-## 멈춤과 전달
+## Pause and report
 
-사용자 판단이 필요한 충돌, 탐색 연장, 기록 위치의 결정은 답변을 기다린다. 필요한 화면이나 도구가 없으면 확인하지 못한 부분과 다음에 필요한 입력을 밝힌다. 자료나 승인이 없다는 이유로 도움말을 실제 UI로 바꾸어 제시하거나 임시 값을 확정 규칙으로 옮기지 않는다.
+Wait for the user's answer when a conflict, exploration extension, or record location needs their decision. If a required screen or tool is unavailable, explain what remains unverified and what input is needed next. Missing evidence or approval does not justify presenting help pages as real UI or promoting tentative values to finalized rules.
 
-단계를 마칠 때에는 확인한 선택과 근거, 미결정 사항, 검증한 대상과 조건, 다음 작업을 프로젝트 기록에 반영하고 사용자에게 요약한다. 개별 프로젝트의 선호나 진행 상태는 이 스킬의 파일에 저장하지 않는다. 명세 전달, 이미지 생성이나 빌드 성공을 실제 UI 검증 완료로 보고하지 않는다.
+At the end of a stage, update the project records with confirmed choices and evidence, unresolved decisions, validated targets and conditions, and the next action. Summarize these for the user. Do not store individual project preferences or progress in this skill's files. Do not report a specification handoff, image generation, or successful build as completed real UI validation.

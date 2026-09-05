@@ -1,46 +1,46 @@
-# 잠정 시각화와 메인 세션의 구현 입력
+# Tentative visualization and implementation input for the main session
 
-사용자가 선택한 특성을 프로젝트 화면에 조합해 확인하고, 메인 세션이 구현할 수 있는 디자인 판단과 검증 조건을 전달한다. 이 절차는 애플리케이션 코드 수정 권한을 부여하지 않는다.
+Combine the user's selected characteristics in a project screen for visual review. Give the main session the design decisions and validation conditions needed for implementation. This procedure does not authorize application code changes.
 
-## 현재 UI에 필요한 규칙 정리
+## Define the rules needed for the current UI
 
-프로젝트 기록에서 확인된 선호, 기존 규칙, 예외와 미결정 사항을 읽는다. 필요한 화면에 기존 원칙과 토큰을 먼저 적용할 수 있는지 판단한다. 새 화면이라는 이유만으로 레퍼런스를 다시 찾거나 전체 토큰 계층을 만들지 않는다.
+Read confirmed preferences, existing rules, exceptions, and unresolved decisions from the project records. First assess whether existing principles and tokens can support the required screen. A new screen alone does not justify another reference search or a complete token hierarchy.
 
-규칙은 서비스 이름이 아니라 선택한 특성과 사용 의미로 설명한다. “Linear 스타일” 대신 어떤 정보 밀도, 글자 위계, 간격이나 강조 방식을 유지할지 쓴다. 색, 배경 구분, 타이포그래피, 간격, 형태, 테두리와 그림자 중 이번 UI에 필요한 것만 정한다.
+Describe rules through selected characteristics and their intended use, not service names. Instead of "Linear style," specify the information density, typographic hierarchy, spacing, or emphasis to preserve. Define only the color, background separation, typography, spacing, shape, border, and shadow rules needed for this UI.
 
-가능하면 원칙을 값보다 먼저 적는다. 예를 들어 “목록과 상세 영역은 그림자보다 테두리로 구분한다”는 원칙을 유지하고, 지금 필요한 테두리 값만 구체화한다. 아직 정하지 않은 값은 임시 구현안으로 표시하며 사용자 선호나 확정 규칙으로 기록하지 않는다.
+Where possible, state principles before values. For example, retain the principle "separate the list and detail areas with borders rather than shadows" and specify only the border values currently needed. Label undecided values as tentative implementation proposals, not user preferences or finalized rules.
 
-## 새로운 조합 시각화
+## Visualize new combinations
 
-여러 레퍼런스에서 고른 특성을 함께 볼 필요가 있거나 텍스트만으로 판단하기 어렵다면, 사용 가능한 공식 이미지 생성 스킬이나 동등한 도구로 프로젝트 화면의 시안을 만든다. 도구가 요구하는 지침을 읽고 실제로 사용할 수 있는지 확인하며 이미지 생성 자체를 구현하지 않는다.
+If characteristics selected from several references need to be seen together, or text alone is insufficient for a decision, use an available official image-generation skill or equivalent tool to create a mockup of the project screen. Read the tool's required instructions and confirm that it is usable. Do not implement image generation itself.
 
-시안을 만들 때에는 대상 화면의 목적, 선택한 특성과 근거, 유지할 기존 규칙, 피할 특성, 임시 결정과 미결정 요소를 구분해 전달한다. 한 레퍼런스의 화면 전체를 복제하지 않는다. 서로 다른 방향을 비교할 때에는 배경 구분 방식이나 밀도처럼 의미 있는 차이를 두며 가능하면 각각의 이미지로 제시한다.
+When requesting a mockup, distinguish the target screen's purpose, selected characteristics and evidence, existing rules to retain, characteristics to avoid, tentative decisions, and unresolved elements. Do not copy an entire reference screen. When comparing directions, make them meaningfully different, such as in background separation or density, and present separate images where possible.
 
-생성 이미지를 “생성 시안”으로 표시하고 무엇을 조합했는지 설명한다. 이미지를 실제로 보여주고 사용자가 선택한 특성이 유지되는지 확인받는다. 선택 기록은 `SKILL.md`의 사용자 선택과 기록 절차를 따른다. 시안에 대한 선호가 확인되어도 구현값의 실제 UI 검증은 아직 끝나지 않았다.
+Label the image as a "generated mockup" and explain which characteristics it combines. Show the image and ask the user whether it preserves their selected characteristics. Record choices through the user choices and records procedure linked from `SKILL.md`. Confirmation that the user likes a mockup does not complete validation of its implementation values in the real UI.
 
-이미지 생성 도구를 사용할 수 없거나 생성에 실패하면 그 사실을 알린다. 확보한 실제 화면으로 필요한 판단을 할 수 있는지 사용자와 확인하거나 시각화를 보류한다. 생성하지 않은 이미지를 있다고 말하거나 문자 와이어프레임으로 외형을 대신하지 않는다. 판단에 꼭 필요한 시각 근거가 없으면 영향을 받는 결정을 미결정으로 남긴다.
+If image generation is unavailable or fails, say so. Ask whether the real screens already available support the needed decision, or defer visualization. Do not claim an image was generated when it was not, or substitute a text wireframe for its appearance. If essential visual evidence is missing, leave the affected decisions unresolved.
 
-## 구현 전에 합의할 확인 조건
+## Agree on validation conditions before implementation
 
-이번 판단을 확인할 대표 화면이나 컴포넌트를 고르고, 상태와 사용 조건을 사용자와 정한다. 변경에 영향을 받는 선택, 오류, 비활성, 키보드 초점 상태와 프로젝트가 사용하는 화면 크기, 테마, 언어를 확인 대상으로 삼는다. 모든 상태나 모든 환경을 일괄 추가하지 않는다.
+Choose a representative screen or component for the current decision and agree with the user on states and conditions of use. Include affected selected, error, disabled, and keyboard-focus states, along with relevant screen sizes, themes, and languages used by the project. Do not add every state or environment indiscriminately.
 
-공통 규칙으로 사용할 예정이면 적용 가능한 다른 기존 화면이나 컴포넌트도 고른다. 다른 대상이 없으면 이번 대상에 한정해 검증하고 공통 규칙의 확인은 미완료로 남긴다. 재사용 검증을 위해 새 화면이나 애플리케이션을 만들지 않는다.
+If the rule is intended for shared use, also choose another existing screen or component where it applies. If there is no other target, validate only the current target and leave shared-rule validation incomplete. Do not create a new screen or application solely to validate reuse.
 
-## 메인 세션에 전달
+## Prepare the handoff to the main session
 
-검증용 임시 변경안과 재사용할 확정 지침을 분리해 전달한다. 임시 값이 필요하다는 이유로 구현을 막지는 않되, 아직 검증하지 않은 값을 최종 규칙처럼 넘기지 않는다.
+Separate tentative changes for validation from finalized guidance to reuse. The need for tentative values does not by itself block implementation, but do not present unvalidated values as final rules.
 
-이번 변경에 필요한 내용만 빠짐없이 정리한다.
+Include all information needed for the current change, without unrelated detail.
 
-- 대상 화면이나 컴포넌트와 이번 변경의 목적
-- 유지할 시각적 특성, 사용자 선택과 관찰 근거
-- 재사용할 기존 원칙과 토큰, 허용된 예외와 적용 대상
-- 검증용 임시 값, 미결정 사항과 아직 적용하면 안 되는 충돌한 선택
-- 피해야 할 스타일과 임의로 추가하면 안 되는 규칙
-- 합의한 검증 화면, 상태와 사용 조건, 공통 규칙의 재사용 대상
+- Target screen or component and the purpose of the change
+- Visual characteristics to preserve, user choices, and observational evidence
+- Existing principles and tokens to reuse, permitted exceptions, and their scope of application
+- Tentative values for validation, unresolved decisions, and conflicting choices that must not yet be applied
+- Styles to avoid and rules that must not be added without approval
+- Agreed validation screens, states, conditions of use, and reuse targets for shared rules
 
-명세 형태는 프로젝트에 맞춘다. 디자인 원칙, 디자인 토큰, CSS 변수나 테마의 명세, 컴포넌트 사용 규칙, 금지할 시각적 패턴을 필요한 수준으로 제공한다. 기존 `DESIGN.md` 또는 같은 역할의 지침이 있으면 재사용하며 동일한 확정 지침을 새로 만들지 않는다.
+Adapt the specification format to the project. Provide design principles, design tokens, CSS variable or theme specifications, component usage rules, and prohibited visual patterns at the level needed. Reuse an existing `DESIGN.md` or equivalent guidance rather than duplicating finalized rules.
 
-메인 세션은 사용자가 승인한 코드 변경만 프로젝트 개발 지침에 따라 수행하고 기존 동작을 검사한다. `tokens.css`, 테마 설정과 컴포넌트 파일의 실제 수정도 메인 세션의 작업이다. 같은 에이전트가 두 절차를 이어서 수행하더라도 디자인 판단을 했다는 사실이 코드 변경 승인을 대신하지 않는다.
+The main session makes only user-approved code changes, follows the project's development guidance, and checks existing behavior. Editing `tokens.css`, theme settings, and component files is also the main session's responsibility. Even when the same agent performs both procedures, making a design decision does not replace authorization to change code.
 
-코드 수정 후에는 메인 세션이 수정한 코드로 실행한 최신 화면을 준비하고 `SKILL.md`의 수정 후 실제 UI 검증 절차를 다시 적용한다. 전달 시점에는 구현 입력 정리, 구현과 실제 UI 검증의 완료 여부를 각각 밝힌다.
+After code changes, the main session prepares the latest screen running the modified code and reapplies the post-change validation procedure linked from `SKILL.md`. At handoff, report separately whether implementation input, implementation, and real UI validation are complete.

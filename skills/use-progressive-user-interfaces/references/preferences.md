@@ -1,53 +1,53 @@
-# 사용자 선택, 탐색 횟수와 기록
+# User choices, exploration rounds, and records
 
-사용자가 확인한 특성과 그 적용 대상을 기록하고, 다음 대화에서도 같은 선택과 탐색 횟수를 이어간다. 선호 확인과 실제 UI 규칙의 검증은 서로 다른 상태로 관리한다.
+Record the characteristics the user confirms and where they apply. Preserve those choices and the exploration round count across conversations. Track preference confirmation separately from validation of rules in the real UI.
 
-## 기록 위치와 재개
+## Choose a record location and resume work
 
-참여 프로젝트의 기존 디자인 문서와 확정 지침을 먼저 찾는다. 적절한 기록 위치가 없으면 최초 실행에서 사용자와 위치를 정한다. 이 스킬의 참고 파일에 프로젝트 상태를 쓰거나 프로젝트 전체의 `AGENTS.md`에 긴 지침을 복제하지 않는다.
+First find the project's existing design documents and finalized guidance. If no suitable record location exists, agree on one with the user during the first use. Do not write project state into this skill's reference files or copy lengthy instructions into the project-wide `AGENTS.md`.
 
-기존 문서 체계 안에서 다음 내용을 구분해 읽고 갱신한다. 항목을 읽을 수 있으면 충분하며 별도 저장 서비스나 고정 파일 형식을 만들지 않는다.
+Read and update the following information as distinct items within the existing documentation system. The information only needs to be retrievable; do not create a separate storage service or require a fixed file format.
 
-- 프로젝트와 대상 화면, 현재 탐색 주제
-- 확인된 선호와 비선호, 적용 대상과 선택 근거
-- 미결정 사항, AI 가설, 검증용 임시 구현안
-- 완료한 탐색 횟수, 제시한 후보와 피드백, 응답을 기다리는 차례, 승인받은 추가 횟수
-- 실제 UI 관찰 근거, 검증된 규칙과 적용 조건, 확인한 화면, 남은 차이와 예외
-- 다음 작업과 그 전에 필요한 사용자 판단이나 실행 화면
+- Project, target screen, and current exploration topic
+- Confirmed preferences and dislikes, their scope of application, and the reasons for each choice
+- Unresolved decisions, AI hypotheses, and tentative implementation proposals for validation
+- Completed rounds, presented candidates and feedback, the round awaiting a response, and approved additional rounds
+- Evidence from real UI observations, validated rules and their conditions of use, inspected screens, remaining differences, and exceptions
+- Next action and any user decision or running screen needed before it
 
-재개할 때에는 이 기록을 먼저 읽고 현재 요청과 대조한다. 예를 들어 완료 2회, 3번째 후보의 피드백 대기 상태라면 새 1회차를 시작하지 않는다. 피드백을 받은 뒤 3회 완료로 갱신한다. 같은 피드백을 다시 읽었다는 이유로 횟수를 늘리지 않는다.
+When resuming, read these records first and compare them with the current request. For example, if two rounds are complete and the third round is awaiting feedback, do not start a new first round. Update the count to three completed rounds after receiving feedback. Reading the same feedback again does not increase the count.
 
-기록끼리 충돌하거나 이전 횟수를 확인할 수 없으면 불확실한 부분만 사용자에게 확인한다. 마지막 기록이 무조건 우선한다고 가정하거나 기존 선택을 덮어쓰지 않는다. 기록 파일을 읽거나 저장할 수 없으면 재개나 저장을 마쳤다고 말하지 않는다.
+If records conflict or the previous count cannot be established, ask the user only about the uncertain parts. Do not assume the latest record always takes precedence or overwrite existing choices. If a record cannot be read or saved, do not claim that restoring or saving the state succeeded.
 
-프로젝트 문서를 변경할 수 있는 요청일 때 합의된 내용을 같은 위치에 반영한다. 읽기 전용 요청이면 정리한 내용을 대화로 전달하고 저장은 하지 않는다. 확정 지침이 이미 있으면 같은 규칙을 담은 새 문서를 중복 생성하지 않는다.
+When the request authorizes changes to project documents, update the agreed location with the confirmed information. For read-only requests, report the information in the conversation without saving it. If finalized guidance already exists, do not create another document containing the same rules.
 
-## 선택의 의미 확인
+## Clarify what a choice means
 
-후보 선택에서 어떤 속성을 유지할지 확인한다. 한 화면을 골랐다는 사실을 그 화면 전체의 색, 글꼴과 모서리를 모두 선호한다는 뜻으로 해석하지 않는다. 비교 화면에서 유지할 부분, 제거할 부분, 다른 후보에서 가져올 부분과 아직 판단하기 어려운 부분을 묻는다.
+Confirm which characteristics the user wants to keep from a selected candidate. Choosing a screen does not imply a preference for all of its colors, fonts, and corners. Ask what to keep, remove, take from another candidate, or leave undecided in the compared screens.
 
-한 버튼의 모서리만 선택했다면 그 버튼의 형태 선호로 기록한다. 전체 컴포넌트의 모서리 규칙으로 일반화하려면 적용 대상을 사용자와 확인하고 실제 UI에서 재사용을 검증해야 한다.
+If the user chooses only the corners of one button, record a shape preference for that button. Before generalizing it into a corner rule for all components, confirm the scope of application with the user and validate reuse in the real UI.
 
-다음 상태를 섞지 않는다.
+Keep the following states separate.
 
-- 확인된 선호와 비선호: 사용자가 선택하거나 피하겠다고 답한 특성. 적용 대상과 근거를 함께 적는다.
-- 미결정: 아직 선택하지 않았거나 판단을 보류한 요소. 답이 없다는 사실은 승인이나 거절이 아니다.
-- AI 가설: 검색이나 비교를 위해 추론한 가능성. 사용자의 취향으로 기록하지 않는다.
-- 임시 구현안: 화면에서 확인하기 위해 잠정 적용할 특성과 값. 사용자가 시안을 좋아해도 실제 UI 검증 전에는 확정 명세로 옮기지 않는다.
-- 검증된 규칙: 실제 실행 화면에서 확인한 특성, 사용 조건과 사용자 판단을 갖춘 규칙. 갱신은 `SKILL.md`의 수정 후 실제 UI 검증 절차를 따른다.
+- Confirmed preferences and dislikes: Characteristics the user chooses or says to avoid. Record where they apply and the supporting evidence.
+- Unresolved decisions: Elements not yet chosen or deliberately deferred. No response means neither approval nor rejection.
+- AI hypotheses: Possibilities inferred to guide searching or comparison. Do not record them as user preferences.
+- Tentative implementation proposals: Characteristics and values provisionally applied for inspection in a screen. Even if the user likes a mockup, do not promote these to finalized specifications before real UI validation.
+- Validated rules: Rules with characteristics checked in a running screen, conditions of use, and the user's judgment. Follow the post-change validation procedure linked from `SKILL.md` when updating them.
 
-기존 원칙과 새 선택이 충돌하면 두 내용을 나란히 설명하고 어떻게 처리할지 사용자에게 확인한다. 기존 규칙 변경, 승인된 예외, 특정 컴포넌트 한정 또는 미결정 유지가 가능하다. 판단 전에는 기존 확정 규칙을 유지하고 충돌한 새 선택을 확정 명세로 전달하지 않는다.
+If a new choice conflicts with an existing principle, explain both and ask the user how to proceed. Options include changing the existing rule, approving an exception, limiting the choice to a specific component, or leaving it unresolved. Until the user decides, retain existing finalized rules and do not pass the conflicting new choice as a finalized specification.
 
-## 탐색 한 차례와 종료
+## Count rounds and stop exploration
 
-한 디자인 주제의 탐색은 기본 최대 3회다. 후보를 제시하고 사용자 피드백을 확인하면 한 차례가 끝난다.
+Exploration is limited to three rounds per design topic by default. A round ends when candidates have been presented and the user's feedback has been received.
 
-- 후보를 전부 거절하거나 판단하기 어렵다고 답해도 1회로 센다.
-- 후보를 보여주고 피드백을 기다리는 동안은 같은 차례가 진행 중이다. 추가 후보를 자동으로 제시하지 않는다.
-- 내부 검색이나 도구 호출은 별도 횟수로 세지 않는다.
-- 접근 실패로 비교 자료를 제시하지 못했다면 횟수를 늘리지 않고 실제 UI 탐색 절차의 대체 탐색과 중단 조건을 따른다.
+- Count one round even if the user rejects every candidate or says they cannot decide.
+- While feedback on presented candidates is pending, the same round remains in progress. Do not automatically present more candidates.
+- Do not count internal searches or tool calls as separate rounds.
+- If access failures prevent presentation of comparison materials, do not increase the count. Follow the alternative search and stopping conditions in the real UI discovery procedure.
 
-횟수가 남아 있어도 다음 화면을 만드는 편이 판단에 도움이 되면 탐색을 마칠 수 있다. 서로 구별되는 방향, 이를 설명하는 원칙 3~7개, 비선호와 재사용할 제약이 확보되면 초기 탐색을 마친다. 숫자를 채우기 위해 사용자가 고르지 않은 원칙을 만들지 않으며, 모든 속성을 확정할 때까지 검색하지 않는다.
+Exploration may end before the limit if creating the next screen would help the user decide more effectively. End initial exploration when there are distinct directions, three to seven principles that explain them, known dislikes, and reusable constraints. Do not invent principles the user has not chosen to meet a target count, or keep searching until every characteristic is finalized.
 
-3회 후에도 방향이 미결정이면 자동 검색을 멈추고 다음 행동을 사용자에게 확인한다. 불확실성을 표시한 잠정 시각화, 추가 횟수를 정한 탐색 연장 또는 주제 보류 중 선택한 행동만 수행한다. 연장 승인을 받으면 추가 횟수와 종료 시점을 기록하고 이전 완료 횟수는 유지한다. 추가 횟수가 없으면 임의의 연장량을 정하지 않는다.
+If the direction remains unresolved after three rounds, stop automatic searching and ask the user for the next action. Perform only the chosen action: a tentative visualization with uncertainty identified, an extension with a specified number of additional rounds, or deferral of the topic. For an approved extension, record the additional rounds and stopping point while retaining the previous completed count. Do not choose an extension length when the user has not specified one.
 
-잠정 시각화를 선택해도 미결정은 그대로 둔다. 탐색을 종료하거나 보류한 뒤 새 디자인 주제를 자동으로 시작하지 않는다. 새 화면을 요청받으면 기존 규칙을 먼저 사용하고, 그 규칙으로 풀리지 않는 새로운 시각적 의문이 있을 때만 탐색을 다시 제안한다.
+A choice to create a tentative visualization does not resolve outstanding decisions. Do not automatically start a new design topic after ending or deferring exploration. When asked for a new screen, use existing rules first. Propose renewed exploration only for a new visual question those rules cannot answer.

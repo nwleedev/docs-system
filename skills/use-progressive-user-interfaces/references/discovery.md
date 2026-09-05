@@ -1,55 +1,55 @@
-# 실제 UI 탐색과 후보 비교
+# Real UI discovery and candidate comparison
 
-프로젝트에서 아직 결정하지 못한 시각적 특성을 비교할 수 있도록, 서로 다른 실제 UI를 찾아 직접 관찰한다. 검색 페이지의 설명이 아니라 사용자가 볼 수 있는 화면을 비교 근거로 삼는다.
+Find and directly inspect distinct real interfaces so the user can compare visual characteristics that remain undecided for the project. Base comparisons on screens the user can see, not descriptions on search pages.
 
-## 검색 관점 정하기
+## Choose search perspectives
 
-프로젝트 용도, 대상 화면, 기존 원칙과 사용자의 표현을 읽고 이번에 확인할 디자인 주제를 정한다. 이미 정한 원칙으로 해결할 수 있으면 새 레퍼런스를 찾지 않고 구현 입력으로 진행한다. 탐색을 시작하기 전에는 `SKILL.md`의 사용자 선택과 기록 절차로 남은 횟수와 피드백 대기 여부를 확인한다.
+Read the project's purpose, target screen, existing principles, and the user's description to identify the design topic to explore. If established principles already answer the question, proceed to implementation input without finding new references. Before exploring, follow the user choices and records procedure linked from `SKILL.md` to check the remaining rounds and whether feedback is pending.
 
-추상적인 요청을 검색어 하나로 옮기지 않는다. 이번 판단에 필요한 관점을 조합한다.
+Do not turn an abstract request into a single search query. Combine the perspectives needed for the current decision.
 
-- 서비스 분야와 사용 목적
-- 화면의 역할과 상호작용 방식
-- 분위기와 정보 밀도
-- 형태, 모서리 반경과 테두리
-- 배경 영역 구분, 그림자와 입체감
-- 타이포그래피, 색과 강조 방식
-- 사용자가 피하려는 특성
+- Service category and purpose
+- Screen role and interaction patterns
+- Mood and information density
+- Shape, corner radius, and borders
+- Separation of background areas, shadows, and depth
+- Typography, color, and emphasis
+- Characteristics the user wants to avoid
 
-예를 들어 “차분하지만 많은 항목을 빠르게 훑는 목록”이라면 목록 중심 업무 화면, 높은 정보 밀도, 절제된 강조색을 각각 살펴본다. “차분함은 회색” 같은 해석은 검색 가설로만 사용하며 선호로 확정하지 않는다.
+For example, for "a calm list that makes many items easy to scan," examine list-based work screens, high information density, and restrained accent colors separately. Treat an interpretation such as "calm means gray" only as a search hypothesis, not a confirmed preference.
 
-## 후보 화면 관찰
+## Inspect candidate screens
 
-실제로 출시된 서비스나 실제 UI 사례를 모은 자료에서 후보를 찾는다. 브라우저 MCP 등 현재 이용 가능한 도구로 실행 화면이나 UI 이미지를 열고 직접 시각적으로 확인한다. 도구의 존재만으로 화면 접근과 관찰이 성공했다고 판단하지 않는다.
+Find candidates in released services or collections of real UI examples. Use available tools, such as a browser MCP tool, to open and visually inspect running screens or UI images. The presence of a tool does not establish that screen access or visual inspection succeeded.
 
-후보마다 서비스와 화면의 이름, 원본 위치, 직접 본 이미지나 실행 화면, 관찰한 상태를 연결한다. 화면 크기나 확인 시점이 비교에 영향을 주면 함께 적는다. 새 기록 형식을 강제하지 말고 프로젝트의 기존 문서에 이 근거를 연결한다.
+For each candidate, connect the service and screen names, source location, image or running screen directly inspected, and observed state. Record screen size or observation time when it affects the comparison. Link this evidence from the project's existing documents rather than requiring a new record format.
 
-관찰한 사실, 해석과 확인하지 못한 조건을 나눈다. “기본 목록에서 행 구분선이 보였다”는 관찰이지만, “이 서비스는 모든 화면을 선으로 구분한다”는 한 화면으로 확정할 수 없다. 현재 이미지에서 보이지 않는 초점, 오류나 펼침 상태를 본 것처럼 설명하지 않는다.
+Separate observations, interpretations, and unverified conditions. "The default list shows row dividers" is an observation. One screen cannot establish that "this service uses lines to separate content on every screen." Do not describe focus, error, or expanded states as observed when they are not visible in the current image.
 
-자료는 다음처럼 구분한다.
+Classify materials as follows.
 
-- 실제 UI 근거: 출시된 서비스의 화면임을 확인하고 직접 본 자료. 갤러리에서 찾았다면 원래 서비스와 화면인지 확인한 근거를 함께 남긴다.
-- 생성 시안: 프로젝트에 특성을 조합한 제안. 실제 서비스 사례나 구현 검증 증거가 아니다.
-- 출처 미확인 이미지: 시각적 선호를 묻는 데에는 사용할 수 있지만 실제 출시 UI라는 근거로 확정하지 않는다. 사용자가 제공한 이미지도 같은 기준을 따른다.
+- Real UI evidence: Material directly inspected and verified as a screen from a released service. For a gallery example, also record the evidence that identifies its original service and screen.
+- Generated mockup: A proposal that combines characteristics for the project. It is neither a real service example nor evidence that an implementation has been validated.
+- Image of unverified origin: Material that may help ask about visual preferences but does not establish what a released UI looks like. Apply the same standard to user-provided images.
 
-도움말, 문서, 블로그와 검색 유입용 페이지는 실제 UI 후보에서 제외한다. 자료 접근 방법을 알아보는 데 사용했더라도 그 페이지를 UI 레퍼런스로 제시하지 않는다. DOM, 텍스트 추출, 검색 요약이나 열리지 않은 링크만 확보했다면 시각적 관찰은 미완료다.
+Exclude help pages, documentation, blogs, and pages created to attract search traffic from real UI candidates. Even if such a page explains how to access a resource, do not present it as a UI reference. A DOM, extracted text, search summary, or unopened link alone does not complete visual inspection.
 
-## 실제 UI에 접근하지 못했을 때
+## When a real UI is inaccessible
 
-실제 UI에 접근하지 못하면 다른 실제 UI를 더 다양한 관점에서 탐색한다.
+If a real UI is inaccessible, explore other real interfaces from a wider range of perspectives.
 
-접근하지 못한 서비스와 이유를 간단히 남기고 검색 관점을 바꾼다. 같은 서비스의 도움말을 더 찾는 대신, 유사한 업무를 수행하는 다른 분야나 같은 상호작용의 다른 화면을 찾거나 정보 밀도와 강조 방식이 다른 후보를 살펴본다. 바꾼 관점과 새로 관찰한 실제 UI를 기록한다.
+Briefly record the inaccessible service and the reason, then change the search perspective. Instead of finding more help pages for the same service, explore another domain with similar tasks, other screens with the same interaction pattern, or candidates with different information density and emphasis. Record the changed perspective and the real interfaces newly inspected.
 
-사용자가 특정 서비스를 반드시 관찰하도록 지정했다면 임의로 대체하지 않고 화면 제공 등 다음 행동을 확인한다. 그렇지 않은 경우에는 대체 탐색을 먼저 진행하되, 적합한 실제 UI를 찾지 못하거나 같은 실패만 반복되어 새 근거가 생기지 않으면 화면 제공을 요청하거나 비교를 보류한다. 접근 실패를 횟수에서 제외한다는 이유로 검색을 계속하지 않는다.
+If the user requires observation of a particular service, do not substitute another service without asking. Confirm the next action, such as requesting a screen from the user. Otherwise, explore alternatives first. If no suitable real UI is found or repeated failures produce no new evidence, request screens or defer the comparison. Excluding access failures from the round count does not justify continued searching without progress.
 
-아직 자료를 제시하지 못한 접근 실패는 탐색 한 차례로 세지 않는다. 출처 미확인 자료를 사용한다면 그 상태를 사용자에게 밝히며, 도움말이나 생성 이미지로 실제 UI 근거를 대신하지 않는다.
+Do not count an access failure as an exploration round if no comparison material has been presented. Disclose when the origin of comparison material is unverified. Do not replace real UI evidence with help pages or generated images.
 
-## 시각적으로 비교할 후보 제시
+## Present candidates for visual comparison
 
-일반적으로 한 차례에 3~5개 후보를 제시하되, 판단에 도움이 되는 차이를 우선한다. 거의 같은 후보를 추가해 수를 채우지 않는다. 적합한 후보가 적으면 그 한계를 밝히고 확보한 차이를 비교한다.
+Usually present three to five candidates per round, prioritizing differences that help the user decide. Do not add nearly identical candidates to reach a target count. If fewer suitable candidates are available, state that limitation and compare the differences found.
 
-각 후보의 이미지나 실행 화면을 보여주고, 이번 질문과 연결된 특징을 짧게 설명한다. 가능하면 후보별 화면을 독립적으로 제시해 정보 밀도, 글자 위계나 배경 구분처럼 실제로 다른 선택을 볼 수 있게 한다. ASCII 아트, 문자 와이어프레임이나 긴 설명으로 외형을 대신하지 않는다.
+Show an image or running screen for each candidate and briefly explain the characteristics relevant to the current question. Where possible, present each candidate separately so the user can see distinct choices in information density, typographic hierarchy, or background separation. Do not substitute ASCII art, text wireframes, or lengthy descriptions for the visual comparison.
 
-사용자에게 한 서비스 전체를 고르게 하지 않는다. 유지할 부분, 제거할 부분, 다른 후보에서 가져올 부분과 판단하기 어려운 부분을 확인한다. 여러 후보에서 서로 다른 특성을 선택할 수 있도록 묻고, 서비스 이름만으로 취향을 요약하지 않는다.
+Do not require the user to choose an entire service as a package. Ask what to keep, remove, take from another candidate, or leave undecided. Let the user select different characteristics from multiple candidates. Do not summarize preferences using only a service name.
 
-후보와 질문을 제시한 뒤에는 피드백을 기다린다. 선택을 기록하거나 다음 탐색 여부를 판단할 때에는 `SKILL.md`의 사용자 선택과 기록 절차를 적용한다. 기다리는 동안 추가 후보를 자동으로 제시하지 않는다.
+After presenting candidates and questions, wait for feedback. Follow the user choices and records procedure linked from `SKILL.md` when recording choices or deciding whether another round is needed. Do not automatically present more candidates while waiting.
