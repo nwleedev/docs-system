@@ -15,6 +15,12 @@
 - Write direct, natural English. Do not preserve the structure of another language when it hides the actor, action, condition, or result.
 - Treat polished but vague abstractions as signals to inspect the context, not as automatically acceptable wording. Keep precise technical terms; otherwise state the actual rule or action and ask the user when the evidence is insufficient.
 
+**Document and commit descriptions**
+
+- Describe actual changes, decisions, and verified reasons in documents and commit messages. Do not recount how work was requested or assigned in conversations with AI.
+- Do not recast conversation participants as separate requesters, decision-makers, or contributors. Do not infer relationships between people or their contributions from role names in instructions alone.
+- Preserve roles supported by evidence when they are needed to explain behavior, permissions, or actual responsibilities. Do not invent reasons for changes or claims of contribution when omitting the conversation history.
+
 **Context compaction**
 
 - After context compaction, reread the applicable AGENTS.md files, especially the **Basic Principles**, before continuing.
