@@ -25,7 +25,9 @@ For Korean text, run `scripts/scan.mjs` relative to this `SKILL.md`. Choose one 
 - repeat `--file <path>` for an exact file set;
 - use `--stdin --source-name <name>` for supplied text.
 
-Inspect the complete `sources` and both `checks`, including each `catalog`, matched `rules`, every warning, and `summary`. A warning marks text to judge, not an automatic failure. Read the complete original paragraph for a paragraph warning. If `summary.omitted` is greater than zero, use smaller input groups when the omitted contexts need individual judgment and report the omitted count. If the script is missing, fails, or does not return one complete JSON object with both checks, stop the affected review and do not return `pass` for its Korean outputs.
+Inspect the complete `sources` and both the expression and long-paragraph `checks`, including each `catalog`, matched `rules`, every warning, and `summary`. Review every warning from both checks in the current sharing unit, even when the expression is familiar, an earlier review assigned it a status, or its likely outcome appears obvious. For each warning, determine separately whether the text needs revision and whether the available text provides enough context to judge it. A warning starts this judgment; it neither proves a defect nor permits retaining the text without review. Read the complete original paragraph for a paragraph warning.
+
+Do not complete the affected review until every warning in the current sharing unit has been judged from current evidence. If `summary.omitted` is greater than zero, use smaller input groups until every omitted warning that applies to the sharing unit has been judged, and report the omitted count from each run. If the script is missing, fails, does not return one complete JSON object with both checks, or leaves a warning unavailable for judgment, stop the affected review and do not return `pass` for its Korean outputs.
 
 Read references only when their conditions apply:
 
@@ -36,11 +38,15 @@ If a required reference cannot be read in full, stop the affected review and rep
 
 ## Improve and judge the outputs
 
-For every challenged expression, first write at least one natural alternative for the actual context. If verified evidence shows that the alternative preserves the meaning and the task authorizes editing, apply it in the same work unit. If the task requests review only, return the alternative without editing. Do not perform context-free string replacement.
+For every warning, decide whether revision is needed and whether additional context is needed before assigning a result. Then write at least one natural alternative for the actual context, including warnings whose original text may remain. Do not stop at a one-word substitution when it leaves the cause of the warning, obscures a relationship, or produces less natural prose. Use the applicable language reference to explore a clearer sentence structure, including a different subject and predicate, verbal wording instead of stacked nouns, splitting or joining sentences, and a change of voice when that language and context make it relevant.
 
-After applying a replacement, rerun the formatting and text checks that can detect defects in the edited output. For Korean text, rerun the scanner on the final sharing unit and inspect every warning introduced by the edit before returning a status. Do not repeat judgments for text the replacement did not affect.
+Compare the alternatives with the original for meaning, responsibility, conditions, focus, and the reader's next action. If verified evidence shows that an alternative preserves the meaning and the task authorizes editing, apply it in the same work unit. If the task requests review only, return the alternative without editing. Do not perform context-free string replacement.
+
+After applying a replacement, rerun the formatting and text checks that can detect defects in the edited output. For Korean text, rerun the scanner on the final sharing unit and reconcile every final warning with the current text before returning a status. Judge a warning introduced by the edit or affected by changed context as new. An unchanged warning may keep evidence recorded during the current work unit, but never inherit a status from an earlier review without examining it again in the current sharing unit.
 
 Retain the original expression only when it is an established term, approved name, code identifier, required notation, or the best accurate wording. Record the alternative considered and the reason for retaining it. If replacement would decide a missing meaning, actor, condition, responsibility, or approval state, do not edit the text; return `needs human input`.
+
+Assign each scanner warning one current result: `pass`, `needs revision`, or `needs human input`. Use `not applicable` only for a criterion that does not apply to that warning or output; it does not replace the warning's result. After every warning has a result, judge each applicable criterion and output with the status definitions below. Managing these statuses means preserving their names and meanings, not reusing an earlier result or skipping a warning.
 
 Judge these criteria once for each applicable output:
 
