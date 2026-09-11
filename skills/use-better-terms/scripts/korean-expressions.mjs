@@ -514,6 +514,30 @@ const rules = [
     negatives: ["해당 기능을 개선합니다."],
     positives: ["파일 업로드 기능은 CSV 파일을 받아 주문 목록을 만듭니다."],
   },
+  {
+    id: "ko.work",
+    expressions: ["업무"],
+    message: "누가 어떤 일을 수행하는지 직접 설명할 수 있는지 확인합니다.",
+    queries: ["업무의 담당자와 수행하는 동작이 드러납니까?", "검토, 처리 또는 기록처럼 실제 행동을 직접 쓸 수 있습니까?"],
+    negatives: ["업무를 진행합니다."],
+    positives: ["담당자는 변경된 파일을 검토하고 결과를 기록합니다."],
+  },
+  {
+    id: "ko.status",
+    expressions: ["지위"],
+    message: "사람이나 조직의 법률상 또는 역할상 상태를 정확히 가리키는지 확인합니다.",
+    queries: ["어떤 권리, 의무 또는 역할을 뜻합니까?", "사용자나 조직의 상태를 판단하는 기준이 드러납니까?"],
+    negatives: ["사용자의 지위를 확인합니다."],
+    positives: ["관리자 권한이 부여된 사용자인지 확인합니다."],
+  },
+  {
+    id: "ko.consumption",
+    expressions: ["소비"],
+    message: "무엇을 어떤 기준과 기간에 얼마나 사용하는지 확인합니다.",
+    queries: ["전력, 비용 또는 자원 중 무엇을 얼마나 사용합니까?", "측정값과 기간을 직접 쓸 수 있습니까?"],
+    negatives: ["자원 소비를 줄입니다."],
+    positives: ["서비스가 시간당 전력을 10 kWh 소비합니다."],
+  },
 ].map((rule) => ({ kind: "literal", mode: "literal", ...rule }));
 
 const FINAL_N = "\u11ab";
