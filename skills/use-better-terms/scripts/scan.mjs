@@ -864,7 +864,7 @@ async function runSelfTest() {
   const expressionSource = makeTestSource("expressions", "😀 경계 경계\n출력을 확인합니다.");
   const expressionCheck = scanExpressions([expressionSource]);
   assert.equal(expressionCheck.id, "expressions");
-  assert.equal(expressionCheck.catalog.length, 50);
+  assert.equal(expressionCheck.catalog.length, 53);
   assert.deepEqual(
     expressionCheck.warnings
       .filter((warning) => warning.ruleId === "ko.boundary")
