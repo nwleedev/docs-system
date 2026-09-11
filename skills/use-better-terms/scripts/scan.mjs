@@ -864,7 +864,7 @@ async function runSelfTest() {
   const expressionSource = makeTestSource("expressions", "😀 경계 경계\n출력을 확인합니다.");
   const expressionCheck = scanExpressions([expressionSource]);
   assert.equal(expressionCheck.id, "expressions");
-  assert.equal(expressionCheck.catalog.length, 53);
+  assert.equal(expressionCheck.catalog.length, 50);
   assert.deepEqual(
     expressionCheck.warnings
       .filter((warning) => warning.ruleId === "ko.boundary")
@@ -876,16 +876,6 @@ async function runSelfTest() {
   );
   assert.equal(expressionCheck.rules.some((rule) => rule.id === "ko.boundary"), true);
   assert.equal(expressionCheck.rules.some((rule) => rule.id === "ko.output"), true);
-
-  const fixedCandidates = scanExpressions([makeTestSource("fixed-candidates", "업무 지위 소비")]);
-  assert.deepEqual(
-    fixedCandidates.warnings.map((warning) => [warning.ruleId, warning.expression]),
-    [
-      ["ko.work", "업무"],
-      ["ko.status", "지위"],
-      ["ko.consumption", "소비"],
-    ],
-  );
 
   const reviewCandidateCheck = scanExpressions([
     makeTestSource("review-candidates", "작은 변경. 작은 부품. 업무 흐름. 물의 흐름."),
