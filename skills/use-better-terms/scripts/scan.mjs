@@ -899,6 +899,20 @@ async function runSelfTest() {
   );
 
   for (const [ruleId, expression] of [
+    ["ko.work", "업무"],
+    ["ko.status", "지위"],
+    ["ko.consumption", "소비"],
+  ]) {
+    const check = scanExpressions([makeTestSource("fixed-candidate", expression)]);
+    assert.deepEqual(
+      check.warnings
+        .filter((warning) => warning.ruleId === ruleId)
+        .map((warning) => [warning.expression, warning.startUtf16, warning.endUtf16]),
+      [[expression, 1, expression.length + 1]],
+    );
+  }
+
+  for (const [ruleId, expression] of [
     ["ko.boundary", "경계"],
     ["ko.small", "작은"],
     ["ko.flow", "흐름"],
