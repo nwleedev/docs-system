@@ -6,9 +6,11 @@ Combine the user's selected characteristics in a target screen for visual review
 
 Read confirmed preferences, existing rules, exceptions, and unresolved decisions from the provided stage result and available design guidance. First assess whether existing principles and tokens can support the required screen. A new screen alone does not justify another reference search or a complete token hierarchy.
 
-Describe rules through selected characteristics and their intended use, not service names. Instead of "Linear style," specify the information density, typographic hierarchy, spacing, or emphasis to preserve. Define only the color, background separation, typography, spacing, shape, border, and shadow rules needed for this UI.
+Describe rules through selected characteristics and their intended use, not service names. Instead of "Linear style," specify the information density, typographic hierarchy, layout, spacing, or emphasis to preserve. Depending on the decision, define only the needed rules for hierarchy, page and region layout, component structure, action placement, information density, color, background separation, typography, spacing, shape, borders, shadows, interaction states, and responsive changes.
 
-Where possible, state principles before values. For example, retain the principle "separate the list and detail areas with borders rather than shadows" and specify only the border values currently needed. Label undecided values as tentative implementation proposals, not user preferences or finalized rules.
+Use the case-by-case evidence and comparison from [case analysis and rationale](rationale.md). Link a rule to the inspected case or source that supports it and state the screen, component, state, or condition where it applies. Keep a visually estimated or otherwise unconfirmed value tentative. Promote a recurring value to a shared token only after its reuse is supported by validated screens; a confirmed preference alone does not establish a token.
+
+Where possible, state principles before values. For example, retain the principle "separate the list and detail areas with borders rather than shadows" and specify only the border values currently needed. Label undecided values as tentative implementation proposals, not user preferences or finalized rules. Keep source-verified values distinct from measurements estimated from a screenshot or visual inspection.
 
 ## Visualize new combinations
 
@@ -22,7 +24,7 @@ If image generation is unavailable or fails, say so. Ask whether the real screen
 
 ## Agree on validation conditions before implementation
 
-Choose a representative screen or component for the current decision and agree with the user on states and conditions of use. Include affected selected, error, disabled, and keyboard-focus states, along with relevant screen sizes, themes, and languages used by the project. Do not add every state or environment indiscriminately.
+Choose a representative screen or component for the current decision and agree with the user on states and conditions of use. Include affected selected, error, disabled, keyboard-focus, and other relevant interaction states, along with screen sizes, themes, and languages that could affect the rule. Use direct inspection where appearance or behavior must be confirmed, and select only conditions affected by the decision.
 
 If the rule is intended for shared use, also choose another existing screen or component where it applies. If there is no other target, validate only the current target and leave shared-rule validation incomplete. Do not create a new screen or application solely to validate reuse.
 

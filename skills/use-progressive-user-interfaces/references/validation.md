@@ -1,6 +1,6 @@
 # Post-change validation of the real UI and rule finalization
 
-Check user choices and agreed conditions in the latest screen running the modified code. Finalize rules only for the targets validated. Keep preferences for generated mockups separate from rules validated in the real UI.
+Check user choices and agreed conditions in the latest screen running the modified code. Use the evidence distinctions in [inspection of real interfaces](inspection.md) to keep direct observation, source-stated reasons, analysis, and unknowns separate. Finalize rules only for the targets validated. Keep preferences for generated mockups separate from rules validated in the real UI.
 
 ## Gather the evidence needed for validation
 
@@ -12,7 +12,7 @@ Real UI validation remains incomplete if the only evidence is a generated image,
 
 ## Compare the changed screen
 
-Directly inspect the representative screen or component and check whether it preserves the selected characteristics. Compare the attributes addressed by this change, such as information density, typography, spacing, shape, color, and background separation, with the evidence behind the choices. Show the user whether the appearance follows consistent principles, whether a choice that worked in a reference is unsuitable for this project, and whether any attributes need further decisions.
+Directly inspect the representative screen or component and check whether it preserves the selected characteristics. Compare the attributes addressed by this change, including hierarchy, layout, component structure, action placement, information density, typography, spacing, shape, color, background separation, interaction states, or responsive changes as relevant, with the evidence behind the choices. Show the user whether the appearance follows consistent principles, whether a choice that worked in a reference is unsuitable for this project, and whether any attributes need further decisions.
 
 Inspect states affected by the change, such as selected, error, disabled, and keyboard-focus states. Check affected screen sizes, themes, and languages used by the project against the agreed criteria. If a state transition needs validation, interact with the running UI or obtain material that demonstrates the transition. A single still image does not verify interactions or every state.
 
