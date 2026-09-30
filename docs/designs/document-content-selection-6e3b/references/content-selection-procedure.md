@@ -2,7 +2,7 @@
 
 작업 설명과 부가 주의 문구는 문서 수록 지시가 없으면 제외한다. 이 판단에 예상 독자를 필수로 요구하지 않는다. 허용된 문장도 근거, 승인 상태와 사실의 조건을 보존한 뒤 표현을 다듬는다.
 
-이 절차는 [요구사항의 내용 포함 조건](../requirements.md#내용이-포함되는-조건)을 두 스킬 구성 방안에 같은 방식으로 적용하기 위한 제안이다. 실제 스킬에 반영된 규칙으로 취급하지 않는다. 설명 대상의 분류는 [내용 분류 기준](./content-classification.md)을 사용한다.
+이 절차는 [요구사항의 내용 포함 조건](../requirements.md#내용이-포함되는-조건)을 두 스킬 구성 방안에 같은 방식으로 적용하기 위한 기준이다. 현재 스킬에 반영한 지침은 [내용 선정 단계](../../../../skills/use-better-terms/SKILL.md#select-document-content)와 [세부 판정 자료](../../../../skills/use-better-terms/references/document-content.md)에서 확인한다. 설명 대상의 분류는 [내용 분류 기준](./content-classification.md)을 사용한다.
 
 ## 판정 순서
 

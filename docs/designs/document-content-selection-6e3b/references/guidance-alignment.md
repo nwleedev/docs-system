@@ -1,8 +1,8 @@
 # 기존 문서 지침과 수록 조건을 함께 적용하는 방법
 
-기존 지침은 독자 정보를 매번 사용자에게 묻거나 작성 경위를 본문에 넣으라고 요구하지 않는다. 보완할 부분은 독자 확인의 입력 조건, 근거 부족과 표현 판정의 보고 위치, 내용 선정이 표현 검토에 앞서는 순서다. 사실의 조건과 승인 상태를 보존하는 규칙은 유지한다.
+확장 전 지침에서 보완할 부분은 독자 확인의 입력 조건, 근거 부족과 표현 판정의 보고 위치, 내용 선정이 표현 검토에 앞서는 순서였다. 이 항목을 현재 스킬에 반영했고 사실의 조건과 승인 상태를 보존하는 규칙은 유지했다.
 
-이 자료는 [내용 포함 조건](../requirements.md#내용이-포함되는-조건)과 [수록 지시 판정 절차](./content-selection-procedure.md)를 기존 규칙에 적용한 분석이다. 저장소 자료는 2026-10-01 확인본을 사용한다. 아래 적용안은 실제 지침 수정이나 승인된 스킬 구성 선택을 뜻하지 않는다.
+이 자료는 [내용 포함 조건](../requirements.md#내용이-포함되는-조건)과 [수록 지시 판정 절차](./content-selection-procedure.md)를 확장 전 규칙에 적용한 분석이다. 아래 대조는 2026-10-01 확인한 Git revision `3face30`의 자료를 기준으로 하며, 현재 파일 링크는 수정본을 가리킨다. 반영한 기준은 [스킬의 내용 선정](../../../../skills/use-better-terms/SKILL.md#select-document-content)과 [세부 판정 자료](../../../../skills/use-better-terms/references/document-content.md)에서 확인할 수 있다.
 
 ## 독자 확인은 이용 가능한 정보로 시작한다
 
@@ -40,7 +40,7 @@
 
 표현을 고치기 전에 본문에 실을 내용을 정하는 절차가 필요하다. 저장소의 문서 작성 권한을 스킬이 다시 정의하지 않는다.
 
-[`use-design-docs`의 실행 순서](../../../../skills/use-design-docs/SKILL.md#execute-in-dependency-order)는 저장소 README의 작성 권한과 문서 종류별 규칙을 적용한다. 현재 [`use-better-terms`의 표현 판정](../../../../skills/use-better-terms/SKILL.md#improve-and-judge-the-outputs)은 뜻을 보존하는 문장 대안을 먼저 다룬다. 수록 지시를 선행 조건으로 확인하는 단계는 명시돼 있지 않다.
+[`use-design-docs`의 실행 순서](../../../../skills/use-design-docs/SKILL.md#execute-in-dependency-order)는 저장소 README의 작성 권한과 문서 종류별 규칙을 적용한다. 확장 전 [`use-better-terms`의 표현 판정](../../../../skills/use-better-terms/SKILL.md#improve-and-judge-the-outputs)은 뜻을 보존하는 문장 대안을 먼저 검토했다. 수록 지시를 선행 조건으로 확인하는 단계는 명시돼 있지 않았다.
 
 기존 스킬 확장은 같은 검토 안에서 내용 선정을 먼저 수행하는 방식으로 비교한다. 전용 스킬은 내용 선정 뒤에 허용된 문장과 필요한 조건을 표현 검토로 넘기는 방식으로 비교한다. 두 방안 모두 같은 수록 기준을 사용한다.
 
