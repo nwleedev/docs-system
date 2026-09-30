@@ -1,11 +1,11 @@
 ---
 name: use-better-terms
-description: Improve text and names before they are stored, committed, published, shared, or explicitly submitted for wording review. Apply evidence-backed replacements first, preserve exact terms only when needed, and leave unsupported meaning changes for human input. Exclude routine chat and responses that will not be reused.
+description: Select requested document content and improve text and names before they are stored, committed, published, shared, or explicitly submitted for wording review. Omit unrequested authoring notes and supplementary cautions, preserve factual conditions, and apply evidence-backed wording changes. Exclude routine chat and responses that will not be reused.
 ---
 
 # Use Better Terms
 
-Improve one sharing unit in the current session. Prefer natural wording that preserves verified meaning. Keep required exact terms with a reason, and do not invent missing meaning, roles, or approval.
+Select document content before improving its wording in one sharing unit. Keep the requested subject, verified meaning, factual conditions, and required exact terms. Do not invent missing meaning, roles, or approval.
 
 ## Set the scope
 
@@ -13,9 +13,21 @@ Improve one sharing unit in the current session. Prefer natural wording that pre
 2. Group outputs from the same commit or sharing action and review the group once after drafting. Do not review each sentence while drafting.
 3. Include chat wording only when it will be stored, published, delivered verbatim outside the conversation, or explicitly submitted for review. Exclude hidden reasoning, tool traces, routine progress messages, general explanations, and responses that will not be reused.
 
+## Select document content
+
+Before saving document prose or generating wording alternatives, distinguish the requested subject from instructions for producing the document. Do not copy prompts, tool directions, or work notes into the body. Preserve exact input only when the requested subject requires a quotation, evaluation input, or another authorized use of that wording.
+
+Omit file-reading directions, progress updates, authoring or research retrospectives, implementation history, and supplementary cautions or disclaimers unless the user explicitly asks to include them in the target document. Performing research or verification does not authorize reporting the process. Apply an inclusion instruction only to its specified document, section, and detail; use applicable standing instructions and later explicit changes. If only this optional inclusion is unclear, omit it without asking for readers or permission to add it.
+
+Keep future actions in a requested plan, steps in a requested method guide, and conditions that define a supported fact. Removing a caution must not broaden the remaining claim. Correct or omit unsupported claims instead of qualifying them with a generic disclaimer. Apply wording preservation to the selected content rather than preserving every draft sentence.
+
+Read [references/document-content.md](references/document-content.md) when a document contains process notes, cautions, quoted instructions, or an explicit request for methods or process reporting. Use its distinctions before judging wording. For a review-only request, report a needed exclusion or rewrite outside the reviewed body; edit only when authorized.
+
 ## Collect evidence and run checks
 
-Collect the intended readers and their next action, applicable repository rules, verified facts, approved decisions and wording, responsible roles, and the context needed to resolve references between sentences. For document work, identify the decisions or actions the reader must make, then locate the source material for each relevant claim. Check the actors, actions, conditions, and timing in that material, and distinguish documentation, code, and runtime evidence when they differ. When evidence does not establish a claim, role, condition, or approval state, record the gap instead of supplying it from inference.
+Use reader information and the reader's next action when established by the request or existing material. Their absence alone does not block writing or require a reader-identification question; write the requested subject from verified facts and applicable document rules. Reader usefulness does not authorize extra process notes or cautions.
+
+Collect applicable repository rules, verified facts, approved decisions and wording, responsible roles, and the context needed to resolve references between sentences. Locate the source material for each selected claim. Check its actors, actions, conditions, and timing, and distinguish documentation, code, and runtime evidence when they differ. Record missing evidence outside the target body instead of inferring a claim, role, condition, or approval state.
 
 Run repository-provided formatting and text checks that apply to the outputs. When Git and text search are available, inspect only the changed shared outputs for formatting errors, personal absolute paths, private identifiers, HTML comments, and unresolved markers. Redact sensitive matches in reports and judge every match in context.
 
@@ -46,7 +58,7 @@ Do not stop at a one-word substitution when it leaves the cause of the warning, 
 
 Compare the alternatives with the original for meaning, responsibility, conditions, focus, and the reader's next action. Restore only information supported by the collected evidence.
 
-If the evidence is missing or conflicting, ask a concrete question about the fact, policy, approval, or responsible role instead of inventing it. Put the current judgment, its limiting conditions, and the reader's next action where the reader can find them.
+If missing or conflicting evidence prevents writing required content or preserving a selected claim's meaning, ask a concrete question about that fact, policy, approval, or responsible role outside the target body. Omit optional unsupported claims when authorized rather than inventing them. Report the judgment, its conditions, and the next action in the review response; put them in the target document only when explicitly requested there. Preserve subject-matter conditions in the body.
 
 If verified evidence shows that an alternative preserves the meaning and the task authorizes editing, apply it in the same work unit. If the task requests review only, return the alternative without editing. Do not perform context-free string replacement.
 
@@ -58,7 +70,7 @@ Assign each scanner warning one current result: `pass`, `needs revision`, or `ne
 
 Judge these criteria once for each applicable output:
 
-1. The title, structure, wording, and names help the intended readers act. Distinct subjects remain in the document responsible for them.
+1. The title, structure, wording, and names serve the requested subject and established reader needs. Unrequested authoring notes and supplementary cautions are absent. Distinct subjects remain in the document responsible for them.
 2. Claims and roles follow verified facts, approved decisions, or approved wording. Proposals, unresolved choices, and approved decisions remain distinct.
 3. Personal paths, credentials, private URLs, private project identifiers, internal-only names, and unnecessary local paths are absent or safely replaced.
 4. Each sentence identifies enough of its subject or referent, action, conditions, and result. Role names stay consistent, and conditions and earlier results connect to dependent actions.
@@ -79,3 +91,5 @@ Use one status for every applicable criterion and output:
 For each non-passing result, give a tight location, the evidence or missing relationship, a replacement when one can be written without a new decision, and the consequence for readers. For each scanner warning retained as `pass`, give the alternative considered and the evidence for retaining the original wording. Do not quote sensitive text.
 
 When the user requested the result, list the reviewed outputs, intended readers, evidence, references, checks, applied or proposed replacements, retained warnings, and questions requiring a decision. Report unavailable checks and omitted warnings. Do not append this report to an unrelated response.
+
+Keep this review report separate from the reviewed body unless the user explicitly requests it in that document. Do not ask for reader information solely to fill the report; state that it was not supplied when relevant.
