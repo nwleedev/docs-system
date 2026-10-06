@@ -1,48 +1,46 @@
-# Tentative visualization and implementation input
+# Coherent mockups and implementation input
 
-Combine the user's selected characteristics in a target screen for visual review, then return the rules and validation conditions needed for implementation. This procedure neither changes application code nor prescribes the surrounding development workflow.
+Translate the design thesis into a coherent screen direction, inspect generated visuals, and provide scoped implementation input.
 
-## Define the rules needed for the current UI
+## Establish the current screen's foundation
 
-Read confirmed preferences, existing rules, exceptions, and unresolved decisions from the provided stage result and available design guidance. First assess whether existing principles and tokens can support the required screen. A new screen alone does not justify another reference search or a complete token hierarchy.
+Use the available goal, scenario, information relationships, constraints, existing rules, choices, and unresolved questions. Define the current foundation: typography, spacing, alignment, page regions, density, surfaces, and action emphasis. Include relevant primary, secondary, destructive, selected, disabled, focus, error, loading, empty, and responsive treatments.
 
-Describe rules through selected characteristics and their intended use, not service names. Instead of "Linear style," specify the information density, typographic hierarchy, layout, spacing, or emphasis to preserve. Depending on the decision, define only the needed rules for hierarchy, page and region layout, component structure, action placement, information density, color, background separation, typography, spacing, shape, borders, shadows, interaction states, and responsive changes.
+Connect each rule to its intended use and scenario constraint. Prefer a principle before a numeric value. Use realistic domain content, information volume, meaningful labels, long content, and status information. Do not add capabilities merely to enrich the screen or fill regions with interchangeable cards and placeholders.
 
-Use the case-by-case evidence and comparison from [case analysis and rationale](rationale.md). Link a rule to the inspected case or source that supports it and state the screen, component, state, or condition where it applies. Keep a visually estimated or otherwise unconfirmed value tentative. Promote a recurring value to a shared token only after its reuse is supported by validated screens; a confirmed preference alone does not establish a token.
+## Generate and inspect a mockup
 
-Where possible, state principles before values. For example, retain the principle "separate the list and detail areas with borders rather than shadows" and specify only the border values currently needed. Label undecided values as tentative implementation proposals, not user preferences or finalized rules. Keep source-verified values distinct from measurements estimated from a screenshot or visual inspection.
+Use [the current foundation](#establish-the-current-screens-foundation) if it is missing or changing.
 
-## Visualize new combinations
+Generate when the direction needs visual review or existing visuals cannot distinguish meaningful alternatives. Use an available image-generation capability and its instructions.
 
-If characteristics selected from several references need to be seen together, or text alone is insufficient for a decision, use an available image-generation capability to create a mockup of the target screen. Follow the capability's own instructions when it is available. Do not require a particular tool or implement image generation through this skill.
+Describe the whole composition: target, goal, scenario, content and volume, information priority, actions, foundation, relevant states and viewport, preserved or avoided characteristics, defaults, and unresolved choices. For alternatives, vary a consequential strategy and use separate images where possible.
 
-When requesting a mockup, distinguish the target screen's purpose, selected characteristics and evidence, existing rules to retain, characteristics to avoid, tentative decisions, and unresolved elements. Do not copy an entire reference screen. When comparing directions, make them meaningfully different, such as in background separation or density, and present separate images where possible.
+Before submission, open and visually inspect the actual returned image. A prompt or success message does not prove its appearance. Check the whole screen before details:
 
-Label the image as a "generated mockup" and explain which characteristics it combines. Show the image and ask the user whether it preserves their selected characteristics. Interpret the answer and return the next stage result through the user choices procedure linked from `SKILL.md`. Confirmation that the user likes a mockup does not complete validation of its implementation values in running UI.
+- Information priority, main action, region hierarchy, and balance support the scenario.
+- Alignment, spacing, typography, density, surfaces, and action emphasis share a foundation.
+- Domain content is plausible and readable, without clipping or filler.
+- Relevant states and responsive conditions are represented where possible; absent conditions remain unverified.
+- Structure and emphasis have scenario-based reasons, and familiar controls remain understandable.
 
-If image generation is unavailable or fails, say so. Ask whether the real screens already available support the needed decision, or defer visualization. Do not claim an image was generated when it was not, or substitute a text wireframe for its appearance. If essential visual evidence is missing, leave the affected decisions unresolved.
+Diagnose visible defects, correct them, and inspect the revised image. If correction fails or repeated attempts stop improving the defect, report the affected condition incomplete with its next action. Show the inspected image labeled as generated, with direction and unverified conditions. For meaningful choices, read [comparison](decisions.md#request-and-interpret-a-choice).
 
-## Agree on validation conditions before implementation
+If generation or inspection fails, identify missing evidence. Use already viewable real screens only if they support the same decision; otherwise defer visualization. A designated reference cannot be silently replaced.
 
-Choose a representative screen or component for the current decision and agree with the user on states and conditions of use. Include affected selected, error, disabled, keyboard-focus, and other relevant interaction states, along with screen sizes, themes, and languages that could affect the rule. Use direct inspection where appearance or behavior must be confirmed, and select only conditions affected by the decision.
+## Define validation conditions
 
-If the rule is intended for shared use, also choose another existing screen or component where it applies. If there is no other target, validate only the current target and leave shared-rule validation incomplete. Do not create a new screen or application solely to validate reuse.
+Choose representative targets and affected states, screen sizes, themes, and languages from approved requirements, the scenario, and existing guidance. Explain them without requiring professional vocabulary or CSS decisions. For materially different scope or direction, use [question classification](decisions.md#decide-whether-a-question-is-necessary).
+
+For a proposed shared rule, identify another existing applicable target. If absent, validate the current target and leave reuse incomplete.
 
 ## Prepare implementation input
 
-Separate tentative changes for validation from finalized guidance to reuse. The need for tentative values does not by itself block implementation, but do not present unvalidated values as final rules.
+Return the current change's goal, scenario, supported actions, preserved functionality, and specific appearance to change, together with:
 
-Include all information needed for the current change, without unrelated detail.
+- Thesis, information relationships, adopted strategies and evidence, and rejected alternatives.
+- Applicable existing principles or tokens, foundation, confirmed choices, exceptions, and scope.
+- Tentative values, unresolved evidence or choices, conflicts that must not be applied, and characteristics to avoid.
+- Representative targets and conditions from [validation conditions](#define-validation-conditions), including existing reuse targets.
 
-- Target screen or component, the user task it supports, and the purpose of the change
-- Visual characteristics to preserve, user choices, and observational evidence
-- Existing principles and tokens to reuse, permitted exceptions, and their scope of application
-- Tentative values for validation, unresolved decisions, and conflicting choices that must not yet be applied
-- Styles to avoid and rules that must not be added without approval
-- Agreed validation screens, states, conditions of use, and reuse targets for shared rules
-
-Adapt the specification format to the current work. Provide design principles, design tokens, CSS variable or theme specifications, component usage rules, and prohibited visual patterns at the level needed. If finalized guidance is available, reuse it rather than duplicating the same rules.
-
-Implementation happens outside this skill under the authority and development process available for the current work. This input does not authorize code changes. Even when the same agent performs both procedures, making a design decision does not replace authorization to edit `tokens.css`, theme settings, component files, or other source code.
-
-After code changes, apply the post-change validation procedure linked from `SKILL.md` when a current running screen and evidence of the change it reflects are available. Report separately whether implementation input, implementation, and running UI validation are complete.
+Use the needed form: principles, tokens, CSS variables, themes, or component usage rules. Refer to existing guidance instead of duplicating it. After separately authorized code changes, use [current UI validation](validation.md#establish-the-evidence-and-scope).
