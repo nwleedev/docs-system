@@ -1,8 +1,10 @@
 # 문서 내용 선정과 표현 검토를 함께 구성하는 방안
 
+내용 선정 규칙은 이후 [`use-better-handoff`](../../../../skills/use-better-handoff/SKILL.md#decide-what-belongs-where)로 이관됐다. 아래 적용 결과와 비교 판단은 당시 구성에 대한 기록이다. 본문의 스킬 링크는 이관 후 위치를 가리킨다.
+
 현재 저장과 공유 절차에는 `use-better-terms` 확장 방식으로 내용 선정 기준을 반영했다. 확장 전 비교에서 두 제안은 같은 수록 기준을 적용했고 비교 문안의 정확성 차이는 확인되지 않았다. 확장 방식은 기존 한 번의 호출에서 내용 선정을 먼저 수행하며, 전용 방식은 내용 선정과 표현 검토를 각각 호출한다.
 
-이 자료는 [두 해결 방안의 비교 요구사항](../requirements.md#조사할-해결-방안)에 대한 분석이다. 비교 근거는 2026-10-01 확인한 확장 전 저장소 지침, [기존 지침 대조](./guidance-alignment.md)와 [12개 입력의 비교 문안](./procedure-comparison.md)이다. 실제 반영한 내용은 [수정한 스킬](../../../../skills/use-better-terms/SKILL.md#select-document-content)에서 확인할 수 있다.
+이 자료는 [두 해결 방안의 비교 요구사항](../requirements.md#조사할-해결-방안)에 대한 분석이다. 비교 근거는 2026-10-01 확인한 확장 전 저장소 지침, [기존 지침 대조](./guidance-alignment.md)와 [12개 입력의 비교 문안](./procedure-comparison.md)이다. 실제 반영한 내용은 [수정한 스킬](../../../../skills/use-better-handoff/SKILL.md#decide-what-belongs-where)에서 확인할 수 있다.
 
 ## 현재 절차에서 필요한 검토
 

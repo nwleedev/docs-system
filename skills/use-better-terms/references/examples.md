@@ -1,24 +1,10 @@
 # Common Wording Examples
 
-Use these examples only when a common criterion or allowed case is unclear. They calibrate audience, evidence, sensitive information, symbols, sentence meaning, and relationships between sentences. Similar wording does not fail automatically; judge the actual context.
-
-## Keep different decisions in their responsible documents
-
-Problematic:
-
-> One decision record sets the log retention period, button color, and dependency update policy.
-
-These subjects have different readers, approval roles, and verification methods. Their appearance in one request does not make them one decision.
-
-Meaning-preserving alternative:
-
-> Record the log retention period in the operations decision, link the button color to the approved design, and record the dependency update in the implementation plan and verification results.
-
 ## Remove decorative symbols, not required notation
 
 Problematic:
 
-> Quick setup · safe storage · easy sharing ✨
+> Quick setup · safe storage · easy sharing
 
 Natural alternative:
 

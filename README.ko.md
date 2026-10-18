@@ -10,6 +10,7 @@
 - [`docs/designs/README.md`](./docs/designs/README.md)는 이 저장소의 설계 문서 규칙을 정합니다. [`use-design-docs`](./skills/use-design-docs/SKILL.md)는 각 저장소의 기준 README에 따라 요구사항, 조사, 결정, 계획과 검증 작업을 진행합니다.
 - [`docs/dev/README.md`](./docs/dev/README.md)는 이 저장소의 개발 지침 규칙을 정합니다. [`use-dev-guidance`](./skills/use-dev-guidance/SKILL.md)는 각 저장소의 기준 README에 따라 기술 조사, 검사, 의존성 작업, 지침과 구현 검증을 진행합니다.
 - [`use-better-terms`](./skills/use-better-terms/SKILL.md)는 저장하거나 공유할 글과 이름에 근거로 뜻을 보존하는 대체 표현을 먼저 적용하고, 새 뜻이 필요한 변경은 사람의 판단을 요청합니다.
+- [`use-better-handoff`](./skills/use-better-handoff/SKILL.md)는 지정된 인수인계 파일에서 작업을 이어받기 위한 설명을 관리하며 그 기록으로 프로젝트를 파악하도록 돕습니다. 기본 파일의 위치와 이름은 변경할 수 있습니다.
 - [`examples/nextjs-frontend.md`](./examples/nextjs-frontend.md)는 특정 기술 구성을 조사하는 프롬프트 예시이며 다른 프로젝트의 기본값이 아닙니다.
 
 `src/`의 두 언어 문서는 따로 관리합니다. 필요한 절을 가져오기 전에 두 파일의 내용을 비교합니다.
@@ -35,6 +36,8 @@
 
 현재 위치는 [Codex Skill 문서](https://developers.openai.com/codex/skills) 또는 [Claude Code Skill 문서](https://code.claude.com/docs/en/skills)에서 확인합니다. 이 저장소의 `skills/`는 조사 자료이므로 그 아래에 있다는 이유만으로 자동 탐색되지 않습니다.
 
-[`src/AGENTS.en.md`](./src/AGENTS.en.md) 또는 [`src/AGENTS.ko.md`](./src/AGENTS.ko.md)에서 설치한 Skill의 호출 절을 골라 도구가 읽는 지침 파일에 추가합니다. `use-better-terms` 절은 `BEGIN USE BETTER TERMS`와 `END USE BETTER TERMS`로 구분되며, 설계 및 개발 Skill의 절은 각 책임을 제목으로 사용합니다. Claude Code에서는 `CLAUDE.md`에 추가하거나 필요한 `AGENTS.md`를 `@AGENTS.md`로 불러옵니다.
+[`src/AGENTS.en.md`](./src/AGENTS.en.md) 또는 [`src/AGENTS.ko.md`](./src/AGENTS.ko.md)에서 설치한 Skill의 호출 절을 골라 도구가 읽는 지침 파일에 추가합니다. 인수인계와 표현 검토 절은 각각 `BEGIN USE BETTER HANDOFF` / `END USE BETTER HANDOFF`와 `BEGIN USE BETTER TERMS` / `END USE BETTER TERMS`로 구분합니다. 둘 다 도입하면 인수인계 정보 배치를 표현 검토에 앞서 수행합니다. 설계 및 개발 Skill의 절은 각 책임을 제목으로 사용합니다. Claude Code에서는 `CLAUDE.md`에 추가하거나 필요한 `AGENTS.md`를 `@AGENTS.md`로 불러옵니다.
+
+인수인계 기능은 `skills/use-better-handoff/` 전체와 해당 호출 절을 함께 복사해 도입합니다. 두 스킬의 지침은 영어이며 언어별 판정 예문은 원문을 유지합니다. 인수인계 파일의 위치와 이름은 작업 지시나 저장소 지침에서 정할 수 있습니다. 각 스킬은 독립적으로 선택할 수 있으며 다른 스킬을 필수로 읽지 않습니다.
 
 Skill을 제거할 때에는 복사한 Skill 디렉터리와 호출 절을 삭제합니다. Skill이 만들었거나 사용한 저장소 기준 README, 다른 지침과 다른 규칙에 필요한 import는 그대로 둡니다.

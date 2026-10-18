@@ -1,137 +1,93 @@
-# 한국어 글과 문구 판정 기준
+# Korean Wording Criteria
 
-한국어가 포함된 글과 이름에만 이 자료를 적용한다. 검사 스크립트가 알린 후보는 금칙어가 아니며, 문자열만으로 찾을 수 없는 문장과 문단의 뜻도 함께 판정한다.
+## Literal translation and hidden actors
 
-## 문맥을 판정하는 순서
+Korean words alone do not make a sentence natural. An English subject pattern or a stack of nouns can hide actions and relationships. Use verbs and Korean particles to show who reads, decides, and records; do not make a document or feature appear to exercise judgment or responsibility.
 
-문제처럼 보이는 표현과 목록에 없는 표현을 다음 순서로 판정한다.
-
-1. 그 표현이 사용 분야에서 뜻이 정해진 전문용어, 제품명, API 이름 또는 코드 식별자인지 확인한다.
-2. 경고가 나온 문장과 판정에 필요한 주변 문장을 읽는다.
-3. 문장이 가리키는 대상, 행동 주체, 행동, 적용 조건, 결과와 책임 관계를 확인하고 수정이 필요한지 판단한다. 경고가 있다는 사실만으로 수정 필요성을 확정하지 않는다.
-4. 현재 문맥과 확인된 근거만으로 수정 또는 원문 유지를 결정할 수 있는지 살피고, 문맥을 더 확인해야 하는지 별도로 판단한다.
-5. 빠진 정보를 저장소 근거, 승인된 결정 또는 승인된 문구에서 확인한다. 근거가 없는 뜻, 역할, 조건이나 결과를 보태지 않는다.
-6. 경고가 나온 표현에는 실제 문맥에 맞는 자연스러운 대체 문장을 적어도 하나 만든다. 단어 하나를 바꾼 대안이 경고 원인을 해결하지 못하거나 문장이 어색하면 다른 구조를 계속 찾는다.
-7. 주어와 서술어를 다시 구성하고, 여러 명사로 나타낸 관계를 동사로 풀어 쓰며, 뜻의 단위에 따라 문장을 나누거나 이어 붙인다. 태 선택이 적용되는 문장은 능동문과 피동문 또는 상태 설명도 비교한다.
-8. 대안이 확인된 뜻, 책임, 조건과 결과를 보존하는지 원문과 비교한다. 근거만으로 뜻을 보존할 수 있으면 대안을 적용한다. 원문이 더 정확하거나 자연스러울 때만 유지하고 검토한 대안과 유지 근거를 기록한다.
-
-문장을 그대로 뒷받침하는 근거가 있으면 `pass`다. 근거만으로 새 판단 없이 고칠 수 있지만 수정 권한이 없으면 `needs revision`이다. 필요한 뜻이나 책임 관계가 없거나 근거끼리 충돌하면 추측하지 않고 `needs human input`으로 판정한다. 낱말만 자동 치환하지 않는다.
-
-## 번역체와 감춰진 행동 주체
-
-한국어 낱말만 썼더라도 영어식 주어와 명사 배열을 그대로 옮기면 행동과 관계가 사라질 수 있다. 무생물인 문서나 기능이 스스로 판단하거나 책임지는 것처럼 쓰지 않고, 실제로 값을 읽고 결정하고 기록하는 주체를 밝힌다. 여러 명사를 이어 붙인 표현은 관계를 동사와 조사로 풀어 쓴다.
-
-문제가 있는 문장:
+This sentence needs human input because it does not identify who checks which input or what changes after an error:
 
 > 이 문서는 입력 품질 향상과 오류 처리 개선을 수행한다.
 
-- **판정:** `needs human input`
-- **이유:** 누가 어떤 입력을 검사하고 오류가 나면 무엇을 바꾸는지 알 수 없다.
-
-뜻이 확인된 뒤 바꾼 문장:
+If the evidence establishes these actions, write:
 
 > 변환기는 각 행의 날짜를 검사한다. 날짜 형식이 맞지 않으면 행 번호와 입력값을 오류 메시지에 기록하고 변환을 중단한다.
 
-목록에 없는 명사도 여러 행동을 숨기면 같은 방식으로 확인한다. 예를 들어 원문 근거가 스케줄러가 작업 큐에서 재시도할 항목을 선택하고 처리기가 처리 성공 여부를 기록한다고 말한다면 다음 문장은 두 행동을 `업무` 하나로 합친다.
+An uncataloged noun can also hide several actions. If evidence distinguishes a scheduler selecting retries from a processor recording outcomes, this sentence collapses them into `업무`:
 
 > 업무를 안정적으로 처리하고 업무를 관리한다.
 
-근거가 확인된 뒤에는 다음처럼 각 행동과 대상을 쓴다.
+Write each verified action and object:
 
 > 스케줄러는 재시도할 항목을 선택한다. 처리기는 성공 여부와 처리 시각을 기록한다.
 
-반대로 자료가 `업무`를 조직이 승인한 분류명으로만 정의한다면 그 이름을 임의로 다른 말로 바꾸지 않는다. 어떤 뜻을 가리키는지 자료가 정하지 않았다면 주체나 행동을 추측하지 말고 확인할 사항으로 남긴다.
+If `업무` is instead an approved classification name, preserve that name. If its meaning is undefined, identify what must be established before rewriting it.
 
-## 능동문과 피동문을 선택하는 기준
+## Active, passive, and state descriptions
 
-능동문과 피동문 가운데 어느 하나를 일괄해서 우선하지 않는다. 확인된 행동 주체와 책임이 독자의 판단이나 다음 행동에 중요하면 능동문을 먼저 검토한다. 대상의 상태나 처리 뒤에 달라진 점이 중심이고, 행동 주체를 밝혀도 독자의 판단이나 행동에 도움이 되지 않으면 피동문이나 상태 설명을 검토한다.
+Do not prefer one voice universally. Consider active wording first when the verified actor or responsibility matters to a reader's decision or next action. Consider passive wording or a state description when the resulting state is central and naming the actor adds no useful information.
 
-두 형태가 모두 확인된 뜻을 보존하면 실제 대안을 각각 작성한다. 행동 주체와 책임, 문장의 초점, 조건과 결과가 드러나는 순서, 독자의 다음 행동을 비교하고 선택 이유를 기록한다. 능동문을 만들려면 근거에 없는 역할을 보태야 하거나 피동문을 쓰면 확인해야 할 책임을 감추게 될 때에는 어느 형태도 추측해서 선택하지 않고 `needs human input`으로 판정한다.
+When both forms preserve the verified meaning, write actual alternatives and compare responsibility, focus, the order of conditions and results, and the reader's next action. Record the choice. Do not invent an actor to form an active sentence or use passive wording to hide responsibility that must be established.
 
-문장부호, 코드 표기나 정확한 이름처럼 태 선택과 관계없는 경고에는 형식적인 능동문 또는 피동문 전환을 요구하지 않는다. 이때 태 선택 기준은 `not applicable`이지만 경고 자체의 수정 필요성과 추가 문맥 확인 필요성은 계속 판정하고, 경고에는 별도의 최종 결과를 정한다.
+Voice comparison does not apply to punctuation, code notation, or exact names merely because they triggered a warning. Judge those warnings through the applicable criteria.
 
-## 한국어 문장에 섞인 영어 보통명사
+## English common nouns inside Korean prose
 
-서비스명, API 이름, 명령, 코드 식별자와 저장소가 승인한 전문용어는 정확한 이름을 유지한다. 일반 역할, 단계, 상태와 판단을 영어로 병기할 때에는 영어가 뜻을 더 정확하게 만드는지 확인한다. 같은 뜻을 괄호로 반복하거나 영어 보통명사가 행동을 감추면 저장소가 쓰는 자연스러운 한국어로 바꾼다.
+Keep exact service names, API names, commands, identifiers, and approved technical terms. For ordinary roles, stages, states, and judgments, ask whether English makes the meaning more precise. Replace redundant parenthetical translations and English nouns that hide actions with natural Korean used by the repository.
 
-문제가 있는 문장:
+When the document defines the roles and outputs, replace:
 
 > reviewer가 findings를 확인하고 approval owner에게 전달한다.
 
-문서가 역할과 산출물을 정의했다면 다음처럼 바꿀 수 있다.
+with:
 
 > 검수자가 검토 결과를 확인하고 승인 책임자에게 전달한다.
 
-`Response.create`처럼 정확한 API 이름은 바꾸지 않는다. 대신 오류가 났을 때 기록할 값과 그 행동을 맡은 호출자를 한국어 문장으로 밝힌다.
+Keep an exact API name such as `Response.create`; explain the caller's action and the values to record on failure in Korean.
 
-## 기존 문구와 반복되는 글의 짜임
+## Repetition and referents
 
-기존 문서는 확인된 사실, 승인된 결정과 필요한 비교 구조를 제공할 수 있다. 기존 제목, 추상 명사, 영어 보통명사와 결론은 이전 문서에 있었다는 이유만으로 유지하지 않는다. 새 글의 독자, 행동 주체, 조건과 행동했을 때 달라지는 점에 맞게 다시 쓴다.
-
-도입, 소제목 수, 목록 수와 문단 길이도 내용에 따라 정한다. 다음 형태가 반복되면 독자가 새 정보를 얻는지 확인한다.
-
-- 뒤의 내용을 예고할 뿐인 도입
-- 실제 관계와 무관하게 맞춘 같은 수의 항목
-- 소제목마다 같은 길이로 반복하는 문단
-- 앞의 답을 다시 말하는 결론
-- 문단마다 되풀이하는 연결 표현
-
-비교 대상마다 같은 속성을 같은 순서로 제시하면 유지할 수 있다. 각 항목이 서로 다른 값과 근거를 제공하는지가 유지 근거다.
-
-반복 자체가 문제라는 뜻은 아니다. 다음 문장에서 `전력 소비량`은 같은 측정값을 가리키므로 다른 낱말로 바꾸면 독자가 서로 다른 지표로 읽을 수 있다.
+Repeated terminology can preserve a reference. Here `전력 소비량` denotes the same measurement; substituting another noun could suggest a different metric:
 
 > 전력 소비량을 시간별로 측정한다. 전력 소비량이 기준을 넘으면 경고를 기록한다.
 
-반면 다음 문장의 `업무`는 선택, 승인과 기록을 각각 가리키는지 알 수 없으므로 반복 횟수를 세는 것만으로 통과시키지 않는다.
+Here repetition of `업무` does not establish whether checking, approval, and recording concern the same thing:
 
 > 업무를 확인하고 업무를 승인한 뒤 업무를 기록한다.
 
-근거가 각 행동의 주체와 대상을 구분한다면 다음처럼 풀어 쓴다.
+If evidence distinguishes the actors and objects, write:
 
 > 담당자는 요청 내용을 확인한다. 승인 책임자는 요청을 승인한다. 기록기는 승인 여부를 저장한다.
 
-## 문장과 문단 사이의 관계
+## Relationships across sentences
 
-문장 하나가 자연스러워도 지칭 대상, 역할, 가정 또는 결정 상태가 다음 문장에서 바뀔 수 있다. 다음 관계를 문단과 문서에서 확인한다.
+Korean can omit subjects and summarize earlier clauses; check that referents, roles, assumptions, and decision states remain identifiable across sentences. Verify that an earlier result supplies the next action's starting condition and that necessary exceptions and assumptions precede the actions using them.
 
-- 대명사와 요약 표현이 한 대상을 가리키는지
-- 같은 역할 이름이 같은 책임을 맡는지
-- 서로 다른 역할의 관계가 근거로 확인되는지
-- 제안, 검토 중인 선택과 승인된 결정이 구분되는지
-- 앞 단계에서 만든 내용이 다음 단계를 시작할 조건으로 이어지는지
-- 예외와 가정이 그것을 사용하는 행동보다 먼저 설명되는지
-
-관계가 끊긴 문장:
+This pair needs human input because the responsible person, approval, and deployment condition are undefined:
 
 > 검수자가 수정안을 제안한다. 담당자는 승인된 내용을 배포한다.
 
-- **판정:** `needs human input`
-- **이유:** 담당자가 누구인지, 누가 무엇을 승인했는지와 배포 시작 조건을 알 수 없다.
-
-관계가 확인된 뒤 바꾼 문장:
+If the relationship is established, write:
 
 > 검수자가 수정안을 제안한다. 승인 책임자가 수정안을 승인하면 배포 담당자가 승인된 문구를 배포한다.
 
-근거가 주체를 제공하는데 문서가 생략한 경우와, 근거 자체에 주체가 없는 경우를 구분한다. 실행 기록에 `검수자가 초안을 승인한 뒤 배포 담당자가 배포했다`고 적혀 있는데 문서가 다음처럼 썼다면 주체와 조건을 복원할 수 있다.
+Distinguish an omitted actor from an unknown actor. If the execution record states `검수자가 초안을 승인한 뒤 배포 담당자가 배포했다`, restore that actor and condition in this sentence:
 
 > 초안이 승인되면 배포한다.
 
 > 검수자가 초안을 승인하면 배포 담당자가 승인된 초안을 배포한다.
 
-반대로 자료가 승인자와 배포 조건을 전혀 정하지 않았다면 다음 문장을 임의로 완성하지 않는다.
+Without evidence for the approver and deployment condition, do not complete this sentence by guessing:
 
 > 담당자가 적절한 시점에 검토를 완료하고 배포한다.
 
-이 경우에는 `누가 승인하고, 어떤 조건을 만족해야 배포하는가`를 확인 사항으로 남긴다. 자료가 있는지 아직 확인하지 않은 상태도 자료가 없다는 뜻으로 바꾸지 않는다.
+Ask who approves and which conditions permit deployment. Evidence not yet inspected is not evidence known to be absent.
 
-현재 상태와 변경 후 효과도 분리한다. 현재 로그가 처리 실패 건수를 보여 준다는 사실만으로 보존 기간을 바꾼 뒤 실패 건수가 줄어든다고 쓸 수 없다.
+Keep observations distinct from predicted effects. A log showing failures does not establish that changing retention will reduce them:
 
 > 현재 로그에서 실패 건수를 확인했다. 보존 기간을 바꾸면 실패 건수가 줄어들 것이다.
 
-첫 문장은 현재 관찰이고 둘째 문장은 아직 검증하지 않은 예상이다. 변경 후 효과를 주장하려면 변경을 적용한 뒤 같은 조건에서 비교할 자료와 시점을 정해야 한다.
+The first sentence is an observation; the second is an unverified prediction. A claim about the change needs evidence comparing the same conditions after applying it, with a defined observation time.
 
-## 긴 문단의 의미 단위
+## Meaning units in long paragraphs
 
-긴 문단 경고가 나오면 원문 전체를 읽는다. 문장 수만으로 수정을 요구하지 않는다. 서로 다른 중심 내용, 근거, 조건, 결정 상태 또는 후속 행동이 섞여 독자가 관계를 다시 구성해야 하는 경우에만 의미 단위로 나눈다.
-
-접근 권한, 로그 보관 기간과 배포 승인처럼 근거와 후속 행동이 다른 사항은 각각의 확인 조건과 행동을 별도 문단에 둔다. 반면 입력 확인부터 오류 기록, 저장과 처리 건수 기록까지 하나의 실행 순서를 설명하는 문단은 길어도 유지할 수 있다.
+Split only when distinct subjects, evidence, conditions, decision states, or next actions force readers to reconstruct relationships. Access permission, log retention, and deployment approval need separate paragraphs when their evidence and follow-up actions differ. A long paragraph can remain intact when it describes one execution sequence from input checks through error recording, storage, and processed-count recording.

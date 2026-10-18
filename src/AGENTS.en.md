@@ -79,6 +79,15 @@
 
 **If a required Skill or one of its required references cannot be read, do not infer replacement rules. Stop and report the missing prerequisite. When only the repository authority README is absent, follow the creation-approval and alternative-location procedure defined by `use-design-docs` or `use-dev-guidance`.**
 
+<!-- BEGIN USE BETTER HANDOFF -->
+
+### Handoff information
+
+- When creating or revising reusable artifacts, use `$use-better-handoff` to place continuity information before wording review. Include the changed artifacts and handoff record in the same sharing unit.
+- Also use `$use-better-handoff` to understand a project through its handoff record or update that record. A reading request alone does not authorize changes.
+- The default is `HANDOFF.md` at the repository root. The task or standing project instructions may specify another location and name. Do not invoke it merely for routine chat or progress updates.
+<!-- END USE BETTER HANDOFF -->
+
 <!-- BEGIN USE BETTER TERMS -->
 
 ### Text and Names

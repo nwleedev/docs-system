@@ -1,8 +1,10 @@
 # 기존 문서 지침과 수록 조건을 함께 적용하는 방법
 
+내용 선정 규칙은 이후 [`use-better-handoff`](../../../../skills/use-better-handoff/SKILL.md#decide-what-belongs-where)로 이관됐다. 아래 적용 결과와 비교 판단은 당시 구성에 대한 기록이다. 본문의 스킬 링크는 이관 후 위치를 가리킨다.
+
 확장 전 지침에서 보완할 부분은 독자 확인의 입력 조건, 근거 부족과 표현 판정의 보고 위치, 내용 선정이 표현 검토에 앞서는 순서였다. 이 항목을 현재 스킬에 반영했고 사실의 조건과 승인 상태를 보존하는 규칙은 유지했다.
 
-이 자료는 [내용 포함 조건](../requirements.md#내용이-포함되는-조건)과 [수록 지시 판정 절차](./content-selection-procedure.md)를 확장 전 규칙에 적용한 분석이다. 아래 대조는 2026-10-01 확인한 Git revision `3face30`의 자료를 기준으로 하며, 현재 파일 링크는 수정본을 가리킨다. 반영한 기준은 [스킬의 내용 선정](../../../../skills/use-better-terms/SKILL.md#select-document-content)과 [세부 판정 자료](../../../../skills/use-better-terms/references/document-content.md)에서 확인할 수 있다.
+이 자료는 [내용 포함 조건](../requirements.md#내용이-포함되는-조건)과 [수록 지시 판정 절차](./content-selection-procedure.md)를 확장 전 규칙에 적용한 분석이다. 아래 대조는 2026-10-01 확인한 Git revision `3face30`의 자료를 기준으로 하며, 현재 파일 링크는 수정본을 가리킨다. 반영한 기준은 [스킬의 내용 선정](../../../../skills/use-better-handoff/SKILL.md#decide-what-belongs-where)과 [세부 판정 자료](../../../../skills/use-better-handoff/SKILL.md#decide-what-belongs-where)에서 확인할 수 있다.
 
 ## 독자 확인은 이용 가능한 정보로 시작한다
 

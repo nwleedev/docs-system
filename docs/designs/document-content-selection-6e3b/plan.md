@@ -1,18 +1,20 @@
 # 요청하지 않은 작업 설명을 제외하는 기준의 적용 계획
 
+내용 선정 규칙은 이후 [`use-better-handoff`](../../../skills/use-better-handoff/SKILL.md#decide-what-belongs-where)로 이관됐다. 아래 적용 결과와 비교 판단은 당시 구성에 대한 기록이다. 본문의 스킬 링크는 이관 후 위치를 가리킨다.
+
 `use-better-terms`에 내용 선정 규칙을 반영하고 14개 입력으로 적용을 확인했다. 요청하지 않은 설명은 제외됐고 요청한 방법, 사실의 조건과 정확한 인용은 유지됐다. 필수 사실이 없는 입력과 검토만 요청한 입력도 각각 질문과 수정 제안으로 처리했다. 스킬 반영과 적용 확인을 마쳤다.
 
 이 계획은 [요구사항의 내용이 포함되는 조건](./requirements.md#내용이-포함되는-조건), [조사할 해결 방안](./requirements.md#조사할-해결-방안), [계획에 담을 절차](./requirements.md#계획에-담을-절차)와 [확인할 결과](./requirements.md#확인할-결과)를 기준으로 한다. 내용 분류와 수록 지시 판정을 스킬에 반영하고, 기존 규칙을 조정한 뒤 실제 적용 문안을 확인한다. 구성 비교는 적용 방식과 반복 판정을 점검하는 근거로 사용한다.
 
 ## 1. 제외할 설명과 요청한 내용을 구분한다
 
-[분류 기준](./references/content-classification.md)에 따라 [스킬의 내용 선정 단계](../../../skills/use-better-terms/SKILL.md#select-document-content)에 기본 제외 대상과 보존할 내용을 반영했다. 문장의 설명 대상과 요청한 내용을 기준으로 분류하며 단어만으로 삭제하지 않는다.
+[분류 기준](./references/content-classification.md)에 따라 [스킬의 내용 선정 단계](../../../skills/use-better-handoff/SKILL.md#decide-what-belongs-where)에 기본 제외 대상과 보존할 내용을 반영했다. 문장의 설명 대상과 요청한 내용을 기준으로 분류하며 단어만으로 삭제하지 않는다.
 
 확인 근거는 각 유형의 포함 또는 제외 예시, 조건을 삭제했을 때 달라지는 주장, 실제 편집 안내와 검색 상황 사례의 연결이다. 같은 수행 절차라도 요청한 문서의 주제이면 유지하고 작성 활동의 회고이면 수록 지시를 확인한다. 2단계의 판정 절차는 이 분류를 사용한다.
 
 ## 2. 명시적 포함 지시를 판정하는 순서를 정한다
 
-[판정 절차](./references/content-selection-procedure.md)를 [스킬의 세부 판정 자료](../../../skills/use-better-terms/references/document-content.md)에 반영했다. 수록 지시가 없으면 제외하고 지정된 문서와 내용만 허용한다. 예상 독자 지정은 필수 입력으로 요구하지 않는다.
+[판정 절차](./references/content-selection-procedure.md)를 [스킬의 세부 판정 자료](../../../skills/use-better-handoff/SKILL.md#decide-what-belongs-where)에 반영했다. 수록 지시가 없으면 제외하고 지정된 문서와 내용만 허용한다. 예상 독자 지정은 필수 입력으로 요구하지 않는다.
 
 확인 근거는 일반 보고서 요청과 방법 부록 요청의 구분, 동일한 뜻의 지시 두 표현, 지속적인 지시의 적용과 변경, 자료 속 인용의 제외 사례다. 본문에 필요한 사실이 부족한 경우만 문서 밖에서 확인한다. 이 순서와 포함 조건을 3단계의 기존 지침 대조에 사용했다.
 

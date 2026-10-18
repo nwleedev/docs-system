@@ -9,6 +9,7 @@
 - [`AGENTS.md`](./AGENTS.md) is this repository's working example. [`src/AGENTS.en.md`](./src/AGENTS.en.md) and [`src/AGENTS.ko.md`](./src/AGENTS.ko.md) are reference documents for other repositories.
 - [`docs/designs/README.md`](./docs/designs/README.md) defines this repository's design-document rules. [`use-design-docs`](./skills/use-design-docs/SKILL.md) routes requirements, research, decisions, planning, and validation through a repository's corresponding README.
 - [`docs/dev/README.md`](./docs/dev/README.md) defines this repository's development-guidance rules. [`use-dev-guidance`](./skills/use-dev-guidance/SKILL.md) routes stack research, checks, dependency work, guidance, and implementation validation through a repository's corresponding README.
+- [`use-better-handoff`](./skills/use-better-handoff/SKILL.md) keeps continuity notes in a designated handoff file and supports reading it to understand a project. The default filename and location can be changed.
 - [`use-better-terms`](./skills/use-better-terms/SKILL.md) improves text and names before storage or sharing by applying evidence-backed alternatives first and leaving unsupported meaning changes for human input.
 - [`examples/nextjs-frontend.md`](./examples/nextjs-frontend.md) is one stack-specific research prompt, not a default for another project.
 
@@ -35,6 +36,8 @@ Copy the complete selected Skill directory, including its references and scripts
 
 Confirm current locations in the [Codex skills documentation](https://developers.openai.com/codex/skills) or [Claude Code skills documentation](https://code.claude.com/docs/en/skills). A directory under this repository's `skills/` is research material and is not discovered automatically.
 
-Copy the matching invocation subsection from [`src/AGENTS.en.md`](./src/AGENTS.en.md) or [`src/AGENTS.ko.md`](./src/AGENTS.ko.md) into the instruction file loaded by the tool. The `use-better-terms` subsection is bounded by `BEGIN USE BETTER TERMS` and `END USE BETTER TERMS`; the design and development subsections are titled for their respective responsibilities. For Claude Code, place the subsection in `CLAUDE.md` or import an applicable `AGENTS.md` with `@AGENTS.md`.
+Copy the matching invocation subsection from [`src/AGENTS.en.md`](./src/AGENTS.en.md) or [`src/AGENTS.ko.md`](./src/AGENTS.ko.md) into the instruction file loaded by the tool. The handoff and wording subsections use `BEGIN USE BETTER HANDOFF` / `END USE BETTER HANDOFF` and `BEGIN USE BETTER TERMS` / `END USE BETTER TERMS`. Use handoff placement before wording review when adopting both. The design and development subsections are titled for their respective responsibilities. For Claude Code, place the subsection in `CLAUDE.md` or import an applicable `AGENTS.md` with `@AGENTS.md`.
+
+For handoff support, copy the complete `skills/use-better-handoff/` directory and its invocation subsection. Its instructions are in English, as are the wording skill's instructions; language-specific examples retain their original text. A task or standing project instruction can choose a handoff filename and location. Each skill can be adopted independently; neither loads the other as a dependency.
 
 To remove a Skill, delete the copied Skill directory and its copied invocation subsection. Keep repository authority READMEs created or used by the Skill, unrelated instructions, and imports still required by other rules.

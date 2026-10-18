@@ -1,5 +1,7 @@
 # 문서에 실릴 내용을 먼저 고르는 작성 기준
 
+내용 선정 규칙은 이후 [`use-better-handoff`](../../../../skills/use-better-handoff/SKILL.md#decide-what-belongs-where)로 이관됐다. 아래 적용 결과와 비교 판단은 당시 구성에 대한 기록이다. 본문의 스킬 링크는 이관 후 위치를 가리킨다.
+
 요청하지 않은 작업 설명과 주의 문구는 독자 지정 여부와 관계없이 제외하는 기준이 적합하다. 포함 여부는 작성 대상 문서에 그 내용을 쓰라는 명시적 지시로 판단하고, 예상 독자에 관한 정보는 허용된 내용의 표현과 설명량을 조절하는 데 사용한다.
 
 이를 위해 `use-better-terms`에 표현을 고치기 전에 수록 여부를 판정하는 기준을 반영했다. [구성 방안 비교](./skill-composition-comparison.md)는 기존 한 번의 호출에 내용 선정을 넣는 방안과 전용 판정 뒤 표현 검토를 호출하는 방안을 대조한다. 기존 호출 안에서 내용 선정을 먼저 수행하는 방식으로 적용했으며 토큰 절감량이나 운영 개선율은 측정하지 않았다.
@@ -18,7 +20,7 @@
 
 확장 전 규칙은 작업 입력을 본문에 옮기지 않도록 했지만 주의사항과 과정 설명의 수록 지시를 확인하는 단계는 명시하지 않았다. [기존 지침 대조](./guidance-alignment.md)에서 보완할 항목을 독자 확인의 입력 조건, 근거 부족과 표현 판정의 보고 대상, 내용 선정과 표현 검토의 순서로 구분했다.
 
-현재 [스킬의 내용 선정 단계](../../../../skills/use-better-terms/SKILL.md#select-document-content)는 기본 제외, 수록 지시의 적용 대상과 사실의 조건을 먼저 확인한다. [근거 수집](../../../../skills/use-better-terms/SKILL.md#collect-evidence-and-run-checks)은 독자 정보가 없다는 이유만으로 질문하거나 중단하지 않도록 명시했고, 판정 보고와 질문은 검토 답변에 두도록 고쳤다. 기존 문서 작성 권한과 표현 검사 기준은 유지했다.
+현재 [스킬의 내용 선정 단계](../../../../skills/use-better-handoff/SKILL.md#decide-what-belongs-where)는 기본 제외, 수록 지시의 적용 대상과 사실의 조건을 먼저 확인한다. [근거 수집](../../../../skills/use-better-terms/SKILL.md#collect-evidence-and-run-checks)은 독자 정보가 없다는 이유만으로 질문하거나 중단하지 않도록 명시했고, 판정 보고와 질문은 검토 답변에 두도록 고쳤다. 기존 문서 작성 권한과 표현 검사 기준은 유지했다.
 
 기존 [작업 의도와 산출물 조사](../../public-output-audience-4d2c/references/prompt-intent-and-artifact-provenance-research.md#입력과-산출물-근거를-분리한다)는 입력과 사실 근거를 구분한다. 이 자료에서는 사실 여부와 별개로 요청한 문서에 실을 내용인지 판정하는 기준을 제안한다.
 

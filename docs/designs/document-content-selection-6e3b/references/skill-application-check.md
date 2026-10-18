@@ -1,8 +1,10 @@
 # 수정한 내용 선정 스킬의 적용 확인
 
+내용 선정 규칙은 이후 [`use-better-handoff`](../../../../skills/use-better-handoff/SKILL.md#decide-what-belongs-where)로 이관됐다. 아래 적용 결과와 비교 판단은 당시 구성에 대한 기록이다. 본문의 스킬 링크는 이관 후 위치를 가리킨다.
+
 수정한 `use-better-terms`를 14개 입력에 적용해 요청하지 않은 설명의 제외와 요청한 내용의 보존을 확인했다. 12개 문서를 작성했고 필수 관찰값이 없는 입력은 본문 밖 확인 질문으로 남겼다. 검토만 요청한 파일은 변경하지 않았다. 이 입력에서는 스킬을 추가로 고쳐야 할 수록 판정 차이가 발견되지 않았다.
 
-이 확인은 [스킬 반영 요구사항](../requirements.md#조사할-해결-방안)과 [수정본에서 확인할 내용](../requirements.md#확인할-결과)에 대한 증거다. 적용한 스킬은 Git revision `abd46a9`의 [본문](../../../../skills/use-better-terms/SKILL.md)과 [내용 선정 참고 자료](../../../../skills/use-better-terms/references/document-content.md)다. 적용일은 2026-10-01이며 모든 관찰값과 초안은 독립적으로 만든 평가 자료다.
+이 확인은 [스킬 반영 요구사항](../requirements.md#조사할-해결-방안)과 [수정본에서 확인할 내용](../requirements.md#확인할-결과)에 대한 증거다. 적용한 스킬은 Git revision `abd46a9`의 [본문](../../../../skills/use-better-terms/SKILL.md)과 [내용 선정 참고 자료](../../../../skills/use-better-handoff/SKILL.md#decide-what-belongs-where)다. 적용일은 2026-10-01이며 모든 관찰값과 초안은 독립적으로 만든 평가 자료다.
 
 ## 입력과 적용 조건
 
