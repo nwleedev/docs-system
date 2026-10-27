@@ -209,6 +209,32 @@ export default defineConfig([
     },
   },
   {
+    name: "flexible-designs-generator",
+    files: ["skills/use-flexible-designs/scripts/create-requirements.mjs"],
+    extends: [js.configs.recommended],
+    languageOptions: { ecmaVersion: 2024, sourceType: "module" },
+    linterOptions: { reportUnusedDisableDirectives: "error" },
+    rules: {
+      "eqeqeq": ["error", "always"],
+      "no-console": "error",
+      "no-duplicate-imports": "error",
+      "no-param-reassign": ["error", { props: true }],
+      "no-shadow": ["error", { builtinGlobals: true }],
+      "no-var": "error",
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              regex: "^(?!node:(?:crypto|fs/promises|path|process|util)$)",
+              message: "Use only the generator's required Node.js built-ins.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
     name: "better-terms-scanner-entrypoint-imports",
     files: ["skills/use-better-terms/scripts/scan.mjs"],
     rules: {

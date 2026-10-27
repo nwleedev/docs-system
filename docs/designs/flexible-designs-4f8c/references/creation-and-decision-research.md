@@ -2,9 +2,9 @@
 
 빈 파일 생성은 내용 작성과 분리하고, 결정 기록은 확정된 선택의 이유와 계획 영향을 남기는 데 사용한다. 아래 기술 선택은 계획을 위한 제안이며 요구사항을 추가로 확정한 기록이 아니다. 자료 확인일은 2026-10-27이다.
 
-## 현재 규칙과 바꿀 부분
+## 전환 전 규칙과 바꿀 부분
 
-[현재 스킬](../../../../skills/use-flexible-designs/SKILL.md)의 「Establish the requirement baseline」과 [설계 기준](../../README.md)의 「Authority and creation」은 명시적인 요청에서 최소 초기 요구사항을 작성하는 것을 이미 허용한다. 따라서 현재 상태를 요구사항 작성의 전면 금지로 설명할 수는 없다. 다만 초기 작성의 허용 조건과 별개로 빈 파일 생성 절차가 없고, 일부 보완과 전체 작성의 구분도 명시되어 있지 않다.
+[전환 전 스킬](../../../../skills/use-flexible-designs/SKILL.md)의 「Establish the requirement baseline」과 [설계 기준](../../README.md)의 「Authority and creation」은 전환 전에 명시적인 요청에서 최소 초기 요구사항을 작성하는 것을 허용했다. 따라서 현재 상태를 요구사항 작성의 전면 금지로 설명할 수는 없다. 다만 초기 작성의 허용 조건과 별개로 빈 파일 생성 절차가 없고, 일부 보완과 전체 작성의 구분도 명시되어 있지 않다.
 
 설계 기준은 요구사항 문서에 목표, 조건과 완료 근거를 요구하며 빈 디렉터리와 임시 문구를 금지한다. 빈 요구사항 생성에는 준비 단계와 작성된 문서를 구분하는 예외가 필요하다. 이 예외가 내용 없는 파일을 구현 기준으로 사용하는 근거가 되어서는 안 된다.
 
@@ -22,7 +22,7 @@
 
 [Node.js 22.0.0의 `util.parseArgs`](https://nodejs.org/download/release/v22.0.0/docs/api/util.html#utilparseargsconfig)는 옵션 선언, 엄격한 파싱과 token 출력을 지원한다. [저장소 MJS 지침](../../../dev/node/mjs-cli.md)의 「인수 해석은 반복 option까지 검사한다」는 단일 옵션 반복이 앞선 값을 숨기는 문제를 다룬다. 필요한 옵션만 선언하고 반복 및 허용 조합을 별도로 검사하는 구성을 계획한다.
 
-현재 `eslint.config.mjs`의 스크립트 검사 범위는 `skills/use-better-terms/scripts/**/*.mjs`다. 새 위치에 파일을 추가하는 것만으로 기존 lint가 적용된다고 볼 수 없다. 생성기에 맞는 별도 파일 설정이 필요하며 검사기 전용 제한을 그대로 복사하지 않는다.
+전환 전 `eslint.config.mjs`의 스크립트 검사 범위는 `skills/use-better-terms/scripts/**/*.mjs`다. 새 위치에 파일을 추가하는 것만으로 기존 lint가 적용된다고 볼 수 없다. 생성기에 맞는 별도 파일 설정이 필요하며 검사기 전용 제한을 그대로 복사하지 않는다.
 
 ## JSDoc의 구체적인 타입
 

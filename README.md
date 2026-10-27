@@ -42,4 +42,6 @@ For handoff support, copy the complete `skills/use-better-handoff/` directory an
 
 To remove a Skill, delete the copied Skill directory and its copied invocation subsection. Keep repository authority READMEs created or used by the Skill, unrelated instructions, and imports still required by other rules.
 
+## Prepare a Design Package
+
 For a new design package using the bundled layout, run `node scripts/create-requirements.mjs --repo <repository-root> --topic <topic-slug>` from the installed `use-flexible-designs` directory. Node.js 22.0.0 or newer is required; no external packages are needed. The script creates only a folder and an empty `requirements.md`. The Skill searches existing requirements before creating a package and writes minimal content from the request unless empty preparation is requested. Plans, research, and decisions are added to the same package when needed.
