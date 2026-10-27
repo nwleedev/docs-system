@@ -16,7 +16,7 @@ docs/designs/
     plan.md
 ```
 
-Create a package only when its context must survive across sessions, contributors, or pull requests. Every package has `requirements.md`. Create reference, decision, and plan files only under their conditions below; do not create empty directories or placeholders. Use a descriptive topic and a short collision-resistant ID.
+Create a package only when its context must survive across sessions, contributors, or pull requests. Every package has `requirements.md`. Preparing a new package may leave that file empty; it is not an implementation baseline until its required information is present. Create reference, decision, and plan files only under their conditions below; do not create empty directories or placeholders. Use a descriptive topic and a short collision-resistant ID for the package folder. Reuse that folder when extending the same work.
 
 Documents are prose-first and have no fixed template. Their headings and order may vary when they preserve the required information, exclude prohibited content, and pass the applicable checks.
 
@@ -29,7 +29,7 @@ Documents are prose-first and have no fixed template. Their headings and order m
 - Use one descriptive title and a logical heading hierarchy. Put each section's conclusion or decision before background details and keep the section focused on one subject.
 - Do not use tables. Use bullets for unordered items and numbers only for sequence or priority. When readers compare repeated items, give each item a subsection and present the applicable attributes in the same order without empty fields or repeated conclusions.
 - Put descriptive external links next to the claims they support. When several sources support one claim, state the compared conclusion and list the fact confirmed by each source. Separate sources that support different claims. Do not leave an unrelated link list at the end.
-- Link to the authoritative requirement, decision, evidence, or guidance instead of copying it into several files. Refer to requirements by file and descriptive heading; do not add requirement IDs. Add metadata only when an active tool or review process consumes it.
+- Link to the authoritative requirement, decision, evidence, or guidance instead of copying it into several files. Connect requirements, plans, references, and decisions by relative file links and descriptive headings; do not assign separate document or item IDs. Shared evidence stays in its original file. Add metadata only when an active tool or review process consumes it.
 - Use language natural to the intended readers. Remove literal translations, unsupported praise, decorative symbols, and uncommon notation unless the reader or approved format needs the exact form.
 - Keep credentials, personal locations, private URLs, private project identifiers, and raw sensitive logs out of tracked documents. Prefer repository-relative locations and stable public URLs. Report unsafe requirement text to the requirements owner instead of silently rewriting it.
 
@@ -37,11 +37,11 @@ Documents are prose-first and have no fixed template. Their headings and order m
 
 ### Authority and creation
 
-`requirements.md` states the requirements owner's requested outcome, and that owner controls its wording and ordering. When a durable package is needed and the file does not exist, AI may create a minimal initial version from the owner's explicit request. After initial creation, AI may propose exact changes but may edit the file only when the owner requests the change or approves the wording.
+A request to create or supplement requirements authorizes minimal writing from the stated outcomes and conditions. Reuse an existing document for the same purpose when appropriate. An explicit empty-document request prepares only the file; review-only requests do not authorize edits. Detailed writing expands the explanation of supplied requirements, not the requested scope.
 
-An initial version contains only stated outcomes, conditions that must remain true, observable completion evidence, and owner-stated unresolved questions. Include protected behavior, exclusions, inputs, environment, or domain constraints only when they affect the work. Exclude workflow instructions unless they constrain the requested result. Do not infer missing requirements, constraints, evidence, or decisions.
+Preserve meaning, quantities, conditions, exceptions, and obligation levels. Write requirements rather than copying prompts or conversational history. Include only stated outcomes, conditions that must remain true, observable completion evidence, and stated unresolved questions. Do not infer missing requirements or treat research and suggestions as approval. Report conflicts or missing meaning before changing affected content.
 
-Omit unsupported sections instead of adding empty headings, placeholders, or guesses. Missing information blocks only work that depends on it; unaffected work may continue when the request supplies a sufficient baseline.
+Requested structural editing may reorganize headings, paragraphs, and order without changing meaning. Omit unsupported sections instead of adding empty headings or placeholders. An empty prepared file is not a completed requirements document. Missing information blocks only work that depends on it; unaffected work may continue when the request supplies a sufficient baseline.
 
 ### Required information
 
@@ -145,7 +145,7 @@ Documentation records intent and evidence; it does not prove implementation comp
 
 ## Requirement Changes During Work
 
-1. The requirements owner updates `requirements.md`; a chat-only statement is not a durable update.
+1. Record authorized requirement changes in `requirements.md`; a chat-only statement is not a durable update.
 2. Compare the updated file with the baseline recorded by the commit that last changed `plan.md`.
 3. Identify affected and unaffected references, decisions, work units, and verification methods.
 4. Pause affected work. Continue unaffected work only when it still satisfies the updated requirements.
