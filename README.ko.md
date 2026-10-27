@@ -7,7 +7,7 @@
 ## 저장소 파일
 
 - [`AGENTS.md`](./AGENTS.md)는 이 저장소에서 사용하는 예시입니다. [`src/AGENTS.en.md`](./src/AGENTS.en.md)와 [`src/AGENTS.ko.md`](./src/AGENTS.ko.md)는 다른 저장소에서 수정해 쓰는 참고 문서입니다.
-- [`docs/designs/README.md`](./docs/designs/README.md)는 이 저장소의 설계 문서 규칙을 정합니다. [`use-design-docs`](./skills/use-design-docs/SKILL.md)는 각 저장소의 기준 README에 따라 요구사항, 조사, 결정, 계획과 검증 작업을 진행합니다.
+- [`docs/designs/README.md`](./docs/designs/README.md)는 이 저장소의 설계 문서 규칙을 정합니다. [`use-flexible-designs`](./skills/use-flexible-designs/SKILL.md)는 각 저장소의 기준 README에 따라 요구사항을 작성하고 보완하며, 부족한 정보를 조사하고 리서치, 결정과 계획을 연결합니다.
 - [`docs/dev/README.md`](./docs/dev/README.md)는 이 저장소의 개발 지침 규칙을 정합니다. [`use-dev-guidance`](./skills/use-dev-guidance/SKILL.md)는 각 저장소의 기준 README에 따라 기술 조사, 검사, 의존성 작업, 지침과 구현 검증을 진행합니다.
 - [`use-better-terms`](./skills/use-better-terms/SKILL.md)는 저장하거나 공유할 글과 이름에 근거로 뜻을 보존하는 대체 표현을 먼저 적용하고, 새 뜻이 필요한 변경은 사람의 판단을 요청합니다.
 - [`use-better-handoff`](./skills/use-better-handoff/SKILL.md)는 지정된 인수인계 파일에서 작업을 이어받기 위한 설명을 관리하며 그 기록으로 프로젝트를 파악하도록 돕습니다. 기본 파일의 위치와 이름은 변경할 수 있습니다.
@@ -41,3 +41,5 @@
 인수인계 기능은 `skills/use-better-handoff/` 전체와 해당 호출 절을 함께 복사해 도입합니다. 두 스킬의 지침은 영어이며 언어별 판정 예문은 원문을 유지합니다. 인수인계 파일의 위치와 이름은 작업 지시나 저장소 지침에서 정할 수 있습니다. 각 스킬은 독립적으로 선택할 수 있으며 다른 스킬을 필수로 읽지 않습니다.
 
 Skill을 제거할 때에는 복사한 Skill 디렉터리와 호출 절을 삭제합니다. Skill이 만들었거나 사용한 저장소 기준 README, 다른 지침과 다른 규칙에 필요한 import는 그대로 둡니다.
+
+기본 배치로 새 설계 폴더를 준비하려면 설치한 `use-flexible-designs` 디렉터리에서 `node scripts/create-requirements.mjs --repo <repository-root> --topic <topic-slug>`를 실행합니다. Node.js 22.0.0 이상이 필요하며 외부 패키지는 사용하지 않습니다. 스크립트는 폴더와 빈 `requirements.md`만 생성합니다. Skill은 새 폴더를 만들기 전에 기존 요구사항을 찾고, 빈 문서만 준비하는 요청이 아니면 입력을 바탕으로 필요한 내용을 작성합니다. 플랜, 리서치와 결정 문서는 필요할 때 같은 폴더에 추가합니다.

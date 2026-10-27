@@ -7,7 +7,7 @@
 ## Repository Files
 
 - [`AGENTS.md`](./AGENTS.md) is this repository's working example. [`src/AGENTS.en.md`](./src/AGENTS.en.md) and [`src/AGENTS.ko.md`](./src/AGENTS.ko.md) are reference documents for other repositories.
-- [`docs/designs/README.md`](./docs/designs/README.md) defines this repository's design-document rules. [`use-design-docs`](./skills/use-design-docs/SKILL.md) routes requirements, research, decisions, planning, and validation through a repository's corresponding README.
+- [`docs/designs/README.md`](./docs/designs/README.md) defines this repository's design-document rules. [`use-flexible-designs`](./skills/use-flexible-designs/SKILL.md) develops and supplements requirements, investigates missing information, and connects research, decisions, and plans under a repository's corresponding README.
 - [`docs/dev/README.md`](./docs/dev/README.md) defines this repository's development-guidance rules. [`use-dev-guidance`](./skills/use-dev-guidance/SKILL.md) routes stack research, checks, dependency work, guidance, and implementation validation through a repository's corresponding README.
 - [`use-better-handoff`](./skills/use-better-handoff/SKILL.md) keeps continuity notes in a designated handoff file and supports reading it to understand a project. The default filename and location can be changed.
 - [`use-better-terms`](./skills/use-better-terms/SKILL.md) improves text and names before storage or sharing by applying evidence-backed alternatives first and leaving unsupported meaning changes for human input.
@@ -41,3 +41,5 @@ Copy the matching invocation subsection from [`src/AGENTS.en.md`](./src/AGENTS.e
 For handoff support, copy the complete `skills/use-better-handoff/` directory and its invocation subsection. Its instructions are in English, as are the wording skill's instructions; language-specific examples retain their original text. A task or standing project instruction can choose a handoff filename and location. Each skill can be adopted independently; neither loads the other as a dependency.
 
 To remove a Skill, delete the copied Skill directory and its copied invocation subsection. Keep repository authority READMEs created or used by the Skill, unrelated instructions, and imports still required by other rules.
+
+For a new design package using the bundled layout, run `node scripts/create-requirements.mjs --repo <repository-root> --topic <topic-slug>` from the installed `use-flexible-designs` directory. Node.js 22.0.0 or newer is required; no external packages are needed. The script creates only a folder and an empty `requirements.md`. The Skill searches existing requirements before creating a package and writes minimal content from the request unless empty preparation is requested. Plans, research, and decisions are added to the same package when needed.

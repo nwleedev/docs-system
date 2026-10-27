@@ -29,7 +29,7 @@
 
 ## 저장소 기준 README 생성을 지원한다
 
-[`skills/use-design-docs/SKILL.md`](../../../skills/use-design-docs/SKILL.md)와 [`skills/use-dev-guidance/SKILL.md`](../../../skills/use-dev-guidance/SKILL.md)의 기준 문서 확인 절차를 같은 원칙으로 바꾼다.
+[`skills/use-design-docs/SKILL.md`](../../../skills/use-flexible-designs/SKILL.md)와 [`skills/use-dev-guidance/SKILL.md`](../../../skills/use-dev-guidance/SKILL.md)의 기준 문서 확인 절차를 같은 원칙으로 바꾼다.
 
 - Skill을 호출하면 저장소 루트와 해당 `docs/*/README.md`의 존재 여부를 먼저 확인한다.
 - README가 있으면 전체를 읽고 저장소의 유일한 현재 기준으로 사용한다. 같은 Skill의 `_README.md`는 읽거나 비교하지 않는다.

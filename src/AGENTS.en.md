@@ -77,7 +77,7 @@
 
 ## Skill Use and Work Environment
 
-**If a required Skill or one of its required references cannot be read, do not infer replacement rules. Stop and report the missing prerequisite. When only the repository authority README is absent, follow the creation-approval and alternative-location procedure defined by `use-design-docs` or `use-dev-guidance`.**
+**If a required Skill or one of its required references cannot be read, do not infer replacement rules. Stop and report the missing prerequisite. When only the repository authority README is absent, follow the creation-approval and alternative-location procedure defined by `use-flexible-designs` or `use-dev-guidance`.**
 
 <!-- BEGIN USE BETTER HANDOFF -->
 
@@ -101,7 +101,7 @@
 
 ### Research, Cross-checking, Design, and Documentation
 
-- Run `$use-design-docs` when clarifying requirements; researching, creating, reviewing, planning, or validating `docs/designs/**`; or using a document under `docs/designs/**` as implementation input.
+- Run `$use-flexible-designs` when clarifying requirements; researching, creating, reviewing, planning, or validating `docs/designs/**`; or using a document under `docs/designs/**` as implementation input.
 - Keep requirements and approved decisions separate from AI research and proposals.
 - Use the repository's `docs/designs/README.md` as the authority for design-document structure, recording locations, and validation criteria.
 

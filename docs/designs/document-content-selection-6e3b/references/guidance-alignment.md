@@ -42,7 +42,7 @@
 
 표현을 고치기 전에 본문에 실을 내용을 정하는 절차가 필요하다. 저장소의 문서 작성 권한을 스킬이 다시 정의하지 않는다.
 
-[`use-design-docs`의 실행 순서](../../../../skills/use-design-docs/SKILL.md#execute-in-dependency-order)는 저장소 README의 작성 권한과 문서 종류별 규칙을 적용한다. 확장 전 [`use-better-terms`의 표현 판정](../../../../skills/use-better-terms/SKILL.md#improve-and-judge-the-outputs)은 뜻을 보존하는 문장 대안을 먼저 검토했다. 수록 지시를 선행 조건으로 확인하는 단계는 명시돼 있지 않았다.
+[`use-design-docs`의 실행 순서](../../../../skills/use-flexible-designs/SKILL.md#execute-in-dependency-order)는 저장소 README의 작성 권한과 문서 종류별 규칙을 적용한다. 확장 전 [`use-better-terms`의 표현 판정](../../../../skills/use-better-terms/SKILL.md#improve-and-judge-the-outputs)은 뜻을 보존하는 문장 대안을 먼저 검토했다. 수록 지시를 선행 조건으로 확인하는 단계는 명시돼 있지 않았다.
 
 기존 스킬 확장은 같은 검토 안에서 내용 선정을 먼저 수행하는 방식으로 비교한다. 전용 스킬은 내용 선정 뒤에 허용된 문장과 필요한 조건을 표현 검토로 넘기는 방식으로 비교한다. 두 방안 모두 같은 수록 기준을 사용한다.
 
