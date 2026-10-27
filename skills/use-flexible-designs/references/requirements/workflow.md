@@ -8,7 +8,7 @@ Resolve purpose, source material, and target before changing requirements. Apply
 4. Create a package only when needed. For the bundled layout with an existing authority README, run the following script from the installed skill directory with Node.js 22.0.0 or newer. It creates only a new folder and an empty requirements file; author content separately when requested. Otherwise follow the established repository rules and locations instead of running an incompatible generator.
 
    ```sh
-   node scripts/create-requirements.mjs --repo <repository-root> --topic <topic-slug>
+   node scripts/requirements/create.mjs --repo <repository-root> --topic <topic-slug>
    ```
 
    Use `--help` for arguments and failure behavior. Do not rerun the generator to extend an existing package or create empty research and decision directories. Do not copy attachments or prompts into the repository as source archives.

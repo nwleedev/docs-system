@@ -155,7 +155,7 @@ async function main(args) {
   const request = parseRequest(args);
   if (request.kind === "help") {
     process.stdout.write(
-      "Usage: node scripts/create-requirements.mjs --repo <root> --topic <slug>\n" +
+      "Usage: node scripts/requirements/create.mjs --repo <root> --topic <slug>\n" +
         "Requires Node.js 22.0.0+ and an existing docs/designs/README.md.\n" +
         "Creates one new topic folder and an empty requirements.md; prints its repository-relative location.\n" +
         "Topic: 1-80 lowercase ASCII letters, digits, and single hyphens. Options may appear once.\n" +

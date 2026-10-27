@@ -210,7 +210,7 @@ export default defineConfig([
   },
   {
     name: "flexible-designs-generator",
-    files: ["skills/use-flexible-designs/scripts/create-requirements.mjs"],
+    files: ["skills/use-flexible-designs/scripts/requirements/create.mjs"],
     extends: [js.configs.recommended],
     languageOptions: { ecmaVersion: 2024, sourceType: "module" },
     linterOptions: { reportUnusedDisableDirectives: "error" },

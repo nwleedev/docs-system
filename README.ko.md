@@ -44,4 +44,4 @@ Skill을 제거할 때에는 복사한 Skill 디렉터리와 호출 절을 삭�
 
 ## 설계 폴더 준비
 
-기본 배치로 새 설계 폴더를 준비하려면 설치한 `use-flexible-designs` 디렉터리에서 `node scripts/create-requirements.mjs --repo <repository-root> --topic <topic-slug>`를 실행합니다. Node.js 22.0.0 이상이 필요하며 외부 패키지는 사용하지 않습니다. 스크립트는 폴더와 빈 `requirements.md`만 생성합니다. Skill은 새 폴더를 만들기 전에 기존 요구사항을 찾고, 빈 문서만 준비하는 요청이 아니면 입력을 바탕으로 필요한 내용을 작성합니다. 플랜, 리서치와 결정 문서는 필요할 때 같은 폴더에 추가합니다.
+기본 배치로 새 설계 폴더를 준비하려면 설치한 `use-flexible-designs` 디렉터리에서 `node scripts/requirements/create.mjs --repo <repository-root> --topic <topic-slug>`를 실행합니다. Node.js 22.0.0 이상이 필요하며 외부 패키지는 사용하지 않습니다. 스크립트는 폴더와 빈 `requirements.md`만 생성합니다. Skill은 새 폴더를 만들기 전에 기존 요구사항을 찾고, 빈 문서만 준비하는 요청이 아니면 입력을 바탕으로 필요한 내용을 작성합니다. 플랜, 리서치와 결정 문서는 필요할 때 같은 폴더에 추가합니다.

@@ -17,7 +17,7 @@ Use `docs/designs/README.md` as the authority for structure, writing permissions
 
 Perform only operations needed by the request, including their prerequisites:
 
-- For requirement creation, supplementation, empty preparation, or restructuring, read [the requirements workflow](references/requirements-workflow.md).
+- For requirement creation, supplementation, empty preparation, or restructuring, read [the requirements workflow](references/requirements/workflow.md).
 - For review, read the complete target and assess ambiguity, contradiction, missing evidence, and unanswered questions without editing it.
 - For research, separate factual questions, optional suggestions, blocking questions, and choices requiring confirmation. Save reusable findings only when the README's reference-creation condition is met.
 - Record confirmed material decisions and their reasons under the README. Keep unresolved choices as questions or options, not approved decisions.
