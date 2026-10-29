@@ -19,7 +19,7 @@ When designated requirements, plans, or reference documents are involved, connec
 
 ## Start and resume
 
-At the start, on resumption, and before each next work unit, reread the necessary parts of the designated record to recover the purpose, decision reasons, assumptions, applicable examples, and unresolved questions. Do not depend on detecting context compaction. If no record is designated, follow the proposal procedure instead of creating a recovery file.
+At the start, on resumption, and before each next work unit, reread the necessary parts of the designated record to recover the purpose, preserved requirements and their evidence, compared alternatives, decision reasons, assumptions, applicable examples, and unresolved questions. Do not depend on detecting context compaction. If no record is designated, follow the proposal procedure instead of creating a recovery file.
 
 ## Research each task
 

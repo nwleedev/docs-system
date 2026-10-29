@@ -1,4 +1,4 @@
 interface:
   display_name: "Use Flexible Coding"
   short_description: "Research technical principles and design decisions"
-  default_prompt: "Use $use-flexible-coding to investigate the computer science principles, implementation patterns, and module or system architecture needed for this task, then explain the reasons, background, project decision history, and suitable examples in the file I designate."
+  default_prompt: "Use $use-flexible-coding to establish which requirements must be preserved and why, investigate the relevant computer science principles, patterns, and module or system architecture, compare local improvements with alternatives that change the processing method, and explain the reasons, background, project decision history, and suitable examples in the file I designate."
