@@ -19,6 +19,20 @@ Write technical decisions only in the designated file, following its purpose and
 
 At the start, on resumption, and before each next work unit, reread the necessary parts of the designated record to recover the purpose, change decisions, and applicable examples. Do not depend on detecting context compaction. If no record is designated, follow the proposal procedure instead of creating a recovery file.
 
+## Research each task
+
+Establish the purpose, change target, and technology versions for each task, then investigate the failures and consequences that justify further research. Cover the patterns and anti-patterns needed to address those problems; explain the purpose and conditions of an approach rather than filling in pattern names or a uniform checklist.
+
+Select project files by their relevance to the task and target, versions and runtime conditions, types and call relationships, and behavior to preserve or test. Explain the selection and any gaps; do not claim to have found every file. Compare the selected evidence with current official guidance for the applicable versions. Existing code establishes project conditions, not a recommendation to copy its structure.
+
+## Explain changes and examples
+
+State which code to add, remove, merge, split, or modify and why. Explicitly justify cases where no code or tests need adding. Describing a change does not authorize performing it.
+
+When recording technical decisions, include project-specific code examples showing how to write the code and why. Match the project's versions, types, call relationships, and rules rather than inventing unrelated objects, fixtures, or scripts. Compare examples with the selected project evidence and official documentation; do not require creating source or test files or running checks just to validate examples. Distinguish that comparison from execution and label unexecuted examples accordingly.
+
+For tests, explain what behavior to test, why testing is needed, and which kind of test fits. Research how to write the chosen test and include a project-specific example whose assertions observe the stated behavior. Do not replace the behavior under test with a fake and then test only the fake. If tests are unnecessary, record why and omit unnecessary test examples.
+
 ## Handle uncertainty
 
 Keep confirmed evidence, proposals, and unverified claims distinct. When repository rules and research conflict, pause the affected judgment, explain the difference and the choices needed in the conversation, and continue only unaffected reading and research. Do not treat a conversation draft as a saved record or an unresolved choice as an implementation decision.
