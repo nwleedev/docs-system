@@ -45,6 +45,6 @@ Ruby 표준 YAML 파서의 형식 검사, 상대 링크와 절 연결, 기존 �
 
 ### 컴퓨터 공학 조사 보완 준비
 
-[컴퓨터 공학 조사 요구사항](./docs/designs/task-pattern-guidance-4ffad1/requirements.md#프로젝트에-필요한-컴퓨터-공학-지식)에 프로젝트에 필요한 지식의 능동적인 조사, 적용 이유와 배경 및 이력을 지정 문서의 목적에 맞게 반영하는 조건을 추가했다. [조사 자료](./docs/designs/task-pattern-guidance-4ffad1/references/cs-research-workflow.md)는 질문 도출, 실패 가능성, 자원 비용, 기술 목록 및 파일 구성 대안의 근거와 한계를 구분한다.
+[컴퓨터 공학 조사 요구사항](./docs/designs/task-pattern-guidance-4ffad1/requirements.md#프로젝트에-필요한-컴퓨터-공학-지식)에 프로젝트에 필요한 지식의 능동적인 조사, 적용 이유와 배경 및 이력을 지정 문서의 목적에 맞게 반영하는 조건을 추가했다. [조사 자료](./docs/designs/task-pattern-guidance-4ffad1/references/cs-research-workflow.md)는 미확인 사항, 실패 가능성, 실행 시간과 CPU 및 메모리 사용량, 기술 목록에서 조사 질문을 찾는 방법을 비교한다. 스킬 파일 구성 대안도 근거와 한계를 구분해 설명한다.
 
 [현재 계획](./docs/designs/task-pattern-guidance-4ffad1/plan.md#구현할-스킬의-파일과-내용)은 스킬 두 파일을 유지하는 구현안을 선택하고, 본문 각 절의 보완 내용과 호출 안내, 사례별 확인 방법을 정한다. 이전 아키텍처 구현과 초기 구현의 완료 기록은 유지한다. 이번 준비에서는 스킬, 호출 정보와 사용 안내를 수정하지 않았으며 컴퓨터 공학 조사 보완 구현은 미착수다. 과거의 검사 결과를 새 지침의 행동 확인으로 사용하지 않는다.
