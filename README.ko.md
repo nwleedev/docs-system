@@ -9,7 +9,7 @@
 - [`AGENTS.md`](./AGENTS.md)는 이 저장소에서 사용하는 예시입니다. [`src/AGENTS.en.md`](./src/AGENTS.en.md)와 [`src/AGENTS.ko.md`](./src/AGENTS.ko.md)는 다른 저장소에서 수정해 쓰는 참고 문서입니다.
 - [`docs/designs/README.md`](./docs/designs/README.md)는 이 저장소의 설계 문서 규칙을 정합니다. [`use-flexible-designs`](./skills/use-flexible-designs/SKILL.md)는 각 저장소의 기준 README에 따라 요구사항을 작성하고 보완하며, 부족한 정보를 조사하고 리서치, 결정과 계획을 연결합니다.
 - [`docs/dev/README.md`](./docs/dev/README.md)는 이 저장소의 개발 지침 규칙을 정합니다. [`use-dev-guidance`](./skills/use-dev-guidance/SKILL.md)는 각 저장소의 기준 README에 따라 기술 조사, 검사, 의존성 작업, 지침과 구현 검증을 진행합니다.
-- [`use-flexible-coding`](./skills/use-flexible-coding/SKILL.md)은 코딩 판단과 그 이유를 조사하고 프로젝트에 맞는 코드 및 테스트 예시로 설명합니다. 사용자가 지정한 파일에 기록하고 지정이 없으면 후보를 제안합니다. 기존 개발 지침 스킬과 별도로 선택할 수 있습니다.
+- [`use-flexible-coding`](./skills/use-flexible-coding/SKILL.md)은 코드 디자인 패턴, 파일과 폴더 구성을 포함한 모듈 아키텍처와 시스템 아키텍처를 조사합니다. 기술 판단의 이유를 프로젝트와 판단 목적에 맞는 예시로 설명합니다. 사용자가 지정한 파일에 기록하고 지정이 없으면 후보를 제안합니다. 기존 개발 지침 스킬과 별도로 선택할 수 있습니다.
 - [`use-better-terms`](./skills/use-better-terms/SKILL.md)는 저장하거나 공유할 글과 이름에 근거로 뜻을 보존하는 대체 표현을 먼저 적용하고, 새 뜻이 필요한 변경은 사람의 판단을 요청합니다.
 - [`use-better-handoff`](./skills/use-better-handoff/SKILL.md)는 지정된 인수인계 파일에서 작업을 이어받기 위한 설명을 관리하며 그 기록으로 프로젝트를 파악하도록 돕습니다. 기본 파일의 위치와 이름은 변경할 수 있습니다.
 - [`examples/nextjs-frontend.md`](./examples/nextjs-frontend.md)는 특정 기술 구성을 조사하는 프롬프트 예시이며 다른 프로젝트의 기본값이 아닙니다.
