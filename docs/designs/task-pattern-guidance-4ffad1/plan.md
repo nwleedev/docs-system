@@ -8,6 +8,51 @@
 
 아래 작업은 후속 구현의 순서다. 현재는 요구사항과 계획을 작성한 상태이며 스킬 구현은 시작하지 않았다.
 
+## 최종 스킬 파일 구성
+
+스킬은 다음 세 파일로 구성한다. 기존 세 파일을 이동하므로 별도의 내부 참고 파일이나 실행 스크립트를 추가하지 않는다.
+
+```text
+skills/use-flexible-coding/
+  SKILL.md
+  agents/
+    openai.yaml
+  references/
+    _README.md
+```
+
+### 실행 지침
+
+`skills/use-dev-guidance/SKILL.md`를 `skills/use-flexible-coding/SKILL.md`로 이동하고 이름, 설명과 본문을 바꾼다. [스킬의 작성 언어](./requirements.md#스킬의-작성-언어)에 따라 설명 필드와 지침 본문을 영어로 작성한다. 작업 목적, 권한, 기록 대상, 조사와 예시, 재개 및 미확인 사항 처리를 이 파일에서 설명한다.
+
+### 도구 표시와 호출 정보
+
+`skills/use-dev-guidance/agents/openai.yaml`을 `skills/use-flexible-coding/agents/openai.yaml`로 이동하고 `display_name`, `short_description`과 `default_prompt`를 새 역할에 맞는 영어로 작성한다. 기본 호출문에는 `$use-flexible-coding`을 사용한다.
+
+### 과거 기본본 보존
+
+`skills/use-dev-guidance/references/_README.md`를 `skills/use-flexible-coding/references/_README.md`로 이동하고 기존 영어 내용을 보존한다. 과거 조사 문서에서 참조하는 자료로만 남기며, 새 스킬의 실행 지침이나 필수 입력으로 사용하지 않는다. 프로젝트 기준 문서로 복사하는 동작도 새 스킬에 포함하지 않는다.
+
+기존 디렉터리에는 이전 이름의 스킬을 남기지 않는다. 새 스킬 디렉터리에는 위 세 파일 외의 파일을 만들지 않는다.
+
+## 함께 수정할 기존 파일
+
+현재 사용 안내와 호출 규칙은 다음 네 파일에서 바꾼다. 한국어와 영어 안내의 의미를 맞추되 각 안내 문서의 언어는 유지한다.
+
+- `README.md`
+- `README.ko.md`
+- `src/AGENTS.en.md`
+- `src/AGENTS.ko.md`
+
+현재 확인된 이전 위치의 링크는 다음 네 파일에서 이동에 맞게 수정한다. 과거 요구사항, 측정치와 당시 이름은 유지하고 링크 목적지만 조정한다. 이동하는 파일의 내용을 바꾸기 때문에 근거의 뜻도 바뀐다면 그 수정은 보류한다.
+
+- `docs/designs/agent-instruction-responsibilities-8c1e/plan.md`
+- `docs/designs/agent-workflow-reliability-c7e4/references/instruction-optimization-evaluation.md`
+- `docs/designs/public-output-audience-4d2c/references/reusable-output-checks-research.md`
+- `docs/designs/task-pattern-guidance-4ffad1/references/recording-options.md`
+
+구현 진행 기록은 이 `plan.md`와 `HANDOFF.md`에서 갱신한다. 다른 변경 대상이 발견되면 그 파일과 변경 이유를 먼저 계획에 반영한다. 대상 프로젝트에서 기록할 파일은 스킬 사용자가 정하며 이 저장소의 스킬 파일 구성과 구분한다.
+
 ## 간결한 본문 구성
 
 [간결한 스킬 구성](./requirements.md#간결한-스킬-구성)을 만족하도록 이름과 호출 조건을 설명하는 필드와 실제 행동 지침을 구분한다. 본문에는 다음 판단만 남긴다.
@@ -64,7 +109,7 @@
 - 파일을 기록할 수 없거나 판단 기준이 충돌하면 영향을 받는 작업을 보류하고 대화에 반영안과 필요한 선택을 제시한다.
 - 스킬 전용 파일, 고정 폴더나 기준 README를 생성하거나 준비해야 하는 조건이 없다.
 
-이름과 디렉터리 일치, YAML 필드와 기본 호출문, 현재 호출 안내와 저장소 링크를 확인한다. 이동한 자료의 링크를 검사할 때는 변경한 파일뿐 아니라 이전 위치를 가리키던 파일도 선택한다. 한국어 문구, 민감정보와 변경 파일 목록을 함께 확인하고 스킬 본문에 같은 조건을 반복한 부분이 없는지 대조한다.
+이름과 디렉터리 일치, YAML 필드와 기본 호출문, 현재 호출 안내와 저장소 링크를 확인한다. 최종 스킬 파일이 명시한 세 파일과 일치하고 스킬 본문과 사용 설명 및 기본 호출문이 영어인지 확인한다. 이동한 자료의 링크를 검사할 때는 변경한 파일뿐 아니라 이전 위치를 가리키던 파일도 선택한다. 한국어 문구, 민감정보와 변경 파일 목록을 함께 확인하고 스킬 본문에 같은 조건을 반복한 부분이 없는지 대조한다.
 
 ## 의존 관계와 중단 조건
 
