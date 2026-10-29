@@ -15,9 +15,11 @@ If no file is designated, find suitable candidates from repository rules and the
 
 Write technical decisions only in the designated file, following its purpose and organization. A designated record does not authorize changes to other files. Do not create skill-specific records or research files. When collected material needs storage, inspect repository rules first rather than defaulting to temporary files; the designated-file condition still applies.
 
+When designated requirements, plans, or reference documents are involved, connect the findings according to each file's purpose: intended behavior and constraints in requirements, applicable work and verification in plans, and principles, sources, and application conditions in references. Do not promote unapproved technical proposals into requirements or duplicate the same explanation across files; link existing explanations where appropriate. If only one file is designated, adapt to that file without creating the others.
+
 ## Start and resume
 
-At the start, on resumption, and before each next work unit, reread the necessary parts of the designated record to recover the purpose, change decisions, and applicable examples. Do not depend on detecting context compaction. If no record is designated, follow the proposal procedure instead of creating a recovery file.
+At the start, on resumption, and before each next work unit, reread the necessary parts of the designated record to recover the purpose, decision reasons, assumptions, applicable examples, and unresolved questions. Do not depend on detecting context compaction. If no record is designated, follow the proposal procedure instead of creating a recovery file.
 
 ## Research each task
 
@@ -29,11 +31,17 @@ Select project files by their relevance to the task and target, versions and run
 
 Research how each relevant principle works, its assumptions, and alternatives. Compare the factors that matter to the decision, such as execution time, memory use, disk reads, storage space, and code that must be maintained. State how the conclusion can be checked. Distinguish observed behavior, estimates with stated assumptions, and effects not yet measured; if evidence is missing, explain what is needed instead of inventing workloads, targets, or improvements. The skill alone does not authorize running measurements.
 
+## Explain principles and decision history
+
+Explain the problem a principle solves, why it is relevant to this project, and why the proposed or chosen approach fits better than the alternatives. Include the principle's original problem and background as needed to understand that judgment, rather than adding an unrelated history lesson. Keep that background separate from the project's adoption history: use existing documents, issues, and version history to establish previous approaches, constraints, and reasons for change. If the history is unavailable, say so; do not invent past reasons or approvals or present a new proposal as an established decision.
+
 ## Explain changes and examples
 
 State which code to add, remove, merge, split, or modify and why. Explicitly justify cases where no code or tests need adding. Describing a change does not authorize performing it.
 
-When recording technical decisions, choose project-specific examples for the decision: code showing how and why for implementation, file and folder organization with dependencies for modules, and communication and data flow for systems. Combine examples when needed rather than inventing unrelated objects, fixtures, or scripts. Compare examples with the selected project evidence and official documentation. For code examples, match the project's versions, types, call relationships, and rules. Do not require creating source or test files or running checks just to validate examples. Distinguish evidence comparison from execution and identify unexecuted code accordingly.
+When recording technical decisions, choose project-specific examples for the decision: code showing how and why for implementation, file and folder organization with dependencies for modules, and communication and data flow for systems. Explain dependencies between stored facts, queries, processing steps, or execution time and memory comparisons when they make the principle and its application clearer. Combine examples when needed rather than inventing unrelated objects, fixtures, or scripts.
+
+Compare examples with the selected project evidence and official documentation. For code examples, match the project's versions, types, call relationships, and rules. Do not require creating source or test files or running checks just to validate examples. Distinguish evidence comparison from execution and identify unexecuted code accordingly.
 
 Use visualization only when it makes the subject easier to understand. Do not substitute meaningless elements and connections for an explanation. Select tools according to their availability and intended purpose. Do not use Markdown tables, ASCII diagrams, or other visual representations that are hard to understand at a glance in a code editor.
 
