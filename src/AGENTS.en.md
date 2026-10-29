@@ -112,7 +112,7 @@
 
 ### Coding Decisions and Examples
 
-- Run `$use-flexible-coding` when a request needs implementation patterns, module architecture including file and folder organization, or system architecture researched and explained or recorded with decision-appropriate project examples. Select it independently of `$use-dev-guidance`.
+- Run `$use-flexible-coding` when a request needs project-specific computer science principles, implementation patterns, module architecture including file and folder organization, or system architecture investigated, with reasons, relevant background, project decision history, and suitable examples explained or recorded. Select it independently of `$use-dev-guidance`.
 - Record in the file designated by the user. If none is designated, propose candidates without editing files. Changes to source code or tests still require an explicit implementation or development instruction.
 
 ## Environment Variables and Sensitive Information
