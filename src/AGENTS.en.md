@@ -110,6 +110,11 @@
 - Run `$use-dev-guidance` when planning, implementing, reviewing, refactoring, testing, or documenting changes to source code, tests, CLIs, libraries, scripts, builds, CI, or configuration, and when changing dependencies or checks.
 - Follow the repository's `docs/dev/README.md` and the topic guidance it selects for development methods, stack-specific rules, execution commands, and verification.
 
+### Coding Decisions and Examples
+
+- Run `$use-flexible-coding` when a request needs coding decisions, applicable approaches and anti-patterns, or project-specific code and test examples explained or recorded. Select it independently of `$use-dev-guidance`.
+- Record in the file designated by the user. If none is designated, propose candidates without editing files. Changes to source code or tests still require an explicit implementation or development instruction.
+
 ## Environment Variables and Sensitive Information
 
 - Do not commit personal information, security keys, internal URLs, tokens, or credentials to Git. Do not commit absolute paths that may expose a personal computer account.

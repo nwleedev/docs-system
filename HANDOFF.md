@@ -29,6 +29,8 @@
 
 [조사 근거](./docs/designs/task-pattern-guidance-4ffad1/references/recording-options.md)는 자료 제공과 실제 읽기의 차이, 압축 뒤 재읽기, 테스트의 목적과 선택한 방식의 한계를 기록한다. 작업 단위마다 기록 확인, 작업 특성과 실패 영향에 따른 조사, 선별한 프로젝트 파일로 예시 대조, 기록 불가 시 보류와 대화 반영안 제시를 반영했다.
 
-요구사항과 [구현 계획](./docs/designs/task-pattern-guidance-4ffad1/plan.md)은 기존 `use-dev-guidance`를 유지하고 `use-flexible-coding`을 신규 스킬로 추가하는 방식이다. [신규 본문](./skills/use-flexible-coding/SKILL.md)에 기록 파일과 변경 권한, 재개와 미확인 사항 처리 지침을 작성하고 조사와 코드 및 테스트 예시 조건을 연결했다. 호출 정보와 별도 사용 안내는 남아 있으며 최종 확인은 모든 단계 뒤에 진행한다.
+요구사항과 [구현 계획](./docs/designs/task-pattern-guidance-4ffad1/plan.md)에 따라 기존 `use-dev-guidance`를 유지하고 `use-flexible-coding`을 신규 스킬로 추가했다. [신규 본문](./skills/use-flexible-coding/SKILL.md)에 기록 파일과 변경 권한, 조사와 예시 작성, 재개와 미확인 사항 처리 지침을 작성했다. 호출 정보와 두 언어의 별도 사용 안내도 추가했다. 각 단계의 완료 상태와 사례 대조 근거를 계획에 기록했다.
 
-신규 스킬은 영어로 작성하는 `SKILL.md`와 `agents/openai.yaml` 두 파일로 구성한다. 기존 스킬의 파일, 기본본, 호출 안내와 과거 문서 링크는 유지한다. 사용 안내를 추가할 네 파일과 새 스킬의 생성 위치를 계획에 명시했다. 각 구현 단계의 진행 상태와 확인 근거는 계획에 갱신하며, 실행 로직을 추가하지 않는 단계에는 문구를 흉내 내는 테스트 코드를 만들지 않는다.
+신규 스킬은 영어로 작성한 `SKILL.md`와 `agents/openai.yaml` 두 파일로 구성한다. 기존 스킬의 파일, 기본본, 호출 안내와 과거 문서 링크를 유지했다. 실행 로직을 추가하지 않아 구현 전 테스트 코드는 작성하지 않았다. 가짜 프로젝트, fixture나 테스트용 스크립트도 추가하지 않았다.
+
+Ruby 표준 YAML 파서의 형식 검사, 상대 링크와 절 연결, 기존 파일과 호출 문구 보존 및 `pnpm lint`를 통과했다. 기본 스킬 검사기는 Python YAML 모듈 부재로 실행하지 못했다. 기존 lockfile의 개발 의존성을 설치한 뒤 lint를 실행했으며 manifest, lockfile과 검사 설정은 변경하지 않았다. 별도 에이전트 실행을 통한 행동 평가는 수행하지 않았다.

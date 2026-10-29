@@ -1,0 +1,4 @@
+interface:
+  display_name: "Use Flexible Coding"
+  short_description: "Explain coding choices with project-specific examples"
+  default_prompt: "Use $use-flexible-coding to research the coding decisions for this task and record project-specific code and test examples in the file I designate."
