@@ -1,11 +1,11 @@
 ---
 name: use-flexible-coding
-description: Research task-specific coding decisions, patterns and anti-patterns, and project-specific code and test examples. Use when a request needs technical choices and their reasons explained or recorded; this skill alone does not authorize implementation.
+description: Research implementation patterns, module architecture including file and folder organization, and system architecture. Use when a request needs project-specific technical decisions, reasons, and examples explained or recorded; this skill alone does not authorize implementation.
 ---
 
 # Use Flexible Coding
 
-Explain coding decisions and project-specific examples for the requested work. Research and examples are the default; changes to source code, tests, configuration, or tooling require an explicit implementation or development instruction.
+Explain technical decisions and project-specific examples for the requested work. Research and examples are the default; changes to source code, tests, configuration, or tooling require an explicit implementation or development instruction.
 
 ## Establish the task and destination
 
@@ -21,9 +21,9 @@ At the start, on resumption, and before each next work unit, reread the necessar
 
 ## Research each task
 
-Establish the purpose, change target, and technology versions for each task, then investigate the failures and consequences that justify further research. Cover the patterns and anti-patterns needed to address those problems; explain the purpose and conditions of an approach rather than filling in pattern names or a uniform checklist.
+Establish the purpose, change target, and technology versions for each task, then select implementation pattern, module architecture (file and folder organization and dependencies), and system architecture questions according to possible failures and their consequences. Investigate these questions together when needed. Cover the patterns and anti-patterns that address them; explain the purpose and conditions of an approach rather than filling in pattern names or a uniform checklist.
 
-Select project files by their relevance to the task and target, versions and runtime conditions, types and call relationships, and behavior to preserve or test. Explain the selection and any gaps; do not claim to have found every file. Compare the selected evidence with current official guidance for the applicable versions. Existing code establishes project conditions, not a recommendation to copy its structure.
+Select project files by their relevance to the task and target, versions and runtime conditions, types and call relationships, and behavior to preserve or test. For module and system questions, use relevant code and configuration to establish responsibilities, dependencies, and runtime interactions. Explain those responsibilities and relationships using that evidence, and state why the files were selected and what remains unverified; do not claim to have found every file. Compare the selected evidence with current official guidance for the applicable versions. Existing code establishes project conditions, not a recommendation to copy its structure.
 
 ## Explain changes and examples
 
