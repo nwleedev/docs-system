@@ -29,7 +29,9 @@ Select project files by their relevance to the task and target, versions and run
 
 State which code to add, remove, merge, split, or modify and why. Explicitly justify cases where no code or tests need adding. Describing a change does not authorize performing it.
 
-When recording technical decisions, include project-specific code examples showing how to write the code and why. Match the project's versions, types, call relationships, and rules rather than inventing unrelated objects, fixtures, or scripts. Compare examples with the selected project evidence and official documentation; do not require creating source or test files or running checks just to validate examples. Distinguish that comparison from execution and label unexecuted examples accordingly.
+When recording technical decisions, choose project-specific examples for the decision: code showing how and why for implementation, file and folder organization with dependencies for modules, and communication and data flow for systems. Combine examples when needed rather than inventing unrelated objects, fixtures, or scripts. Compare examples with the selected project evidence and official documentation. For code examples, match the project's versions, types, call relationships, and rules. Do not require creating source or test files or running checks just to validate examples. Distinguish evidence comparison from execution and identify unexecuted code accordingly.
+
+Use visualization only when it makes the subject easier to understand. Do not substitute meaningless elements and connections for an explanation. Select tools according to their availability and intended purpose. Do not use Markdown tables, ASCII diagrams, or other visual representations that are hard to understand at a glance in a code editor.
 
 For tests, explain what behavior to test, why testing is needed, and which kind of test fits. Research how to write the chosen test and include a project-specific example whose assertions observe the stated behavior. Do not replace the behavior under test with a fake and then test only the fake. If tests are unnecessary, record why and omit unnecessary test examples.
 
