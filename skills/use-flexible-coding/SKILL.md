@@ -1,11 +1,11 @@
 ---
 name: use-flexible-coding
-description: Research implementation patterns, module architecture including file and folder organization, and system architecture. Use when a request needs project-specific technical decisions, reasons, and examples explained or recorded; this skill alone does not authorize implementation.
+description: Research project-specific computer science principles, implementation patterns, module architecture including file and folder organization, and system architecture. Use when technical choices need investigation, reasons, and project-specific examples explained or recorded; this skill alone does not authorize implementation.
 ---
 
 # Use Flexible Coding
 
-Explain technical decisions and project-specific examples for the requested work. Research and examples are the default; changes to source code, tests, configuration, or tooling require an explicit implementation or development instruction.
+Research the principles needed for the requested work and explain technical decisions with project-specific examples. Research and examples are the default; changes to source code, tests, configuration, or tooling require an explicit implementation or development instruction.
 
 ## Establish the task and destination
 
@@ -21,9 +21,13 @@ At the start, on resumption, and before each next work unit, reread the necessar
 
 ## Research each task
 
-Establish the purpose, change target, and technology versions for each task, then select implementation pattern, module architecture (file and folder organization and dependencies), and system architecture questions according to possible failures and their consequences. Investigate these questions together when needed. Cover the patterns and anti-patterns that address them; explain the purpose and conditions of an approach rather than filling in pattern names or a uniform checklist.
+Establish the purpose, change target, and technology versions for each task. Proactively derive questions from the meaning and update rules of stored facts, external inputs and access permissions, repeated work, concurrency, and CPU, memory, storage, or network use. Use relevant project evidence and possible failures to select questions even when the user has not named a technical topic. These are prompts for investigation, not a checklist to fill for every task.
 
-Select project files by their relevance to the task and target, versions and runtime conditions, types and call relationships, and behavior to preserve or test. For module and system questions, use relevant code and configuration to establish responsibilities, dependencies, and runtime interactions. Explain those responsibilities and relationships using that evidence, and state why the files were selected and what remains unverified; do not claim to have found every file. Compare the selected evidence with current official guidance for the applicable versions. Existing code establishes project conditions, not a recommendation to copy its structure.
+Investigate the relevant computer science principles, implementation patterns, module architecture (file and folder organization and dependencies), and system architecture together. Database normalization and query optimization, database and web security, HTTP caching, algorithms and data structures, UI performance, and backend load handling are examples, not an exhaustive or mandatory list. Cover the patterns and anti-patterns that address the selected questions; explain their purpose and conditions rather than filling in names.
+
+Select project files by their relevance to the task and target, versions and runtime conditions, types and call relationships, and behavior to preserve or test. For module and system questions, use relevant code and configuration to establish responsibilities, dependencies, and runtime interactions. Explain those responsibilities and relationships using that evidence, and state why the files were selected and what remains unverified; do not claim to have found every file. Compare the selected evidence with current official guidance for the applicable versions and original research when needed. Existing code establishes project conditions, not a recommendation to copy its structure.
+
+Research how each relevant principle works, its assumptions, and alternatives. Compare the factors that matter to the decision, such as execution time, memory use, disk reads, storage space, and code that must be maintained. State how the conclusion can be checked. Distinguish observed behavior, estimates with stated assumptions, and effects not yet measured; if evidence is missing, explain what is needed instead of inventing workloads, targets, or improvements. The skill alone does not authorize running measurements.
 
 ## Explain changes and examples
 
