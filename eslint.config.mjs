@@ -24,7 +24,7 @@ export default defineConfig([
     },
     rules: {
       "array-callback-return": "error",
-      "eqeqeq": ["error", "always"],
+      eqeqeq: ["error", "always"],
       "no-console": "error",
       "no-duplicate-imports": "error",
       "no-eval": "error",
@@ -39,7 +39,8 @@ export default defineConfig([
             {
               name: "node:child_process",
               allowImportNames: ["execFile", "spawnSync"],
-              message: "Import only execFile and spawnSync from node:child_process.",
+              message:
+                "Import only execFile and spawnSync from node:child_process.",
             },
             {
               name: "child_process",
@@ -48,13 +49,16 @@ export default defineConfig([
             {
               name: "node:process",
               allowImportNames: ["default"],
-              message: "Import node:process only as the default process binding.",
+              message:
+                "Import node:process only as the default process binding.",
             },
           ],
           patterns: [
             {
-              regex: "^(?!node:(?:assert/strict|buffer|child_process|fs|fs/promises|path|process|url|util)$)",
-              message: "Import only the Node.js built-ins required by this scanner.",
+              regex:
+                "^(?!node:(?:assert/strict|buffer|child_process|fs|fs/promises|path|process|url|util)$)",
+              message:
+                "Import only the Node.js built-ins required by this scanner.",
             },
           ],
         },
@@ -89,7 +93,8 @@ export default defineConfig([
         {
           object: "globalThis",
           property: "process",
-          message: "Import node:process statically and keep restricted calls visible.",
+          message:
+            "Import node:process statically and keep restricted calls visible.",
         },
         {
           object: "globalThis",
@@ -109,7 +114,8 @@ export default defineConfig([
         {
           object: "globalThis",
           property: "console",
-          message: "Write only the scanner's defined stdout and stderr formats.",
+          message:
+            "Write only the scanner's defined stdout and stderr formats.",
         },
       ],
       "no-restricted-syntax": [
@@ -119,79 +125,104 @@ export default defineConfig([
           message: "Keep mutable state inside a call.",
         },
         {
-          selector: "Program > ExportNamedDeclaration > VariableDeclaration[kind='let']",
+          selector:
+            "Program > ExportNamedDeclaration > VariableDeclaration[kind='let']",
           message: "Keep mutable state inside a call.",
         },
         {
           selector: "ImportExpression",
-          message: "Dynamic imports are not allowed; keep every import static and auditable.",
+          message:
+            "Dynamic imports are not allowed; keep every import static and auditable.",
         },
         {
-          selector: "MemberExpression[object.type='MetaProperty'][object.meta.name='import'][computed=false][property.name='main']",
+          selector:
+            "MemberExpression[object.type='MetaProperty'][object.meta.name='import'][computed=false][property.name='main']",
           message: "import.meta.main requires Node.js 22.18.0.",
         },
         {
-          selector: "MemberExpression[object.type='MetaProperty'][object.meta.name='import'][computed=true][property.value='main']",
+          selector:
+            "MemberExpression[object.type='MetaProperty'][object.meta.name='import'][computed=true][property.value='main']",
           message: "import.meta.main requires Node.js 22.18.0.",
         },
         {
-          selector: "MemberExpression[object.type='MetaProperty'][object.meta.name='import'][computed=true][property.type='TemplateLiteral'][property.expressions.length=0][property.quasis.0.value.cooked='main']",
+          selector:
+            "MemberExpression[object.type='MetaProperty'][object.meta.name='import'][computed=true][property.type='TemplateLiteral'][property.expressions.length=0][property.quasis.0.value.cooked='main']",
           message: "import.meta.main requires Node.js 22.18.0.",
         },
         {
-          selector: "VariableDeclarator[init.type='MetaProperty'][init.meta.name='import'][init.property.name='meta']",
-          message: "Do not alias or destructure import.meta; use import.meta.url directly.",
+          selector:
+            "VariableDeclarator[init.type='MetaProperty'][init.meta.name='import'][init.property.name='meta']",
+          message:
+            "Do not alias or destructure import.meta; use import.meta.url directly.",
         },
         {
-          selector: "ImportDeclaration[source.value='node:process'] > ImportDefaultSpecifier[local.name!='process']",
-          message: "Import node:process as process so restricted calls remain visible.",
+          selector:
+            "ImportDeclaration[source.value='node:process'] > ImportDefaultSpecifier[local.name!='process']",
+          message:
+            "Import node:process as process so restricted calls remain visible.",
         },
         {
-          selector: "ImportDeclaration[source.value='node:process'] > ImportSpecifier[imported.name='default']",
+          selector:
+            "ImportDeclaration[source.value='node:process'] > ImportSpecifier[imported.name='default']",
           message: "Use a default import named process without import braces.",
         },
         {
-          selector: "ImportDeclaration[source.value='node:process'] > ImportSpecifier[imported.value='default']",
+          selector:
+            "ImportDeclaration[source.value='node:process'] > ImportSpecifier[imported.value='default']",
           message: "Use a default import named process without import braces.",
         },
         {
-          selector: "ImportDeclaration[source.value='node:child_process'] > ImportSpecifier[imported.name='execFile'][local.name!='execFile']",
-          message: "Import execFile without an alias so restricted calls remain visible.",
+          selector:
+            "ImportDeclaration[source.value='node:child_process'] > ImportSpecifier[imported.name='execFile'][local.name!='execFile']",
+          message:
+            "Import execFile without an alias so restricted calls remain visible.",
         },
         {
-          selector: "ImportDeclaration[source.value='node:child_process'] > ImportSpecifier[imported.value='execFile'][local.name!='execFile']",
-          message: "Import execFile without an alias so restricted calls remain visible.",
+          selector:
+            "ImportDeclaration[source.value='node:child_process'] > ImportSpecifier[imported.value='execFile'][local.name!='execFile']",
+          message:
+            "Import execFile without an alias so restricted calls remain visible.",
         },
         {
-          selector: "ImportDeclaration[source.value='node:child_process'] > ImportSpecifier[imported.name='spawnSync'][local.name!='spawnSync']",
-          message: "Import spawnSync without an alias so restricted calls remain visible.",
+          selector:
+            "ImportDeclaration[source.value='node:child_process'] > ImportSpecifier[imported.name='spawnSync'][local.name!='spawnSync']",
+          message:
+            "Import spawnSync without an alias so restricted calls remain visible.",
         },
         {
-          selector: "ImportDeclaration[source.value='node:child_process'] > ImportSpecifier[imported.value='spawnSync'][local.name!='spawnSync']",
-          message: "Import spawnSync without an alias so restricted calls remain visible.",
+          selector:
+            "ImportDeclaration[source.value='node:child_process'] > ImportSpecifier[imported.value='spawnSync'][local.name!='spawnSync']",
+          message:
+            "Import spawnSync without an alias so restricted calls remain visible.",
         },
         {
-          selector: "CallExpression[callee.name='execFile'] > ObjectExpression > Property[computed=false][key.name='shell']",
+          selector:
+            "CallExpression[callee.name='execFile'] > ObjectExpression > Property[computed=false][key.name='shell']",
           message: "Omit the shell option for execFile.",
         },
         {
-          selector: "CallExpression[callee.name='execFile'] > ObjectExpression > Property[computed=false][key.value='shell']",
+          selector:
+            "CallExpression[callee.name='execFile'] > ObjectExpression > Property[computed=false][key.value='shell']",
           message: "Omit the shell option for execFile.",
         },
         {
-          selector: "CallExpression[callee.name='spawnSync'] > ObjectExpression > Property[computed=false][key.name='shell']",
+          selector:
+            "CallExpression[callee.name='spawnSync'] > ObjectExpression > Property[computed=false][key.name='shell']",
           message: "Omit the shell option for spawnSync.",
         },
         {
-          selector: "CallExpression[callee.name='spawnSync'] > ObjectExpression > Property[computed=false][key.value='shell']",
+          selector:
+            "CallExpression[callee.name='spawnSync'] > ObjectExpression > Property[computed=false][key.value='shell']",
           message: "Omit the shell option for spawnSync.",
         },
         {
-          selector: "CallExpression[callee.name='execFile'] > ObjectExpression > Property[computed=true]",
+          selector:
+            "CallExpression[callee.name='execFile'] > ObjectExpression > Property[computed=true]",
           message: "Keep execFile options static and omit the shell option.",
         },
         {
-          selector: "CallExpression[callee.name='spawnSync'] > ObjectExpression > Property[computed=true]",
+          selector:
+            "CallExpression[callee.name='spawnSync'] > ObjectExpression > Property[computed=true]",
           message: "Keep spawnSync options static and omit the shell option.",
         },
       ],
@@ -209,13 +240,13 @@ export default defineConfig([
     },
   },
   {
-    name: "flexible-designs-generator",
-    files: ["skills/use-flexible-designs/scripts/requirements/create.mjs"],
+    name: "flexible-design-generator",
+    files: ["skills/use-flexible-design/scripts/requirements/create.mjs"],
     extends: [js.configs.recommended],
     languageOptions: { ecmaVersion: 2024, sourceType: "module" },
     linterOptions: { reportUnusedDisableDirectives: "error" },
     rules: {
-      "eqeqeq": ["error", "always"],
+      eqeqeq: ["error", "always"],
       "no-console": "error",
       "no-duplicate-imports": "error",
       "no-param-reassign": ["error", { props: true }],
@@ -245,7 +276,8 @@ export default defineConfig([
             {
               name: "node:child_process",
               allowImportNames: ["execFile", "spawnSync"],
-              message: "Import only execFile and spawnSync from node:child_process.",
+              message:
+                "Import only execFile and spawnSync from node:child_process.",
             },
             {
               name: "child_process",
@@ -254,7 +286,8 @@ export default defineConfig([
             {
               name: "node:process",
               allowImportNames: ["default"],
-              message: "Import node:process only as the default process binding.",
+              message:
+                "Import node:process only as the default process binding.",
             },
           ],
           patterns: [

@@ -1,4 +1,4 @@
 interface:
   display_name: "Use Flexible Designs"
   short_description: "Develop requirements and connect research, decisions, and plans"
-  default_prompt: "Use $use-flexible-designs to develop requirements and connect the necessary research, decisions, and plan."
+  default_prompt: "Use $use-flexible-design to develop requirements and connect the necessary research, decisions, and plan."

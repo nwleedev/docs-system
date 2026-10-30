@@ -50,7 +50,7 @@
 
 ## 이름과 현재 호출 지침을 전환한다
 
-`skills/use-design-docs/`를 `skills/use-flexible-designs/`로 이동한다. `SKILL.md`의 `name`, 제목과 설명, `agents/openai.yaml`의 표시 이름, 요약과 기본 호출문을 새 이름에 맞춘다. 별칭 스킬이나 이전 위치의 전달 파일은 만들지 않는다.
+`skills/use-design-docs/`를 `skills/use-flexible-design/`로 이동한다. `SKILL.md`의 `name`, 제목과 설명, `agents/openai.yaml`의 표시 이름, 요약과 기본 호출문을 새 이름에 맞춘다. 별칭 스킬이나 이전 위치의 전달 파일은 만들지 않는다.
 
 앞 단계의 기준에 따라 `SKILL.md`의 작업 선택, 요구사항 기준 확인과 실행 순서를 수정한다. 새 참고 문서는 요구사항 생성, 보완과 구조 정리에 필요한 경우에 읽도록 `SKILL.md`에 직접 연결한다. 빈 문서 준비도 공통 탐색 절차를 거치고 실제 생성에는 스크립트의 사용법을 적용한다. 문서 관리를 넘어 부족한 정보와 변경 영향을 조사하도록 설명하되, 유연한 설계를 이유로 새로운 아키텍처나 추상화를 강제하지 않는다.
 
@@ -65,7 +65,7 @@
 
 ## 빈 문서 생성 스크립트를 추가한다
 
-`skills/use-flexible-designs/scripts/requirements/create.mjs`를 추가하고 새 스킬과 두 언어 README에서 실행 방법을 안내한다. 생성과 작성 규칙이 정리된 뒤에 진행한다. 저장소 밖에서 복사한 스킬도 실행할 수 있도록 스크립트 위치와 파일을 생성할 저장소를 분리한다.
+`skills/use-flexible-design/scripts/requirements/create.mjs`를 추가하고 새 스킬과 두 언어 README에서 실행 방법을 안내한다. 생성과 작성 규칙이 정리된 뒤에 진행한다. 저장소 밖에서 복사한 스킬도 실행할 수 있도록 스크립트 위치와 파일을 생성할 저장소를 분리한다.
 
 - 입력은 `--repo <root>`와 `--topic <slug>`로 제한한다. `--help`는 사용법만 출력하며 파일을 만들지 않는다. topic은 영문 소문자, 숫자와 단일 하이픈으로 구성된 이름으로 제한하고 디렉터리 구분자와 상대 이동 표기를 거부한다.
 - 출력은 지정 저장소의 `docs/designs/<topic>-<short-id>/requirements.md`다. 짧은 ID는 새 폴더 이름에만 Node.js 내장 난수 기능으로 생성한다. 새 폴더를 배타적으로 생성하고, 파일도 `wx`로 생성해 충돌 시 기존 파일을 보존한다. 생성 결과에는 빈 요구사항 파일만 두고 문서 ID, 항목 ID와 빈 하위 디렉터리는 만들지 않는다.

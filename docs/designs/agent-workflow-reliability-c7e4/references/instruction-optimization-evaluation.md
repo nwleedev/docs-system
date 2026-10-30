@@ -33,7 +33,7 @@
 - `skills/use-dev-guidance/SKILL.md`: 104줄, 9,456바이트에서 58줄, 6,338바이트로 변경됐다.
 - 이름을 바꾸기 전 `skills/use-words-review/SKILL.md`: 114줄, 14,152바이트에서 `skills/use-better-terms/SKILL.md` 65줄, 6,550바이트로 변경됐다.
 
-[설계 문서 Skill](../../../../skills/use-flexible-designs/SKILL.md)과 [개발 지침 Skill](../../../../skills/use-dev-guidance/SKILL.md)은 저장소 기준을 찾고 필요한 작업을 순서대로 선택하는 절차만 관리한다. [문구 개선 Skill](../../../../skills/use-better-terms/SKILL.md)은 공유 단위의 입력 선택, 검사, 조건부 참고 자료, 대체 표현 우선 처리와 판정 형식만 관리한다.
+[설계 문서 Skill](../../../../skills/use-flexible-design/SKILL.md)과 [개발 지침 Skill](../../../../skills/use-dev-guidance/SKILL.md)은 저장소 기준을 찾고 필요한 작업을 순서대로 선택하는 절차만 관리한다. [문구 개선 Skill](../../../../skills/use-better-terms/SKILL.md)은 공유 단위의 입력 선택, 검사, 조건부 참고 자료, 대체 표현 우선 처리와 판정 형식만 관리한다.
 
 ### 한 파일로 사용하는 저장소 기준
 
@@ -42,7 +42,7 @@
 - `skills/use-dev-guidance/references/_README.md`: 206줄, 19,776바이트에서 130줄, 11,759바이트로 변경됐다.
 - `docs/dev/README.md`: 207줄, 19,764바이트에서 133줄, 11,765바이트로 변경됐다.
 
-[설계 문서 시작 자료](../../../../skills/use-flexible-designs/references/_README.md)와 [개발 지침 시작 자료](../../../../skills/use-dev-guidance/references/_README.md)는 나누지 않았다. 각각을 한 파일로 복사해도 문서 생성 조건, 작성 권한, 필수 정보, 금지 내용과 검증 방법을 판단할 수 있다.
+[설계 문서 시작 자료](../../../../skills/use-flexible-design/references/_README.md)와 [개발 지침 시작 자료](../../../../skills/use-dev-guidance/references/_README.md)는 나누지 않았다. 각각을 한 파일로 복사해도 문서 생성 조건, 작성 권한, 필수 정보, 금지 내용과 검증 방법을 판단할 수 있다.
 
 이 저장소의 [설계 문서 기준](../../README.md)은 관리용 첫 줄을 제외한 설계 시작 자료와 내용이 같고, [개발 지침 기준](../../../dev/README.md)은 시작 자료의 공통 본문에 이 저장소의 Node.js 문서 링크만 더한다.
 

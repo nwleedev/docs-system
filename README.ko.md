@@ -7,7 +7,7 @@
 ## 저장소 파일
 
 - [`AGENTS.md`](./AGENTS.md)는 이 저장소에서 사용하는 예시입니다. [`src/AGENTS.en.md`](./src/AGENTS.en.md)와 [`src/AGENTS.ko.md`](./src/AGENTS.ko.md)는 다른 저장소에서 수정해 쓰는 참고 문서입니다.
-- [`docs/designs/README.md`](./docs/designs/README.md)는 이 저장소의 설계 문서 규칙을 정합니다. [`use-flexible-designs`](./skills/use-flexible-designs/SKILL.md)는 각 저장소의 기준 README에 따라 요구사항을 작성하고 보완하며, 부족한 정보를 조사하고 리서치, 결정과 계획을 연결합니다.
+- [`docs/designs/README.md`](./docs/designs/README.md)는 이 저장소의 설계 문서 규칙을 정합니다. [`use-flexible-design`](./skills/use-flexible-design/SKILL.md)는 각 저장소의 기준 README에 따라 요구사항을 작성하고 보완하며, 부족한 정보를 조사하고 리서치, 결정과 계획을 연결합니다.
 - [`docs/dev/README.md`](./docs/dev/README.md)는 이 저장소의 개발 지침 규칙을 정합니다. [`use-dev-guidance`](./skills/use-dev-guidance/SKILL.md)는 각 저장소의 기준 README에 따라 기술 조사, 검사, 의존성 작업, 지침과 구현 검증을 진행합니다.
 - [`use-flexible-coding`](./skills/use-flexible-coding/SKILL.md)은 프로젝트에 필요한 컴퓨터 공학 원리, 코드 디자인 패턴, 파일과 폴더 구성을 포함한 모듈 아키텍처와 시스템 아키텍처를 조사합니다. 적용 이유와 배경 및 프로젝트에서 선택한 이력을 판단 목적에 맞는 예시로 설명합니다. 사용자가 지정한 파일에 기록하고 지정이 없으면 후보를 제안합니다. 기존 개발 지침 스킬과 별도로 선택할 수 있습니다.
 - [`use-better-terms`](./skills/use-better-terms/SKILL.md)는 저장하거나 공유할 글과 이름에 근거로 뜻을 보존하는 대체 표현을 먼저 적용하고, 새 뜻이 필요한 변경은 사람의 판단을 요청합니다.
@@ -45,4 +45,4 @@ Skill을 제거할 때에는 복사한 Skill 디렉터리와 호출 절을 삭�
 
 ## 설계 폴더 준비
 
-기본 배치로 새 설계 폴더를 준비하려면 설치한 `use-flexible-designs` 디렉터리에서 `node scripts/requirements/create.mjs --repo <repository-root> --topic <topic-slug>`를 실행합니다. Node.js 22.0.0 이상이 필요하며 외부 패키지는 사용하지 않습니다. 스크립트는 폴더와 빈 `requirements.md`만 생성합니다. Skill은 새 폴더를 만들기 전에 기존 요구사항을 찾고, 빈 문서만 준비하는 요청이 아니면 입력을 바탕으로 필요한 내용을 작성합니다. 플랜, 리서치와 결정 문서는 필요할 때 같은 폴더에 추가합니다.
+기본 배치로 새 설계 폴더를 준비하려면 설치한 `use-flexible-design` 디렉터리에서 `node scripts/requirements/create.mjs --repo <repository-root> --topic <topic-slug>`를 실행합니다. Node.js 22.0.0 이상이 필요하며 외부 패키지는 사용하지 않습니다. 스크립트는 폴더와 빈 `requirements.md`만 생성합니다. Skill은 새 폴더를 만들기 전에 기존 요구사항을 찾고, 빈 문서만 준비하는 요청이 아니면 입력을 바탕으로 필요한 내용을 작성합니다. 플랜, 리서치와 결정 문서는 필요할 때 같은 폴더에 추가합니다.

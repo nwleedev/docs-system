@@ -77,7 +77,7 @@
 
 ## 적극적인 Skill 활용과 작업 환경 관리
 
-**필요한 Skill이나 그 Skill의 필수 참고 자료를 읽을 수 없으면 대체 규칙을 추정하지 않고 중단 사유를 보고한다. 저장소 기준 README만 없으면 `use-flexible-designs` 또는 `use-dev-guidance`가 정한 생성 승인 및 대체 위치 절차를 따른다.**
+**필요한 Skill이나 그 Skill의 필수 참고 자료를 읽을 수 없으면 대체 규칙을 추정하지 않고 중단 사유를 보고한다. 저장소 기준 README만 없으면 `use-flexible-design` 또는 `use-dev-guidance`가 정한 생성 승인 및 대체 위치 절차를 따른다.**
 
 <!-- BEGIN USE BETTER HANDOFF -->
 
@@ -101,7 +101,7 @@
 
 ### 리서치, 교차 검증, 설계와 문서화
 
-- 요구사항을 구체화하거나 `docs/designs/**`를 조사, 작성, 검토, 계획 또는 검증할 때와 그 아래의 문서를 구현 입력으로 사용할 때에는 `$use-flexible-designs`를 실행한다.
+- 요구사항을 구체화하거나 `docs/designs/**`를 조사, 작성, 검토, 계획 또는 검증할 때와 그 아래의 문서를 구현 입력으로 사용할 때에는 `$use-flexible-design`를 실행한다.
 - 요구사항과 승인된 결정은 AI의 조사 결과나 제안과 구분한다.
 - 설계 문서의 구조, 기록 위치와 검사 기준은 저장소의 `docs/designs/README.md`가 관리한다.
 

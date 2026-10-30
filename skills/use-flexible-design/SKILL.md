@@ -1,5 +1,5 @@
 ---
-name: use-flexible-designs
+name: use-flexible-design
 description: Turn requests into requirements, investigate missing information, and connect research, decisions, and plans under the repository's design-document rules. Use for creating, extending, reviewing, or restructuring requirements and for planning or assessing design changes.
 ---
 

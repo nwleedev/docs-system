@@ -1,6 +1,6 @@
 # 설계 스킬 전환 인수인계
 
-`use-flexible-designs` 전환을 위한 요구사항과 구현 계획을 작성했다. 설계 기준, 요구사항 보완 절차, 이름 전환과 생성 스크립트를 반영했다. 실행 검사, 문서 절차 검토와 최종 문구 검사를 마쳤다. 계획의 모든 절차를 완료했다.
+`use-flexible-design` 전환을 위한 요구사항과 구현 계획을 작성했다. 설계 기준, 요구사항 보완 절차, 이름 전환과 생성 스크립트를 반영했다. 실행 검사, 문서 절차 검토와 최종 문구 검사를 마쳤다. 계획의 모든 절차를 완료했다.
 
 - [요구사항](./docs/designs/flexible-designs-4f8c/requirements.md)은 최소 작성과 보완을 기본으로 하고 빈 문서 준비, 상세 작성과 구조 정리를 구분한다.
 - [계획](./docs/designs/flexible-designs-4f8c/plan.md)은 기준 규칙 변경, 탐색과 보완 순서, 이름 전환, 생성 스크립트 추가와 마지막 검증 순서다. 0바이트 파일, 입력 옵션과 Node.js 최소 버전은 요구사항에서 파생한 구현 선택이며 구현 결과가 아니다.
@@ -21,7 +21,7 @@
 - 스킬 본문은 53줄, 760단어에서 36줄, 427단어로 줄었다. 조건부 참고 문서까지 합친 수치는 51줄이다. 파일 생성, 검색과 내용 작성의 책임이 달라 기존 문구 검사기와 공용 모듈로 묶지 않았다.
 - 최소 작성, 상세 작성, 빈 문서 준비, 읽기 전용 검토, 구조 정리와 기존 문서 재사용을 최종 문서 절차에 대입했다. 실제 모델을 별도로 실행한 행동 평가는 수행하지 않았다. 파일 시스템의 악의적인 동시 교체를 모든 환경에서 차단한다고 보장하지 않는다.
 
-요구사항 생성 스크립트는 `skills/use-flexible-designs/scripts/requirements/create.mjs`에, 작성 절차는 `skills/use-flexible-designs/references/requirements/workflow.md`에 배치했다. 호출문, 사용법과 정적 검사 설정도 같은 위치를 사용한다.
+요구사항 생성 스크립트는 `skills/use-flexible-design/scripts/requirements/create.mjs`에, 작성 절차는 `skills/use-flexible-design/references/requirements/workflow.md`에 배치했다. 호출문, 사용법과 정적 검사 설정도 같은 위치를 사용한다.
 
 ## 코딩 판단 기록 요구사항
 
