@@ -1,4 +1,4 @@
 interface:
   display_name: "Use Flexible Design"
-  short_description: "Develop requirements and connect research, decisions, and plans"
-  default_prompt: "Use $use-flexible-design to develop requirements and connect the necessary research, decisions, and plan."
+  short_description: "Investigate requirement gaps and implementation readiness"
+  default_prompt: "Use $use-flexible-design to understand the current goal, investigate missing conditions without expanding it, and explain implementation readiness and next steps with evidence."

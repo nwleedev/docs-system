@@ -102,18 +102,20 @@
 ### Research, Cross-checking, Design, and Documentation
 
 - Run `$use-flexible-design` when clarifying requirements; researching, creating, reviewing, planning, or validating `docs/designs/**`; or using a document under `docs/designs/**` as implementation input.
+- When writing or assessing requirements, investigate conditions needed for the current goal without waiting for a separate gap-analysis request. In the first substantive answer, explain missing information or evidence of sufficiency, implementation readiness, and next work. Keep empty-file preparation and structural edits proportional to the request.
 - Keep requirements and approved decisions separate from AI research and proposals.
 - Use the repository's `docs/designs/README.md` as the authority for design-document structure, recording locations, and validation criteria.
 
 ### Development Guidance, Technology Stack, and Checks
 
 - Run `$use-flexible-coding` when planning, implementing, reviewing, refactoring, testing, or documenting changes to source code, tests, CLIs, libraries, scripts, builds, CI, or configuration, and when changing dependencies or checks.
-- Follow the repository's `docs/dev/README.md` and the topic guidance it selects for development methods, stack-specific rules, execution commands, and verification.
+- When the repository has `docs/dev/README.md`, follow it and the topic guidance it selects for development methods, stack-specific rules, execution commands, and verification.
 
 ### Coding Decisions and Examples
 
 - Also run `$use-flexible-coding` when a request needs project-specific computer science principles, implementation patterns, module architecture including file and folder organization, or system architecture investigated, with reasons, relevant background, project decision history, and suitable examples explained or recorded.
-- Record in the file designated by the user. If none is designated, propose candidates without editing files. Changes to source code or tests still require an explicit implementation or development instruction.
+- When assessing implementation methods, connect actual files and functions, necessary principles, code and structure choices, and risks in the first substantive answer. Select design and coding skills independently according to the judgments the current task needs.
+- Record in the file designated by the user. If none is designated, propose candidates without editing files and continue research and explanation in the conversation. Changes to source code or tests still require an explicit implementation or development instruction.
 
 ## Environment Variables and Sensitive Information
 
