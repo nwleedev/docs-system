@@ -10,6 +10,7 @@
 - [`docs/designs/README.md`](./docs/designs/README.md)는 이 저장소의 설계 문서 규칙을 정합니다. [`use-flexible-design`](./skills/use-flexible-design/SKILL.md)는 각 저장소의 기준 README에 따라 요구사항을 작성하고 보완하며, 부족한 정보를 조사하고 리서치, 결정과 계획을 연결합니다.
 - [`docs/dev/README.md`](./docs/dev/README.md)는 이 저장소의 개발 지침 규칙을 정합니다. [`use-dev-guidance`](./skills/use-dev-guidance/SKILL.md)는 각 저장소의 기준 README에 따라 기술 조사, 검사, 의존성 작업, 지침과 구현 검증을 진행합니다.
 - [`use-flexible-coding`](./skills/use-flexible-coding/SKILL.md)은 프로젝트에 필요한 컴퓨터 공학 원리, 코드 디자인 패턴, 파일과 폴더 구성을 포함한 모듈 아키텍처와 시스템 아키텍처를 조사합니다. 적용 이유와 배경 및 프로젝트에서 선택한 이력을 판단 목적에 맞는 예시로 설명합니다. 사용자가 지정한 파일에 기록하고 지정이 없으면 후보를 제안합니다. 기존 개발 지침 스킬과 별도로 선택할 수 있습니다.
+- [`ui`](./skills/ui/SKILL.md)는 사용자와 대화하며 서비스 UI를 설계합니다. 최초 본격 시안 전에 디자인 테마를 검색하고 시각 자료로 비교한 뒤 실제 서비스처럼 보이고 조작할 수 있는 HTML을 작성하고 수정합니다. 브라우저 개발자 도구에서 요소의 전체 XPath를 복사해 대화로 수정 요청을 전달합니다. 검토 도구는 시안 밖에 두며 기존 애플리케이션 코드는 수정하지 않습니다.
 - [`use-better-terms`](./skills/use-better-terms/SKILL.md)는 저장하거나 공유할 글과 이름에 근거로 뜻을 보존하는 대체 표현을 먼저 적용하고, 새 뜻이 필요한 변경은 사람의 판단을 요청합니다.
 - [`use-better-handoff`](./skills/use-better-handoff/SKILL.md)는 지정된 인수인계 파일에서 작업을 이어받기 위한 설명을 관리하며 그 기록으로 프로젝트를 파악하도록 돕습니다. 기본 파일의 위치와 이름은 변경할 수 있습니다.
 - [`examples/nextjs-frontend.md`](./examples/nextjs-frontend.md)는 특정 기술 구성을 조사하는 프롬프트 예시이며 다른 프로젝트의 기본값이 아닙니다.

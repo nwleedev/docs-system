@@ -6,13 +6,15 @@ Check the latest running screen's goal completion, consistency, completeness, an
 
 Use the scenario, preserved functionality, direction, rules, proposals, exceptions, and targets from current implementation input. For missing inspection conditions read [validation conditions](implementation.md#define-validation-conditions).
 
-Confirm that the running UI or supplied screen evidence reflects the evaluated changes. If unclear, request current evidence or defer the affected check. Follow [screen checks](#inspect-four-aspects-of-the-screen) and [differences and reuse](#resolve-differences-and-validate-reuse) before finalizing rules.
+Confirm that the running UI or supplied screen evidence reflects the evaluated changes. Distinguish a running HTML mockup from the production application; simulation does not establish backend behavior. If unclear, request current evidence or defer the affected check. Follow [screen checks](#inspect-four-aspects-of-the-screen) and [differences and reuse](#resolve-differences-and-validate-reuse) before finalizing rules.
 
 ## Inspect four aspects of the screen
 
 ### Goal completion and action sequence
 
 Follow the representative scenario to its outcome. Check main-action discoverability, timely information, status and next-step feedback, repeated actions, and risky-action confirmation or recovery. Verify transitions by interaction or demonstrated evidence; record observed difficulties and conditions. Visual inspection alone proves neither complete behavioral correctness nor measured usability improvement.
+
+Check the named interaction itself. Accessible alternatives may supplement required dragging, but do not replace it. For an XPath revision, verify that the matched target reflects the request and other affected actions still work after refresh. If the path and intended target disagree, leave that edit pending rather than validating a guessed substitute.
 
 ### Visual consistency
 
@@ -22,11 +24,15 @@ Compare regions and relevant states against typography, spacing, alignment, dens
 
 Inspect whole composition, readable domain content, actual volume, long text, affected states, and relevant sizes, themes, and languages. Record clipping, absent states, placeholders, unexplained spacing, and unfinished regions against their conditions. Do not infer responsive behavior from one viewport.
 
+Apply [service content rules](implementation.md#keep-the-screen-about-the-service): the HTML must read as the intended service, with no mockup introduction, review controls, or authoring commentary, including hidden review modes. Check phrases for meaning and usefulness rather than blanket removal. Preserve necessary help, status, errors, and accessibility information; correct redundant disclaimers, reports, rationales, and unclear text. Keep unresolved implementation limits in the conversation.
+
 For keyboard operation, semantic accessibility, or compliance claims, obtain interaction or applicable independent checks; visual inspection alone is insufficient.
 
 ### Distinctiveness
 
 Explain structure, hierarchy, and emphasis through the thesis and domain constraints. Identify distinguishing choices beyond decoration and their evidence. Lists, cards, and sidebars are valid when justified by the scenario. This judgment proves neither uniqueness across all services nor measured usability improvement.
+
+Compare the screen with the confirmed theme characteristics and avoided treatments. Verify that SaaS design has not been introduced without an explicit requirement. Check whether relationships and actions use appropriate visual forms instead of being reduced to text and buttons; do not add arbitrary imagery merely to increase variety.
 
 ## Resolve differences and validate reuse
 
