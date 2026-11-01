@@ -77,7 +77,7 @@
 
 ## Skill Use and Work Environment
 
-**If a required Skill or one of its required references cannot be read, do not infer replacement rules. Stop and report the missing prerequisite. When only the repository authority README is absent, follow the creation-approval and alternative-location procedure defined by `use-flexible-design` or `use-dev-guidance`.**
+**If a required Skill or one of its required references cannot be read, do not infer replacement rules. Stop and report the missing prerequisite. When only the design authority README is absent, follow the creation-approval and alternative-location procedure in `use-flexible-design`. If the development authority README is absent, propose recording candidates under the destination procedure in `use-flexible-coding` and existing repository instructions; do not create an authority file on your own.**
 
 <!-- BEGIN USE BETTER HANDOFF -->
 
@@ -107,12 +107,12 @@
 
 ### Development Guidance, Technology Stack, and Checks
 
-- Run `$use-dev-guidance` when planning, implementing, reviewing, refactoring, testing, or documenting changes to source code, tests, CLIs, libraries, scripts, builds, CI, or configuration, and when changing dependencies or checks.
+- Run `$use-flexible-coding` when planning, implementing, reviewing, refactoring, testing, or documenting changes to source code, tests, CLIs, libraries, scripts, builds, CI, or configuration, and when changing dependencies or checks.
 - Follow the repository's `docs/dev/README.md` and the topic guidance it selects for development methods, stack-specific rules, execution commands, and verification.
 
 ### Coding Decisions and Examples
 
-- Run `$use-flexible-coding` when a request needs project-specific computer science principles, implementation patterns, module architecture including file and folder organization, or system architecture investigated, with reasons, relevant background, project decision history, and suitable examples explained or recorded. Select it independently of `$use-dev-guidance`.
+- Also run `$use-flexible-coding` when a request needs project-specific computer science principles, implementation patterns, module architecture including file and folder organization, or system architecture investigated, with reasons, relevant background, project decision history, and suitable examples explained or recorded.
 - Record in the file designated by the user. If none is designated, propose candidates without editing files. Changes to source code or tests still require an explicit implementation or development instruction.
 
 ## Environment Variables and Sensitive Information

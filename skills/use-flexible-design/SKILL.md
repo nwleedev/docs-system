@@ -3,7 +3,7 @@ name: use-flexible-design
 description: Turn requests into requirements, investigate missing information, and connect research, decisions, and plans under the repository's design-document rules. Use for creating, extending, reviewing, or restructuring requirements and for planning or assessing design changes.
 ---
 
-# Use Flexible Designs
+# Use Flexible Design
 
 Use `docs/designs/README.md` as the authority for structure, writing permissions, document contents, and validation. This skill coordinates design work; it does not authorize implementation.
 
