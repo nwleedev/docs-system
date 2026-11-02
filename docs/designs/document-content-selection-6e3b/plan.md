@@ -20,7 +20,7 @@
 
 ## 3. 사실 보존과 기존 지침을 함께 적용한다
 
-[기존 지침 대조](./references/guidance-alignment.md)에 따라 [스킬의 근거 수집](../../../skills/use-better-terms/SKILL.md#collect-evidence-and-run-checks)에서 독자 정보의 부재만으로 질문하거나 중단하지 않도록 고쳤다. 표현 판정과 질문은 검토 답변에 두고, 대상 본문에 넣으려면 그 문서에 대한 수록 지시를 확인한다.
+[기존 지침 대조](./references/guidance-alignment.md)에 따라 [스킬의 근거 수집](../../../skills/use-better-terms/SKILL.md#prepare-before-writing)에서 독자 정보의 부재만으로 질문하거나 중단하지 않도록 고쳤다. 표현 판정과 질문은 검토 답변에 두고, 대상 본문에 넣으려면 그 문서에 대한 수록 지시를 확인한다.
 
 확인 근거는 스킬에 반영한 내용 선정의 선행 조건, 근거가 부족할 때 질문할 대상과 보고 위치, 관찰 조건과 승인 상태를 보존하는 규칙이다. 기존 표현 검사와 판정 상태는 유지했다. 4단계의 적용 확인은 이 수정본을 사용했다.
 

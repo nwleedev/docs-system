@@ -10,7 +10,7 @@
 
 독자에 관한 정보는 요청한 주제와 기존 자료에서 확인하고, 그 정보가 없다는 이유만으로 기본 제외를 멈추지 않는 적용안이 필요하다.
 
-[`use-better-terms`의 근거 수집](../../../../skills/use-better-terms/SKILL.md#collect-evidence-and-run-checks)과 [설계 문서의 공통 규칙](../../README.md#rules-for-every-document)은 독자와 독자가 해야 할 행동을 확인하도록 한다. 두 자료 모두 독자 정보를 매번 사용자에게 입력받는 절차를 요구하지 않는다.
+[`use-better-terms`의 근거 수집](../../../../skills/use-better-terms/SKILL.md#prepare-before-writing)과 [설계 문서의 공통 규칙](../../README.md#rules-for-every-document)은 독자와 독자가 해야 할 행동을 확인하도록 한다. 두 자료 모두 독자 정보를 매번 사용자에게 입력받는 절차를 요구하지 않는다.
 
 본문에 필요한 사실이나 필수 내용 자체를 정할 수 없을 때만 누락 정보를 확인한다. 용어와 설명량을 정하는 데 이미 있는 독자 정보를 사용하되, 독자에게 유용할 것이라는 추정으로 작업 설명의 수록을 허용하지 않는다.
 
@@ -18,7 +18,7 @@
 
 근거가 부족하면 주장을 고치거나 제외하고, 필요한 확인 사항은 대상 본문과 구분해 알린다.
 
-[`use-better-terms`의 문구 판정](../../../../skills/use-better-terms/SKILL.md#improve-and-judge-the-outputs)은 사실, 책임이나 승인 근거가 부족하면 추정하지 않고 질문하며, 판정과 그 조건을 독자가 찾을 수 있게 하도록 한다. 판정을 어느 문서에 적어야 하는지는 이 문장만으로 정해지지 않는다.
+[`use-better-terms`의 문구 판정](../../../../skills/use-better-terms/SKILL.md#run-the-final-checks)은 사실, 책임이나 승인 근거가 부족하면 추정하지 않고 질문하며, 판정과 그 조건을 독자가 찾을 수 있게 하도록 한다. 판정을 어느 문서에 적어야 하는지는 이 문장만으로 정해지지 않는다.
 
 수록 지시가 없는 작업 설명은 별도 질문 없이 제외한다. 글의 뜻을 보존할 사실이 부족하면 필요한 사실만 확인한다. 표현 검토를 요청한 경우에는 검토 답변에 판정과 대안을 보고하며, 검토 대상 본문에 그 보고를 덧붙이지 않는다.
 
@@ -42,7 +42,7 @@
 
 표현을 고치기 전에 본문에 실을 내용을 정하는 절차가 필요하다. 저장소의 문서 작성 권한을 스킬이 다시 정의하지 않는다.
 
-[`use-design-docs`의 실행 순서](../../../../skills/use-flexible-design/SKILL.md#execute-in-dependency-order)는 저장소 README의 작성 권한과 문서 종류별 규칙을 적용한다. 확장 전 [`use-better-terms`의 표현 판정](../../../../skills/use-better-terms/SKILL.md#improve-and-judge-the-outputs)은 뜻을 보존하는 문장 대안을 먼저 검토했다. 수록 지시를 선행 조건으로 확인하는 단계는 명시돼 있지 않았다.
+[`use-design-docs`의 실행 순서](../../../../skills/use-flexible-design/SKILL.md#execute-in-dependency-order)는 저장소 README의 작성 권한과 문서 종류별 규칙을 적용한다. 확장 전 [`use-better-terms`의 표현 판정](../../../../skills/use-better-terms/SKILL.md#run-the-final-checks)은 뜻을 보존하는 문장 대안을 먼저 검토했다. 수록 지시를 선행 조건으로 확인하는 단계는 명시돼 있지 않았다.
 
 기존 스킬 확장은 같은 검토 안에서 내용 선정을 먼저 수행하는 방식으로 비교한다. 전용 스킬은 내용 선정 뒤에 허용된 문장과 필요한 조건을 표현 검토로 넘기는 방식으로 비교한다. 두 방안 모두 같은 수록 기준을 사용한다.
 

@@ -2,7 +2,7 @@
 
 ## Literal translation and hidden actors
 
-Korean words alone do not make a sentence natural. An English subject pattern or a stack of nouns can hide actions and relationships. Use verbs and Korean particles to show who reads, decides, and records; do not make a document or feature appear to exercise judgment or responsibility.
+Korean words alone do not make a sentence natural. An English subject pattern or a stack of nouns can hide actions and relationships. Use verbs and Korean particles to identify the actor and action. Do not make a document or feature appear to exercise judgment or responsibility.
 
 This sentence needs human input because it does not identify who checks which input or what changes after an error:
 
@@ -42,11 +42,28 @@ with:
 
 > 검수자가 검토 결과를 확인하고 승인 책임자에게 전달한다.
 
-Keep an exact API name such as `Response.create`; explain the caller's action and the values to record on failure in Korean.
+Keep an exact API name such as `Response.create`. Explain the caller's action and the values to record on failure in Korean.
 
 ## Repetition and referents
 
-Repeated terminology can preserve a reference. Here `전력 소비량` denotes the same measurement; substituting another noun could suggest a different metric:
+Check sentence frames across the whole document. Repeated introductions and conclusions can add no meaning even when their words differ. Do not fix them by rotating synonyms. Preserve structures used to compare the same attributes.
+
+Treat `A부터 B까지의 C` and `A와 B를 C로 연결` as prompts to inspect meaning rather than prohibited forms. The same applies to a list ending in `까지`. Confirm the stated range or relationship. Do not imply shared responsibility merely because items appear together.
+
+For a service that only accepts applications this wording invents further responsibility:
+
+> 접수부터 승인까지의 업무를 처리한다.
+
+If acceptance is the only established action write:
+
+> 신청서를 접수한다.
+
+Keep a supported range such as:
+
+> 신청 기간은 3월 1일부터 3월 10일까지다.
+
+
+Repeated terminology can preserve a reference. Here `전력 소비량` denotes the same measurement. Substituting another noun could suggest a different metric:
 
 > 전력 소비량을 시간별로 측정한다. 전력 소비량이 기준을 넘으면 경고를 기록한다.
 
@@ -60,7 +77,7 @@ If evidence distinguishes the actors and objects, write:
 
 ## Relationships across sentences
 
-Korean can omit subjects and summarize earlier clauses; check that referents, roles, assumptions, and decision states remain identifiable across sentences. Verify that an earlier result supplies the next action's starting condition and that necessary exceptions and assumptions precede the actions using them.
+Korean can omit subjects and summarize earlier clauses. Keep referents and roles identifiable across sentences. Preserve assumptions and decision states. Preserve sequence only when the source establishes it. Independent sentences do not need a causal or sequential connection. Keep each exception with the action it qualifies.
 
 This pair needs human input because the responsible person, approval, and deployment condition are undefined:
 
@@ -86,8 +103,34 @@ Keep observations distinct from predicted effects. A log showing failures does n
 
 > 현재 로그에서 실패 건수를 확인했다. 보존 기간을 바꾸면 실패 건수가 줄어들 것이다.
 
-The first sentence is an observation; the second is an unverified prediction. A claim about the change needs evidence comparing the same conditions after applying it, with a defined observation time.
+The first sentence is an observation. The second is an unverified prediction. A claim about the change needs evidence comparing the same conditions after applying it, with a defined observation time.
 
 ## Meaning units in long paragraphs
 
 Split only when distinct subjects, evidence, conditions, decision states, or next actions force readers to reconstruct relationships. Access permission, log retention, and deployment approval need separate paragraphs when their evidence and follow-up actions differ. A long paragraph can remain intact when it describes one execution sequence from input checks through error recording, storage, and processed-count recording.
+
+## Report register and sentence function
+
+In a report name what the evidence establishes. Do not use `읽다` or `보다` as a substitute for the finding. These verbs are not prohibited when the reading action itself matters. Do not replace reading with verification unless verification occurred.
+
+If the record states only that a report was opened then preserve that limit:
+
+> 보고서를 열람했다.
+
+Do not rewrite that fact as:
+
+> 보고서의 정확성을 검증했다.
+
+Give a factual observation its own sentence when an interpretation or instruction has different evidence. Use commas only when needed for meaning. Do not use semicolons or replace them with a chain of conjunctions.
+
+## Separate conditions and responsibility
+
+Suppose the source requires reviewer approval for publication and a daily schedule for backups. This wording wrongly puts both actions under approval:
+
+> 검토자가 승인하면 보고서를 게시하고 백업한다.
+
+Preserve the separate conditions:
+
+> 검토자가 승인하면 보고서를 게시한다. 백업은 매일 실행한다.
+
+Do not infer that a reviewer also publishes the report. Name the publisher only when the source identifies that role. An unknown relationship is not evidence that the actions are independent.

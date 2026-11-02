@@ -83,7 +83,7 @@
 
 ### Handoff information
 
-- When creating or revising reusable artifacts, use `$use-better-handoff` to place continuity information before wording review. Include the changed artifacts and handoff record in the same sharing unit.
+- When creating or revising reusable artifacts use `$use-better-handoff` before wording review. Move continuity information to the designated record and clean up the affected originals in the same sharing unit. Do not add a record when there is nothing to move or update.
 - Also use `$use-better-handoff` to understand a project through its handoff record or update that record. A reading request alone does not authorize changes.
 - The default is `HANDOFF.md` at the repository root. The task or standing project instructions may specify another location and name. Do not invoke it merely for routine chat or progress updates.
 <!-- END USE BETTER HANDOFF -->
@@ -92,8 +92,8 @@
 
 ### Text and Names
 
-- Before drafting Korean text or names that will be stored, committed, published, or shared outside the conversation, read the pre-draft reference required by `$use-better-terms`.
-- Group text and names in any language by storage or sharing unit and run `$use-better-terms` once immediately before storing or sharing them. Apply natural alternatives first when verified evidence preserves the meaning.
+- Before drafting reusable text or names in any language follow the preparation instructions in `$use-better-terms`. Select the applicable project rules and source evidence. Read its required Korean reference before drafting Korean text.
+- Group text and names by storage or sharing unit. Perform the final review in `$use-better-terms` once immediately before storing or sharing them. Apply natural alternatives first when verified evidence preserves the meaning.
 - Retain an established term or exact name only with its reason. Ask for human input instead of replacing text when doing so would decide missing meaning, responsibility, or approval.
 - When the user explicitly requests review of wording or a public output, review the complete requested unit even when no file changed.
 - Do not run `$use-better-terms` merely because routine chat or a progress update is sent.

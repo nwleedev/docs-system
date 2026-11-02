@@ -20,7 +20,7 @@
 
 확장 전 규칙은 작업 입력을 본문에 옮기지 않도록 했지만 주의사항과 과정 설명의 수록 지시를 확인하는 단계는 명시하지 않았다. [기존 지침 대조](./guidance-alignment.md)에서 보완할 항목을 독자 확인의 입력 조건, 근거 부족과 표현 판정의 보고 대상, 내용 선정과 표현 검토의 순서로 구분했다.
 
-현재 [스킬의 내용 선정 단계](../../../../skills/use-better-handoff/SKILL.md#decide-what-belongs-where)는 기본 제외, 수록 지시의 적용 대상과 사실의 조건을 먼저 확인한다. [근거 수집](../../../../skills/use-better-terms/SKILL.md#collect-evidence-and-run-checks)은 독자 정보가 없다는 이유만으로 질문하거나 중단하지 않도록 명시했고, 판정 보고와 질문은 검토 답변에 두도록 고쳤다. 기존 문서 작성 권한과 표현 검사 기준은 유지했다.
+현재 [스킬의 내용 선정 단계](../../../../skills/use-better-handoff/SKILL.md#decide-what-belongs-where)는 기본 제외, 수록 지시의 적용 대상과 사실의 조건을 먼저 확인한다. [근거 수집](../../../../skills/use-better-terms/SKILL.md#prepare-before-writing)은 독자 정보가 없다는 이유만으로 질문하거나 중단하지 않도록 명시했고, 판정 보고와 질문은 검토 답변에 두도록 고쳤다. 기존 문서 작성 권한과 표현 검사 기준은 유지했다.
 
 기존 [작업 의도와 산출물 조사](../../public-output-audience-4d2c/references/prompt-intent-and-artifact-provenance-research.md#입력과-산출물-근거를-분리한다)는 입력과 사실 근거를 구분한다. 이 자료에서는 사실 여부와 별개로 요청한 문서에 실을 내용인지 판정하는 기준을 제안한다.
 

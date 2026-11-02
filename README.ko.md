@@ -11,8 +11,8 @@
 - [`docs/dev/README.md`](./docs/dev/README.md)는 이 저장소의 개발 지침 규칙을 정합니다. [`use-dev-guidance`](./skills/use-dev-guidance/SKILL.md)는 이 기준을 따르는 작업에서 독립적으로 사용할 수 있습니다. AGENTS 참고 문서는 개발 작업에 `use-flexible-coding`을 선택합니다.
 - [`use-flexible-coding`](./skills/use-flexible-coding/SKILL.md)은 실제 처리 순서를 따라 필요한 원리, 구현 패턴과 모듈 및 시스템 구성을 조사합니다. 첫 실질 답변에서 구체적인 코드와 파일 변경, 예시, 이유, 대안과 위험 및 착수 판단을 연결해 설명합니다. 지정한 파일에 기록하며, 지정이 없으면 후보를 제안하고 대화에서 조사를 계속합니다. 설계 스킬과 독립적으로 선택하며 조사만으로 실제 구현 권한이 생기지는 않습니다.
 - [`ui`](./skills/ui/SKILL.md)는 사용자와 대화하며 서비스 UI를 설계합니다. 최초 본격 시안 전에 디자인 테마를 검색하고 시각 자료로 비교한 뒤 실제 서비스처럼 보이고 조작할 수 있는 HTML을 작성하고 수정합니다. 브라우저 개발자 도구에서 요소의 전체 XPath를 복사해 대화로 수정 요청을 전달합니다. 검토 도구는 시안 밖에 두며 기존 애플리케이션 코드는 수정하지 않습니다.
-- [`use-better-terms`](./skills/use-better-terms/SKILL.md)는 저장하거나 공유할 글과 이름에 근거로 뜻을 보존하는 대체 표현을 먼저 적용하고, 새 뜻이 필요한 변경은 사람의 판단을 요청합니다.
-- [`use-better-handoff`](./skills/use-better-handoff/SKILL.md)는 지정된 인수인계 파일에서 작업을 이어받기 위한 설명을 관리하며 그 기록으로 프로젝트를 파악하도록 돕습니다. 기본 파일의 위치와 이름은 변경할 수 있습니다.
+- [`use-better-terms`](./skills/use-better-terms/SKILL.md)는 작성 전에 프로젝트 표현 규칙과 근거를 선택합니다. 마지막 검토에서 뜻을 보존하며 불필요한 반복과 근거 없는 관계를 고칩니다. 필요한 뜻이 확인되지 않으면 사람의 판단을 요청합니다.
+- [`use-better-handoff`](./skills/use-better-handoff/SKILL.md)는 작업을 이어받기 위한 설명을 지정 파일로 옮기고 원본을 정리합니다. 독자에게 필수인 정보는 유지하고 불필요한 기록은 추가하지 않습니다. 기존 기록으로 프로젝트를 파악하는 데에도 사용합니다. 파일의 위치와 이름은 변경할 수 있습니다.
 - [`examples/nextjs-frontend.md`](./examples/nextjs-frontend.md)는 특정 기술 구성을 조사하는 프롬프트 예시이며 다른 프로젝트의 기본값이 아닙니다.
 
 `src/`의 두 언어 문서는 따로 관리합니다. 필요한 절을 가져오기 전에 두 파일의 내용을 비교합니다.

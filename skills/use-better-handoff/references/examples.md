@@ -34,4 +34,28 @@ A source quote such as "Include the work process in the report" remains source t
 
 ## Several decisions in one note
 
-A note about log retention, button color, and dependency policy does not make them one decision. Preserve the approved decisions in their operations, design, and development documents. A handoff entry can link to them and explain the pending coordination; it does not relocate their authority.
+A note about log retention, button color, and dependency policy does not make them one decision. Preserve the approved decisions in their operations, design, and development documents. A handoff entry can link to them and explain the pending coordination. It does not relocate their authority.
+
+## The same note in several artifacts
+
+A report footer and a UI comment both say "The next agent should verify the source links." The task authorizes editing both artifacts. The designated record has no entry for this follow-up.
+
+Preserve the supported follow-up once in the designated record with links to both artifacts. Remove the note from the footer and comment. Adding the record while retaining either note leaves the move incomplete. Do not replace the note with an instruction to open the record.
+
+If the record already contains the same information then use that entry. Repeating the task must not append another copy. A new fact can require updating the entry without duplicating the old explanation.
+
+## A data limitation mixed with an author note
+
+> Missing dates indicate missing records rather than confirmed inactivity. The next agent should review the chart labels.
+
+Keep the first sentence with the chart because it defines how readers interpret missing dates. Move the second sentence to the designated record when it is supported follow-up work. Do not claim that the labels have been reviewed.
+
+The same distinction applies to implementation explanations. "The import skips rows without dates" may define data behavior that users need. "I changed the import during this session" is work history. Neither the word `import` nor the sentence's location decides placement.
+
+## No continuity information
+
+A form contains only required field labels and useful validation errors. There is no supported follow-up to record. Keep the form text. Do not create a handoff file or add a note stating that no information was moved.
+
+## An original cannot be changed
+
+A task permits updating a report and its designated record but not an embedded read-only attachment. The attachment contains the same author note as the report. Preserve the information in the record and adjust only the authorized report. Report that the attachment still contains the note. Do not claim that all originals were cleaned up or bypass the access restriction.

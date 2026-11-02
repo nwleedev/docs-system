@@ -1,84 +1,118 @@
 # Common Wording Examples
 
-## Remove decorative symbols, not required notation
+These synthetic examples contrast wording choices. Use the stated evidence rather than treating a phrase as inherently wrong.
+
+## Remove decoration while preserving notation
 
 Problematic:
 
 > Quick setup · safe storage · easy sharing
 
-Natural alternative:
+If these are the supported actions write:
 
-> Complete the setup, save the content, and share it with your team.
+> Complete the setup. Save the content. Share it with your team.
 
-Keep exact symbols in formulas, trademarks, approved interface labels, code, character tests, and accessibility instructions. The reader's need for the notation, not the symbol alone, decides the result.
+Preserve exact symbols in formulas and approved names. Code and character tests may also require them. Keep notation needed for accessibility. The reader's need decides whether the symbol stays.
 
-## Replace private locations while preserving usable locations
+## Replace private locations
 
-Problematic:
-
-> Find the attachment in a named user's desktop directory.
-
-Repository-relative alternative:
+Do not direct readers to a named user's desktop directory when a repository example is available:
 
 > See `examples/config.yml` for an example configuration.
 
-If a local input location is required to reproduce a result, retain only the necessary part in an untracked record with suitable access. Do not quote credentials, private URLs, private identifiers, or personal locations in the review result.
+Keep a necessary local reproduction location only in an untracked record with suitable access. Do not quote sensitive locations or credentials in the review response.
 
-## Rewrite inherited wording for the current readers
+## Adapt inherited wording
 
-Problematic:
+An earlier document can establish facts without supplying suitable wording for new readers. Retain its verified facts and approved decisions. Explain the actors and actions the current readers need. Keep repeated structure when readers compare the same attributes in the same order.
 
-> Copy the earlier document's title, abstractions, and conclusion because it supplied the facts for this document.
-
-Evidence-backed alternative:
-
-> Retain verified facts and approved decisions from the earlier document. Explain them for the current readers by naming the actor, action, conditions, and result.
-
-An existing document can establish facts and approved decisions without making its wording suitable for a new audience. Repeated structure remains useful when readers compare the same attributes in the same order.
-
-## Make sentence relationships explicit
-
-### Several judgments compressed into one sentence
+## Separate clarification from approval
 
 > Apply the review findings to clarify the approved scope and confirm that it can be released.
 
-- **Status:** `needs human input`
-- **Missing relationship:** The text does not identify who confirms what, whether the clarification grants release approval, or whether it only changes a document.
-- **Next step:** Obtain the review and approval roles before writing a replacement.
+This needs human input. The sentence does not identify what is released or who approves release. Clarifying a document does not itself grant approval. Obtain the missing relationship before replacing the sentence.
 
-### Technical modifiers without identifiable objects
+Similarly this pair does not establish approval:
 
-Heading:
+> The reviewer lists the changed items. Release only the approved items.
+
+Name the approval owner and approved items only when the source establishes them. Do not promote the reviewer to approver.
+
+## Resolve ambiguous objects
 
 > Submission path
 
-Body:
-
 > Separate it from the configuration code path.
 
-- **Status:** `needs human input`
-- **Missing relationship:** The first phrase could mean a registry address, artifact directory, or deployment destination. The second could mean a file location, import connection, or execution flow.
-- **Next step:** Identify both objects and the required separation before replacing either phrase.
+Both objects need clarification. The first could be a registry address or artifact directory. The second could be a file location or execution flow. Identify the actual objects before choosing a replacement.
 
-### Roles and approval that do not connect
+A similar ambiguity occurs here:
 
-> The reviewer lists the changed items. Release only the approved scope.
+> Attach the review findings and release log to the report. Retain this record for seven days.
 
-- **Status:** `needs human input`
-- **Missing relationship:** The text does not identify who approves the items, when approval occurs, or which items were approved.
-- **Possible wording after confirmation:** After the approval owner selects the items for release, the release owner publishes only those items.
+If evidence identifies the complete report as the retained record write:
 
-### One phrase with several possible referents
+> Retain the report with its attached findings and release log for seven days.
 
-> Attach the review findings and the release log to the report. Retain this record for seven days.
+Otherwise ask which record must be retained.
 
-- **Status:** `needs human input`
-- **Missing relationship:** `this record` could mean the findings, the log, or the complete report.
-- **Possible wording after confirmation:** Retain the report, including the attached review findings and release log, for seven days.
+## Preserve a clear condition
 
-### Clear condition and result
+> Replace a personal path with a repository-relative path if the document contains one. Confirm that the file remains accessible at the revised path before sharing the document.
 
-> If a document contains a personal path, replace it with a repository-relative path. Confirm that the file remains accessible at the revised path before sharing the document.
+The condition and required action are identifiable. A replacement must preserve the access check and its timing.
 
-- **Status:** `pass`
-- **Reason:** The condition, change, verification, and next action appear in order.
+## Distinguish facts from a causal claim
+
+Evidence states that the team added a dashboard. A separate record states that failures fell during the same month. It does not establish a causal relationship.
+
+Unsupported:
+
+> The team added a dashboard thereby reducing failures.
+
+Supported:
+
+> The team added a dashboard. Failures fell during the same month.
+
+Do not replace the unsupported claim with a declaration that the dashboard had no effect. That conclusion is also absent from the evidence.
+
+## Preserve valid ranges and terminology
+
+> The archive contains reports from 2020 to 2025.
+
+Keep this range when the archive supports it. The phrase `from A to B` is not itself a defect.
+
+> Set the retention period to seven days. Keep the retention period unchanged during export.
+
+Keep `retention period` in both sentences. Replacing it with a different noun may imply a different setting.
+
+## Simplify actions without changing obligations
+
+> Perform an evaluation of the revised text.
+
+Equivalent:
+
+> Evaluate the revised text.
+
+Permission is different from obligation:
+
+> You may attach a source excerpt.
+
+Do not rewrite this as a requirement to attach an excerpt.
+
+## Keep modifier and condition scope
+
+> Only editors may publish the report.
+
+Do not move `only` before `publish`. That position could limit what editors may do rather than who may publish.
+
+> If editing is authorized then revise the draft and save the revision.
+
+A split must keep both actions conditional. A list can express the shared condition without repeating it:
+
+When editing is authorized:
+
+- Revise the draft.
+- Save the revision.
+
+Do not make saving unconditional merely to shorten the sentences.
