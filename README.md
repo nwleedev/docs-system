@@ -26,6 +26,8 @@ The two language documents under `src/` are maintained independently. Compare th
 
 This repository does not generate or merge instruction files. Keep the adopted file short and link to maintained repository documents for detailed knowledge.
 
+You can add wording rules specific to the target project after adopting the reference. Write them in that project's `AGENTS.md` or link to a separate wording guide from that file. Add a section only when there are rules to record. An empty placeholder is not required.
+
 ## Install or Remove a Skill
 
 Copy the complete selected Skill directory, including its references and scripts, to a discovery location supported by the tool:
