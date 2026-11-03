@@ -1,4 +1,4 @@
 interface:
   display_name: "Use Flexible Design"
-  short_description: "Investigate requirement gaps and implementation readiness"
-  default_prompt: "Use $use-flexible-design to understand the current goal, investigate missing conditions without expanding it, and explain implementation readiness and next steps with evidence."
+  short_description: "Assess goals, requirement gaps, and changing evidence"
+  default_prompt: "Use $use-flexible-design to establish the actual goal, assess necessary conditions and new evidence, and explain readiness, required work, and completion evidence."

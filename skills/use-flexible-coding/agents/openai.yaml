@@ -1,4 +1,4 @@
 interface:
   display_name: "Use Flexible Coding"
-  short_description: "Connect technical research to code, structure, and readiness"
-  default_prompt: "Use $use-flexible-coding to investigate the current technical goal, preserve required behavior, compare approaches, and explain concrete code and file changes, risks, and implementation readiness with project evidence."
+  short_description: "Explain mechanisms, alternatives, and implementation readiness"
+  default_prompt: "Use $use-flexible-coding to investigate the mechanisms and conditions behind this technical issue and explain suitable alternatives, necessary changes, and evidence for the next decision."

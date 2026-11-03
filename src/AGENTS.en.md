@@ -102,7 +102,7 @@
 ### Research, Cross-checking, Design, and Documentation
 
 - Run `$use-flexible-design` when clarifying requirements; researching, creating, reviewing, planning, or validating `docs/designs/**`; or using a document under `docs/designs/**` as implementation input.
-- When writing or assessing requirements, investigate conditions needed for the current goal without waiting for a separate gap-analysis request. In the first substantive answer, explain missing information or evidence of sufficiency, implementation readiness, and next work. Keep empty-file preparation and structural edits proportional to the request.
+- When writing or assessing requirements, establish the actual goal and use situations rather than inferring features from the project name. Investigate necessary conditions and the impact of new evidence without waiting for a separate request. In the first substantive answer, explain missing information or evidence of sufficiency, readiness, necessary work and reasons, and completion evidence. Keep empty-file preparation and structural edits proportional to the request.
 - Keep requirements and approved decisions separate from AI research and proposals.
 - Use the repository's `docs/designs/README.md` as the authority for design-document structure, recording locations, and validation criteria.
 
@@ -114,7 +114,7 @@
 ### Coding Decisions and Examples
 
 - Also run `$use-flexible-coding` when a request needs project-specific computer science principles, implementation patterns, module architecture including file and folder organization, or system architecture investigated, with reasons, relevant background, project decision history, and suitable examples explained or recorded.
-- When assessing implementation methods, connect actual files and functions, necessary principles, code and structure choices, and risks in the first substantive answer. Select design and coding skills independently according to the judgments the current task needs.
+- When assessing implementation methods, investigate the mechanisms and conditions that explain the issue, including before code exists. In the first substantive answer, connect that explanation to alternatives, concrete changes and reasons, risks, and evidence for the next decision. Select design and coding skills independently according to the judgments the current task needs.
 - Record in the file designated by the user. If none is designated, propose candidates without editing files and continue research and explanation in the conversation. Changes to source code or tests still require an explicit implementation or development instruction.
 
 ## Environment Variables and Sensitive Information
