@@ -113,14 +113,16 @@ Create `plan.md` only when work needs an execution plan and behavior-changing am
 
 - The path and applicable headings of the baseline `requirements.md`
 - Requirement areas and outcomes mapped to work units
-- Dependencies and execution order where order matters
-- Observable verification for each work unit
+- Dependencies and execution order, explaining what dependent work cannot do or establish without each prerequisite
+- Observable verification for each work unit and the remaining connections needed to achieve the overall outcome
 - Unresolved blockers and explicit stop conditions
 - Applicable files under `docs/dev/` when later changes could alter execution
 
 Before the plan's first commit, the reviewed files are the provisional baseline. Afterward, the versions in the commit that last changed `plan.md` are the baseline. Do not record Git object IDs or timestamps as baseline identifiers. Changing and committing the plan confirms that its requirements and listed development guidance were reviewed again.
 
 The plan may choose implementation steps, but every required outcome and protected behavior must be covered by work and verification or identified as blocked.
+
+Distinguish task-start prerequisites from final acceptance criteria. Unresolved choices block only dependent work; routine implementation choices do not require all project details to be settled in advance. Consider stated deadlines and resource limits when assessing completion expectations. Explain the basis and uncertainty of an estimate; do not invent a date when the evidence is insufficient.
 
 ### Prohibited content
 
@@ -146,11 +148,13 @@ Documentation records intent and evidence; it does not prove implementation comp
 
 ## Requirement Changes During Work
 
-1. Record authorized requirement changes in `requirements.md`; a chat-only statement is not a durable update.
-2. Compare the updated file with the baseline recorded by the commit that last changed `plan.md`.
-3. Identify affected and unaffected references, decisions, work units, and verification methods.
-4. Pause affected work. Continue unaffected work only when it still satisfies the updated requirements.
-5. Update affected derived documents and commit the reviewed plan before affected work resumes.
+Use this procedure when authorized requirements change or new evidence invalidates the plan's assumptions about feasibility, effort, dependencies, or completion. First distinguish observed facts from inference and identify whether the issue concerns a defect, unclear intent, a technical constraint, or a proposed capability. These are investigative distinctions, not mandatory labels or automatic requirement additions.
+
+1. Record authorized behavior or constraint changes in `requirements.md`; a chat-only statement is not a durable update. When requirements are unchanged, preserve them and record the new evidence and its implications in the existing plan or supporting record as appropriate.
+2. Compare current requirements and the new evidence with the baseline in the commit that last changed `plan.md`.
+3. Identify affected and unaffected references, decisions, work units, verification methods, and completion evidence that remains valid. Reassess remaining effort, order, and overall completion expectations against any stated deadline or resource limit.
+4. Pause affected work. Continue unaffected work only when it still satisfies the requirements. Resolve choices that change the requested outcome or constraints with their owner; do not silently remove required behavior to retain an earlier estimate.
+5. Update affected derived documents and commit the reviewed plan before affected work resumes. If the new evidence does not change the plan, explain why no revision is needed rather than manufacturing work.
 
 Do not restart all work automatically or rewrite requirements to match completed work.
 
