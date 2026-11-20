@@ -2,19 +2,19 @@
 
 이 디렉터리는 프로젝트 전반적으로 유지되어야 하는 요구사항, 근거, 결정과 플랜을 보관한다. AI는 검토, 조사, 승인된 결정 기록, 계획과 검증을 할 수 있지만 요청하지 않은 사항을 생성하거나 별도의 안내 없이 수정하지 않는다.
 
-`requirements.md`는 임의로 변경해서는 안된다. 명시적인 지시가 있을 때에만 수정할 수 있다.
+`requirements.md`는 임의로 변경해서는 안된다. 대신 현재 요구사항 문제에 어떤 문제점이 존재하는지 자세하게 설명한다. 명시적인 수정 지시가 있을 때에는 수정할 수 있다.
 
 ## 묶음과 문서 구성
 
 ```text
 docs/designs/
   README.md
-  <topic>-<short-id>/
+  <topic>-<nonce>/
     requirements.md
     references/
-      <research-topic>.md
+      <reference>.md
     decisions/
-      <decision-topic>.md
+      <decision>.md
     plan.md
 ```
 
@@ -26,8 +26,16 @@ docs/designs/
 
 ## `requirements.md`
 
+요구사항에 대해서 기록되는 파일이다.
+
 ## `references/*.md`
+
+요구사항, 플랜과 관련하여 리서치한 자료를 기록한 파일이다.
 
 ## `decisions/*.md`
 
+결정 사항이 기록되는 파일이다.
+
 ## `plan.md`
+
+요구사항에 대해서 어떻게 작업할지에 대해서 기록된 파일이다.

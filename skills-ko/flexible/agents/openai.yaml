@@ -1,4 +1,4 @@
 interface:
-  display_name: "요구사항과 설계 정리"
-  short_description: "목표와 요구사항 누락 및 새 근거에 따른 영향 판단"
-  default_prompt: "실제 목표를 확인하고 필요한 조건과 새 근거를 평가하며 착수 가능 여부, 필요한 절차와 완료 근거를 설명하도록 $use-flexible-design을 사용한다."
+  display_name: "요구사항 구체화 & 설계"
+  short_description: "요구사항을 실제로 실행할 수 있도록 구체화하고 설계합니다."
+  default_prompt: "$flexible을 통해서 현재 요구사항의 상태를 파악하고 모호한 부분이 있는지 확인합니다. 필요한 정보를 리서치하고 필요한 결정을 진행하여 요구사항을 구체화하고 플랜을 구성합니다."
