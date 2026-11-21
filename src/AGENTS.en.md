@@ -88,7 +88,7 @@
 - The default is `HANDOFF.md` at the repository root. The task or standing project instructions may specify another location and name. Do not invoke it merely for routine chat or progress updates.
 <!-- END USE BETTER HANDOFF -->
 
-<!-- BEGIN USE BETTER TERMS -->
+<!-- BEGIN TERMS -->
 
 ### Text and Names
 
@@ -97,7 +97,7 @@
 - Retain an established term or exact name only with its reason. Ask for human input instead of replacing text when doing so would decide missing meaning, responsibility, or approval.
 - When the user explicitly requests review of wording or a public output, review the complete requested unit even when no file changed.
 - Do not run `$terms` merely because routine chat or a progress update is sent.
-<!-- END USE BETTER TERMS -->
+<!-- END TERMS -->
 
 ### Research, Cross-checking, Design, and Documentation
 
