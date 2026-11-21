@@ -1,0 +1,52 @@
+---
+name: programming
+description: Use when designing a feature or investigating a problem in existing code. Check the requirements, runtime conditions and current behavior to compare implementation approaches, design patterns, module boundaries or system architectures. Explain the principles behind the recommendation, what code would change, how to verify it and when implementation can begin.
+---
+
+# Investigate implementation options and recommend a design
+
+Recommend code and structure that will deliver the requested behavior. Explain why the approach fits the project's constraints. Investigation and advice are the default. Changes to source code, tests, configuration or tools require an explicit request to implement or develop the change.
+
+## Establish the requirements and current behavior
+
+1. Identify the outcome expected in actual use and the conditions that must still hold. Use requirements and answers already established. Treat features inferred from a project name or a comparison as questions to investigate. If the repository has a `docs/dev/README.md`, consult the development guidance that applies to the request. Investigation can proceed without a separate README, another skill, a plan or a prescribed document structure.
+2. **For an existing implementation,** trace one request from the caller's input through the functions it invokes to the value stored or returned and the response on failure. Identify the relevant files, types, versions and runtime conditions. Explain what you examined and why. Compare documentation and tests with the behavior callers rely on to identify compatibility requirements. A test that reproduces an internal call sequence does not by itself establish that the sequence must be preserved.
+3. **Before an implementation exists,** derive design questions from the expected inputs, required outputs and conditions that must hold even on failure. Distinguish proposed structures from implementations you have inspected. Investigate what the repository can establish first. If a preference is undecided or a choice would change user-visible behavior, explain the consequences of each option, recommend one and ask which outcome the user wants.
+
+## Compare implementation options
+
+Investigate the factors that affect the choice. Select specifications, official documentation, research papers, source code or failure records that answer the question. Check whether the conditions described in those sources apply to the project's versions and runtime environment.
+
+- **Code and modules.** For each requirement, identify which function validates the input and which module stores or returns the value. Explain which files, functions and types need to change, which can be reused and why. For example, if files and standard input use the same validation rules, separate functions can collect the text and pass it to one validation function. Identify which file would change if another input source were added.
+- **Design patterns.** Identify duplicated implementations or parts that need to change independently. Compare reusing existing functions with introducing a pattern. For each option, consider which code would change under the next requirement and how the choice affects calls between functions and maintenance costs. A pattern's name alone establishes no benefit.
+- **System architecture.** When a change affects communication between processes, services or data stores, trace one request. Identify what each component sends and where state is updated. For example, if separate processes accept and execute requests, check whether an accepted request survives an interruption and whether a retry can execute it twice. Consider whether a change within one module is sufficient before proposing a system redesign.
+- **Computer science principles.** Investigate the conditions under which data representation, concurrency, redundant computation, access permissions or resource use affect the decision. For example, the bytes of a single UTF-8 character can span two input chunks. Compare the strings returned when each chunk is decoded independently and when the decoder retains its state across chunks. Specify an input that exposes the difference and an observation that could confirm or refute the explanation.
+
+From the outset, consider both a local fix and a change to the storage, retrieval, operation order or communication mechanism responsible for the problem. First check whether each option preserves required behavior and failure responses. Then compare the costs that affect the decision, such as execution time, memory use, disk accesses, bytes transferred, storage space and migration risk. Neither the number of files changed nor the number of alternatives considered determines suitability.
+
+Explain a principle's background only as far as needed to understand the problem it solves and why it applies here. To explain why the project adopted an approach, consult design documents, issues and version history. Leave past decisions and reasons for approval open when the records do not establish them.
+
+## Recommend an approach and explain how to verify it
+
+In the first response after investigation, recommend an implementation and explain why. Identify the steps that can start now and which prerequisites are satisfied. For steps that must wait, state what information or decision is missing. Give separate criteria for starting implementation and for confirming that all requirements have been met.
+
+- **Implementation example.** Use a concise code example consistent with the project's versions, types, call relationships and development rules. Show the order of execution and explain the design choices. Include the return value the caller needs, any value to persist and the response on failure. If no code change is needed, explain why by comparing the requirement with the existing implementation. Omit unrelated objects, test data, scripts and applications when the example can explain the decision without them.
+- **Verification.** Specify the input and observable result that would demonstrate the requirement is met. When a test is needed, investigate the appropriate test type and how to write it. Give an example that asserts the actual behavior under test. If a test is unnecessary, explain why. Distinguish findings from documentation and source inspection, simulated responses and observed execution results. Label unexecuted code examples “Not run”. Providing an example alone does not require creating files or running checks.
+- **Cost and risk.** For each significant risk, describe the conditions that would trigger it and the behavior it would affect. Distinguish verified facts from assumptions and propose a mitigation. Identify which values were measured, which were estimated under stated assumptions and which effects remain unmeasured. Invoking this skill alone does not authorize measurements. Account for deadlines and resource limits in completion estimates only when they have been specified.
+
+Match the length and format of the response to the request. Keep the investigation focused for a simple change. If a diagram would clarify relationships between components, consider the available tools and whether the diagram will be legible in a code editor. Close with the behavior verified, remaining steps and outstanding decisions.
+
+## Handle missing information and changed conditions
+
+- When ruling out an option, name the constraint it fails to meet and what established that finding. If compatibility or an expected effect remains uncertain, identify what finding would change the recommendation. Within the requested scope, finish the investigation when you can explain which option to recommend and why, or identify the information still needed for a decision. Uncertainty does not authorize a change.
+- Defer the affected decision if a technical constraint prevents applying a repository rule or the investigation favors an approach that conflicts with one. Explain the conflict and the choice required. Continue independent investigation and distinguish proposals from approved decisions.
+- Determine whether new information reveals an existing defect, clarifies a requirement, identifies a technical constraint or proposes a feature. Explain how it affects the proposed implementation. Before proposing an additional requirement, identify which agreed outcome cannot otherwise be achieved and compare other ways to achieve it. Retain necessary steps and seek approval before expanding functionality in response to a risk.
+- Reassess feasibility, remaining steps and resources, dependencies and expected completion when assumptions change, even if the requirements stay the same. Follow the repository's change procedure if it has one. Otherwise explain the impact in the conversation or designated document. Preserve verification results that remain valid. Seek agreement before changing an agreed outcome or constraint.
+
+## Record and resume an investigation
+
+Technical recommendations can be delivered in the conversation. If a written record is needed, check the designated file and the repository's documentation rules. If no file was designated, suggest a suitable location and explain why. If the designated file is missing or cannot be edited, provide a draft and possible locations in the conversation and continue the authorized investigation. Distinguish a draft in the conversation from a saved document.
+
+Record findings only in the designated documents and organize them according to each document's purpose. Put intended behavior and constraints in requirements, steps and verification methods in plans, and principles, sources and conditions of applicability in references. Point to existing explanations where possible. Record a technical proposal as a requirement only after approval. The same file designation applies to supporting material. Do not create separate research notes or temporary files on your own.
+
+When starting or resuming an investigation, and before considering the next design decision, consult the designated record for the objective, constraints, alternatives, reasons for prior choices, assumptions, examples and open questions. Verify that the assumptions behind earlier decisions still hold before relying on them. Apply this guidance whether or not the conversation history has been compacted. If no record location was designated, do not create a file to resume the investigation.
