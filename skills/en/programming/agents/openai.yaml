@@ -1,4 +1,4 @@
 interface:
-  display_name: "Implementation and Design Review"
+  display_name: "Programming"
   short_description: "Compare designs, identify code changes, and plan verification."
   default_prompt: "Use $programming to review how to implement this requirement. Identify the behavior to preserve and the code that would change. Compare the options, explain your recommendation using any relevant design patterns or computer science principles, and specify how to verify that the requirement is met."
