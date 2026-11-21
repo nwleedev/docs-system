@@ -11,12 +11,13 @@
  */
 
 /**
- * @typedef {{lemma: string, pos: "adjective" | "verb", aux?: "active" | "passive" | "state"}} Term
+ * @typedef {{lemma: string, pos: "adjective" | "verb", aux?: "active" | "passive" | "state", conjugation?: "reu"}} Term
  */
 
 /**
  * @typedef {ExpressionRule & {
- *   mode: "literal" | "lemma" | "phrase",
+ *   mode: "literal" | "lemma" | "phrase" | "noun" | "word" | "particle",
+ *   numbered?: boolean,
  *   terms?: ReadonlyArray<Term>,
  *   prefix?: string
  * }} InternalRule
@@ -38,7 +39,7 @@
  * }} ExpressionWarning
  */
 
-/** @typedef {{rule: number, order: number, surface: string, expression: string}} ExpressionDescriptor */
+/** @typedef {{rule: number, order: number, surface: string, expression: string, mode: InternalRule["mode"], numbered?: boolean}} ExpressionDescriptor */
 
 /**
  * @typedef {{
@@ -58,7 +59,7 @@
  * }} NfdMapping
  */
 
-/** @typedef {{rule: number, order: number, expression: string, length: number, prefix: string}} TermDescriptor */
+/** @typedef {{rule: number, order: number, expression: string, length: number, prefix: string, bounded: boolean}} TermDescriptor */
 /** @typedef {{order: number, surface: string, expression: string}} LabelDescriptor */
 
 /** @type {number} */
@@ -550,6 +551,222 @@ const rules = [
     negatives: ["자원 소비를 줄입니다."],
     positives: ["전력 소비량을 시간별로 측정합니다."],
   },
+  {
+    id: "ko.task",
+    mode: "noun",
+    terms: [{ lemma: "일하다", pos: "verb" }],
+    expressions: ["일"],
+    message: "맡은 책임과 실제로 수행할 절차를 구분합니다.",
+    queries: ["해야 할 절차나 맡은 책임을 구체적으로 설명할 수 있습니까?"],
+    negatives: ["다음 일을 진행한다."],
+    positives: ["설치 명령을 실행한다."],
+  },
+  {
+    id: "ko.operation",
+    mode: "noun",
+    terms: [{ lemma: "작업하다", pos: "verb" }],
+    expressions: ["작업"],
+    message: "변경할 대상과 행동 또는 공식 분류명을 확인합니다.",
+    queries: ["어떤 대상을 어떻게 변경합니까? 화면에 표시된 공식 분류명입니까?"],
+    negatives: ["작업을 진행한다."],
+    positives: ["설치 안내를 수정한다."],
+  },
+  {
+    id: "ko.assignment",
+    mode: "noun",
+    expressions: ["과업"],
+    message: "담당할 절차와 완료 조건을 확인합니다.",
+    queries: ["맡은 책임과 완료 조건을 구체적으로 명시할 수 있습니까?"],
+    negatives: ["다음 과업을 수행한다."],
+    positives: ["기존 설정과 배포 설정의 차이를 기록한다."],
+  },
+  {
+    id: "ko.process",
+    mode: "noun",
+    terms: [{ lemma: "처리하다", pos: "verb" }, { lemma: "처리되다", pos: "verb" }],
+    expressions: ["처리"],
+    message: "검토 이후 수행할 절차를 확인합니다.",
+    queries: ["승인, 반려, 저장 중 실제로 수행하는 절차는 무엇입니까?"],
+    negatives: ["검토한 신청서를 처리한다."],
+    positives: ["승인한 신청서를 등록한다."],
+  },
+  {
+    id: "ko.details",
+    mode: "noun",
+    expressions: ["내역"],
+    message: "조회하거나 기록할 정보의 종류를 확인합니다.",
+    queries: ["결제 내역이나 환불 사유처럼 어떤 기록인지 구별할 수 있습니까?"],
+    negatives: ["내역을 확인하고 내역을 기록한다."],
+    positives: ["결제 내역을 확인하고 환불 사유를 기록한다."],
+  },
+  {
+    id: "ko.note",
+    mode: "word",
+    terms: [{ lemma: "적다", pos: "verb" }],
+    expressions: ["적다"],
+    message: "기록할 항목과 위치를 확인하고 수량을 나타내는 용례도 구별합니다.",
+    queries: ["무엇을 어디에 기록합니까? 수량이 적다는 뜻입니까?"],
+    negatives: ["오류를 적는다."],
+    positives: ["실패한 파일의 이름을 로그에 기록한다."],
+  },
+  {
+    id: "ko.write",
+    mode: "word",
+    terms: [{ lemma: "쓰다", pos: "verb" }],
+    expressions: ["쓰다"],
+    message: "문서 작성, 값 기록과 도구 사용을 구분합니다.",
+    queries: ["문서 작성, 값 기록, 도구 사용 중 어느 행동입니까?"],
+    negatives: ["결과를 쓴다."],
+    positives: ["변환한 행 수를 로그에 기록한다."],
+  },
+  {
+    id: "ko.read",
+    mode: "word",
+    terms: [{ lemma: "읽다", pos: "verb" }],
+    expressions: ["읽다"],
+    message: "열람 여부와 내용을 검증했다는 주장을 구분합니다.",
+    queries: ["문서 열람 자체를 보고합니까? 확인한 내용도 설명해야 합니까?"],
+    negatives: ["문서를 읽고 진행한다."],
+    positives: ["설치 안내에서 실행할 명령을 확인한다."],
+  },
+  {
+    id: "ko.see",
+    mode: "word",
+    terms: [{ lemma: "보다", pos: "verb" }],
+    expressions: ["보다"],
+    message: "무엇을 관찰하거나 비교해야 하는지 확인합니다.",
+    queries: ["열람, 비교, 검사 중 어떤 행동을 뜻합니까?"],
+    negatives: ["설정을 보고 결정한다."],
+    positives: ["두 설정의 제한 시간을 비교한다."],
+  },
+  {
+    id: "ko.identify",
+    mode: "word",
+    terms: [{ lemma: "짚다", pos: "verb" }],
+    expressions: ["짚다"],
+    message: "식별해야 할 문제나 위치를 확인합니다.",
+    queries: ["어떤 문제나 위치를 식별해야 합니까?"],
+    negatives: ["문제를 짚는다."],
+    positives: ["누락된 입력 항목을 식별한다."],
+  },
+  {
+    id: "ko.call",
+    mode: "word",
+    terms: [{ lemma: "부르다", pos: "verb", conjugation: "reu" }],
+    expressions: ["부르다"],
+    message: "이름 지정과 함수 호출을 구분합니다.",
+    queries: ["이름을 지정합니까, 기존 이름으로 지칭합니까, 함수를 호출합니까?"],
+    negatives: ["등록 함수를 부른다."],
+    positives: ["등록 함수를 호출한다."],
+  },
+  {
+    id: "ko.divide",
+    mode: "word",
+    terms: [{ lemma: "나누다", pos: "verb" }],
+    expressions: ["나누다"],
+    message: "분류 기준이나 분리할 대상을 확인합니다.",
+    queries: ["무엇을 어떤 기준으로 분류하거나 분리합니까?"],
+    negatives: ["항목을 나눈다."],
+    positives: ["승인 여부에 따라 신청서를 분류한다."],
+  },
+  {
+    id: "ko.keep",
+    mode: "word",
+    terms: [{ lemma: "두다", pos: "verb" }],
+    expressions: ["두다"],
+    message: "보존할 내용이나 저장 위치를 확인합니다.",
+    queries: ["기존 내용을 보존합니까, 파일을 지정한 위치에 저장합니까?"],
+    negatives: ["문서를 그대로 둔다."],
+    positives: ["원문의 인용문을 보존한다."],
+  },
+  {
+    id: "ko.reduce",
+    mode: "word",
+    terms: [{ lemma: "줄이다", pos: "verb" }],
+    expressions: ["줄이다"],
+    message: "축약할 내용이나 조정할 수량을 확인합니다.",
+    queries: ["축약, 삭제, 수량 조정 중 어떤 변경을 요구합니까?"],
+    negatives: ["설명을 줄인다."],
+    positives: ["두 번째 문단의 중복 설명을 삭제한다."],
+  },
+  {
+    id: "ko.compose",
+    mode: "word",
+    terms: [{ lemma: "짜다", pos: "verb" }],
+    expressions: ["짜다"],
+    message: "작성할 코드나 수립할 계획을 확인합니다.",
+    queries: ["코드를 작성합니까, 계획을 수립합니까?"],
+    negatives: ["테스트 코드를 짠다."],
+    positives: ["테스트 코드를 작성한다."],
+  },
+  {
+    id: "ko.make",
+    mode: "word",
+    terms: [{ lemma: "만들다", pos: "verb" }],
+    expressions: ["만들다"],
+    message: "파일 생성과 내용 작성을 구분합니다.",
+    queries: ["빈 파일을 생성합니까, 문서 내용을 작성합니까?"],
+    negatives: ["요구사항 문서를 만든다."],
+    positives: ["요구사항 문서에 승인 조건을 작성한다."],
+  },
+  {
+    id: "ko.gather",
+    mode: "word",
+    terms: [{ lemma: "모으다", pos: "verb" }],
+    expressions: ["모으다"],
+    message: "수집할 자료나 통합할 문서를 확인합니다.",
+    queries: ["자료를 수집합니까, 여러 문서의 내용을 통합합니까?"],
+    negatives: ["설치 안내를 한 문서에 모은다."],
+    positives: ["운영체제별 설치 안내를 한 문서로 통합한다."],
+  },
+  {
+    id: "ko.fill",
+    mode: "word",
+    terms: [{ lemma: "채우다", pos: "verb" }],
+    expressions: ["채우다"],
+    message: "입력할 값이나 작성할 내용을 확인합니다.",
+    queries: ["어느 항목에 어떤 값을 입력하거나 내용을 작성합니까?"],
+    negatives: ["빈칸을 채운다."],
+    positives: ["완료 기준 항목에 확인할 조건을 작성한다."],
+  },
+  {
+    id: "ko.new",
+    mode: "word",
+    expressions: ["새"],
+    message: "기존 대상과 구별할 이름을 확인합니다.",
+    queries: ["기존 대상과 구별할 이름이나 생성 조건을 명시해야 합니까?"],
+    negatives: ["새 문서를 확인한다."],
+    positives: ["신규 설치 문서를 확인한다."],
+  },
+  {
+    id: "ko.section",
+    mode: "noun",
+    numbered: true,
+    expressions: ["절"],
+    message: "독자가 찾아야 할 문서의 항목 이름을 확인합니다.",
+    queries: ["독자가 찾을 수 있는 항목 이름을 제시할 수 있습니까?"],
+    negatives: ["설치 절을 확인한다."],
+    positives: ["Windows 설치 안내를 확인한다."],
+  },
+  {
+    id: "ko.until",
+    mode: "particle",
+    expressions: ["까지"],
+    message: "기간이나 담당 범위의 끝을 확인합니다.",
+    queries: ["기간의 끝이나 실제 담당 범위가 근거와 일치합니까?"],
+    negatives: ["접수부터 승인까지 담당한다."],
+    positives: ["신청 기간은 금요일까지다."],
+  },
+  {
+    id: "ko.connect",
+    mode: "noun",
+    terms: [{ lemma: "연결하다", pos: "verb" }, { lemma: "연결되다", pos: "verb" }],
+    expressions: ["연결"],
+    message: "연결할 두 대상과 연결 방법을 확인합니다.",
+    queries: ["무엇과 무엇을 어떤 방식으로 연결합니까?"],
+    negatives: ["두 내용을 연결한다."],
+    positives: ["README에 설치 안내로 이동하는 링크를 추가한다."],
+  },
 ].map((rule) => ({ kind: "literal", mode: "literal", ...rule }));
 
 const FINAL_N = "\u11ab";
@@ -557,6 +774,14 @@ const FINAL_L = "\u11af";
 const FINAL_M = "\u11b7";
 const FINAL_B = "\u11b8";
 const FINAL_SS = "\u11bb";
+const FINAL_LM = "\u11b1";
+const brightVowels = new Set(["\u1161", "\u1169"]);
+const contractedVowels = new Map([
+  ["\u1169", "\u116a"], // ㅗ + ㅏ → ㅘ
+  ["\u116e", "\u116f"], // ㅜ + ㅓ → ㅝ
+  ["\u1175", "\u1167"], // ㅣ + ㅓ → ㅕ
+  ["\u116c", "\u116b"], // ㅚ + ㅓ → ㅙ
+]);
 
 const endings = {
   adjective: {
@@ -638,6 +863,12 @@ const endings = {
     ],
   },
   verb: {
+    common: [
+      "자", "자마자", "다가", "더라도", "더군요",
+      "나요", "네요", "죠", "지요", "잖아요", "거든", "거든요",
+      "는지", "는지는", "는지를", "는지도", "는지만", "는가", "는데도",
+      "고서", "고도", "고는", "고요", "든지",
+    ],
     consonant: [
       "다",
       "는다",
@@ -677,6 +908,9 @@ const endings = {
       "는다고",
       "는다는",
       "는다면",
+      "으세요", "으십시오", "으신", "으셔서", "으셨어요", "으실",
+      "으려고", "으려면", "으러", "으니까", "으므로", "으면서도",
+      "을지", "을지는", "을지를", "을지도", "을까", "을까요", "을수록", "을지라도",
     ],
     vowel: [
       "다",
@@ -720,9 +954,13 @@ const endings = {
       `${FINAL_N}다고`,
       `${FINAL_N}다는`,
       `${FINAL_N}다면`,
+      "세요", "십시오", "신", "셔서", "셨어요", "실",
+      "려고", "려면", "러", "니까", "므로", "면서도",
+      `${FINAL_L}지`, `${FINAL_L}지는`, `${FINAL_L}지를`, `${FINAL_L}지도`,
+      `${FINAL_L}까`, `${FINAL_L}까요`, `${FINAL_L}수록`, `${FINAL_L}지라도`,
     ],
   },
-  fused: ["", "요", "서", "도", "야", "야만", "야지"],
+  fused: ["", "요", "서", "서도", "서는", "도", "야", "야만", "야지", "야지요", "라", "다가"],
   past: [
     "다",
     "어요",
@@ -738,6 +976,9 @@ const endings = {
     "다고",
     "다는",
     "다면",
+    "을", "을지", "을까", "을까요", "을지도", "는지", "는지는", "는지를",
+    "더라도", "거나", "기", "음", "는데도", "네요", "나요", "죠", "으니까",
+    "더니", "겠지", "겠다", "겠습니다", "으므로", "으면서",
   ],
   afterda: ["", "가", "가도", "가는", "가면", "시피"],
   auxiliary: {
@@ -789,6 +1030,19 @@ export function selfTestExpressionRules() {
     warning.startUtf16 !== 1 ||
     warning.endUtf16 !== 2
   ) {
+    throw new Error("self-test:expression-rules");
+  }
+
+  const verb = {
+    ...definition,
+    mode: "word",
+    id: "ko.test-verb",
+    terms: [{ lemma: "고르다", pos: "verb", conjugation: "reu" }],
+    expressions: ["고르다"],
+  };
+  const sample = ["골랐다", "고르기는", "고르렀다"];
+  const selected = scanExpressionRules(sample.map((text) => ({ id: text, text })), [verb]).warnings;
+  if (selected.length !== 2 || selected[0].sourceId !== sample[0] || selected[1].sourceId !== sample[1]) {
     throw new Error("self-test:expression-rules");
   }
 
@@ -862,7 +1116,8 @@ function validateRules(definitions) {
   for (const rule of definitions) {
     if (
       rule.kind !== "literal" ||
-      !["literal", "lemma", "phrase"].includes(rule.mode) ||
+      !["literal", "lemma", "phrase", "noun", "word", "particle"].includes(rule.mode) ||
+      (rule.numbered !== undefined && (rule.mode !== "noun" || typeof rule.numbered !== "boolean")) ||
       !/^ko\.[a-z0-9-]+$/u.test(rule.id) ||
       ids.has(rule.id) ||
       !isNonEmptyText(rule.message) ||
@@ -889,7 +1144,8 @@ function validateRules(definitions) {
  * @returns {void}
  */
 function validateTerms(rule, lemmas) {
-  if (rule.mode === "literal") {
+  if (rule.mode === "literal" || rule.mode === "particle" ||
+      (["noun", "word"].includes(rule.mode) && rule.terms === undefined)) {
     if (rule.terms !== undefined || rule.prefix !== undefined) {
       throw new Error("rules:invalid-expression-rule");
     }
@@ -903,7 +1159,7 @@ function validateTerms(rule, lemmas) {
       (!isNonEmptyText(rule.prefix ?? "") ||
         /[\r\n]/u.test(rule.prefix) ||
         !rule.expressions.some((expression) => expression.startsWith(rule.prefix)))) ||
-    (rule.mode === "lemma" && rule.prefix !== undefined)
+    (rule.mode !== "phrase" && rule.prefix !== undefined)
   ) {
     throw new Error("rules:invalid-expression-rule");
   }
@@ -916,6 +1172,8 @@ function validateTerms(rule, lemmas) {
       stem.length === 0 ||
       ![...stem].every((character) => isMorphologyTokenCodePoint(character.codePointAt(0))) ||
       !["adjective", "verb"].includes(term.pos) ||
+      (term.conjugation !== undefined &&
+        (term.conjugation !== "reu" || !term.lemma.endsWith("르다"))) ||
       (term.aux !== undefined && !["active", "passive", "state"].includes(term.aux)) ||
       lemmas.has(term.lemma)
     ) {
@@ -1038,10 +1296,10 @@ function buildExpressionIndex(definitions) {
     for (const expression of rule.expressions) {
       const surface = expression.normalize("NFD");
       labels.push({ order, surface, expression });
-      if (rule.mode === "literal") {
+      if (rule.mode !== "lemma" && rule.mode !== "phrase" && !(rule.mode === "word" && rule.terms)) {
         const firstUnit = surface[0];
         const descriptors = literal.get(firstUnit) ?? [];
-        descriptors.push({ rule: index, order, surface, expression });
+        descriptors.push({ rule: index, order, surface, expression, mode: rule.mode, numbered: rule.numbered });
         literal.set(firstUnit, descriptors);
       }
       order += 1;
@@ -1069,15 +1327,31 @@ function buildExpressionIndex(definitions) {
 function buildForms(term, bare) {
   const forms = new Map();
   const stem = term.lemma.slice(0, -1).normalize("NFD");
-  const shape = hasFinalConsonant(stem) ? "consonant" : "vowel";
-  addForms(forms, stem, endings[term.pos][shape]);
+  const liquid = stem.endsWith(FINAL_L);
+  const shape = hasFinalConsonant(stem) && !liquid ? "consonant" : "vowel";
+  const suffixes = endings[term.pos][shape];
+  for (const ending of term.pos === "verb" ? [...suffixes, ...endings.verb.common] : suffixes) {
+    const suffix = ending.normalize("NFD");
+    let base = stem;
+    let tail = suffix;
+    if (liquid) {
+      if (suffix.startsWith(FINAL_L)) {
+        tail = suffix.slice(1);
+      } else if (suffix.startsWith(FINAL_M)) {
+        base = stem.slice(0, -1);
+        tail = FINAL_LM + suffix.slice(1);
+      } else if (/^[ᄂᄉᆫᆸ]/u.test(suffix)) {
+        base = stem.slice(0, -1);
+      }
+    }
+    forms.set(base + tail, base.length);
+  }
   if (bare) {
     forms.set(stem, stem.length);
   }
   addForms(forms, term.lemma.normalize("NFD"), endings.afterda);
 
-  const fused = makeFusedStem(stem);
-  if (fused !== null) {
+  for (const fused of makeFusedStems(stem, term.conjugation)) {
     addForms(forms, fused, endings.fused);
     if (term.aux !== undefined) {
       addForms(forms, fused, endings.auxiliary[term.aux]);
@@ -1103,27 +1377,35 @@ function addForms(forms, surface, values) {
 }
 
 /**
- * 받침 유무와 마지막 모음에 따라 아/어 표면을 만든다.
+ * 받침, 모음과 불규칙 활용 유형에 따라 아/어의 본말과 준말을 생성한다.
  *
  * @param {string} stem NFD 어간
- * @returns {string | null} 지원하는 규칙으로 만든 NFD 표면
+ * @param {Term["conjugation"]} conjugation 어간 변화 유형
+ * @returns {string[]} 적용 가능한 NFD 표면
  */
-function makeFusedStem(stem) {
+function makeFusedStems(stem, conjugation) {
   const vowel = findLastVowel(stem);
   if (vowel === null) {
-    return null;
+    return [];
   }
+  const full = stem + (brightVowels.has(vowel) ? "아" : "어").normalize("NFD");
   if (hasFinalConsonant(stem)) {
-    const ending = vowel === "\u1161" || vowel === "\u1169" ? "아" : "어";
-    return `${stem}${ending.normalize("NFD")}`;
+    return [full];
   }
-  if (vowel === "\u1175") {
-    return `${stem.slice(0, -1)}\u1167`;
+  const prefix = stem.slice(0, -2);
+  if (stem.endsWith("하".normalize("NFD"))) {
+    return [stem + "여".normalize("NFD"), prefix + "해".normalize("NFD")];
   }
-  if (vowel === "\u116e") {
-    return `${stem.slice(0, -1)}\u116f`;
+  if (vowel === "\u1173") {
+    const medial = brightVowels.has(findLastVowel(prefix) ?? "") ? "\u1161" : "\u1165";
+    const changed = conjugation === "reu" ? prefix + FINAL_L : prefix;
+    return [changed + stem.at(-2) + medial];
   }
-  return null;
+  if (vowel === "\u1161" || vowel === "\u1165") {
+    return [stem];
+  }
+  const contraction = contractedVowels.get(vowel);
+  return contraction ? [full, stem.slice(0, -1) + contraction] : [full];
 }
 
 /**
@@ -1191,6 +1473,7 @@ function makeTermDescriptor(rule, index, surface, length, labels) {
     expression,
     length: matched === 0 ? length : matched,
     prefix: (rule.prefix ?? "").normalize("NFD"),
+    bounded: rule.mode === "word" || rule.mode === "noun",
   };
 }
 
@@ -1214,6 +1497,103 @@ function addTermDescriptor(token, surface, descriptor) {
 }
 
 /**
+ * 앞말의 받침에 맞는 조사와 이어지는 보조사 조합을 생성한다.
+ * @param {boolean} closed 받침 유무
+ * @param {boolean} liquid ㄹ 받침 여부
+ * @returns {Set<string>} NFD로 정규화한 접미 문자열
+ */
+function makeParticleSuffixes(closed, liquid) {
+  const direction = closed && !liquid ? "으로" : "로";
+  const tails = new Set([
+    "", "도", "만", "의", "께서", "밖에", "마저", "조차", "뿐", "하고", "엔", "에선", "에겐",
+    ...(closed
+      ? ["은", "이", "을", "과", "이나", "이나마", "이든", "이든지", "이랑", "이라도", "이며", "이란", "이라는"]
+      : ["는", "가", "를", "와", "나", "나마", "든", "든지", "랑", "라도", "며", "란", "라는"]),
+    "이다", "입니다", "인", "일", "이면", "이고", "인지", "이라면", "이며", "이었다", "이었고",
+    "이지만", "이므로", "이어도", "이어서", "일지", "일지라도", "임", "임을", "임에도",
+    ...(closed ? ["이에요"] : ["다", "였다", "였고", "예요", "라면"]),
+  ]);
+  for (const location of ["에", "에서", "에게", "에게서", "한테", "한테서", "께", direction]) {
+    for (const limit of ["", "부터", "까지"]) {
+      const base = location + limit;
+      for (const focus of ["", "는", "도", "만", "의", "만은", "만도"]) {
+        tails.add(base + focus);
+      }
+    }
+  }
+  for (const base of ["부터", "까지", "보다", "처럼", "만큼", "마다", "대로", "조차", "마저",
+    closed ? "과" : "와", closed ? "이랑" : "랑", direction + "서", direction + "써"]) {
+    const final = hasFinalConsonant(base.normalize("NFD"));
+    for (const focus of ["", "도", "만", "의", final ? "은" : "는", final ? "이" : "가",
+      final ? "을" : "를", final ? "이라도" : "라도"]) {
+      tails.add(base + focus);
+    }
+  }
+  for (const focus of ["은", "이", "을", "도", "으로", "으로는", "으로도", "이라도"]) {
+    tails.add("만" + focus);
+  }
+  return new Set([...tails].map((tail) => tail.normalize("NFD")));
+}
+
+const particles = {
+  vowel: makeParticleSuffixes(false, false),
+  final: makeParticleSuffixes(true, false),
+  liquid: makeParticleSuffixes(true, true),
+};
+const pluralMarker = "들".normalize("NFD");
+const maxParticleLength = pluralMarker.length +
+  Math.max(...Object.values(particles).flatMap((suffixes) => [...suffixes].map((s) => s.length)));
+
+/** @param {string} base NFD 어간 또는 체언 */
+function particlesAfter(base) {
+  if (base.endsWith(FINAL_L)) return particles.liquid;
+  return hasFinalConsonant(base) ? particles.final : particles.vowel;
+}
+
+/**
+ * @param {string} nfd 자모로 정규화한 원문
+ * @param {number} start 일치한 표현의 시작 위치
+ * @param {ExpressionDescriptor} descriptor 표현에 적용할 경계 조건
+ * @returns {boolean}
+ */
+function matchesWordBoundary(nfd, start, descriptor) {
+  if (descriptor.mode === "literal") return true;
+  const end = start + descriptor.surface.length;
+  const previous = characterAt(nfd, start - 1);
+  const followsNumber = descriptor.numbered && /\p{Nd}/u.test(previous);
+  if (descriptor.mode !== "particle" && isWordCharacter(previous) && !followsNumber) return false;
+
+  let stop = end;
+  while (stop < nfd.length && isMorphologyTokenCodePoint(nfd.charCodeAt(stop))) {
+    if (stop - end >= maxParticleLength) return false;
+    stop += 1;
+  }
+  if (isWordCharacter(characterAt(nfd, stop))) return false;
+  const suffix = nfd.slice(end, stop);
+  if (descriptor.mode === "word") return suffix.length === 0;
+  if (descriptor.mode === "noun" && suffix.startsWith(pluralMarker)) {
+    return particles.liquid.has(suffix.slice(pluralMarker.length));
+  }
+  return particlesAfter(descriptor.surface).has(suffix);
+}
+
+/**
+ * @param {string} text
+ * @param {number} offset 문자 안의 UTF-16 위치
+ * @returns {string} 해당 문자 또는 범위 밖이면 빈 문자열
+ */
+function characterAt(text, offset) {
+  const start = isLowSurrogate(text.charCodeAt(offset)) ? offset - 1 : offset;
+  const point = text.codePointAt(start);
+  return point === undefined ? "" : String.fromCodePoint(point);
+}
+
+/** @param {string} character */
+function isWordCharacter(character) {
+  return /[\p{L}\p{M}\p{N}_]/u.test(character);
+}
+
+/**
  * 한 source의 모든 literal 및 활용형 출현을 원본 UTF-16 위치의 결정적 순서로 모은다.
  *
  * @param {string} text 검사할 원문
@@ -1231,7 +1611,8 @@ function collectMatches(text, literal, token) {
       continue;
     }
     for (const descriptor of descriptors) {
-      if (!mapping.nfdText.startsWith(descriptor.surface, offset)) {
+      if (!mapping.nfdText.startsWith(descriptor.surface, offset) ||
+          !matchesWordBoundary(mapping.nfdText, offset, descriptor)) {
         continue;
       }
       const range = mapOriginalRange(mapping, offset, offset + descriptor.surface.length);
@@ -1253,6 +1634,29 @@ function collectMatches(text, literal, token) {
       left.order - right.order ||
       left.end - right.end,
   );
+}
+
+/**
+ * 조사 앞이 이미 등록된 명사형일 때만 원래 동사의 진단을 재사용한다.
+ * @param {string} surface NFD 어절
+ * @param {ReadonlyMap<string, ReadonlyArray<TermDescriptor>>} token 활용형 색인
+ * @returns {ReadonlyArray<TermDescriptor>} 같은 규칙에서 중복되지 않는 후보
+ */
+function tokenWithParticles(surface, token) {
+  const exact = token.get(surface) ?? [];
+  let attached;
+  for (let end = Math.max(1, surface.length - maxParticleLength); end < surface.length; end++) {
+    const final = surface[end - 1];
+    const gi = end >= 2 && surface.startsWith("\u1100\u1175", end - 2);
+    if (!gi && final !== FINAL_M && final !== FINAL_LM) continue;
+    const suffixes = gi ? particles.vowel : particles.final;
+    if (!suffixes.has(surface.slice(end))) continue;
+    for (const candidate of token.get(surface.slice(0, end)) ?? []) {
+      attached ??= [...exact];
+      if (!attached.some((item) => item.rule === candidate.rule)) attached.push(candidate);
+    }
+  }
+  return attached ?? exact;
 }
 
 /**
@@ -1282,10 +1686,14 @@ function collectTermMatches(text, mapping, token, matches) {
     }
 
     const surface = text.slice(tokenStart, tokenEnd).normalize("NFD");
-    const descriptors = token.get(surface) ?? [];
+    const descriptors = tokenWithParticles(surface, token);
     const source = findCodePointIndex(mapping.originalStarts, tokenStart);
     const offset = mapping.nfdStarts[source];
     for (const descriptor of descriptors) {
+      if (descriptor.bounded && (isWordCharacter(characterAt(text, tokenStart - 1)) ||
+          isWordCharacter(characterAt(text, tokenEnd)))) {
+        continue;
+      }
       const start = offset - descriptor.prefix.length;
       if (start < 0 || !mapping.nfdText.startsWith(descriptor.prefix, start)) {
         continue;

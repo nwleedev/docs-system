@@ -866,7 +866,6 @@ async function runSelfTest() {
   const expressionSource = makeTestSource("expressions", "😀 경계 경계\n출력을 확인합니다.");
   const expressionCheck = scanExpressions([expressionSource]);
   assert.equal(expressionCheck.id, "expressions");
-  assert.equal(expressionCheck.catalog.length, 53);
   assert.deepEqual(
     expressionCheck.warnings
       .filter((warning) => warning.ruleId === "ko.boundary")
@@ -878,6 +877,66 @@ async function runSelfTest() {
   );
   assert.equal(expressionCheck.rules.some((rule) => rule.id === "ko.boundary"), true);
   assert.equal(expressionCheck.rules.some((rule) => rule.id === "ko.output"), true);
+
+  const formsByRule = [
+    ["ko.task", "일", "일 일을 일이 일하는"],
+    ["ko.operation", "작업", "작업 작업으로 작업해서 작업만으로도 작업들에는"],
+    ["ko.assignment", "과업", "과업 과업의 과업만"],
+    ["ko.process", "처리", "처리 처리를 처리한다 처리해 처리됐습니다"],
+    ["ko.details", "내역", "내역 내역에서 내역은"],
+    ["ko.note", "적다", "적다 적는 적었다 적으면"],
+    ["ko.write", "쓰다", "쓰다 쓴다 써 썼다 쓸"],
+    ["ko.read", "읽다", "읽다 읽는 읽었습니다 읽음"],
+    ["ko.see", "보다", "보다 본다 보아 봐 보았다 봤다"],
+    ["ko.identify", "짚다", "짚다 짚는 짚었다 짚으세요 짚었을 짚기는 짚었음에도"],
+    ["ko.call", "부르다", "부르다 부르는 불러 불렀다"],
+    ["ko.divide", "나누다", "나누다 나누어 나눠 나누었다 나눴다"],
+    ["ko.keep", "두다", "두다 둔다 두어 둬 두었다 뒀다"],
+    ["ko.reduce", "줄이다", "줄이다 줄이는 줄여 줄였다"],
+    ["ko.compose", "짜다", "짜다 짠다 짜서 짰다"],
+    ["ko.make", "만들다", "만들다 만드는 만듭니다 만들면 만든 만듦 만듦을"],
+    ["ko.gather", "모으다", "모으다 모은 모아 모았다"],
+    ["ko.fill", "채우다", "채우다 채워 채웠다 채우면"],
+    ["ko.new", "새", "새"],
+    ["ko.section", "절", "절 절에서는 제2절"],
+    ["ko.until", "까지", "까지 끝까지 끝까지는 금요일까지다"],
+    ["ko.connect", "연결", "연결 연결된 연결해 연결되어 연결됩니다"],
+  ];
+  const targets = new Set(formsByRule.map(([id]) => id));
+  assert.equal(expressionCheck.catalog.length, 53 + targets.size);
+  const forms = formsByRule.flatMap(([id, expression, words]) =>
+    words.split(" ").map((word) => ({ id, expression, word })),
+  );
+  const excludedWords =
+    "파일 일자 절차 적절한 새로고침 색상 작업자 내역서 처리량 연결망 결과보다 " +
+    "부르렀다 만들는 만들습니다 읽는이름 짚었다는말 x쓴다 쓴다2 tmp_연결해 𠮷새 새𠮷 𠮷읽는다 읽는다𠮷";
+  const cases = forms.map(({ word }) => makeTestSource(word, word));
+  const testedForms = scanExpressions([...cases, makeTestSource("exclusions", excludedWords)]);
+  assert.deepEqual(
+    testedForms.warnings.filter((warning) => targets.has(warning.ruleId))
+      .map(({ sourceId, ruleId, expression }) => [sourceId, ruleId, expression]),
+    forms.map(({ id, expression, word }) => [word, id, expression]),
+  );
+
+  for (const normalization of ["NFC", "NFD"]) {
+    const line = "😀 제2절 작업까지도 30일까지".normalize(normalization);
+    const overlap = scanExpressions([makeTestSource("overlap", `시작\n${line}`)]);
+    assert.deepEqual(
+      overlap.warnings.filter((warning) => targets.has(warning.ruleId))
+        .map(({ ruleId, line: lineNumber, startUtf16, endUtf16, quote }) =>
+          [ruleId, lineNumber, startUtf16, endUtf16, quote]),
+      [
+        ["ko.section", "절", "😀 제2"],
+        ["ko.operation", "작업", "😀 제2절 "],
+        ["ko.until", "까지", "😀 제2절 작업"],
+        ["ko.until", "까지", "😀 제2절 작업까지도 30일"],
+      ].map(([ruleId, surface, preceding]) => {
+        const word = surface.normalize(normalization);
+        const offset = preceding.normalize(normalization).length;
+        return [ruleId, 2, offset + 1, offset + word.length + 1, line];
+      }),
+    );
+  }
 
   const reviewCandidateCheck = scanExpressions([
     makeTestSource("review-candidates", "작은 변경. 작은 부품. 업무 흐름. 물의 흐름."),
