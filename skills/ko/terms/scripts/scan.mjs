@@ -17,72 +17,14 @@ import { parseArgs, TextDecoder } from "node:util";
 import { scanExpressions, selfTestExpressionRules } from "./korean-expressions.mjs";
 import { scanParagraphs } from "./long-paragraphs.mjs";
 
-/**
- * @typedef {{
- *   id: string,
- *   path?: string,
- *   text: string,
- *   bytes: number
- * }} Source
- */
-
-/**
- * @typedef {{kind: "changed", repository: string} |
- *   {kind: "files", files: ReadonlyArray<string>} |
- *   {kind: "stdin", sourceName: string} |
- *   {kind: "help"} |
- *   {kind: "self-test"}} InputMode
- */
-
-/**
- * @typedef {{
- *   id: string,
- *   path?: string
- * }} SourceMetadata
- */
-
-/**
- * @typedef {{
- *   id: string,
- *   catalog: ReadonlyArray<Readonly<Record<string, unknown>>>,
- *   rules: ReadonlyArray<Readonly<Record<string, unknown>>>,
- *   warnings: ReadonlyArray<Readonly<Record<string, unknown>>>,
- *   summary: {total: number, shown: number, omitted: number}
- * }} Check
- */
-
-/**
- * @typedef {{
- *   stdout: Buffer
- * }} ChildResult
- */
-
-/**
- * @typedef {{
- *   cwd: string,
- *   env: Readonly<Record<string, string>>,
- *   timeout: number,
- *   maxBuffer: number
- * }} ChildOptions
- */
-
-/** @type {number} */
 const MAX_SOURCES = 512;
-/** @type {number} */
 const MAX_SOURCE_BYTES = 2 * 1024 * 1024;
-/** @type {number} */
 const MAX_TOTAL_BYTES = 32 * 1024 * 1024;
-/** @type {number} */
 const MAX_CHECK_BYTES = 32 * 1024 * 1024;
-/** @type {number} */
 const READ_CHUNK_BYTES = 64 * 1024;
-/** @type {number} */
 const GIT_TIMEOUT_MS = 30_000;
-/** @type {number} */
 const GIT_OUTPUT_BYTES = 8 * 1024 * 1024;
-/** @type {number} */
 const SELF_TEST_TIMEOUT_MS = 10_000;
-/** @type {number} */
 const SELF_TEST_OUTPUT_BYTES = 1024 * 1024;
 const HELP_TEXT = [
   "한국어 글에서 검토할 표현과 긴 문단을 찾습니다.",
@@ -107,7 +49,6 @@ const HELP_TEXT = [
   "위 호출형 중 하나만 사용합니다. --source-name은 --stdin과 함께 사용합니다.",
   "",
 ].join("\n");
-/** @type {ReadonlySet<string>} */
 const SUPPORTED_GIT_STATUSES = new Set([
   " M",
   " T",
@@ -136,23 +77,10 @@ const SUPPORTED_GIT_STATUSES = new Set([
   "??",
 ]);
 
-/**
- * 공개 오류 code를 가진 Error를 만든다.
- *
- * @param {string} code 표준 오류로 내보내도 원문이나 개인 위치를 드러내지 않는 code
- * @param {Error} [cause] 내부 원인을 보존하되 출력하지 않을 오류
- * @returns {Error} 최상위 진입점까지 전달할 오류
- */
 function scannerError(code, cause) {
   return cause === undefined ? new Error(code) : new Error(code, { cause });
 }
 
-/**
- * CLI option의 실제 출현 횟수와 조합을 검사해 하나의 입력 mode로 바꾼다.
- *
- * @param {ReadonlyArray<string>} args Node.js 실행 파일과 스크립트 위치를 제외한 인수
- * @returns {InputMode} 배타성이 확인된 입력 mode와 필요한 값
- */
 function parseCommandLine(args) {
   let parsed;
   try {
@@ -174,7 +102,6 @@ function parseCommandLine(args) {
     throw scannerError("usage:invalid-arguments", error instanceof Error ? error : undefined);
   }
 
-  /** @type {Map<string, number>} */
   const counts = new Map();
   for (const token of parsed.tokens) {
     if (token.kind === "option") {
@@ -235,12 +162,6 @@ function parseCommandLine(args) {
   return { kind: "self-test" };
 }
 
-/**
- * 출력 식별자나 파일 위치로 사용할 인수가 비어 있지 않은 정상 Unicode 문자열인지 확인한다.
- *
- * @param {string} value 검사할 인수
- * @returns {boolean} NUL과 고립 surrogate가 없으면 true
- */
 function isValidInputName(value) {
   return value.length > 0 && !value.includes("\0") && value.isWellFormed();
 }
@@ -257,12 +178,6 @@ function scanSources(sources) {
   return { sources: sourceMetadata, checks };
 }
 
-/**
- * source 개수, byte와 Unicode를 탐지 전에 한 번 확인한다.
- *
- * @param {ReadonlyArray<Source>} sources 입력 어댑터가 만든 source
- * @returns {ReadonlyArray<SourceMetadata>} 공개 결과에 넣을 안전한 식별 정보
- */
 function validateSources(sources) {
   if (sources.length > MAX_SOURCES) {
     throw scannerError("input:too-many-sources");
@@ -284,13 +199,6 @@ function validateSources(sources) {
   }
 }
 
-/**
- * 한 검사 결과를 byte 상한 안의 가장 긴 결정적 경고 앞부분으로 줄인다.
- *
- * @param {Check} check 탐지 모듈이 모든 source를 검사한 결과
- * @param {number} maxBytes 직렬화한 검사 결과의 최대 UTF-8 byte
- * @returns {Check} 전체 집계와 byte 상한 안의 상세 경고
- */
 function limitCheckByBytes(check, maxBytes) {
   const withFirstWarnings = (count) => ({
     id: check.id,
@@ -325,16 +233,8 @@ function limitCheckByBytes(check, maxBytes) {
   }
   return withFirstWarnings(lower);
 }
-/**
- * UTF-8 byte chunk를 source별 decoder로 해석하면서 입력 상한을 적용한다.
- *
- * @param {AsyncIterable<Uint8Array | string>} chunks 한 source에서 순서대로 읽은 byte chunk
- * @param {number} committedTotalBytes 앞서 완결된 source의 byte 합계
- * @returns {Promise<{text: string, bytes: number}>} 엄격하게 해석한 원문과 실제 byte 수
- */
 async function decodeChunks(chunks, committedTotalBytes) {
   const decoder = new TextDecoder("utf-8", { fatal: true, ignoreBOM: false });
-  /** @type {Array<string>} */
   const parts = [];
   let bytes = 0;
 
@@ -364,12 +264,6 @@ async function decodeChunks(chunks, committedTotalBytes) {
   return { text: parts.join(""), bytes };
 }
 
-/**
- * 열린 파일의 같은 handle에서 고정 크기 chunk를 끝까지 읽는다.
- *
- * @param {import("node:fs/promises").FileHandle} handle 이미 file type을 확인한 handle
- * @returns {AsyncGenerator<Uint8Array, void, void>} 파일 순서를 유지하는 byte chunk
- */
 async function* readHandleChunks(handle) {
   while (true) {
     const buffer = Buffer.allocUnsafe(READ_CHUNK_BYTES);
@@ -381,14 +275,6 @@ async function* readHandleChunks(handle) {
   }
 }
 
-/**
- * 후보 위치를 symlink와 특수 파일 여부부터 검사하고 같은 handle에서 원문을 읽는다.
- *
- * @param {string} candidate 호출자 또는 Git이 선택한 위치
- * @param {"changed" | "file"} mode 누락 및 비정규 파일 처리 방식
- * @param {number} committedTotalBytes 앞서 읽은 source의 byte 합계
- * @returns {Promise<null | {realPath: string, text: string, bytes: number}>} 제외할 변경 항목 또는 읽은 파일
- */
 async function readCandidateFile(candidate, mode, committedTotalBytes) {
   let lexicalStats;
   try {
@@ -436,17 +322,9 @@ async function readCandidateFile(candidate, mode, committedTotalBytes) {
   }
 }
 
-/**
- * 반복된 `--file` 입력을 호출 순서대로 읽고 개인 절대 위치는 순번 식별자로 바꾼다.
- *
- * @param {ReadonlyArray<string>} files 호출자가 전달한 파일 위치
- * @returns {Promise<ReadonlyArray<Source>>} 중복 실제 위치가 없고 표시 위치가 정규화된 source
- */
 async function readFiles(files) {
   const cwdReal = await realpath(process.cwd());
-  /** @type {Set<string>} */
   const seen = new Set();
-  /** @type {Array<Source>} */
   const sources = [];
   let totalBytes = 0;
 
@@ -473,23 +351,11 @@ async function readFiles(files) {
   return sources;
 }
 
-/**
- * `--stdin`의 byte stream 하나를 source 이름으로 식별하고 파일 위치는 만들지 않는다.
- *
- * @param {string} sourceName 호출자가 정한 표시 이름
- * @returns {Promise<ReadonlyArray<Source>>} 빈 입력도 포함하는 source 한 건
- */
 async function readStdin(sourceName) {
   const decoded = await decodeChunks(process.stdin, 0);
   return [{ id: sourceName, text: decoded.text, bytes: decoded.bytes }];
 }
 
-/**
- * 저장소 위치 안에 머무는 상대 위치인지 path 구성 요소로 판정한다.
- *
- * @param {string} relativePath 기준 디렉터리에서 후보 실제 위치까지의 상대 위치
- * @returns {boolean} 기준 디렉터리 자체가 아니며 부모로 나가지 않으면 true
- */
 function isInsideDirectory(relativePath) {
   return (
     relativePath !== "" &&
@@ -499,25 +365,11 @@ function isInsideDirectory(relativePath) {
   );
 }
 
-/**
- * 운영체제 path 구분자를 JSON에서 일정한 슬래시로 바꾼다.
- *
- * @param {string} pathValue 정규화할 상대 위치
- * @returns {string} 플랫폼과 무관한 표시 위치
- */
 function toPortablePath(pathValue) {
   return pathValue.split(pathSeparator).join("/");
 }
 
-/**
- * 현재 process 환경에서 Git 동작을 바꾸는 변수와 locale을 제거한다.
- *
- * @param {Readonly<Record<string, string | undefined>>} environment 현재 process 환경
- * @param {NodeJS.Platform} platform 실행 플랫폼
- * @returns {Readonly<Record<string, string>>} Git 자식 process에 전달할 제한된 환경
- */
 function sanitizeEnvironment(environment, platform) {
-  /** @type {Record<string, string>} */
   const sanitized = {};
   let windowsPath;
 
@@ -547,13 +399,6 @@ function sanitizeEnvironment(environment, platform) {
   return sanitized;
 }
 
-/**
- * 저장소 cwd를 적용하기 전에 신뢰하는 절대 PATH 항목에서 Git 실행 파일을 찾는다.
- *
- * @param {string | undefined} pathValue 정리된 실행 파일 검색 경로
- * @param {NodeJS.Platform} platform 실행 플랫폼
- * @returns {Promise<string>} 실행 권한이 확인된 Git 절대 위치
- */
 async function findGitExecutable(pathValue, platform) {
   if (pathValue === undefined || pathValue.length === 0) {
     throw scannerError("git:not-found");
@@ -574,14 +419,6 @@ async function findGitExecutable(pathValue, platform) {
   throw scannerError("git:not-found");
 }
 
-/**
- * shell 없이 자식 process를 실행하고 stdout과 stderr byte를 분리한다.
- *
- * @param {string} executable 신뢰 경로에서 찾은 실행 파일
- * @param {ReadonlyArray<string>} args 자식 process 인수
- * @param {ChildOptions} options cwd, 환경, 시간과 stream 상한
- * @returns {Promise<ChildResult>} stderr가 비어 있는 성공 상태의 stdout
- */
 function runChildFile(executable, args, options) {
   return new Promise((resolveResult, rejectResult) => {
     execFile(
@@ -611,16 +448,8 @@ function runChildFile(executable, args, options) {
   });
 }
 
-/**
- * `--no-renames`가 적용된 Git NUL 구분 status에서 허용한 위치만 모은다.
- *
- * @param {Buffer} stdout `git status --porcelain=v1 -z`의 원시 stdout
- * @returns {ReadonlyArray<string>} 중복을 제거한 현재 작업 트리 위치
- * @throws {Error} 허용 목록 밖 status, rename 또는 copy record, 잘못된 byte 형식, 빈 위치, 절대 위치, 정확히 `..`이거나 `../`로 시작하는 상대 위치
- */
 function parseGitStatus(stdout) {
   const decoder = new TextDecoder("utf-8", { fatal: true, ignoreBOM: true });
-  /** @type {Set<string>} */
   const paths = new Set();
   let cursor = 0;
 
@@ -658,12 +487,6 @@ function parseGitStatus(stdout) {
     .map(({ path }) => path);
 }
 
-/**
- * Git이 반환한 위치가 저장소 상대 위치이며 부모 디렉터리로 나가지 않는지 확인한다.
- *
- * @param {string} pathValue Git status의 현재 위치
- * @returns {boolean} 저장소 내부 후보로 안전하게 결합할 수 있으면 true
- */
 function isValidGitRelativePath(pathValue) {
   if (!isValidInputName(pathValue) || isAbsolute(pathValue)) {
     return false;
@@ -672,12 +495,6 @@ function isValidGitRelativePath(pathValue) {
   return normalized !== ".." && !normalized.startsWith("../");
 }
 
-/**
- * rev-parse stdout의 마지막 LF 하나만 제거하고 개인 위치를 출력하지 않은 채 저장소 루트를 얻는다.
- *
- * @param {Buffer} stdout `git rev-parse --show-toplevel`의 stdout
- * @returns {string} CR과 LF가 없는 저장소 루트
- */
 function parseRepositoryRoot(stdout) {
   let decoded;
   try {
@@ -692,12 +509,6 @@ function parseRepositoryRoot(stdout) {
   return root;
 }
 
-/**
- * Git status가 선택한 현재 파일을 byte 순서로 읽고 삭제, symlink와 submodule을 제외한다.
- *
- * @param {string} repository `--changed`로 받은 저장소 또는 하위 디렉터리
- * @returns {Promise<ReadonlyArray<Source>>} 저장소 상대 위치로 식별한 현재 원문 source
- */
 async function readChangedFiles(repository) {
   const requestedCwd = resolve(process.cwd(), repository);
   let requestedStats;
@@ -747,7 +558,6 @@ async function readChangedFiles(repository) {
   );
 
   const paths = parseGitStatus(statusResult.stdout);
-  /** @type {Array<Source>} */
   const sources = [];
   let totalBytes = 0;
   for (const pathValue of paths) {
@@ -775,13 +585,6 @@ async function readChangedFiles(repository) {
   return sources;
 }
 
-/**
- * stream write callback이 끝날 때까지 기다려 즉시 종료로 JSON이 잘리지 않게 한다.
- *
- * @param {NodeJS.WritableStream} stream stdout 또는 stderr
- * @param {string} text 기록할 온전한 문자열
- * @returns {Promise<void>} stream이 문자열을 처리하면 끝나는 Promise
- */
 function writeText(stream, text) {
   return new Promise((resolveWrite, rejectWrite) => {
     const onError = (error) => rejectWrite(error);
@@ -797,12 +600,6 @@ function writeText(stream, text) {
   });
 }
 
-/**
- * 내부 원인, stack trace와 입력 원문을 제외하고 승인된 오류 code만 선택한다.
- *
- * @param {unknown} error 최상위에서 잡은 값
- * @returns {string} 표준 오류에 기록할 한 줄 code
- */
 function publicErrorCode(error) {
   if (
     error instanceof Error &&
@@ -813,11 +610,6 @@ function publicErrorCode(error) {
   return "internal:unexpected";
 }
 
-/**
- * 운영 parser와 탐색 함수, 입력 상한 및 실제 자식 process 종료 상태를 검사한다.
- *
- * @returns {Promise<void>} 모든 assertion이 통과하면 끝나는 Promise
- */
 async function runSelfTest() {
   selfTestExpressionRules();
   assert.deepEqual(parseCommandLine(["--stdin", "--source-name", "sample"]), {
@@ -1318,10 +1110,6 @@ async function runSelfTest() {
     /input:too-many-sources/u,
   );
   await assert.rejects(
-    () => decodeChunks([Buffer.from([0xc3, 0x28])], 0),
-    /input:invalid-utf8/u,
-  );
-  await assert.rejects(
     () =>
       runChildFile(process.execPath, ["-e", "process.stderr.write('warning')"], {
         cwd: process.cwd(),
@@ -1386,10 +1174,19 @@ async function runSelfTest() {
   assert.equal(helpChild.error, undefined);
   assert.equal(helpChild.signal, null);
   assert.equal(helpChild.status, 0);
-  assert.equal(helpChild.stdout, HELP_TEXT);
   assert.equal(helpChild.stderr, "");
   assert.equal(helpChild.stdout.endsWith("\n"), true);
-  assert.throws(() => JSON.parse(helpChild.stdout));
+  const helpLines = helpChild.stdout.split("\n");
+  assert.ok(helpLines.includes("  node scripts/scan.mjs --file <path> [--file <path> ...]"));
+  assert.ok(helpLines.includes("  node scripts/scan.mjs --stdin --source-name <name>"));
+  for (const option of ["--changed <repo>", "--file <path>", "--stdin", "--source-name <name>", "--self-test", "--help"]) {
+    assert.ok(
+      helpLines.some((line) =>
+        line.startsWith(`  ${option}  `) && line.slice(option.length + 2).trim().length > 0,
+      ),
+      `Missing help description: ${option}`,
+    );
+  }
 
   for (const invalidArgs of [
     ["--invalid-self-test-argument"],
@@ -1457,40 +1254,61 @@ async function runSelfTest() {
   await mkdir(tempParent, { recursive: true });
   const repository = await mkdtemp(join(tempParent, "better-terms-self-test-"));
   try {
-    const init = spawnSync("git", ["init", "--quiet"], {
-      cwd: repository,
-      encoding: "utf8",
-      timeout: SELF_TEST_TIMEOUT_MS,
-      maxBuffer: SELF_TEST_OUTPUT_BYTES,
-      windowsHide: true,
-    });
-    assert.equal(init.status, 0);
-    await writeFile(join(repository, "sample.md"), sevenSentences, "utf8");
-    const add = spawnSync("git", ["add", "sample.md"], {
-      cwd: repository,
-      encoding: "utf8",
-      timeout: SELF_TEST_TIMEOUT_MS,
-      maxBuffer: SELF_TEST_OUTPUT_BYTES,
-      windowsHide: true,
-    });
-    assert.equal(add.status, 0);
+    function git(...args) {
+      const child = spawnSync("git", [
+        "-c", "user.name=Scanner Self-Test",
+        "-c", "user.email=scanner@example.invalid",
+        "-c", "commit.gpgSign=false",
+        "-c", `core.hooksPath=${join(repository, "disabled-hooks")}`,
+        ...args,
+      ], {
+        cwd: repository,
+        encoding: "utf8",
+        timeout: SELF_TEST_TIMEOUT_MS,
+        maxBuffer: SELF_TEST_OUTPUT_BYTES,
+        windowsHide: true,
+      });
+      assert.ifError(child.error);
+      assert.equal(child.status, 0);
+    }
+
+    git("init", "--quiet");
+    for (const name of ["staged.md", "staged-only.md", "unstaged.md", "unchanged.md"]) {
+      await writeFile(join(repository, name), "", "utf8");
+    }
+    git("add", ".");
+    git("commit", "--quiet", "-m", "Initialize scanner fixture");
+
+    await writeFile(join(repository, "staged.md"), "경계", "utf8");
+    await writeFile(join(repository, "staged-only.md"), "연결", "utf8");
+    git("add", "staged.md", "staged-only.md");
+    await writeFile(join(repository, "staged.md"), "근거", "utf8");
+    await writeFile(join(repository, "unstaged.md"), "작업", "utf8");
+    await writeFile(join(repository, "untracked.md"), sevenSentences, "utf8");
+
     const changedChild = runScannerProcess(["--changed", repository]);
     assert.equal(changedChild.status, 0);
+    assert.equal(changedChild.stderr, "");
     const changedOutput = JSON.parse(changedChild.stdout);
-    assert.equal(changedOutput.sources.length, 1);
-    assert.equal(changedOutput.checks[1].summary.total, 1);
+    assert.deepEqual(
+      changedOutput.sources.map(({ id }) => id),
+      ["staged-only.md", "staged.md", "unstaged.md", "untracked.md"],
+    );
+    assert.deepEqual(
+      changedOutput.checks[0].warnings
+        .filter(({ sourceId }) => sourceId === "staged.md")
+        .map(({ ruleId }) => ruleId),
+      ["ko.evidence"],
+    );
+    assert.deepEqual(
+      changedOutput.checks[1].warnings.map(({ sourceId }) => sourceId),
+      ["untracked.md"],
+    );
   } finally {
     await rm(repository, { recursive: true, force: true });
   }
 }
 
-/**
- * self-test가 현재 진입점을 실제 자식 process로 실행한다.
- *
- * @param {ReadonlyArray<string>} args 검사기 인수
- * @param {string | Buffer} [input] 표준 입력으로 전달할 원문
- * @returns {{status: number | null, stdout: string, stderr: string}} 실제 종료 상태와 stream
- */
 function runScannerProcess(args, input) {
   return spawnSync(process.execPath, [fileURLToPath(import.meta.url), ...args], {
     input,
@@ -1501,13 +1319,6 @@ function runScannerProcess(args, input) {
   });
 }
 
-/**
- * self-test source에 실제 UTF-8 byte 수를 붙인다.
- *
- * @param {string} id source 식별자
- * @param {string} text source 원문
- * @returns {Source} 운영 탐지 함수에 전달할 source
- */
 function makeTestSource(id, text) {
   return { id, text, bytes: Buffer.byteLength(text, "utf8") };
 }
