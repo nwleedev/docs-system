@@ -1,4 +1,0 @@
-interface:
-  display_name: "저장소 개발 지침 적용"
-  short_description: "저장소의 개발 지침 절차를 선택하고 수행"
-  default_prompt: "이 요청에 필요한 개발 지침 절차를 빠짐없이 선택하고 수행하도록 $use-dev-guidance를 사용한다."

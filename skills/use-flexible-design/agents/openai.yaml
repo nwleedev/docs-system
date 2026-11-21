@@ -1,4 +1,0 @@
-interface:
-  display_name: "Use Flexible Design"
-  short_description: "Assess goals, requirement gaps, and changing evidence"
-  default_prompt: "Use $use-flexible-design to establish the actual goal, assess necessary conditions and new evidence, and explain readiness, required work, and completion evidence."

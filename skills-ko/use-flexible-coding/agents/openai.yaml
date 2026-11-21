@@ -1,4 +1,0 @@
-interface:
-  display_name: "기술 조사와 구현 방법 설명"
-  short_description: "작동 원리와 대안 및 구현 착수 가능 여부 설명"
-  default_prompt: "이 기술 이슈의 작동 원리와 성립 조건을 조사하고 적합한 대안, 필요한 변경과 다음 결정의 근거를 설명하도록 $use-flexible-coding을 사용한다."

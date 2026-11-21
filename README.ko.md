@@ -6,7 +6,7 @@
 
 ## 저장소 파일
 
-- [`AGENTS.md`](./AGENTS.md)는 이 저장소에서 사용하는 예시입니다. [`src/AGENTS.en.md`](./src/AGENTS.en.md)와 [`src/AGENTS.ko.md`](./src/AGENTS.ko.md)는 다른 저장소에서 수정해 쓰는 참고 문서입니다.
+- [`AGENTS.md`](./AGENTS.md)는 이 저장소에서 사용하는 예시입니다. [`src/en/AGENTS.md`](./src/en/AGENTS.md)와 [`src/ko/AGENTS.md`](./src/ko/AGENTS.md)는 다른 저장소에서 수정해 쓰는 참고 문서입니다.
 - [`docs/designs/README.md`](./docs/designs/README.md)는 이 저장소의 설계 문서 규칙을 정합니다. [`use-flexible-design`](./skills/use-flexible-design/SKILL.md)는 실제 목표와 사용 상황에 따라 요구사항을 작성하고 검토하며, 필요한 조건과 새 이슈를 조사해 첫 실질 답변에서 착수 가능 여부, 필요한 작업과 완료 증거를 설명합니다. 조사와 제안은 승인된 요구사항과 구분하고 결정 및 계획에 연결합니다.
 - [`docs/dev/README.md`](./docs/dev/README.md)는 이 저장소의 개발 지침 규칙을 정합니다. [`use-dev-guidance`](./skills/use-dev-guidance/SKILL.md)는 이 기준을 따르는 작업에서 독립적으로 사용할 수 있습니다. AGENTS 참고 문서는 개발 작업에 `use-flexible-coding`을 선택합니다.
 - [`use-flexible-coding`](./skills/use-flexible-coding/SKILL.md)은 코드가 없는 단계에도 필요한 원리, 코드 디자인 패턴과 모듈 및 시스템 구성을 통해 작동 방식과 적용 조건을 조사합니다. 첫 실질 답변에서 인과관계를 구체적인 변경, 예시, 대안, 위험과 착수 판단에 연결합니다. 새 근거가 생기면 영향을 받는 작업과 완료 예상을 다시 판단합니다. 지정한 파일에 기록하며, 지정이 없으면 후보를 제안하고 대화에서 조사를 계속합니다. 설계 스킬과 독립적으로 선택하며 조사만으로 실제 구현 권한이 생기지는 않습니다.
@@ -40,7 +40,7 @@
 
 현재 위치는 [Codex Skill 문서](https://developers.openai.com/codex/skills) 또는 [Claude Code Skill 문서](https://code.claude.com/docs/en/skills)에서 확인합니다. 이 저장소의 `skills/`는 조사 자료이므로 그 아래에 있다는 이유만으로 자동 탐색되지 않습니다.
 
-[`src/AGENTS.en.md`](./src/AGENTS.en.md) 또는 [`src/AGENTS.ko.md`](./src/AGENTS.ko.md)에서 설치한 Skill의 호출 절을 골라 도구가 읽는 지침 파일에 추가합니다. 인수인계와 표현 검토 절은 각각 `BEGIN USE BETTER HANDOFF` / `END USE BETTER HANDOFF`와 `BEGIN TERMS` / `END TERMS`로 구분합니다. 둘 다 도입하면 인수인계 정보 배치를 표현 검토에 앞서 수행합니다. 설계 및 개발 Skill의 절은 각 책임을 제목으로 사용합니다. Claude Code에서는 `CLAUDE.md`에 추가하거나 필요한 `AGENTS.md`를 `@AGENTS.md`로 불러옵니다.
+[`src/en/AGENTS.md`](./src/en/AGENTS.md) 또는 [`src/ko/AGENTS.md`](./src/ko/AGENTS.md)에서 설치한 Skill의 호출 절을 골라 도구가 읽는 지침 파일에 추가합니다. 인수인계와 표현 검토 절은 각각 `BEGIN USE BETTER HANDOFF` / `END USE BETTER HANDOFF`와 `BEGIN TERMS` / `END TERMS`로 구분합니다. 둘 다 도입하면 인수인계 정보 배치를 표현 검토에 앞서 수행합니다. 설계 및 개발 Skill의 절은 각 책임을 제목으로 사용합니다. Claude Code에서는 `CLAUDE.md`에 추가하거나 필요한 `AGENTS.md`를 `@AGENTS.md`로 불러옵니다.
 
 인수인계 기능은 `skills/use-better-handoff/` 전체와 해당 호출 절을 함께 복사해 도입합니다. 두 스킬의 지침은 영어이며 언어별 판정 예문은 원문을 유지합니다. 인수인계 파일의 위치와 이름은 작업 지시나 저장소 지침에서 정할 수 있습니다. 각 스킬은 독립적으로 선택할 수 있으며 다른 스킬을 필수로 읽지 않습니다.
 
