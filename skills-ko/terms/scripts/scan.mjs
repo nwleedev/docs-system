@@ -901,6 +901,7 @@ async function runSelfTest() {
     ["ko.section", "절", "절 절에서는 제2절"],
     ["ko.until", "까지", "까지 끝까지 끝까지는 금요일까지다"],
     ["ko.connect", "연결", "연결 연결된 연결해 연결되어 연결됩니다"],
+    ["ko.original-text", "원문", "원문 원문은 원문에서 원문으로 원문에서도"],
   ];
   const targets = new Set(formsByRule.map(([id]) => id));
   assert.equal(expressionCheck.catalog.length, 53 + targets.size);
@@ -908,7 +909,7 @@ async function runSelfTest() {
     words.split(" ").map((word) => ({ id, expression, word })),
   );
   const excludedWords =
-    "파일 일자 절차 적절한 새로고침 색상 작업자 내역서 처리량 연결망 결과보다 " +
+    "파일 일자 절차 적절한 새로고침 색상 작업자 내역서 처리량 연결망 결과보다 원문보기 지원문서 " +
     "부르렀다 만들는 만들습니다 읽는이름 짚었다는말 x쓴다 쓴다2 tmp_연결해 𠮷새 새𠮷 𠮷읽는다 읽는다𠮷";
   const cases = forms.map(({ word }) => makeTestSource(word, word));
   const testedForms = scanExpressions([...cases, makeTestSource("exclusions", excludedWords)]);
