@@ -884,6 +884,7 @@ async function runSelfTest() {
     ["ko.assignment", "과업", "과업 과업의 과업만"],
     ["ko.process", "처리", "처리 처리를 처리한다 처리해 처리됐습니다"],
     ["ko.details", "내역", "내역 내역에서 내역은"],
+    ["ko.evidence", "근거", "근거 근거가 근거를 근거로 근거로는 근거만으로는"],
     ["ko.note", "적다", "적다 적는 적었다 적으면"],
     ["ko.write", "쓰다", "쓰다 쓴다 써 썼다 쓸"],
     ["ko.notify", "알리다", "알리다 알린다 알리는 알립니다 알리어 알려 알려서 알렸다 알렸습니다 알림을 알림들을 알려주세요 알려줘요 알려줬다 알려주셨습니다 알려줄게요 알려줄래요"],
@@ -910,6 +911,7 @@ async function runSelfTest() {
     words.split(" ").map((word) => ({ id, expression, word })),
   );
   const excludedWords =
+    "근거리 근거리에서 근거지 근거지를 " +
     "파일 일자 절차 적절한 새로고침 색상 작업자 내역서 처리량 연결망 결과보다 원문보기 지원문서 알림판 알림장 알리바이 " +
     "알린주세요 알려주머니 알려주세요청 알림들어가기 부르렀다 만들는 만들습니다 읽는이름 짚었다는말 x쓴다 쓴다2 tmp_연결해 𠮷새 새𠮷 𠮷읽는다 읽는다𠮷";
   const cases = forms.map(({ word }) => makeTestSource(word, word));
