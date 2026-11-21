@@ -889,7 +889,31 @@ async function runSelfTest() {
     ["ko.original-text", "원문", "원문 원문은 원문에서 원문으로 원문에서도"],
   ];
   const targets = new Set(formsByRule.map(([id]) => id));
-  assert.equal(expressionCheck.catalog.length, 53 + targets.size);
+  const catalogIds = new Set(expressionCheck.catalog.map(({ id }) => id));
+  for (const id of [
+    "ko.middle-dot", "ko.about", "ko.by-passive", "ko.in-context",
+    "ko.with-relationship", "ko.must-double-negative", "ko.hold-meeting", "ko.user-facing",
+    "ko.scope", "ko.small", "ko.boundary", "ko.contract",
+    "ko.rubric", "ko.validity", "ko.consistency", "ko.visibility",
+    "ko.path", "ko.flow", "ko.public", "ko.product",
+    "ko.saturation", "ko.ownership", "ko.falsification", "ko.narrow-state",
+    "ko.narrow", "ko.close", "ko.fix-in-place", "ko.support",
+    "ko.guarantee", "ko.response", "ko.cover-topic", "ko.exposure",
+    "ko.capture", "ko.alignment", "ko.surface", "ko.core",
+    "ko.effective", "ko.smooth", "ko.strong", "ko.robust",
+    "ko.comprehensive", "ko.various", "ko.essential", "ko.the-relevant",
+    "ko.related", "ko.this-content", "ko.result", "ko.output",
+    "ko.data", "ko.feature", "ko.work", "ko.status",
+    "ko.consumption", "ko.task", "ko.operation", "ko.assignment",
+    "ko.process", "ko.details", "ko.evidence", "ko.original-text",
+    "ko.note", "ko.write", "ko.notify", "ko.read",
+    "ko.see", "ko.identify", "ko.call", "ko.divide",
+    "ko.keep", "ko.reduce", "ko.compose", "ko.make",
+    "ko.gather", "ko.fill", "ko.new", "ko.section",
+    "ko.until", "ko.connect",
+  ]) {
+    assert.ok(catalogIds.has(id), `Missing rule in catalog: ${id}`);
+  }
   const forms = formsByRule.flatMap(([id, expression, words]) =>
     words.split(" ").map((word) => ({ id, expression, word })),
   );
@@ -1228,15 +1252,19 @@ async function runSelfTest() {
     [3, 3, 7],
   );
 
-  const repeatedExpressions = "경계".repeat(20_001);
+  const repeatedExpressions = "경계".repeat(20_000);
   const cappedExpressions = scanExpressions([
     makeTestSource("expression-cap", repeatedExpressions),
+    makeTestSource("after-cap", "좁다"),
   ]);
   assert.deepEqual(cappedExpressions.summary, {
     total: 20_001,
     shown: 20_000,
     omitted: 1,
   });
+
+  assert.equal(cappedExpressions.warnings.at(-1).sourceId, "expression-cap");
+  assert.ok(cappedExpressions.rules.some(({ id }) => id === "ko.narrow-state"));
 
   const repeatedParagraphs = Array.from(
     { length: 20_001 },
@@ -1274,6 +1302,12 @@ async function runSelfTest() {
     empty.checks.map((check) => check.summary.total),
     [0, 0],
   );
+
+  const sources = Object.freeze([
+    Object.freeze(expressionSource),
+    Object.freeze(makeTestSource("paragraph", sevenSentences)),
+  ]);
+  assert.deepEqual(scanSources(sources), assembled);
   assert.throws(
     () =>
       scanSources(

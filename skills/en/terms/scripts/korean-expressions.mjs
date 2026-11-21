@@ -1,77 +1,6 @@
-/**
- * @typedef {{
- *   id: string,
- *   kind: "literal",
- *   expressions: ReadonlyArray<string>,
- *   message: string,
- *   queries: ReadonlyArray<string>,
- *   negatives: ReadonlyArray<string>,
- *   positives: ReadonlyArray<string>
- * }} ExpressionRule
- */
-
-/**
- * @typedef {{lemma: string, pos: "adjective" | "verb", aux?: "active" | "passive" | "state", conjugation?: "reu"}} Term
- */
-
-/**
- * @typedef {ExpressionRule & {
- *   mode: "literal" | "lemma" | "phrase" | "noun" | "word" | "particle",
- *   numbered?: boolean,
- *   terms?: ReadonlyArray<Term>,
- *   prefix?: string
- * }} InternalRule
- */
-
-/**
- * @typedef {{id: string, text: string}} Source
- */
-
-/**
- * @typedef {{
- *   ruleId: string,
- *   expression: string,
- *   sourceId: string,
- *   line: number,
- *   startUtf16: number,
- *   endUtf16: number,
- *   quote: string
- * }} ExpressionWarning
- */
-
-/** @typedef {{rule: number, order: number, surface: string, expression: string, mode: InternalRule["mode"], numbered?: boolean}} ExpressionDescriptor */
-
-/**
- * @typedef {{
- *   rule: number,
- *   order: number,
- *   expression: string,
- *   start: number,
- *   end: number
- * }} ExpressionMatch
- */
-
-/**
- * @typedef {{
- *   nfdText: string,
- *   originalStarts: ReadonlyArray<number>,
- *   nfdStarts: ReadonlyArray<number>
- * }} NfdMapping
- */
-
-/** @typedef {{rule: number, order: number, expression: string, length: number, prefix: string, bounded: boolean}} TermDescriptor */
-/** @typedef {{order: number, surface: string, expression: string}} LabelDescriptor */
-
-/** @type {number} */
 const MAX_WARNINGS = 20_000;
-/** @type {number} */
 const MAX_QUOTE_UTF16 = 480;
 
-/**
- * 검사할 표현 후보와 AI가 각 문맥을 판정할 때 사용할 질문 및 대조 사례다.
- *
- * @type {ReadonlyArray<InternalRule>}
- */
 const rules = [
   {
     id: "ko.middle-dot",
@@ -1042,28 +971,10 @@ const endings = {
 
 const benefactiveForms = [...buildForms({ lemma: "주다", pos: "verb" }, false).keys()];
 
-/**
- * 내장 표현 규칙 전체를 순회해 모든 고정 표현과 규칙 활용 출현을 찾는다.
- *
- * @param {ReadonlyArray<Source>} sources 입력 순서가 고정된 원문
- * @returns {{
- *   id: "expressions",
- *   catalog: ReadonlyArray<{id: string, kind: "literal", expressions: ReadonlyArray<string>}>,
- *   rules: ReadonlyArray<ExpressionRule>,
- *   warnings: ReadonlyArray<ExpressionWarning>,
- *   summary: {total: number, shown: number, omitted: number}
- * }} 전체 출현 집계와 제한된 상세 경고
- * @remarks 규칙과 표현은 외부 입력으로 선택하지 않으며 겹치는 출현도 각각 센다.
- */
 export function scanExpressions(sources) {
   return scanExpressionRules(sources, rules);
 }
 
-/**
- * 자체 검사가 공통 활용 규칙의 자료 추가와 잘못된 자료 거부를 직접 실행한다.
- *
- * @returns {void}
- */
 export function selfTestExpressionRules() {
   const definition = {
     kind: "literal",
@@ -1115,18 +1026,10 @@ export function selfTestExpressionRules() {
   throw new Error("self-test:expression-rules");
 }
 
-/**
- * 전달받은 비공개 규칙 자료를 검증하고 모든 표현 출현을 찾는다.
- *
- * @param {ReadonlyArray<Source>} sources 입력 순서가 고정된 원문
- * @param {ReadonlyArray<InternalRule>} definitions 검사할 규칙 자료
- * @returns {ReturnType<typeof scanExpressions>} 전체 출현 집계와 제한된 상세 경고
- */
 function scanExpressionRules(sources, definitions) {
   validateRules(definitions);
   const { literal, token } = buildExpressionIndex(definitions);
   const matchedRules = definitions.map(() => false);
-  /** @type {Array<ExpressionWarning>} */
   const warnings = [];
   let total = 0;
 
@@ -1134,7 +1037,11 @@ function scanExpressionRules(sources, definitions) {
     if (!source.text.isWellFormed()) {
       throw new Error("rules:invalid-source");
     }
-    const result = scanSource(source, definitions, literal, token, warnings);
+    const remaining = MAX_WARNINGS - warnings.length;
+    const result = scanSource(source, definitions, literal, token, remaining);
+    for (const warning of result.warnings) {
+      warnings.push(warning);
+    }
     total += result.found;
     for (const ruleIndex of result.matchedRuleIndexes) {
       matchedRules[ruleIndex] = true;
@@ -1158,12 +1065,6 @@ function scanExpressionRules(sources, definitions) {
   };
 }
 
-/**
- * 규칙의 식별자와 판정 자료가 실행 가능한지 확인한다.
- *
- * @param {ReadonlyArray<InternalRule>} definitions 검사할 규칙 자료
- * @returns {void}
- */
 function validateRules(definitions) {
   const ids = new Set();
   const lemmas = new Set();
@@ -1190,13 +1091,6 @@ function validateRules(definitions) {
   validateEndings(endings);
 }
 
-/**
- * 검사 방식에 필요한 표제어와 구문 앞부분을 확인한다.
- *
- * @param {InternalRule} rule 검사할 규칙
- * @param {Set<string>} lemmas 앞선 규칙에서 선언한 표제어
- * @returns {void}
- */
 function validateTerms(rule, lemmas) {
   if (rule.mode === "literal" || rule.mode === "particle" ||
       (["noun", "word"].includes(rule.mode) && rule.terms === undefined)) {
@@ -1237,12 +1131,6 @@ function validateTerms(rule, lemmas) {
   }
 }
 
-/**
- * 공통 어미 자료의 이름, 배열과 Unicode를 확인한다.
- *
- * @param {object} value 검사할 자료
- * @returns {void}
- */
 function validateEndings(value) {
   if (!hasLowercaseKeys(value)) {
     throw new Error("rules:invalid-expression-rule");
@@ -1267,22 +1155,10 @@ function validateEndings(value) {
   }
 }
 
-/**
- * 비공개 자료의 속성명이 영문 소문자로만 이루어졌는지 확인한다.
- *
- * @param {object} value 검사할 객체
- * @returns {boolean} 모든 속성명이 조건을 만족하면 true
- */
 function hasLowercaseKeys(value) {
   return Object.keys(value).every((key) => /^[a-z]+$/u.test(key));
 }
 
-/**
- * 비공개 검사 자료를 제외하고 기존 공개 규칙 필드만 반환한다.
- *
- * @param {InternalRule} rule 검사 규칙
- * @returns {ExpressionRule} 공개 JSON에 기록할 규칙
- */
 function makePublicRule(rule) {
   return {
     kind: rule.kind,
@@ -1295,13 +1171,6 @@ function makePublicRule(rule) {
   };
 }
 
-/**
- * 규칙 문자열 배열의 공백, 중복, Unicode와 길이를 확인한다.
- *
- * @param {ReadonlyArray<string>} values 검사할 문자열 배열
- * @param {boolean} expression 표현에 quote 길이와 줄바꿈 제한을 적용할지 여부
- * @returns {void}
- */
 function validateTextList(values, expression) {
   if (values.length === 0) {
     throw new Error("rules:invalid-expression-rule");
@@ -1319,33 +1188,15 @@ function validateTextList(values, expression) {
   }
 }
 
-/**
- * 사람이 읽을 규칙 자료가 공백뿐이거나 잘못된 Unicode인지 확인한다.
- *
- * @param {string} value 검사할 문자열
- * @returns {boolean} 문자가 있고 Unicode가 온전하면 true
- */
 function isNonEmptyText(value) {
   return value.trim().length > 0 && value.isWellFormed();
 }
 
-/**
- * 고정 표현과 활용형 token을 선언 순서 및 사용자 진단에 연결한다.
- *
- * @param {ReadonlyArray<InternalRule>} definitions 검사할 규칙 자료
- * @returns {{
- *   literal: ReadonlyMap<string, ReadonlyArray<ExpressionDescriptor>>,
- *   token: ReadonlyMap<string, ReadonlyArray<TermDescriptor>>
- * }} 두 매칭 방식의 후보 색인
- */
 function buildExpressionIndex(definitions) {
-  /** @type {Map<string, Array<ExpressionDescriptor>>} */
   const literal = new Map();
-  /** @type {Map<string, Array<TermDescriptor>>} */
   const token = new Map();
   let order = 0;
   for (const [index, rule] of definitions.entries()) {
-    /** @type {Array<LabelDescriptor>} */
     const labels = [];
     for (const expression of rule.expressions) {
       const surface = expression.normalize("NFD");
@@ -1371,14 +1222,6 @@ function buildExpressionIndex(definitions) {
   return { literal, token };
 }
 
-/**
- * 표제어의 규칙 활용을 정규화한 token과 보고할 어간 길이로 만든다.
- *
- * @param {Term} term 표제어, 품사와 보조 용언 종류
- * @param {boolean} bare 선언 표현에 어간 자체가 있는지 여부
- * @param {ReadonlyArray<string>} [auxiliaryForms] 동사의 아/어형 뒤에 붙일 보조 동사 활용형
- * @returns {ReadonlyMap<string, number>} NFD token과 보고할 NFD 길이
- */
 function buildForms(term, bare, auxiliaryForms = []) {
   const forms = new Map();
   const stem = term.lemma.slice(0, -1).normalize("NFD");
@@ -1419,14 +1262,6 @@ function buildForms(term, bare, auxiliaryForms = []) {
   return forms;
 }
 
-/**
- * 한 활용 표면에 공통 어미를 붙여 중복 없는 token 자료를 추가한다.
- *
- * @param {Map<string, number>} forms 생성한 활용형
- * @param {string} surface NFD 활용 표면
- * @param {ReadonlyArray<string>} values 붙일 어미
- * @returns {void}
- */
 function addForms(forms, surface, values) {
   for (const ending of values) {
     const value = `${surface}${ending.normalize("NFD")}`;
@@ -1434,13 +1269,6 @@ function addForms(forms, surface, values) {
   }
 }
 
-/**
- * 받침, 모음과 불규칙 활용 유형에 따라 아/어의 본말과 준말을 생성한다.
- *
- * @param {string} stem NFD 어간
- * @param {Term["conjugation"]} conjugation 어간 변화 유형
- * @returns {string[]} 적용 가능한 NFD 표면
- */
 function makeFusedStems(stem, conjugation) {
   const vowel = findLastVowel(stem);
   if (vowel === null) {
@@ -1466,12 +1294,6 @@ function makeFusedStems(stem, conjugation) {
   return contraction ? [full, stem.slice(0, -1) + contraction] : [full];
 }
 
-/**
- * NFD 어간의 마지막 현대 한글 모음을 찾는다.
- *
- * @param {string} stem NFD 어간
- * @returns {string | null} 마지막 중성 자모
- */
 function findLastVowel(stem) {
   for (let index = stem.length - 1; index >= 0; index -= 1) {
     const codePoint = stem.codePointAt(index);
@@ -1482,38 +1304,15 @@ function findLastVowel(stem) {
   return null;
 }
 
-/**
- * NFD 어간이 현대 한글 종성으로 끝나는지 확인한다.
- *
- * @param {string} stem NFD 어간
- * @returns {boolean} 받침이 있으면 true
- */
 function hasFinalConsonant(stem) {
   const codePoint = stem.codePointAt(stem.length - 1);
   return codePoint >= 0x11a8 && codePoint <= 0x11c2;
 }
 
-/**
- * 모음으로 끝나는 NFD 표면에 종성을 추가한다.
- *
- * @param {string} surface NFD 활용 표면
- * @param {string} consonant 종성 자모
- * @returns {string} 종성을 붙인 NFD 표면
- */
 function addFinalConsonant(surface, consonant) {
   return `${surface}${consonant}`;
 }
 
-/**
- * 생성된 token에 표시 표현, 선언 순서와 구문 앞부분을 연결한다.
- *
- * @param {InternalRule} rule 검사 규칙
- * @param {number} index 규칙 위치
- * @param {string} surface NFD token
- * @param {number} length 보고할 어간 길이
- * @param {ReadonlyArray<LabelDescriptor>} labels 정규화한 표시 표현과 선언 순서
- * @returns {TermDescriptor} 실행용 후보
- */
 function makeTermDescriptor(rule, index, surface, length, labels) {
   let expression = labels[0].expression;
   let order = labels[0].order;
@@ -1535,14 +1334,6 @@ function makeTermDescriptor(rule, index, surface, length, labels) {
   };
 }
 
-/**
- * 같은 token과 규칙의 후보는 더 긴 보고 범위 하나만 유지한다.
- *
- * @param {Map<string, Array<TermDescriptor>>} token token 색인
- * @param {string} surface NFD token
- * @param {TermDescriptor} descriptor 추가할 후보
- * @returns {void}
- */
 function addTermDescriptor(token, surface, descriptor) {
   const descriptors = token.get(surface) ?? [];
   const current = descriptors.findIndex((candidate) => candidate.rule === descriptor.rule);
@@ -1554,12 +1345,6 @@ function addTermDescriptor(token, surface, descriptor) {
   token.set(surface, descriptors);
 }
 
-/**
- * 앞말의 받침에 맞는 조사와 이어지는 보조사 조합을 생성한다.
- * @param {boolean} closed 받침 유무
- * @param {boolean} liquid ㄹ 받침 여부
- * @returns {Set<string>} NFD로 정규화한 접미 문자열
- */
 function makeParticleSuffixes(closed, liquid) {
   const direction = closed && !liquid ? "으로" : "로";
   const tails = new Set([
@@ -1602,17 +1387,11 @@ const pluralMarker = "들".normalize("NFD");
 const maxParticleLength = pluralMarker.length +
   Math.max(...Object.values(particles).flatMap((suffixes) => [...suffixes].map((s) => s.length)));
 
-/** @param {string} base NFD 어간 또는 체언 */
 function particlesAfter(base) {
   if (base.endsWith(FINAL_L)) return particles.liquid;
   return hasFinalConsonant(base) ? particles.final : particles.vowel;
 }
 
-/**
- * @param {string} suffix 명사나 명사형 뒤의 NFD 문자열
- * @param {ReadonlySet<string>} suffixes 해당 받침 뒤에 붙는 조사
- * @returns {boolean} 복수 표지와 조사가 결합할 수 있는지 여부
- */
 function matchesNounSuffix(suffix, suffixes) {
   if (suffix.startsWith(pluralMarker)) {
     return particles.liquid.has(suffix.slice(pluralMarker.length));
@@ -1620,12 +1399,6 @@ function matchesNounSuffix(suffix, suffixes) {
   return suffixes.has(suffix);
 }
 
-/**
- * @param {string} nfd 자모로 정규화한 원문
- * @param {number} start 일치한 표현의 시작 위치
- * @param {ExpressionDescriptor} descriptor 표현에 적용할 경계 조건
- * @returns {boolean}
- */
 function matchesWordBoundary(nfd, start, descriptor) {
   if (descriptor.mode === "literal") return true;
   const end = start + descriptor.surface.length;
@@ -1645,32 +1418,17 @@ function matchesWordBoundary(nfd, start, descriptor) {
   return descriptor.mode === "noun" ? matchesNounSuffix(suffix, suffixes) : suffixes.has(suffix);
 }
 
-/**
- * @param {string} text
- * @param {number} offset 문자 안의 UTF-16 위치
- * @returns {string} 해당 문자 또는 범위 밖이면 빈 문자열
- */
 function characterAt(text, offset) {
   const start = isLowSurrogate(text.charCodeAt(offset)) ? offset - 1 : offset;
   const point = text.codePointAt(start);
   return point === undefined ? "" : String.fromCodePoint(point);
 }
 
-/** @param {string} character */
 function isWordCharacter(character) {
   return /[\p{L}\p{M}\p{N}_]/u.test(character);
 }
 
-/**
- * 한 source의 모든 literal 및 활용형 출현을 원본 UTF-16 위치의 결정적 순서로 모은다.
- *
- * @param {string} text 검사할 원문
- * @param {ReadonlyMap<string, ReadonlyArray<ExpressionDescriptor>>} literal 고정 표현 색인
- * @param {ReadonlyMap<string, ReadonlyArray<TermDescriptor>>} token 활용형 token 색인
- * @returns {ReadonlyArray<ExpressionMatch>} 시작 위치와 선언 순서로 정렬한 출현
- */
 function collectMatches(text, literal, token) {
-  /** @type {Array<ExpressionMatch>} */
   const matches = [];
   const mapping = buildNfdMapping(text);
   for (let offset = 0; offset < mapping.nfdText.length; offset += 1) {
@@ -1704,12 +1462,6 @@ function collectMatches(text, literal, token) {
   );
 }
 
-/**
- * 조사 앞이 이미 등록된 명사형일 때만 원래 동사의 진단을 재사용한다.
- * @param {string} surface NFD 어절
- * @param {ReadonlyMap<string, ReadonlyArray<TermDescriptor>>} token 활용형 색인
- * @returns {ReadonlyArray<TermDescriptor>} 같은 규칙에서 중복되지 않는 후보
- */
 function tokenWithParticles(surface, token) {
   const exact = token.get(surface) ?? [];
   let attached;
@@ -1727,15 +1479,6 @@ function tokenWithParticles(surface, token) {
   return attached ?? exact;
 }
 
-/**
- * 한국어 token 전체가 검증된 활용으로 해석될 때 표제어의 원본 범위를 모은다.
- *
- * @param {string} text 검사할 원문
- * @param {NfdMapping} mapping 원문과 NFD 위치 대응
- * @param {ReadonlyMap<string, ReadonlyArray<TermDescriptor>>} token 활용형 token 색인
- * @param {Array<ExpressionMatch>} matches 출현을 추가할 배열
- * @returns {void}
- */
 function collectTermMatches(text, mapping, token, matches) {
   for (let tokenStart = 0; tokenStart < text.length; ) {
     const codePoint = text.codePointAt(tokenStart);
@@ -1781,12 +1524,6 @@ function collectTermMatches(text, mapping, token, matches) {
   }
 }
 
-/**
- * 활용형 token에 사용할 현대 한글 음절과 정준 분해 자모인지 확인한다.
- *
- * @param {number | undefined} codePoint Unicode code point
- * @returns {boolean} 형태 판정 token에 포함하면 true
- */
 function isMorphologyTokenCodePoint(codePoint) {
   return (
     codePoint !== undefined &&
@@ -1797,19 +1534,9 @@ function isMorphologyTokenCodePoint(codePoint) {
   );
 }
 
-/**
- * code point마다 NFD를 이어 붙여 원본 위치와 NFD 위치의 대응을 만든다.
- *
- * @param {string} text 검사할 원문
- * @returns {NfdMapping} NFD 원문과 code point 시작 위치 대응
- * @remarks 마지막 항목은 두 문자열의 끝 위치를 가리키는 sentinel이다.
- */
 function buildNfdMapping(text) {
-  /** @type {Array<number>} */
   const originalStarts = [];
-  /** @type {Array<number>} */
   const nfdStarts = [];
-  /** @type {Array<string>} */
   const parts = [];
   let nfdLength = 0;
   for (let offset = 0; offset < text.length; ) {
@@ -1827,14 +1554,6 @@ function buildNfdMapping(text) {
   return { nfdText: parts.join(""), originalStarts, nfdStarts };
 }
 
-/**
- * NFD 일치 범위를 원본 UTF-16 범위로 바꾸고 음절 중간에서 끝난 일치는 그 음절의 끝으로 올린다.
- *
- * @param {NfdMapping} mapping 원본과 NFD 위치 대응
- * @param {number} nfdStart NFD 일치 시작 위치
- * @param {number} nfdEnd NFD 일치의 exclusive 끝 위치
- * @returns {null | {start: number, end: number}} code point 시작에 정렬되지 않은 일치는 null
- */
 function mapOriginalRange(mapping, nfdStart, nfdEnd) {
   const startIndex = findCodePointIndex(mapping.nfdStarts, nfdStart);
   if (mapping.nfdStarts[startIndex] !== nfdStart) {
@@ -1847,13 +1566,6 @@ function mapOriginalRange(mapping, nfdStart, nfdEnd) {
   };
 }
 
-/**
- * 목표 NFD 위치를 포함하는 code point 항목을 이분 탐색으로 찾는다.
- *
- * @param {ReadonlyArray<number>} nfdStarts 오름차순 NFD 시작 위치
- * @param {number} target 찾을 NFD 위치
- * @returns {number} `nfdStarts[index] <= target`을 만족하는 가장 큰 index
- */
 function findCodePointIndex(nfdStarts, target) {
   let lower = 0;
   let upper = nfdStarts.length - 1;
@@ -1868,17 +1580,8 @@ function findCodePointIndex(nfdStarts, target) {
   return lower;
 }
 
-/**
- * 한 source의 모든 출현을 모아 줄과 열을 계산하고 경고 상한 안에서 기록한다.
- *
- * @param {Source} source 검사할 원문
- * @param {ReadonlyArray<InternalRule>} definitions 검사할 규칙 자료
- * @param {ReadonlyMap<string, ReadonlyArray<ExpressionDescriptor>>} literal 고정 표현 색인
- * @param {ReadonlyMap<string, ReadonlyArray<TermDescriptor>>} token 활용형 token 색인
- * @param {Array<ExpressionWarning>} warnings 실행 전체의 상세 경고 앞부분
- * @returns {{found: number, matchedRuleIndexes: ReadonlySet<number>}} 출현 수와 발견 규칙 위치
- */
-function scanSource(source, definitions, literal, token, warnings) {
+function scanSource(source, definitions, literal, token, limit) {
+  const warnings = [];
   const matches = collectMatches(source.text, literal, token);
   const matchedRuleIndexes = new Set();
   let line = 1;
@@ -1891,7 +1594,7 @@ function scanSource(source, definitions, literal, token, warnings) {
       const match = matches[cursor];
       cursor += 1;
       matchedRuleIndexes.add(match.rule);
-      if (warnings.length < MAX_WARNINGS) {
+      if (warnings.length < limit) {
         warnings.push({
           ruleId: definitions[match.rule].id,
           expression: match.expression,
@@ -1918,16 +1621,9 @@ function scanSource(source, definitions, literal, token, warnings) {
     }
   }
 
-  return { found: matches.length, matchedRuleIndexes };
+  return { found: matches.length, matchedRuleIndexes, warnings };
 }
 
-/**
- * 한 줄의 끝을 LF, CRLF와 단독 CR을 같은 줄바꿈으로 보아 찾는다.
- *
- * @param {string} text source 원문
- * @param {number} start 줄의 첫 UTF-16 offset
- * @returns {number} 줄바꿈 문자 또는 문자열 끝의 exclusive offset
- */
 function findLineEnd(text, start) {
   for (let offset = start; offset < text.length; offset += 1) {
     const unit = text.charCodeAt(offset);
@@ -1938,16 +1634,6 @@ function findLineEnd(text, start) {
   return text.length;
 }
 
-/**
- * 일치 표현을 보존하면서 줄에서 최대 480 UTF-16 code unit을 반환한다.
- *
- * @param {string} text source 원문
- * @param {number} lineStart 줄 시작 offset
- * @param {number} lineEnd 줄 끝 offset
- * @param {number} matchStart 일치 시작 offset
- * @param {number} matchLength 일치 표현 길이
- * @returns {string} AI가 문맥 판정에 사용할 원문 일부
- */
 function makeQuote(text, lineStart, lineEnd, matchStart, matchLength) {
   if (lineEnd - lineStart <= MAX_QUOTE_UTF16) {
     return text.slice(lineStart, lineEnd);
@@ -1965,18 +1651,10 @@ function makeQuote(text, lineStart, lineEnd, matchStart, matchLength) {
   return text.slice(start, end);
 }
 
-/**
- * @param {number} unit UTF-16 code unit
- * @returns {boolean} high surrogate이면 true
- */
 function isHighSurrogate(unit) {
   return unit >= 0xd800 && unit <= 0xdbff;
 }
 
-/**
- * @param {number} unit UTF-16 code unit
- * @returns {boolean} low surrogate이면 true
- */
 function isLowSurrogate(unit) {
   return unit >= 0xdc00 && unit <= 0xdfff;
 }
