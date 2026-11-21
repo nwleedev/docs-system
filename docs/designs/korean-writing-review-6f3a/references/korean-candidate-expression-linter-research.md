@@ -392,6 +392,14 @@ scanSources({ provideSources });
 
 textlint에서 확인한 것처럼 입력 차이를 `Source` 뒤에 숨겨서는 안 된다. Git 어댑터는 변경 파일 선정과 저장소 상대 위치를, 파일 어댑터는 호출자가 정한 순서와 표시 위치를, 표준 입력 어댑터는 `source-name`과 byte 상한을 각각 책임진다. 공통 값은 탐색에 필요한 최소 부분뿐이다.
 
+### terms 검사기의 설계 패턴
+
+앞의 입력 함수 주입 예시는 종전 설계다. 현재 두 언어판을 리팩터링할 때는 **입력 어댑터가 텍스트를 읽고, 검사 함수가 그 값을 받아 결과를 계산하는 구조**를 권장한다. 아래 내용은 소스 코드와 설계 자료를 대조한 결과이며 성능 측정치는 없다.
+
+- **Functional Core, Imperative Shell.** `--stdin`을 예로 들면 `main`이 `provideStdinSource`를 기다리고, 반환된 배열을 `scanSources`에 전달한다. `scanSources`는 입력을 검증하고 표현과 문단 경고를 조립한다. 마지막에 `main`이 결과를 출력한다. 표준 입력 읽기에 실패하면 기존 CLI 오류 처리가 실행되고 탐지기는 호출되지 않는다. 이 분리는 계산 부분을 실제 문자열만으로 검증할 수 있게 한다. [Gary Bernhardt의 설계 사례](https://www.destroyallsoftware.com/screencasts/catalog/functional-core-imperative-shell)
+- **입력 어댑터와 의존성 주입.** 파일, 표준 입력, Git의 세 함수는 각 입력 형식을 같은 배열로 변환하는 어댑터 역할을 한다. 예를 들어 Git 상태와 변경 파일 선택은 Git 입력 함수에서만 처리한다. 입력 함수를 전달하면 호출자가 읽는 방법을 바꿀 수 있지만 현재 검사 본체는 그 함수를 즉시 한 번 호출한다. 읽기 지연이나 재시도가 필요한 시점에만 함수 주입을 재검토한다. 파일 선택 오류는 실제 Git 상태와 결과 식별자를 대조해 검증한다. [Martin Fowler의 의존성 주입 설명](https://martinfowler.com/articles/injection.html), [Git 상태 출력 명세](https://git-scm.com/docs/git-status)
+- **데이터 기반 표현 검사.** 새 동사가 기존 활용 방식을 따르면 표제어와 활용 유형을 규칙 데이터에 등록한다. `buildExpressionIndex`와 공통 매칭 함수가 같은 방식으로 검사한다. ESLint처럼 규칙마다 서로 다른 구문 노드를 방문하고 코드를 실행해야 할 때는 규칙별 실행 함수가 유용하다. 현재 검사기는 고정된 표현 규칙 전체를 실행하므로 단어마다 전략 객체를 생성하거나 플러그인 등록 구조를 도입하면 같은 매칭 절차를 여러 곳에서 관리하게 된다. Markdown 문단은 블록과 문장 수를 판정하므로 기존 `scanParagraphs`에서 별도로 계산한다. [ESLint의 규칙별 실행 함수 사례](https://eslint.org/docs/latest/extend/custom-rules)
+
 ### 변경 파일 입력
 
 ```text
