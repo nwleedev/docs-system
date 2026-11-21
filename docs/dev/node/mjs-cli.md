@@ -731,9 +731,8 @@ class SharedFindings {
 ```mjs
 async function main(args) {
   const request = parseCliRequest(args);
-  const result = await scanSources({
-    provideSources: () => provideSources(request),
-  });
+  const sources = await readSources(request);
+  const result = scanSources(sources);
 
   await writeText(
     process.stdout,
@@ -1023,9 +1022,9 @@ const location = utils.processText(source.text, {
 
 **막을 실패.** 기능 수가 늘었다는 이유로 class나 공용 dependency container를 만들면 순수 계산 함수도 파일을 읽고 Git을 실행하거나 process 객체에 접근할 수 있으며 실제 의존 관계가 인수에서 보이지 않는다. 상태가 없는 class는 표준 함수 호출을 한 단계 감쌀 뿐이다. 상태가 있는 class의 method를 함수 값으로 떼어 전달하면 receiver를 잃어 private field 접근이 실패할 수 있다.
 
-**적용 조건과 관찰 결과.** 현재 `scanSources({ provideSources })`처럼 필요한 기능 하나를 함수로 전달하는 방식은 유지한다. 기능이 늘어나도 파일이나 Git을 읽는 함수에는 실제로 호출할 함수만 이름으로 전달하고, 순수 함수에는 계산할 값만 전달한다. class는 여러 호출에서 같은 상태나 자원을 유지하거나, 여러 method가 같은 조건, 호출 순서 또는 `close()` 같은 종료 절차를 함께 지켜야 하며 함수나 기존 Node.js 객체로 해결할 수 없을 때 다시 검토한다. 기능 또는 method 수만 늘어난 것은 전환 근거가 아니다. Node.js `FileHandle`처럼 이미 상태와 종료 동작을 제공하는 객체는 별도 객체로 감싸지 않고 사용한다.
+**적용 조건과 관찰 결과.** 검사기는 진입점에서 선택한 입력 함수를 한 번 호출하고, 읽은 배열을 `scanSources(sources)`에 전달한다. 기능이 늘어나도 파일이나 Git을 읽는 함수에는 실제로 호출할 함수만 이름으로 전달하고, 순수 함수에는 계산할 값만 전달한다. class는 여러 호출에서 같은 상태나 자원을 유지하거나, 여러 method가 같은 조건, 호출 순서 또는 `close()` 같은 종료 절차를 함께 지켜야 하며 함수나 기존 Node.js 객체로 해결할 수 없을 때 다시 검토한다. 기능 또는 method 수만 늘어난 것은 전환 근거가 아니다. Node.js `FileHandle`처럼 이미 상태와 종료 동작을 제공하는 객체는 별도 객체로 감싸지 않고 사용한다.
 
-두 탐지 함수는 정적으로 가져와 직접 호출한다. 이 함수들을 다시 주입하면 실제 module graph와 다른 탐지기를 실행할 수 있어 모든 내장 검사를 항상 실행한다는 조건을 약화한다. 테스트에서 바꿔야 하는 I/O 경계인 `provideSources`만 전달하고, 탐지 함수는 같은 source 값으로 직접 검사한다. Node.js의 module mock은 22.3.0에 추가되어 최저 지원 버전인 22.0.0부터 22.2.x까지 사용할 수 없고, 22.18.0에서도 실험 flag가 필요하다. 현재 self-test를 위해 loader나 module mock을 도입하지 않는다. [Node.js 22 test runner의 module mock 문서](https://nodejs.org/download/release/v22.18.0/docs/api/test.html#mockmodulespecifier-options)를 확인했다.
+두 탐지 함수는 정적으로 가져와 직접 호출한다. 이 함수들을 다시 주입하면 실제 module graph와 다른 탐지기를 실행할 수 있어 모든 내장 검사를 항상 실행한다는 조건을 약화한다. 검사 조립과 탐지 함수는 source 배열로 검사하고, 실제 입출력은 CLI를 실행해 확인한다. Node.js의 module mock은 22.3.0에 추가되어 최저 지원 버전인 22.0.0부터 22.2.x까지 사용할 수 없고, 22.18.0에서도 실험 flag가 필요하다. 현재 self-test를 위해 loader나 module mock을 도입하지 않는다. [Node.js 22 test runner의 module mock 문서](https://nodejs.org/download/release/v22.18.0/docs/api/test.html#mockmodulespecifier-options)를 확인했다.
 
 **권장 코드.** 함수가 실제로 사용하는 두 기능만 전달한다.
 
@@ -1039,13 +1038,11 @@ async function readChangedSources(
 }
 ```
 
-분리안에서는 source 제공 기능만 바꾸고 탐지기는 고정한다.
+입력 처리 이후에는 동일한 배열을 두 탐지기에 전달한다.
 
 ```mjs
-async function scanSources({ provideSources }) {
-  const sources = await provideSources();
-  return scanContent(sources);
-}
+const sources = await readChangedFiles(repository);
+const result = scanSources(sources);
 ```
 
 **피해야 할 코드.** 다음 class는 상태, 불변 조건과 수명주기 없이 호출을 전달하고, 큰 container는 숨은 I/O를 허용한다.

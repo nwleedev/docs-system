@@ -66,8 +66,6 @@ import { scanParagraphs } from "./long-paragraphs.mjs";
  * }} ChildOptions
  */
 
-/** @typedef {() => Promise<ReadonlyArray<Source>>} SourceProvider */
-
 /** @type {number} */
 const MAX_SOURCES = 512;
 /** @type {number} */
@@ -247,19 +245,11 @@ function isValidInputName(value) {
   return value.length > 0 && !value.includes("\0") && value.isWellFormed();
 }
 
-/**
- * source 제공 함수 하나만 호출하고 두 고정 탐지기를 항상 실행한다.
- *
- * @param {Readonly<{provideSources: SourceProvider}>} dependencies source를 읽는 I/O 기능
- * @returns {Promise<{
- *   sources: ReadonlyArray<SourceMetadata>,
- *   checks: ReadonlyArray<Check>
- * }>} 공통 source metadata와 표현 및 문단 검사 결과
- * @remarks 탐지 함수는 주입받지 않고 정적 import한 함수를 직접 호출한다.
- */
-async function scanSources({ provideSources }) {
-  const sources = await provideSources();
-  const sourceMetadata = validateSources(sources);
+function scanSources(sources) {
+  validateSources(sources);
+  const sourceMetadata = sources.map(({ id, path }) =>
+    path === undefined ? { id } : { id, path },
+  );
   const checks = [
     limitCheckByBytes(scanExpressions(sources), MAX_CHECK_BYTES),
     limitCheckByBytes(scanParagraphs(sources), MAX_CHECK_BYTES),
@@ -292,9 +282,6 @@ function validateSources(sources) {
       throw scannerError("input:total-too-large");
     }
   }
-  return sources.map((source) =>
-    source.path === undefined ? { id: source.id } : { id: source.id, path: source.path },
-  );
 }
 
 /**
@@ -305,27 +292,23 @@ function validateSources(sources) {
  * @returns {Check} 전체 집계와 byte 상한 안의 상세 경고
  */
 function limitCheckByBytes(check, maxBytes) {
-  /**
-   * @param {number} shown 포함할 상세 경고 수
-   * @returns {Check} 표시 및 생략 수를 다시 계산한 검사 결과
-   */
-  const select = (shown) => ({
+  const withFirstWarnings = (count) => ({
     id: check.id,
     catalog: check.catalog,
     rules: check.rules,
-    warnings: check.warnings.slice(0, shown),
+    warnings: check.warnings.slice(0, count),
     summary: {
       total: check.summary.total,
-      shown,
-      omitted: check.summary.total - shown,
+      shown: count,
+      omitted: check.summary.total - count,
     },
   });
 
-  if (Buffer.byteLength(JSON.stringify(select(0)), "utf8") > maxBytes) {
+  if (Buffer.byteLength(JSON.stringify(withFirstWarnings(0)), "utf8") > maxBytes) {
     throw scannerError("output:too-large");
   }
 
-  const complete = select(check.warnings.length);
+  const complete = withFirstWarnings(check.warnings.length);
   if (Buffer.byteLength(JSON.stringify(complete), "utf8") <= maxBytes) {
     return complete;
   }
@@ -334,13 +317,13 @@ function limitCheckByBytes(check, maxBytes) {
   let upper = check.warnings.length;
   while (lower < upper) {
     const middle = Math.ceil((lower + upper) / 2);
-    if (Buffer.byteLength(JSON.stringify(select(middle)), "utf8") <= maxBytes) {
+    if (Buffer.byteLength(JSON.stringify(withFirstWarnings(middle)), "utf8") <= maxBytes) {
       lower = middle;
     } else {
       upper = middle - 1;
     }
   }
-  return select(lower);
+  return withFirstWarnings(lower);
 }
 /**
  * UTF-8 byte chunk를 source별 decoder로 해석하면서 입력 상한을 적용한다.
@@ -459,7 +442,7 @@ async function readCandidateFile(candidate, mode, committedTotalBytes) {
  * @param {ReadonlyArray<string>} files 호출자가 전달한 파일 위치
  * @returns {Promise<ReadonlyArray<Source>>} 중복 실제 위치가 없고 표시 위치가 정규화된 source
  */
-async function provideFileSources(files) {
+async function readFiles(files) {
   const cwdReal = await realpath(process.cwd());
   /** @type {Set<string>} */
   const seen = new Set();
@@ -496,7 +479,7 @@ async function provideFileSources(files) {
  * @param {string} sourceName 호출자가 정한 표시 이름
  * @returns {Promise<ReadonlyArray<Source>>} 빈 입력도 포함하는 source 한 건
  */
-async function provideStdinSource(sourceName) {
+async function readStdin(sourceName) {
   const decoded = await decodeChunks(process.stdin, 0);
   return [{ id: sourceName, text: decoded.text, bytes: decoded.bytes }];
 }
@@ -715,7 +698,7 @@ function parseRepositoryRoot(stdout) {
  * @param {string} repository `--changed`로 받은 저장소 또는 하위 디렉터리
  * @returns {Promise<ReadonlyArray<Source>>} 저장소 상대 위치로 식별한 현재 원문 source
  */
-async function provideChangedSources(repository) {
+async function readChangedFiles(repository) {
   const requestedCwd = resolve(process.cwd(), repository);
   let requestedStats;
   try {
@@ -1278,14 +1261,7 @@ async function runSelfTest() {
   assert.throws(() => limitCheckByBytes(cappedExpressions, 1), /output:too-large/u);
   assert.equal(MAX_CHECK_BYTES, 32 * 1024 * 1024);
 
-  let providerCalls = 0;
-  const assembled = await scanSources({
-    provideSources: async () => {
-      providerCalls += 1;
-      return [expressionSource, makeTestSource("paragraph", sevenSentences)];
-    },
-  });
-  assert.equal(providerCalls, 1);
+  const assembled = scanSources([expressionSource, makeTestSource("paragraph", sevenSentences)]);
   assert.deepEqual(
     assembled.checks.map((check) => check.id),
     ["expressions", "paragraphs"],
@@ -1293,21 +1269,18 @@ async function runSelfTest() {
   assert.deepEqual(assembled.sources, [{ id: "expressions" }, { id: "paragraph" }]);
   assert.equal(assembled.checks[1].summary.total, 1);
 
-  const empty = await scanSources({
-    provideSources: async () => [makeTestSource("empty", "")],
-  });
+  const empty = scanSources([makeTestSource("empty", "")]);
   assert.deepEqual(
     empty.checks.map((check) => check.summary.total),
     [0, 0],
   );
-  await assert.rejects(
+  assert.throws(
     () =>
-      scanSources({
-        provideSources: async () =>
-          Array.from({ length: MAX_SOURCES + 1 }, (_, index) =>
-            makeTestSource(`source-${index}`, ""),
-          ),
-      }),
+      scanSources(
+        Array.from({ length: MAX_SOURCES + 1 }, (_, index) =>
+          makeTestSource(`source-${index}`, ""),
+        ),
+      ),
     /input:too-many-sources/u,
   );
   await assert.rejects(
@@ -1520,17 +1493,16 @@ async function main(args) {
     }
   }
 
-  /** @type {SourceProvider} */
-  let provideSources;
+  let sources;
   if (mode.kind === "changed") {
-    provideSources = () => provideChangedSources(mode.repository);
+    sources = await readChangedFiles(mode.repository);
   } else if (mode.kind === "files") {
-    provideSources = () => provideFileSources(mode.files);
+    sources = await readFiles(mode.files);
   } else {
-    provideSources = () => provideStdinSource(mode.sourceName);
+    sources = await readStdin(mode.sourceName);
   }
 
-  const scan = await scanSources({ provideSources });
+  const scan = scanSources(sources);
   let json;
   try {
     json = JSON.stringify(scan);
