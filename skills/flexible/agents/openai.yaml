@@ -1,0 +1,4 @@
+interface:
+  display_name: "Requirements Clarification and Design"
+  short_description: "Review requirements, order steps, and set completion criteria."
+  default_prompt: "Use $flexible to review the requirements. Describe the steps needed to meet them, in order. If anything is undecided, explain what needs to be confirmed and why."

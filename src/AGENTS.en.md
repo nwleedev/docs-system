@@ -77,7 +77,7 @@
 
 ## Skill Use and Work Environment
 
-**If a required Skill or one of its required references cannot be read, do not infer replacement rules. Stop and report the missing prerequisite. When only the design authority README is absent, follow the creation-approval and alternative-location procedure in `use-flexible-design`. If the development authority README is absent, propose recording candidates under the destination procedure in `use-flexible-coding` and existing repository instructions; do not create an authority file on your own.**
+**If a required Skill or one of its required references cannot be read, do not infer replacement rules. Stop and report the missing prerequisite. If the design README is missing, use `$flexible` to check the repository's existing documentation rules first. If there are none and a guide is needed, propose creating `docs/designs/README.md` and create it only with the user's agreement. If the development authority README is absent, propose recording candidates under the destination procedure in `use-flexible-coding` and existing repository instructions. Do not create an authority file on your own.**
 
 <!-- BEGIN USE BETTER HANDOFF -->
 
@@ -92,19 +92,19 @@
 
 ### Text and Names
 
-- Before drafting reusable text or names in any language follow the preparation instructions in `$use-better-terms`. Select the applicable project rules and source evidence. Read its required Korean reference before drafting Korean text.
-- Group text and names by storage or sharing unit. Perform the final review in `$use-better-terms` once immediately before storing or sharing them. Apply natural alternatives first when verified evidence preserves the meaning.
+- Before drafting reusable text or names in any language, follow the preparation instructions in `$terms` to check the project's wording rules and the evidence for the wording. Apply the Korean criteria in the skill itself wherever Korean appears.
+- Group text and names by storage or sharing unit. Perform the final review in `$terms` once immediately before storing or sharing them. For a review request, propose alternatives. When asked to draft or edit, apply wording that preserves the meaning established by the evidence.
 - Retain an established term or exact name only with its reason. Ask for human input instead of replacing text when doing so would decide missing meaning, responsibility, or approval.
 - When the user explicitly requests review of wording or a public output, review the complete requested unit even when no file changed.
-- Do not run `$use-better-terms` merely because routine chat or a progress update is sent.
+- Do not run `$terms` merely because routine chat or a progress update is sent.
 <!-- END USE BETTER TERMS -->
 
 ### Research, Cross-checking, Design, and Documentation
 
-- Run `$use-flexible-design` when clarifying requirements; researching, creating, reviewing, planning, or validating `docs/designs/**`; or using a document under `docs/designs/**` as implementation input.
+- Use `$flexible` to clarify requirements, write an execution plan or carry out a plan when asked. Also use it to research, draft, review, plan or validate documents under `docs/designs/**` or to implement changes based on those documents.
 - When writing or assessing requirements, establish the actual goal and use situations rather than inferring features from the project name. Investigate necessary conditions and the impact of new evidence without waiting for a separate request. In the first substantive answer, explain missing information or evidence of sufficiency, readiness, necessary work and reasons, and completion evidence. Keep empty-file preparation and structural edits proportional to the request.
 - Keep requirements and approved decisions separate from AI research and proposals.
-- Use the repository's `docs/designs/README.md` as the authority for design-document structure, recording locations, and validation criteria.
+- If the repository has a `docs/designs/README.md`, follow its rules for design-document structure, recording locations, and validation criteria.
 
 ### Development Guidance, Technology Stack, and Checks
 
