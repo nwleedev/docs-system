@@ -10,7 +10,7 @@
 
 **적용 조건과 관찰 결과.** 검사기는 다른 module이 import하는 library가 아니라 직접 실행하는 단독 CLI다. `main()`을 파일 끝의 top-level `await` 한 곳에서 호출하고, 성공할 때만 종료 상태를 `0`으로 바꾼다. 후보가 발견된 것은 실행 실패가 아니므로 경고 수와 무관하게 상태 `0`을 반환한다. SIGINT와 SIGTERM handler는 추가하지 않아 운영체제가 정한 signal 종료 의미를 유지한다.
 
-**권장 코드.** 실패 상태를 먼저 정하면 끝나지 않은 Promise도 성공으로 보고하지 않는다.
+**권장 코드.** 실패 상태를 먼저 정하면 끝나지 않은 Promise도 성공으로 보고하지 않는다. 아래 예제에서는 표준 오류 출력까지 실패하면 추가 출력을 시도하지 않는다. 의도적으로 비운 `catch` 블록을 ESLint의 `no-empty` 규칙이 허용하도록 그 이유를 설명하는 주석 한 줄을 사용한다.
 
 ```mjs
 import process from "node:process";
@@ -718,7 +718,9 @@ class SharedFindings {
 
 **막을 실패.** 한 함수가 인수 해석, Git 실행, 파일 읽기, literal 탐색, 위치 계산과 JSON 출력을 직접 수행하면 한 정책만 바뀌어도 같은 함수를 수정해야 한다. 반대로 문장 수나 줄 수만 줄이려고 한 번 쓰는 표현식을 helper로 옮기면 이름과 호출부만 늘어난다. `processData()`나 `handleItem()`처럼 넓은 이름은 입력, 반환값과 부수 효과를 드러내지 않는다.
 
-**적용 조건과 관찰 결과.** 함수는 한 계산 결과를 만들거나 한 종류의 I/O 접점을 맡는다. CLI 한 번을 조정하는 `main()`은 여러 함수를 순서대로 호출할 수 있지만 각 단계의 내부 규칙을 다시 구현하지 않는다. 함수 이름은 `parseCliRequest()`, `readChangedSources()`, `findAll()`, `serializeResult()`와 `writeText()`처럼 행동과 대상을 드러낸다. 주석은 이름과 코드를 되풀이하지 않고 운영체제 차이, 보안 제한과 UTF-16 같은 이유를 설명할 때만 사용한다.
+**적용 조건과 관찰 결과.** 함수는 한 계산 결과를 만들거나 한 종류의 I/O 접점을 맡는다. CLI 한 번을 조정하는 `main()`은 여러 함수를 순서대로 호출할 수 있지만 각 단계의 내부 규칙을 다시 구현하지 않는다. 함수 이름은 `parseCliRequest()`, `readChangedSources()`, `findAll()`, `serializeResult()`와 `writeText()`처럼 행동과 대상을 드러낸다.
+
+검사기 코드에는 CLI 실행이나 프로젝트 도구의 작동에 필요한 주석만 작성한다. JSDoc의 `@param`과 `@returns`는 타입 검사기가 매개변수와 반환값을 검사하는 데 해당 표기가 필요할 때만 작성한다. 운영체제 차이, 보안 제한, UTF-16을 선택한 이유는 개발 지침 본문에서 설명한다.
 
 **권장 코드.** 각 변경 원인과 실패 종류를 해당 단계에 둔다.
 
@@ -945,35 +947,31 @@ if (options.paragraphs) {
 
 **권장 코드.** 각 탐지 모듈은 자기 정책을 내부에 두고 하나의 named function만 공개한다. 아래 예시의 `scanLiteralRules`와 `scanPlainTextParagraphs`는 같은 파일에 남는 비공개 helper를 나타낸다.
 
+`korean-expressions.mjs`의 내장 규칙 배열은 예시에서 내용을 생략했다. 다음 두 예제의 JSDoc은 타입 검사기에 입력과 반환 타입을 지정할 때 사용하는 표기다.
+
 ```mjs
-// korean-expressions.mjs
-const rules = [
-  // 내장 표현 규칙은 이 배열 한 곳에서만 관리한다.
-];
+const rules = [];
 
 /**
- * 모든 source에서 내장 표현 규칙을 순회한다.
- *
- * @param {ReadonlyArray<Source>} sources 검사할 원문과 source 식별자
- * @returns {ExpressionScan} 실제 순회한 catalog, 발견 규칙과 경고 집계
+ * @param {ReadonlyArray<Source>} sources
+ * @returns {ExpressionScan}
  */
 export function scanExpressions(sources) {
   return scanLiteralRules(sources, rules);
 }
 ```
 
+`long-paragraphs.mjs`
+
 ```mjs
-// long-paragraphs.mjs
 const longParagraphPolicy = {
   id: "ko.long-paragraph",
   minSentences: 7,
 };
 
 /**
- * Markdown 플레인 텍스트 문단에서 길이 검토 후보를 찾는다.
- *
- * @param {ReadonlyArray<Source>} sources 검사할 원문과 source 식별자
- * @returns {ParagraphScan} 적용 정책, 문단 경고와 집계
+ * @param {ReadonlyArray<Source>} sources
+ * @returns {ParagraphScan}
  */
 export function scanParagraphs(sources) {
   return scanPlainTextParagraphs(sources, longParagraphPolicy);
@@ -982,13 +980,17 @@ export function scanParagraphs(sources) {
 
 **피해야 할 코드.** 진입점의 기능을 다시 export하는 barrel, 외부에서 규칙을 바꾸는 setter와 모든 책임을 담은 class를 만들지 않는다.
 
+`index.mjs`
+
 ```mjs
-// index.mjs
 export * from "./scan.mjs";
 export * from "./korean-expressions.mjs";
 export * from "./long-paragraphs.mjs";
+```
 
-// korean-expressions.mjs
+`korean-expressions.mjs`
+
+```mjs
 export let rules = [];
 export function setRules(nextRules) {
   rules = nextRules;
