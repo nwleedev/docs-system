@@ -638,6 +638,23 @@ const rules = [
     positives: ["변환한 행 수를 로그에 기록한다."],
   },
   {
+    id: "ko.notify",
+    mode: "word",
+    terms: [{ lemma: "알리다", pos: "verb" }],
+    expressions: ["알리다"],
+    message: "‘알림’은 특정 사건이나 상태 변화를 수신자에게 통지하는 기능 또는 그 통지를 가리킬 때만 유지합니다.",
+    queries: [
+      "통지를 보내는 조건과 수신자를 실제 기능이나 명세에서 확인할 수 있습니까?",
+      "질문에 답하거나 화면에 사용법을 안내하는 상황이라면 무엇을 설명하거나 표시해야 합니까?",
+    ],
+    negatives: ["설치 방법을 알려주세요.", "설치 화면에 사용 방법 알림을 표시한다."],
+    positives: [
+      "설치 절차를 순서대로 설명해 주세요.",
+      "설치 화면에 사용 방법을 표시한다.",
+      "주문이 취소되면 구매자에게 취소 알림을 전송한다.",
+    ],
+  },
+  {
     id: "ko.read",
     mode: "word",
     terms: [{ lemma: "읽다", pos: "verb" }],
@@ -929,6 +946,7 @@ const endings = {
       "으세요", "으십시오", "으신", "으셔서", "으셨어요", "으실",
       "으려고", "으려면", "으러", "으니까", "으므로", "으면서도",
       "을지", "을지는", "을지를", "을지도", "을까", "을까요", "을수록", "을지라도",
+      "을게", "을게요", "을래", "을래요",
     ],
     vowel: [
       "다",
@@ -976,6 +994,7 @@ const endings = {
       "려고", "려면", "러", "니까", "므로", "면서도",
       `${FINAL_L}지`, `${FINAL_L}지는`, `${FINAL_L}지를`, `${FINAL_L}지도`,
       `${FINAL_L}까`, `${FINAL_L}까요`, `${FINAL_L}수록`, `${FINAL_L}지라도`,
+      `${FINAL_L}게`, `${FINAL_L}게요`, `${FINAL_L}래`, `${FINAL_L}래요`,
     ],
   },
   fused: ["", "요", "서", "서도", "서는", "도", "야", "야만", "야지", "야지요", "라", "다가"],
@@ -1005,6 +1024,8 @@ const endings = {
     passive: ["있다", "있고", "있으면", "있으며", "있습니다", "있는", "있던"],
   },
 };
+
+const benefactiveForms = [...buildForms({ lemma: "주다", pos: "verb" }, false).keys()];
 
 /**
  * 내장 표현 규칙 전체를 순회해 모든 고정 표현과 규칙 활용 출현을 찾는다.
@@ -1326,7 +1347,7 @@ function buildExpressionIndex(definitions) {
     for (const term of rule.terms ?? []) {
       const stem = term.lemma.slice(0, -1).normalize("NFD");
       const bare = labels.some((label) => label.surface === stem);
-      for (const [surface, length] of buildForms(term, bare)) {
+      for (const [surface, length] of buildForms(term, bare, benefactiveForms)) {
         const descriptor = makeTermDescriptor(rule, index, surface, length, labels);
         addTermDescriptor(token, surface, descriptor);
       }
@@ -1340,9 +1361,10 @@ function buildExpressionIndex(definitions) {
  *
  * @param {Term} term 표제어, 품사와 보조 용언 종류
  * @param {boolean} bare 선언 표현에 어간 자체가 있는지 여부
+ * @param {ReadonlyArray<string>} [auxiliaryForms] 동사의 아/어형 뒤에 붙일 보조 동사 활용형
  * @returns {ReadonlyMap<string, number>} NFD token과 보고할 NFD 길이
  */
-function buildForms(term, bare) {
+function buildForms(term, bare, auxiliaryForms = []) {
   const forms = new Map();
   const stem = term.lemma.slice(0, -1).normalize("NFD");
   const liquid = stem.endsWith(FINAL_L);
@@ -1371,6 +1393,9 @@ function buildForms(term, bare) {
 
   for (const fused of makeFusedStems(stem, term.conjugation)) {
     addForms(forms, fused, endings.fused);
+    if (term.pos === "verb") {
+      addForms(forms, fused, auxiliaryForms);
+    }
     if (term.aux !== undefined) {
       addForms(forms, fused, endings.auxiliary[term.aux]);
     }
@@ -1569,6 +1594,18 @@ function particlesAfter(base) {
 }
 
 /**
+ * @param {string} suffix 명사나 명사형 뒤의 NFD 문자열
+ * @param {ReadonlySet<string>} suffixes 해당 받침 뒤에 붙는 조사
+ * @returns {boolean} 복수 표지와 조사가 결합할 수 있는지 여부
+ */
+function matchesNounSuffix(suffix, suffixes) {
+  if (suffix.startsWith(pluralMarker)) {
+    return particles.liquid.has(suffix.slice(pluralMarker.length));
+  }
+  return suffixes.has(suffix);
+}
+
+/**
  * @param {string} nfd 자모로 정규화한 원문
  * @param {number} start 일치한 표현의 시작 위치
  * @param {ExpressionDescriptor} descriptor 표현에 적용할 경계 조건
@@ -1589,10 +1626,8 @@ function matchesWordBoundary(nfd, start, descriptor) {
   if (isWordCharacter(characterAt(nfd, stop))) return false;
   const suffix = nfd.slice(end, stop);
   if (descriptor.mode === "word") return suffix.length === 0;
-  if (descriptor.mode === "noun" && suffix.startsWith(pluralMarker)) {
-    return particles.liquid.has(suffix.slice(pluralMarker.length));
-  }
-  return particlesAfter(descriptor.surface).has(suffix);
+  const suffixes = particlesAfter(descriptor.surface);
+  return descriptor.mode === "noun" ? matchesNounSuffix(suffix, suffixes) : suffixes.has(suffix);
 }
 
 /**
@@ -1668,7 +1703,7 @@ function tokenWithParticles(surface, token) {
     const gi = end >= 2 && surface.startsWith("\u1100\u1175", end - 2);
     if (!gi && final !== FINAL_M && final !== FINAL_LM) continue;
     const suffixes = gi ? particles.vowel : particles.final;
-    if (!suffixes.has(surface.slice(end))) continue;
+    if (!matchesNounSuffix(surface.slice(end), suffixes)) continue;
     for (const candidate of token.get(surface.slice(0, end)) ?? []) {
       attached ??= [...exact];
       if (!attached.some((item) => item.rule === candidate.rule)) attached.push(candidate);

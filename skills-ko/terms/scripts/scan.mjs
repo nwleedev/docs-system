@@ -886,10 +886,11 @@ async function runSelfTest() {
     ["ko.details", "내역", "내역 내역에서 내역은"],
     ["ko.note", "적다", "적다 적는 적었다 적으면"],
     ["ko.write", "쓰다", "쓰다 쓴다 써 썼다 쓸"],
-    ["ko.read", "읽다", "읽다 읽는 읽었습니다 읽음"],
+    ["ko.notify", "알리다", "알리다 알린다 알리는 알립니다 알리어 알려 알려서 알렸다 알렸습니다 알림을 알림들을 알려주세요 알려줘요 알려줬다 알려주셨습니다 알려줄게요 알려줄래요"],
+    ["ko.read", "읽다", "읽다 읽는 읽었습니다 읽음 읽어주세요 읽을게요 읽을래요"],
     ["ko.see", "보다", "보다 본다 보아 봐 보았다 봤다"],
     ["ko.identify", "짚다", "짚다 짚는 짚었다 짚으세요 짚었을 짚기는 짚었음에도"],
-    ["ko.call", "부르다", "부르다 부르는 불러 불렀다"],
+    ["ko.call", "부르다", "부르다 부르는 불러 불렀다 불러준다"],
     ["ko.divide", "나누다", "나누다 나누어 나눠 나누었다 나눴다"],
     ["ko.keep", "두다", "두다 둔다 두어 둬 두었다 뒀다"],
     ["ko.reduce", "줄이다", "줄이다 줄이는 줄여 줄였다"],
@@ -909,8 +910,8 @@ async function runSelfTest() {
     words.split(" ").map((word) => ({ id, expression, word })),
   );
   const excludedWords =
-    "파일 일자 절차 적절한 새로고침 색상 작업자 내역서 처리량 연결망 결과보다 원문보기 지원문서 " +
-    "부르렀다 만들는 만들습니다 읽는이름 짚었다는말 x쓴다 쓴다2 tmp_연결해 𠮷새 새𠮷 𠮷읽는다 읽는다𠮷";
+    "파일 일자 절차 적절한 새로고침 색상 작업자 내역서 처리량 연결망 결과보다 원문보기 지원문서 알림판 알림장 알리바이 " +
+    "알린주세요 알려주머니 알려주세요청 알림들어가기 부르렀다 만들는 만들습니다 읽는이름 짚었다는말 x쓴다 쓴다2 tmp_연결해 𠮷새 새𠮷 𠮷읽는다 읽는다𠮷";
   const cases = forms.map(({ word }) => makeTestSource(word, word));
   const testedForms = scanExpressions([...cases, makeTestSource("exclusions", excludedWords)]);
   assert.deepEqual(
