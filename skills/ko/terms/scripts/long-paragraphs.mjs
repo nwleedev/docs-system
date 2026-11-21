@@ -1,6 +1,36 @@
+/** @typedef {{id: string, text: string}} Source */
+
+/**
+ * @typedef {{
+ *   id: string,
+ *   kind: "paragraph",
+ *   min: number,
+ *   message: string,
+ *   queries: ReadonlyArray<string>,
+ *   negatives: ReadonlyArray<string>,
+ *   positives: ReadonlyArray<string>
+ * }} ParagraphPolicy
+ */
+
+/**
+ * @typedef {{
+ *   ruleId: string,
+ *   count: number,
+ *   sourceId: string,
+ *   line: number,
+ *   startUtf16: number,
+ *   quote: string
+ * }} ParagraphWarning
+ */
+
+/** @typedef {{text: string, line: number, startUtf16: number}} Paragraph */
+
+/** @type {number} */
 const MAX_WARNINGS = 20_000;
+/** @type {number} */
 const MAX_QUOTE_UTF16 = 480;
 
+/** @type {ParagraphPolicy} */
 const policy = {
   id: "ko.long-paragraph",
   kind: "paragraph",
@@ -19,9 +49,20 @@ const policy = {
   ],
 };
 
+/**
+ * @param {ReadonlyArray<Source>} sources
+ * @returns {{
+ *   id: "paragraphs",
+ *   catalog: ReadonlyArray<{id: string, kind: "paragraph", min: number}>,
+ *   rules: ReadonlyArray<ParagraphPolicy>,
+ *   warnings: ReadonlyArray<ParagraphWarning>,
+ *   summary: {total: number, shown: number, omitted: number}
+ * }}
+ */
 export function scanParagraphs(sources) {
   validatePolicy();
   const segmenter = new Intl.Segmenter("ko", { granularity: "sentence" });
+  /** @type {Array<ParagraphWarning>} */
   const warnings = [];
   let total = 0;
 
@@ -60,6 +101,7 @@ export function scanParagraphs(sources) {
   };
 }
 
+/** @returns {void} */
 function validatePolicy() {
   if (
     policy.kind !== "paragraph" ||
@@ -77,9 +119,15 @@ function validatePolicy() {
   }
 }
 
+/**
+ * @param {string} text
+ * @returns {ReadonlyArray<Paragraph>}
+ */
 function collectPlainTextParagraphs(text) {
   const lines = splitLines(text);
+  /** @type {Array<Paragraph>} */
   const paragraphs = [];
+  /** @type {Array<{text: string, line: number}>} */
   let current = [];
   let fence = null;
   const frontMatterEnd =
@@ -89,6 +137,7 @@ function collectPlainTextParagraphs(text) {
             index > 0 && (entry.text === "---" || entry.text === "..."),
         )
       : -1;
+  /** @type {"html" | "other" | null} */
   let excludedBlock = null;
 
   const flush = () => {
@@ -173,10 +222,18 @@ function collectPlainTextParagraphs(text) {
   return paragraphs;
 }
 
+/**
+ * @param {string} text
+ * @returns {ReadonlyArray<{text: string, line: number}>}
+ */
 function splitLines(text) {
   return text.split(/\r\n|\r|\n/u).map((line, index) => ({ text: line, line: index + 1 }));
 }
 
+/**
+ * @param {string} line
+ * @returns {{character: string, length: number} | null}
+ */
 function readFence(line) {
   const match = /^ {0,3}(`{3,}|~{3,})/u.exec(line);
   if (match === null) {
@@ -185,6 +242,10 @@ function readFence(line) {
   return { character: match[1][0], length: match[1].length };
 }
 
+/**
+ * @param {string} line
+ * @returns {boolean}
+ */
 function isExcludedBlockStart(line) {
   return (
     /^(?: {4}|\t)/u.test(line) ||
@@ -195,10 +256,19 @@ function isExcludedBlockStart(line) {
   );
 }
 
+/**
+ * @param {string} line
+ * @returns {boolean}
+ */
 function isSetextUnderline(line) {
   return /^ {0,3}(?:=+|-+)\s*$/u.test(line);
 }
 
+/**
+ * @param {Intl.Segmenter} segmenter
+ * @param {string} text
+ * @returns {number}
+ */
 function countSentences(segmenter, text) {
   let count = 0;
   for (const part of segmenter.segment(text)) {
@@ -209,6 +279,10 @@ function countSentences(segmenter, text) {
   return count;
 }
 
+/**
+ * @param {string} text
+ * @returns {string}
+ */
 function makeQuote(text) {
   if (text.length <= MAX_QUOTE_UTF16) {
     return text;
@@ -220,14 +294,26 @@ function makeQuote(text) {
   return text.slice(0, end);
 }
 
+/**
+ * @param {string} value
+ * @returns {boolean}
+ */
 function isNonEmptyText(value) {
   return value.trim().length > 0 && value.isWellFormed();
 }
 
+/**
+ * @param {number} unit
+ * @returns {boolean}
+ */
 function isHighSurrogate(unit) {
   return unit >= 0xd800 && unit <= 0xdbff;
 }
 
+/**
+ * @param {number} unit
+ * @returns {boolean}
+ */
 function isLowSurrogate(unit) {
   return unit >= 0xdc00 && unit <= 0xdfff;
 }

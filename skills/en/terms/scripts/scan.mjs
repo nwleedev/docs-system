@@ -17,6 +17,55 @@ import { parseArgs, TextDecoder } from "node:util";
 import { scanExpressions, selfTestExpressionRules } from "./korean-expressions.mjs";
 import { scanParagraphs } from "./long-paragraphs.mjs";
 
+/**
+ * @typedef {{
+ *   id: string,
+ *   path?: string,
+ *   text: string,
+ *   bytes: number
+ * }} Source
+ */
+
+/**
+ * @typedef {{kind: "changed", repository: string} |
+ *   {kind: "files", files: ReadonlyArray<string>} |
+ *   {kind: "stdin", sourceName: string} |
+ *   {kind: "help"} |
+ *   {kind: "self-test"}} InputMode
+ */
+
+/**
+ * @typedef {{
+ *   id: string,
+ *   path?: string
+ * }} SourceMetadata
+ */
+
+/**
+ * @typedef {{
+ *   id: string,
+ *   catalog: ReadonlyArray<Readonly<Record<string, unknown>>>,
+ *   rules: ReadonlyArray<Readonly<Record<string, unknown>>>,
+ *   warnings: ReadonlyArray<Readonly<Record<string, unknown>>>,
+ *   summary: {total: number, shown: number, omitted: number}
+ * }} Check
+ */
+
+/**
+ * @typedef {{
+ *   stdout: Buffer
+ * }} ChildResult
+ */
+
+/**
+ * @typedef {{
+ *   cwd: string,
+ *   env: Readonly<Record<string, string>>,
+ *   timeout: number,
+ *   maxBuffer: number
+ * }} ChildOptions
+ */
+
 const MAX_SOURCES = 512;
 const MAX_SOURCE_BYTES = 2 * 1024 * 1024;
 const MAX_TOTAL_BYTES = 32 * 1024 * 1024;
@@ -49,6 +98,7 @@ const HELP_TEXT = [
   "Choose one of the forms shown above.",
   "",
 ].join("\n");
+/** @type {ReadonlySet<string>} */
 const SUPPORTED_GIT_STATUSES = new Set([
   " M",
   " T",
@@ -77,10 +127,19 @@ const SUPPORTED_GIT_STATUSES = new Set([
   "??",
 ]);
 
+/**
+ * @param {string} code
+ * @param {Error} [cause]
+ * @returns {Error}
+ */
 function scannerError(code, cause) {
   return cause === undefined ? new Error(code) : new Error(code, { cause });
 }
 
+/**
+ * @param {ReadonlyArray<string>} args
+ * @returns {InputMode}
+ */
 function parseCommandLine(args) {
   let parsed;
   try {
@@ -102,6 +161,7 @@ function parseCommandLine(args) {
     throw scannerError("usage:invalid-arguments", error instanceof Error ? error : undefined);
   }
 
+  /** @type {Map<string, number>} */
   const counts = new Map();
   for (const token of parsed.tokens) {
     if (token.kind === "option") {
@@ -162,10 +222,15 @@ function parseCommandLine(args) {
   return { kind: "self-test" };
 }
 
+/**
+ * @param {string} value
+ * @returns {boolean}
+ */
 function isValidInputName(value) {
   return value.length > 0 && !value.includes("\0") && value.isWellFormed();
 }
 
+/** @param {ReadonlyArray<Source>} sources */
 function scanSources(sources) {
   validateSources(sources);
   const sourceMetadata = sources.map(({ id, path }) =>
@@ -178,6 +243,7 @@ function scanSources(sources) {
   return { sources: sourceMetadata, checks };
 }
 
+/** @param {ReadonlyArray<Source>} sources */
 function validateSources(sources) {
   if (sources.length > MAX_SOURCES) {
     throw scannerError("input:too-many-sources");
@@ -199,7 +265,16 @@ function validateSources(sources) {
   }
 }
 
+/**
+ * @param {Check} check
+ * @param {number} maxBytes
+ * @returns {Check}
+ */
 function limitCheckByBytes(check, maxBytes) {
+  /**
+   * @param {number} count
+   * @returns {Check}
+   */
   const withFirstWarnings = (count) => ({
     id: check.id,
     catalog: check.catalog,
@@ -233,8 +308,14 @@ function limitCheckByBytes(check, maxBytes) {
   }
   return withFirstWarnings(lower);
 }
+/**
+ * @param {AsyncIterable<Uint8Array | string>} chunks
+ * @param {number} committedTotalBytes
+ * @returns {Promise<{text: string, bytes: number}>}
+ */
 async function decodeChunks(chunks, committedTotalBytes) {
   const decoder = new TextDecoder("utf-8", { fatal: true, ignoreBOM: false });
+  /** @type {Array<string>} */
   const parts = [];
   let bytes = 0;
 
@@ -264,6 +345,10 @@ async function decodeChunks(chunks, committedTotalBytes) {
   return { text: parts.join(""), bytes };
 }
 
+/**
+ * @param {import("node:fs/promises").FileHandle} handle
+ * @returns {AsyncGenerator<Uint8Array, void, void>}
+ */
 async function* readHandleChunks(handle) {
   while (true) {
     const buffer = Buffer.allocUnsafe(READ_CHUNK_BYTES);
@@ -275,6 +360,12 @@ async function* readHandleChunks(handle) {
   }
 }
 
+/**
+ * @param {string} candidate
+ * @param {"changed" | "file"} mode
+ * @param {number} committedTotalBytes
+ * @returns {Promise<null | {realPath: string, text: string, bytes: number}>}
+ */
 async function readCandidateFile(candidate, mode, committedTotalBytes) {
   let lexicalStats;
   try {
@@ -322,8 +413,13 @@ async function readCandidateFile(candidate, mode, committedTotalBytes) {
   }
 }
 
+/**
+ * @param {ReadonlyArray<string>} files
+ * @returns {Promise<ReadonlyArray<Source>>}
+ */
 async function readFiles(files) {
   const cwdReal = await realpath(process.cwd());
+  /** @type {Set<string>} */
   const seen = new Set();
   const sources = [];
   let totalBytes = 0;
@@ -331,7 +427,7 @@ async function readFiles(files) {
   for (const [index, file] of files.entries()) {
     const candidate = resolve(process.cwd(), file);
     const result = await readCandidateFile(candidate, "file", totalBytes);
-    assert.notEqual(result, null);
+    assert.ok(result !== null);
     if (seen.has(result.realPath)) {
       throw scannerError("usage:duplicate-file");
     }
@@ -351,11 +447,19 @@ async function readFiles(files) {
   return sources;
 }
 
+/**
+ * @param {string} sourceName
+ * @returns {Promise<ReadonlyArray<Source>>}
+ */
 async function readStdin(sourceName) {
   const decoded = await decodeChunks(process.stdin, 0);
   return [{ id: sourceName, text: decoded.text, bytes: decoded.bytes }];
 }
 
+/**
+ * @param {string} relativePath
+ * @returns {boolean}
+ */
 function isInsideDirectory(relativePath) {
   return (
     relativePath !== "" &&
@@ -365,11 +469,21 @@ function isInsideDirectory(relativePath) {
   );
 }
 
+/**
+ * @param {string} pathValue
+ * @returns {string}
+ */
 function toPortablePath(pathValue) {
   return pathValue.split(pathSeparator).join("/");
 }
 
+/**
+ * @param {Readonly<Record<string, string | undefined>>} environment
+ * @param {NodeJS.Platform} platform
+ * @returns {Readonly<Record<string, string>>}
+ */
 function sanitizeEnvironment(environment, platform) {
+  /** @type {Record<string, string>} */
   const sanitized = {};
   let windowsPath;
 
@@ -399,6 +513,11 @@ function sanitizeEnvironment(environment, platform) {
   return sanitized;
 }
 
+/**
+ * @param {string | undefined} pathValue
+ * @param {NodeJS.Platform} platform
+ * @returns {Promise<string>}
+ */
 async function findGitExecutable(pathValue, platform) {
   if (pathValue === undefined || pathValue.length === 0) {
     throw scannerError("git:not-found");
@@ -419,6 +538,12 @@ async function findGitExecutable(pathValue, platform) {
   throw scannerError("git:not-found");
 }
 
+/**
+ * @param {string} executable
+ * @param {ReadonlyArray<string>} args
+ * @param {ChildOptions} options
+ * @returns {Promise<ChildResult>}
+ */
 function runChildFile(executable, args, options) {
   return new Promise((resolveResult, rejectResult) => {
     execFile(
@@ -448,8 +573,13 @@ function runChildFile(executable, args, options) {
   });
 }
 
+/**
+ * @param {Buffer} stdout
+ * @returns {ReadonlyArray<string>}
+ */
 function parseGitStatus(stdout) {
   const decoder = new TextDecoder("utf-8", { fatal: true, ignoreBOM: true });
+  /** @type {Set<string>} */
   const paths = new Set();
   let cursor = 0;
 
@@ -487,6 +617,10 @@ function parseGitStatus(stdout) {
     .map(({ path }) => path);
 }
 
+/**
+ * @param {string} pathValue
+ * @returns {boolean}
+ */
 function isValidGitRelativePath(pathValue) {
   if (!isValidInputName(pathValue) || isAbsolute(pathValue)) {
     return false;
@@ -495,6 +629,10 @@ function isValidGitRelativePath(pathValue) {
   return normalized !== ".." && !normalized.startsWith("../");
 }
 
+/**
+ * @param {Buffer} stdout
+ * @returns {string}
+ */
 function parseRepositoryRoot(stdout) {
   let decoded;
   try {
@@ -509,6 +647,10 @@ function parseRepositoryRoot(stdout) {
   return root;
 }
 
+/**
+ * @param {string} repository
+ * @returns {Promise<ReadonlyArray<Source>>}
+ */
 async function readChangedFiles(repository) {
   const requestedCwd = resolve(process.cwd(), repository);
   let requestedStats;
@@ -585,8 +727,14 @@ async function readChangedFiles(repository) {
   return sources;
 }
 
+/**
+ * @param {NodeJS.WritableStream} stream
+ * @param {string} text
+ * @returns {Promise<void>}
+ */
 function writeText(stream, text) {
   return new Promise((resolveWrite, rejectWrite) => {
+    /** @param {Error} error */
     const onError = (error) => rejectWrite(error);
     stream.once("error", onError);
     stream.write(text, (error) => {
@@ -600,6 +748,10 @@ function writeText(stream, text) {
   });
 }
 
+/**
+ * @param {unknown} error
+ * @returns {string}
+ */
 function publicErrorCode(error) {
   if (
     error instanceof Error &&
@@ -610,6 +762,7 @@ function publicErrorCode(error) {
   return "internal:unexpected";
 }
 
+/** @returns {Promise<void>} */
 async function runSelfTest() {
   selfTestExpressionRules();
   assert.deepEqual(parseCommandLine(["--stdin", "--source-name", "sample"]), {
@@ -1055,7 +1208,7 @@ async function runSelfTest() {
     omitted: 1,
   });
 
-  assert.equal(cappedExpressions.warnings.at(-1).sourceId, "expression-cap");
+  assert.equal(cappedExpressions.warnings.at(-1)?.sourceId, "expression-cap");
   assert.ok(cappedExpressions.rules.some(({ id }) => id === "ko.narrow-state"));
 
   const repeatedParagraphs = Array.from(
@@ -1157,8 +1310,11 @@ async function runSelfTest() {
     assert.equal(successfulChild.status, 0);
     assert.equal(successfulChild.stderr, "");
   }
+  /** @type {ReturnType<typeof scanSources>} */
   const fileOutput = JSON.parse(fileChild.stdout);
+  /** @type {ReturnType<typeof scanSources>} */
   const stdinOutput = JSON.parse(stdinChild.stdout);
+  /** @param {ReturnType<typeof scanSources>["checks"]} checks */
   const normalizeSourceIds = (checks) =>
     checks.map((check) => ({
       ...check,
@@ -1202,7 +1358,8 @@ async function runSelfTest() {
     assert.match(invalidChild.stderr, /^usage:[a-z0-9-]+\n$/u);
   }
 
-  for (const [args, input, expectedError] of [
+  /** @type {Array<[string[], Buffer | undefined, string]>} */
+  const failureInputs = [
     [
       ["--stdin", "--source-name", "invalid-utf8"],
       Buffer.from([0xc3, 0x28]),
@@ -1216,7 +1373,8 @@ async function runSelfTest() {
     ],
     [["--file", "missing-self-test-file"], undefined, "input:file-unavailable\n"],
     [["--changed", scriptPath], undefined, "git:repository-required\n"],
-  ]) {
+  ];
+  for (const [args, input, expectedError] of failureInputs) {
     const failedChild = runScannerProcess(args, input);
     assert.equal(failedChild.error, undefined);
     assert.equal(failedChild.signal, null);
@@ -1225,7 +1383,8 @@ async function runSelfTest() {
     assert.equal(failedChild.stderr, expectedError);
   }
 
-  await new Promise((resolveClosedPipe, rejectClosedPipe) => {
+  /** @type {Promise<void>} */
+  const closedPipe = new Promise((resolveClosedPipe, rejectClosedPipe) => {
     const closedPipeChild = execFile(
       process.execPath,
       [scriptPath, "--stdin", "--source-name", "closed-pipe"],
@@ -1249,11 +1408,13 @@ async function runSelfTest() {
     closedPipeChild.stdout?.once("data", () => closedPipeChild.stdout?.destroy());
     closedPipeChild.stdin?.end("경계".repeat(5_000));
   });
+  await closedPipe;
 
   const tempParent = join(process.cwd(), "temps");
   await mkdir(tempParent, { recursive: true });
   const repository = await mkdtemp(join(tempParent, "better-terms-self-test-"));
   try {
+    /** @param {...string} args */
     function git(...args) {
       const child = spawnSync("git", [
         "-c", "user.name=Scanner Self-Test",
@@ -1289,6 +1450,7 @@ async function runSelfTest() {
     const changedChild = runScannerProcess(["--changed", repository]);
     assert.equal(changedChild.status, 0);
     assert.equal(changedChild.stderr, "");
+    /** @type {ReturnType<typeof scanSources>} */
     const changedOutput = JSON.parse(changedChild.stdout);
     assert.deepEqual(
       changedOutput.sources.map(({ id }) => id),
@@ -1309,6 +1471,10 @@ async function runSelfTest() {
   }
 }
 
+/**
+ * @param {ReadonlyArray<string>} args
+ * @param {string | Buffer} [input]
+ */
 function runScannerProcess(args, input) {
   return spawnSync(process.execPath, [fileURLToPath(import.meta.url), ...args], {
     input,
@@ -1319,10 +1485,16 @@ function runScannerProcess(args, input) {
   });
 }
 
+/**
+ * @param {string} id
+ * @param {string} text
+ * @returns {Source}
+ */
 function makeTestSource(id, text) {
   return { id, text, bytes: Buffer.byteLength(text, "utf8") };
 }
 
+/** @param {ReadonlyArray<string>} args */
 async function main(args) {
   const mode = parseCommandLine(args);
   if (mode.kind === "help") {

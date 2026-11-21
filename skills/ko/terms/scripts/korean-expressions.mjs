@@ -1,7 +1,71 @@
+/**
+ * @typedef {{
+ *   id: string,
+ *   kind: "literal",
+ *   expressions: ReadonlyArray<string>,
+ *   message: string,
+ *   queries: ReadonlyArray<string>,
+ *   negatives: ReadonlyArray<string>,
+ *   positives: ReadonlyArray<string>
+ * }} ExpressionRule
+ */
+
+/** @typedef {{lemma: string, pos: "adjective" | "verb", aux?: "active" | "passive" | "state", conjugation?: "reu"}} Term */
+
+/**
+ * @typedef {ExpressionRule & {
+ *   mode: "literal" | "lemma" | "phrase" | "noun" | "word" | "particle",
+ *   numbered?: boolean,
+ *   terms?: ReadonlyArray<Term>,
+ *   prefix?: string
+ * }} InternalRule
+ */
+
+/** @typedef {{id: string, text: string}} Source */
+
+/**
+ * @typedef {{
+ *   ruleId: string,
+ *   expression: string,
+ *   sourceId: string,
+ *   line: number,
+ *   startUtf16: number,
+ *   endUtf16: number,
+ *   quote: string
+ * }} ExpressionWarning
+ */
+
+/** @typedef {{rule: number, order: number, surface: string, expression: string, mode: InternalRule["mode"], numbered?: boolean}} ExpressionDescriptor */
+
+/**
+ * @typedef {{
+ *   rule: number,
+ *   order: number,
+ *   expression: string,
+ *   start: number,
+ *   end: number
+ * }} ExpressionMatch
+ */
+
+/**
+ * @typedef {{
+ *   nfdText: string,
+ *   originalStarts: ReadonlyArray<number>,
+ *   nfdStarts: ReadonlyArray<number>
+ * }} NfdMapping
+ */
+
+/** @typedef {{rule: number, order: number, expression: string, length: number, prefix: string, bounded: boolean}} TermDescriptor */
+
+/** @typedef {{order: number, surface: string, expression: string}} LabelDescriptor */
+
+/** @type {number} */
 const MAX_WARNINGS = 20_000;
+/** @type {number} */
 const MAX_QUOTE_UTF16 = 480;
 
-const rules = [
+/** @type {ReadonlyArray<Omit<InternalRule, "kind" | "mode"> & {mode?: InternalRule["mode"]}>} */
+const ruleDefinitions = [
   {
     id: "ko.middle-dot",
     expressions: ["·"],
@@ -746,7 +810,10 @@ const rules = [
     negatives: ["두 내용을 연결한다."],
     positives: ["README에 설치 안내로 이동하는 링크를 추가한다."],
   },
-].map((rule) => ({ kind: "literal", mode: "literal", ...rule }));
+];
+
+/** @type {ReadonlyArray<InternalRule>} */
+const rules = ruleDefinitions.map((rule) => ({ kind: "literal", mode: "literal", ...rule }));
 
 const FINAL_N = "\u11ab";
 const FINAL_L = "\u11af";
@@ -971,11 +1038,23 @@ const endings = {
 
 const benefactiveForms = [...buildForms({ lemma: "주다", pos: "verb" }, false).keys()];
 
+/**
+ * @param {ReadonlyArray<Source>} sources
+ * @returns {{
+ *   id: "expressions",
+ *   catalog: ReadonlyArray<{id: string, kind: "literal", expressions: ReadonlyArray<string>}>,
+ *   rules: ReadonlyArray<ExpressionRule>,
+ *   warnings: ReadonlyArray<ExpressionWarning>,
+ *   summary: {total: number, shown: number, omitted: number}
+ * }}
+ */
 export function scanExpressions(sources) {
   return scanExpressionRules(sources, rules);
 }
 
+/** @returns {void} */
 export function selfTestExpressionRules() {
+  /** @type {InternalRule} */
   const definition = {
     kind: "literal",
     mode: "lemma",
@@ -998,6 +1077,7 @@ export function selfTestExpressionRules() {
     throw new Error("self-test:expression-rules");
   }
 
+  /** @type {InternalRule} */
   const verb = {
     ...definition,
     mode: "word",
@@ -1015,7 +1095,7 @@ export function selfTestExpressionRules() {
     scanExpressionRules([], [
       {
         ...definition,
-        terms: [{ lemma: "차다", pos: "noun" }],
+        terms: [/** @type {Term} */ (/** @type {unknown} */ ({ lemma: "차다", pos: "noun" }))],
       },
     ]);
   } catch (error) {
@@ -1026,6 +1106,11 @@ export function selfTestExpressionRules() {
   throw new Error("self-test:expression-rules");
 }
 
+/**
+ * @param {ReadonlyArray<Source>} sources
+ * @param {ReadonlyArray<InternalRule>} definitions
+ * @returns {ReturnType<typeof scanExpressions>}
+ */
 function scanExpressionRules(sources, definitions) {
   validateRules(definitions);
   const { literal, token } = buildExpressionIndex(definitions);
@@ -1065,6 +1150,10 @@ function scanExpressionRules(sources, definitions) {
   };
 }
 
+/**
+ * @param {ReadonlyArray<InternalRule>} definitions
+ * @returns {void}
+ */
 function validateRules(definitions) {
   const ids = new Set();
   const lemmas = new Set();
@@ -1091,6 +1180,11 @@ function validateRules(definitions) {
   validateEndings(endings);
 }
 
+/**
+ * @param {InternalRule} rule
+ * @param {Set<string>} lemmas
+ * @returns {void}
+ */
 function validateTerms(rule, lemmas) {
   if (rule.mode === "literal" || rule.mode === "particle" ||
       (["noun", "word"].includes(rule.mode) && rule.terms === undefined)) {
@@ -1100,13 +1194,14 @@ function validateTerms(rule, lemmas) {
     return;
   }
 
+  const { prefix } = rule;
   if (
     !Array.isArray(rule.terms) ||
     rule.terms.length === 0 ||
     (rule.mode === "phrase" &&
-      (!isNonEmptyText(rule.prefix ?? "") ||
-        /[\r\n]/u.test(rule.prefix) ||
-        !rule.expressions.some((expression) => expression.startsWith(rule.prefix)))) ||
+      (prefix === undefined || !isNonEmptyText(prefix) ||
+        /[\r\n]/u.test(prefix) ||
+        !rule.expressions.some((expression) => expression.startsWith(prefix)))) ||
     (rule.mode !== "phrase" && rule.prefix !== undefined)
   ) {
     throw new Error("rules:invalid-expression-rule");
@@ -1131,6 +1226,10 @@ function validateTerms(rule, lemmas) {
   }
 }
 
+/**
+ * @param {object} value
+ * @returns {void}
+ */
 function validateEndings(value) {
   if (!hasLowercaseKeys(value)) {
     throw new Error("rules:invalid-expression-rule");
@@ -1155,10 +1254,18 @@ function validateEndings(value) {
   }
 }
 
+/**
+ * @param {object} value
+ * @returns {boolean}
+ */
 function hasLowercaseKeys(value) {
   return Object.keys(value).every((key) => /^[a-z]+$/u.test(key));
 }
 
+/**
+ * @param {InternalRule} rule
+ * @returns {ExpressionRule}
+ */
 function makePublicRule(rule) {
   return {
     kind: rule.kind,
@@ -1171,6 +1278,11 @@ function makePublicRule(rule) {
   };
 }
 
+/**
+ * @param {ReadonlyArray<string>} values
+ * @param {boolean} expression
+ * @returns {void}
+ */
 function validateTextList(values, expression) {
   if (values.length === 0) {
     throw new Error("rules:invalid-expression-rule");
@@ -1188,15 +1300,29 @@ function validateTextList(values, expression) {
   }
 }
 
+/**
+ * @param {string} value
+ * @returns {boolean}
+ */
 function isNonEmptyText(value) {
   return value.trim().length > 0 && value.isWellFormed();
 }
 
+/**
+ * @param {ReadonlyArray<InternalRule>} definitions
+ * @returns {{
+ *   literal: ReadonlyMap<string, ReadonlyArray<ExpressionDescriptor>>,
+ *   token: ReadonlyMap<string, ReadonlyArray<TermDescriptor>>
+ * }}
+ */
 function buildExpressionIndex(definitions) {
+  /** @type {Map<string, Array<ExpressionDescriptor>>} */
   const literal = new Map();
+  /** @type {Map<string, Array<TermDescriptor>>} */
   const token = new Map();
   let order = 0;
   for (const [index, rule] of definitions.entries()) {
+    /** @type {Array<LabelDescriptor>} */
     const labels = [];
     for (const expression of rule.expressions) {
       const surface = expression.normalize("NFD");
@@ -1222,6 +1348,12 @@ function buildExpressionIndex(definitions) {
   return { literal, token };
 }
 
+/**
+ * @param {Term} term
+ * @param {boolean} bare
+ * @param {ReadonlyArray<string>} [auxiliaryForms]
+ * @returns {ReadonlyMap<string, number>}
+ */
 function buildForms(term, bare, auxiliaryForms = []) {
   const forms = new Map();
   const stem = term.lemma.slice(0, -1).normalize("NFD");
@@ -1262,6 +1394,12 @@ function buildForms(term, bare, auxiliaryForms = []) {
   return forms;
 }
 
+/**
+ * @param {Map<string, number>} forms
+ * @param {string} surface
+ * @param {ReadonlyArray<string>} values
+ * @returns {void}
+ */
 function addForms(forms, surface, values) {
   for (const ending of values) {
     const value = `${surface}${ending.normalize("NFD")}`;
@@ -1269,6 +1407,11 @@ function addForms(forms, surface, values) {
   }
 }
 
+/**
+ * @param {string} stem
+ * @param {Term["conjugation"]} conjugation
+ * @returns {string[]}
+ */
 function makeFusedStems(stem, conjugation) {
   const vowel = findLastVowel(stem);
   if (vowel === null) {
@@ -1294,25 +1437,46 @@ function makeFusedStems(stem, conjugation) {
   return contraction ? [full, stem.slice(0, -1) + contraction] : [full];
 }
 
+/**
+ * @param {string} stem
+ * @returns {string | null}
+ */
 function findLastVowel(stem) {
   for (let index = stem.length - 1; index >= 0; index -= 1) {
     const codePoint = stem.codePointAt(index);
-    if (codePoint >= 0x1161 && codePoint <= 0x1175) {
+    if (codePoint !== undefined && codePoint >= 0x1161 && codePoint <= 0x1175) {
       return stem[index];
     }
   }
   return null;
 }
 
+/**
+ * @param {string} stem
+ * @returns {boolean}
+ */
 function hasFinalConsonant(stem) {
   const codePoint = stem.codePointAt(stem.length - 1);
-  return codePoint >= 0x11a8 && codePoint <= 0x11c2;
+  return codePoint !== undefined && codePoint >= 0x11a8 && codePoint <= 0x11c2;
 }
 
+/**
+ * @param {string} surface
+ * @param {string} consonant
+ * @returns {string}
+ */
 function addFinalConsonant(surface, consonant) {
   return `${surface}${consonant}`;
 }
 
+/**
+ * @param {InternalRule} rule
+ * @param {number} index
+ * @param {string} surface
+ * @param {number} length
+ * @param {ReadonlyArray<LabelDescriptor>} labels
+ * @returns {TermDescriptor}
+ */
 function makeTermDescriptor(rule, index, surface, length, labels) {
   let expression = labels[0].expression;
   let order = labels[0].order;
@@ -1334,6 +1498,12 @@ function makeTermDescriptor(rule, index, surface, length, labels) {
   };
 }
 
+/**
+ * @param {Map<string, Array<TermDescriptor>>} token
+ * @param {string} surface
+ * @param {TermDescriptor} descriptor
+ * @returns {void}
+ */
 function addTermDescriptor(token, surface, descriptor) {
   const descriptors = token.get(surface) ?? [];
   const current = descriptors.findIndex((candidate) => candidate.rule === descriptor.rule);
@@ -1345,6 +1515,11 @@ function addTermDescriptor(token, surface, descriptor) {
   token.set(surface, descriptors);
 }
 
+/**
+ * @param {boolean} closed
+ * @param {boolean} liquid
+ * @returns {Set<string>}
+ */
 function makeParticleSuffixes(closed, liquid) {
   const direction = closed && !liquid ? "으로" : "로";
   const tails = new Set([
@@ -1387,11 +1562,17 @@ const pluralMarker = "들".normalize("NFD");
 const maxParticleLength = pluralMarker.length +
   Math.max(...Object.values(particles).flatMap((suffixes) => [...suffixes].map((s) => s.length)));
 
+/** @param {string} base */
 function particlesAfter(base) {
   if (base.endsWith(FINAL_L)) return particles.liquid;
   return hasFinalConsonant(base) ? particles.final : particles.vowel;
 }
 
+/**
+ * @param {string} suffix
+ * @param {ReadonlySet<string>} suffixes
+ * @returns {boolean}
+ */
 function matchesNounSuffix(suffix, suffixes) {
   if (suffix.startsWith(pluralMarker)) {
     return particles.liquid.has(suffix.slice(pluralMarker.length));
@@ -1399,6 +1580,12 @@ function matchesNounSuffix(suffix, suffixes) {
   return suffixes.has(suffix);
 }
 
+/**
+ * @param {string} nfd
+ * @param {number} start
+ * @param {ExpressionDescriptor} descriptor
+ * @returns {boolean}
+ */
 function matchesWordBoundary(nfd, start, descriptor) {
   if (descriptor.mode === "literal") return true;
   const end = start + descriptor.surface.length;
@@ -1418,17 +1605,30 @@ function matchesWordBoundary(nfd, start, descriptor) {
   return descriptor.mode === "noun" ? matchesNounSuffix(suffix, suffixes) : suffixes.has(suffix);
 }
 
+/**
+ * @param {string} text
+ * @param {number} offset
+ * @returns {string}
+ */
 function characterAt(text, offset) {
   const start = isLowSurrogate(text.charCodeAt(offset)) ? offset - 1 : offset;
   const point = text.codePointAt(start);
   return point === undefined ? "" : String.fromCodePoint(point);
 }
 
+/** @param {string} character */
 function isWordCharacter(character) {
   return /[\p{L}\p{M}\p{N}_]/u.test(character);
 }
 
+/**
+ * @param {string} text
+ * @param {ReadonlyMap<string, ReadonlyArray<ExpressionDescriptor>>} literal
+ * @param {ReadonlyMap<string, ReadonlyArray<TermDescriptor>>} token
+ * @returns {ReadonlyArray<ExpressionMatch>}
+ */
 function collectMatches(text, literal, token) {
+  /** @type {Array<ExpressionMatch>} */
   const matches = [];
   const mapping = buildNfdMapping(text);
   for (let offset = 0; offset < mapping.nfdText.length; offset += 1) {
@@ -1462,6 +1662,11 @@ function collectMatches(text, literal, token) {
   );
 }
 
+/**
+ * @param {string} surface
+ * @param {ReadonlyMap<string, ReadonlyArray<TermDescriptor>>} token
+ * @returns {ReadonlyArray<TermDescriptor>}
+ */
 function tokenWithParticles(surface, token) {
   const exact = token.get(surface) ?? [];
   let attached;
@@ -1479,9 +1684,16 @@ function tokenWithParticles(surface, token) {
   return attached ?? exact;
 }
 
+/**
+ * @param {string} text
+ * @param {NfdMapping} mapping
+ * @param {ReadonlyMap<string, ReadonlyArray<TermDescriptor>>} token
+ * @param {Array<ExpressionMatch>} matches
+ * @returns {void}
+ */
 function collectTermMatches(text, mapping, token, matches) {
   for (let tokenStart = 0; tokenStart < text.length; ) {
-    const codePoint = text.codePointAt(tokenStart);
+    const codePoint = text.codePointAt(tokenStart) ?? 0;
     if (!isMorphologyTokenCodePoint(codePoint)) {
       tokenStart += codePoint > 0xffff ? 2 : 1;
       continue;
@@ -1489,7 +1701,7 @@ function collectTermMatches(text, mapping, token, matches) {
 
     let tokenEnd = tokenStart;
     while (tokenEnd < text.length) {
-      const tokenCodePoint = text.codePointAt(tokenEnd);
+      const tokenCodePoint = text.codePointAt(tokenEnd) ?? 0;
       if (!isMorphologyTokenCodePoint(tokenCodePoint)) {
         break;
       }
@@ -1524,6 +1736,10 @@ function collectTermMatches(text, mapping, token, matches) {
   }
 }
 
+/**
+ * @param {number | undefined} codePoint
+ * @returns {boolean}
+ */
 function isMorphologyTokenCodePoint(codePoint) {
   return (
     codePoint !== undefined &&
@@ -1534,13 +1750,20 @@ function isMorphologyTokenCodePoint(codePoint) {
   );
 }
 
+/**
+ * @param {string} text
+ * @returns {NfdMapping}
+ */
 function buildNfdMapping(text) {
+  /** @type {Array<number>} */
   const originalStarts = [];
+  /** @type {Array<number>} */
   const nfdStarts = [];
+  /** @type {Array<string>} */
   const parts = [];
   let nfdLength = 0;
   for (let offset = 0; offset < text.length; ) {
-    const codePoint = text.codePointAt(offset);
+    const codePoint = text.codePointAt(offset) ?? 0;
     const unitLength = codePoint > 0xffff ? 2 : 1;
     const decomposed = text.slice(offset, offset + unitLength).normalize("NFD");
     originalStarts.push(offset);
@@ -1554,6 +1777,12 @@ function buildNfdMapping(text) {
   return { nfdText: parts.join(""), originalStarts, nfdStarts };
 }
 
+/**
+ * @param {NfdMapping} mapping
+ * @param {number} nfdStart
+ * @param {number} nfdEnd
+ * @returns {null | {start: number, end: number}}
+ */
 function mapOriginalRange(mapping, nfdStart, nfdEnd) {
   const startIndex = findCodePointIndex(mapping.nfdStarts, nfdStart);
   if (mapping.nfdStarts[startIndex] !== nfdStart) {
@@ -1566,6 +1795,11 @@ function mapOriginalRange(mapping, nfdStart, nfdEnd) {
   };
 }
 
+/**
+ * @param {ReadonlyArray<number>} nfdStarts
+ * @param {number} target
+ * @returns {number}
+ */
 function findCodePointIndex(nfdStarts, target) {
   let lower = 0;
   let upper = nfdStarts.length - 1;
@@ -1580,6 +1814,13 @@ function findCodePointIndex(nfdStarts, target) {
   return lower;
 }
 
+/**
+ * @param {Source} source
+ * @param {ReadonlyArray<InternalRule>} definitions
+ * @param {ReadonlyMap<string, ReadonlyArray<ExpressionDescriptor>>} literal
+ * @param {ReadonlyMap<string, ReadonlyArray<TermDescriptor>>} token
+ * @param {number} limit
+ */
 function scanSource(source, definitions, literal, token, limit) {
   const warnings = [];
   const matches = collectMatches(source.text, literal, token);
@@ -1624,6 +1865,11 @@ function scanSource(source, definitions, literal, token, limit) {
   return { found: matches.length, matchedRuleIndexes, warnings };
 }
 
+/**
+ * @param {string} text
+ * @param {number} start
+ * @returns {number}
+ */
 function findLineEnd(text, start) {
   for (let offset = start; offset < text.length; offset += 1) {
     const unit = text.charCodeAt(offset);
@@ -1634,6 +1880,14 @@ function findLineEnd(text, start) {
   return text.length;
 }
 
+/**
+ * @param {string} text
+ * @param {number} lineStart
+ * @param {number} lineEnd
+ * @param {number} matchStart
+ * @param {number} matchLength
+ * @returns {string}
+ */
 function makeQuote(text, lineStart, lineEnd, matchStart, matchLength) {
   if (lineEnd - lineStart <= MAX_QUOTE_UTF16) {
     return text.slice(lineStart, lineEnd);
@@ -1651,10 +1905,18 @@ function makeQuote(text, lineStart, lineEnd, matchStart, matchLength) {
   return text.slice(start, end);
 }
 
+/**
+ * @param {number} unit
+ * @returns {boolean}
+ */
 function isHighSurrogate(unit) {
   return unit >= 0xd800 && unit <= 0xdbff;
 }
 
+/**
+ * @param {number} unit
+ * @returns {boolean}
+ */
 function isLowSurrogate(unit) {
   return unit >= 0xdc00 && unit <= 0xdfff;
 }
