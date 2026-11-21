@@ -88,7 +88,9 @@ const SELF_TEST_TIMEOUT_MS = 10_000;
 const SELF_TEST_OUTPUT_BYTES = 1024 * 1024;
 const HELP_TEXT = [
   "한국어 글에서 검토할 표현과 긴 문단을 찾습니다.",
+  "경고가 표시되면 앞뒤 문장을 읽고 표현을 고치거나 문단을 나눌 필요가 있는지 판단하세요.",
   "",
+  "아래 예시는 저장소 최상위 디렉터리에서 실행합니다.",
   "Usage:",
   "  node skills-ko/terms/scripts/scan.mjs --changed <repo>",
   "  node skills-ko/terms/scripts/scan.mjs --file <path> [--file <path> ...]",
