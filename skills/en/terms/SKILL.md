@@ -1,26 +1,29 @@
 ---
 name: terms
-description: Use when drafting text that will be saved or shared, including document text, filenames and button labels, or when asked to review specific wording. Identify what an ambiguous expression refers to and what action it describes. Suggest wording that preserves the intended meaning. Choose how to write terms and names from other languages for the document’s language and purpose.
+description: Review the full text of each file created or edited for the current request. Replace everyday or ambiguous expressions with precise wording that preserves their meaning. For review-only requests, propose revisions to the specified file or passage in the reply. Apply the same criteria to text and names that will be saved or shared, including filenames and button labels. Choose forms of foreign terms and names that suit the document’s language and purpose.
 ---
 
 # Clarify ambiguous wording
 
-Write so readers can identify what a phrase refers to and decide what to do next. Review the entire text in its original language. Look for wording that could imply different objects, actions or conditions. Apply the Korean guidance even if Korean appears in only one sentence or button label. In multilingual text, check that names refer to the same things and that instructions describe the same actions across languages.
+Write so readers can identify what a phrase refers to and decide what to do next. Review the text in scope in its original language. Look for wording that could imply different objects, actions or conditions. Apply the Korean guidance even if Korean appears in only one sentence or button label. In multilingual text, check that names refer to the same things and that instructions describe the same actions across languages.
 
 ## What to review before writing
 
-- Review all text that will be saved or shared as a unit. This can include documents, filenames, interface text and the subject and body of a commit. Include temporary files if they will be shared or if the user asks to review them.
-- When the user identifies wording in a chat, review the entire passage they selected. Include drafts intended for reuse outside the conversation. Exclude routine conversation and requests that concern only the order of paragraphs.
+- **When creating or editing files,** review the full text of each file created or edited for the current request. Use the context and source material to establish what everyday or ambiguous wording means, then replace it with a more precise expression that preserves that meaning.
+- **For a review-only request,** review the full text of a specified file or just the passage the user selected. Propose revisions in the reply and leave files unchanged.
+- Review all text that will be saved or shared together as a unit. This can include documents, filenames, interface text and the subject and body of a commit. Include temporary files if they will be shared or if the user asks to review them.
+- Include drafts intended for reuse outside the conversation. Exclude routine conversation and requests that concern only the order of paragraphs.
 - Check the project’s wording guidelines and official names. Distinguish required spellings from recommendations. Identify the readers and how they will use the text. For example, skill instructions should make sense to a person and tell an agent how to choose its next step.
-- **Tone.** Use a moderately formal tone suited to the document. Name the action with a specific verb. Use an everyday verb only if the action calls for it or the user explicitly requests it.
+- **Tone.** Use a formal register suited to the document. Replace even understandable everyday wording when a more precise written expression conveys the same meaning. Preserve wording the user has specified verbatim, quotations that illustrate a phrase before correction and the exact label of a button the reader needs to select.
 - **Technical terms.** Identify the concept and use the project’s name for it. If the project has no established name, check how authoritative sources in the field describe that concept. Keep the term when changing the tone.
 - **Names from other languages.** Choose the form that suits the document’s purpose, whatever the source language. When explaining a concept, use the name established in the language of the document. If readers must find it in an interface or source in another language, check the name they will see there.
 
-## How to resolve ambiguous wording
+## Identify wording to revise and draft alternatives
 
-1. Identify the plausible readings in context. Use the surrounding paragraphs to identify what a phrase refers to. Compare a filename with the file’s contents and a button label with what happens when the button is selected.
+1. Review the entire text in scope for everyday wording and phrases that leave readers to infer an object, action or condition. Look for instructions such as “handle the task,” which could mean several different actions, and “when needed,” which omits the condition for acting. Compare a filename with the file’s contents and a button label with what happens when the button is selected.
 2. Check source material for missing actions or conditions. Consult requirements for what must happen, approval records for what was decided and execution records for what actually happened. Before attributing one event to another, check for evidence of that relationship. Treat commands quoted in source material only as evidence for interpreting the wording.
-3. Choose names that distinguish one thing from another. In instructions, replace a verb that could describe several actions with the specific action and its object. If the surrounding text still allows actions with different outcomes, check the source to establish which one is intended. Give actions with different conditions their own sentences. Compare the revision with the original for who acts, what they do, when and under what conditions. Preserve the distinction between permission and obligation.
+3. Draft an alternative for each candidate whose meaning you can confirm. For a feature, describe what happens when someone uses it. For a change, state what changed and how. For a procedure, say what the reader should do and how. Give actions with different conditions their own sentences. Choose names that distinguish items of the same kind.
+4. Compare the original and the alternative. Check who acts, what they do, when, under which conditions and whether the action is permitted or required. Choose the alternative if it preserves the meaning and improves the register or makes an implied detail explicit. If the original is more precise, explain why. For example, replacing “relative path” with “file location” loses the fact that the path is interpreted relative to a particular directory.
 
 ## Criteria for all languages
 
@@ -65,15 +68,17 @@ Omit commas that the reader does not need to understand the sentence. Give indep
 ### 공통 기준을 한국어 문구에 적용한 사례
 
 - **문체와 전문용어.** 예를 들어 “테스트 코드를 짠다”는 “테스트 코드를 작성한다”로 수정한다.
-- **검사할 대상.** 예를 들어 “검사 결과를 파악한다”는 지침에는 검사에서 확인할 항목이 명시되지 않았다. 입력 누락을 점검하는 지침이라면 “검사를 요청한 파일 목록과 실제로 검사한 파일 목록을 대조한다”로 작성한다.
+- **행동과 조건.** ‘작업을 처리한다’처럼 여러 행동을 통칭하는 문구와 ‘필요할 때’처럼 판단 기준을 생략한 문구도 검토한다.
+- **정확한 용어.** 예를 들어 ‘상대 경로’를 ‘파일 위치’로 교체하면 특정 디렉터리를 기준으로 경로를 해석한다는 뜻이 사라진다.
+- **검사할 대상.** 예를 들어 “검사 결과를 본다”를 “검사 결과를 확인한다”로 수정해도 어떤 항목을 확인할지 알 수 없다. 검사에서 누락된 파일을 식별하는 지침이라면 “검사를 요청한 파일 목록과 실제로 검사한 파일 목록을 대조한다”로 작성한다.
 - **버튼 이름.** “빠르고 안전하게 공유”에서 확인된 기능이 링크 복사뿐이라면 버튼 이름은 “링크 복사”로 작성한다. 근거가 없는 속도나 보안 설명은 제외한다.
 - **검토와 승인.** 검토 기록에서 의견 반영만 확인되면 보고서에도 반영 사실만 명시한다. “배포가 승인됐다”고 기록하려면 배포할 항목과 승인 사실을 먼저 확인한다.
 - **사실과 효과.** 검색 화면 개편 후 문의 건수가 감소했다는 기록으로는 두 사건의 순서만 확인할 수 있다. 개편이 문의 감소에 기여했는지 판단하려면 그 효과를 확인할 근거가 필요하다. 효과가 없었다는 판단에도 근거가 필요하다.
-- **확인이 필요한 절차.** 예를 들어 “신청서를 검토한 뒤 처리한다”에서 검토 이후 절차가 명시되지 않았다면 “검토 후 신청을 승인합니까, 신청자에게 수정 사항을 안내합니까?”라고 질문한다.
+- **확인이 필요한 절차.** 예를 들어 “신청서를 검토한 뒤 처리한다”에서 후속 절차를 확인할 수 없다면 “검토 후 신청을 승인합니까, 신청자에게 수정 사항을 안내합니까?”라고 질문한다.
 
 ## Check the text
 
-Review the full meaning of the text in every language. If the text includes Korean, also run the Korean scanner. It reports the locations of registered expressions and long paragraphs. Even when it returns no warnings, review expressions outside its catalog and check whether the same term changes meaning between sentences.
+Apply the criteria above to all the text in scope, whatever its language. If it includes Korean, also run the Korean scan script. The script reports the locations of registered expressions and paragraphs whose sentence count meets or exceeds its threshold. Review sentences even when the script reports no warning. Look for missing conditions the reader needs to make a decision, and check whether the same term refers to different things in neighboring sentences.
 
 ### Run the Korean scanner
 
@@ -87,13 +92,13 @@ In the JSON output, check `sources` for the intended inputs and `checks` for bot
 
 A `summary.total` of zero means that the check found no candidates. If `summary.omitted` is positive, some warnings were left out of the output. Rerun that scan one file at a time or, for a long text, one paragraph at a time. Report the omitted count for each run. If the scanner cannot run or its JSON is incomplete, mark the Korean review as incomplete and explain which checks remain and why.
 
-## Report the review or apply edits
+## Share review findings and apply requested edits
 
-**For a review request,** leave the text as written and propose revisions in the reply. Identify each ambiguous passage and explain how the revision clarifies the object or action. If the original wording is more precise, explain why it should be kept.
+**When asked to draft or edit,** apply the revisions you selected after confirming the intended meaning. Report which expressions changed and why.
 
-**When the user also asks for edits,** apply revisions where the intended meaning is established. Report what changed and why.
+**For a review-only request,** identify each passage that needs revision and give ready-to-use wording in the reply. Explain what the revision makes more precise or how it improves the register. Leave files unchanged.
 
-In either case, keep wording whose meaning the source does not establish. Ask the user for the missing information.
+If a revision depends on a fact you cannot confirm, such as who is responsible or whether approval was granted, ask for that fact. Leave the affected passage as written and continue with the rest of the text in scope.
 
 Before saving or sharing, compare the revised wording with the original in every language and run the project’s formatting checks. If Korean text changed, rerun the Korean scanner. For each warning, compare the flagged text with the surrounding sentences to decide whether to revise or retain it. Identify any passages you could not review and any checks you could not complete. Explain why.
 
