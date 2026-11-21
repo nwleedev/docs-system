@@ -12,7 +12,7 @@ export default defineConfig([
   },
   {
     name: "node-mjs-scripts",
-    files: ["skills/use-better-terms/scripts/**/*.mjs"],
+    files: ["skills/{en,ko}/terms/scripts/**/*.mjs"],
     extends: [js.configs.recommended],
     languageOptions: {
       ecmaVersion: 2024,
@@ -240,8 +240,8 @@ export default defineConfig([
     },
   },
   {
-    name: "flexible-design-generator",
-    files: ["skills/use-flexible-design/scripts/requirements/create.mjs"],
+    name: "flexible-requirements-generator",
+    files: ["skills/{en,ko}/flexible/scripts/requirements/create.mjs"],
     extends: [js.configs.recommended],
     languageOptions: { ecmaVersion: 2024, sourceType: "module" },
     linterOptions: { reportUnusedDisableDirectives: "error" },
@@ -266,8 +266,8 @@ export default defineConfig([
     },
   },
   {
-    name: "better-terms-scanner-entrypoint-imports",
-    files: ["skills/use-better-terms/scripts/scan.mjs"],
+    name: "terms-scanner-entrypoint-imports",
+    files: ["skills/{en,ko}/terms/scripts/scan.mjs"],
     rules: {
       "no-restricted-imports": [
         "error",
