@@ -80,7 +80,6 @@
 If a required skill or one of its required references cannot be read, stop and identify the missing or inaccessible material. Do not infer replacement rules.
 
 - If `docs/designs/README.md` is missing, use `$flexible` to check the repository’s existing documentation rules. If there are no such rules and the repository needs a design guide, propose creating this file. Create it only with the user’s agreement.
-- If `docs/dev/README.md` is missing and the findings need to be documented, use `$programming` and the repository’s rules to propose a location for the findings. Create this README only with the user’s agreement.
 
 <!-- BEGIN HANDOVER -->
 
@@ -112,7 +111,7 @@ If a required skill or one of its required references cannot be read, stop and i
 ### Development Guidance, Technology Stack, and Checks
 
 - Run `$programming` when planning, implementing, reviewing, refactoring, testing, or documenting changes to source code, tests, CLIs, libraries, scripts, builds, CI, or configuration, and when changing dependencies or checks.
-- If the repository has a `docs/dev/README.md`, follow the development methods, technology-specific rules, commands and verification procedures in that document and the topic guides it identifies.
+- Follow the development methods, technology-specific rules, commands and verification procedures in each repository.
 
 ### Comparing implementation options
 
