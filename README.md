@@ -15,7 +15,6 @@
 
 - [`flexible`](./skills/en/flexible/SKILL.md) identifies which steps the current requirements support and how to verify each one. For a review, the agent leaves files untouched and explains which steps depend on open questions. It carries out the plan when the user requests execution.
 - [`programming`](./skills/en/programming/SKILL.md) compares ways to implement a feature or resolve a problem in existing code. It explains why an approach fits, which code would change, and how to verify the result. The agent changes code only when the user asks for implementation.
-- [`ui`](./skills/en/ui/SKILL.md) compares visual designs and creates standalone HTML mockups. To request a revision, copy the element's full XPath from the browser developer tools and describe what should change in the mockup. Production application code stays unchanged during mockup revisions.
 - [`handover`](./skills/en/handover/SKILL.md) moves notes for the next agent to the designated handoff file. Instructions that readers need stay in the original document. Use this skill to consult or update an existing handoff record.
 - [`terms`](./skills/en/terms/SKILL.md) reviews the full text of each file created or edited for the current request and revises everyday or ambiguous wording. It also applies to filenames and interface text. For review-only requests, it suggests revisions to the selected file or passage in the reply. It reviews text in any language and runs additional checks on Korean text.
 
