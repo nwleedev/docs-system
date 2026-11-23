@@ -1,51 +1,84 @@
 ---
-name: ui
-description: Design service UI with the user through visual theme research, comparison, service-like HTML mockups, and feedback using copied XPath. Use for new UI directions, refinements, resumed design choices, implementation input, and visual validation. Excludes production application edits.
+name: "ui"
+description: "Research which screens a service or application needs. Review layouts by device, component choices and presentation, UI copy, panel typography and spacing, and the service's visual style. Also use when deriving design rules from reference materials or reviewing content layout in slides and documents."
 ---
 
-# UI
+# Review UI and content layout
 
-Develop the user's intended service experience through conversation, visual comparison, and inspectable HTML. Preserve requested behavior and confirmed choices as the design becomes concrete. The person choosing the design and the people who will use the service may have different information needs; keep design discussion out of the service screen.
+Propose screens and UI elements based on the service's features and usage scenarios. Identify missing or duplicate elements and unnecessary guidance in existing screens. For slides and documents, follow [Review content layout in slides and documents](#review-content-layout-in-slides-and-documents).
 
-## Establish the design basis
+## Identify the service and check its current state
 
-For a new direction, establish the intended outcome, representative scenario, required actions and states, constraints, existing guidance, desired impression, and avoided characteristics. Use available context first. Discuss material unknowns early without requiring design vocabulary, CSS values, or a questionnaire when the answer is already available.
+- Use the request and project documents to identify the service, user groups and permissions, supported environments, and features or screens under review. In a monorepo, distinguish each service's requirements and design decisions.
+- Compare the existing UI with the requirements. Distinguish behavior observed in the running application, behavior established from code, and elements or layouts visible in screenshots.
+- For a specific screen or feature, check how its states, entry and return paths, and shared components affect the proposed layout. Reassess affected screens and elements when requirements change.
 
-Separate explicit requirements and confirmed preferences from existing implementations, drafts, and assumptions. Describe what people see, decide, and do, including repetition and mistake costs; a feature list alone is not a scenario. Do not replace a named interaction with an easier alternative or infer approval from silence.
+## Research which screens are needed
 
-Before research, form a provisional explanation of information priority, action placement, density, and domain relationships. Then search design themes and service UI, present viewable differences, and use feedback to establish the direction before making the first full UI mockup. A theme choice approves only the characteristics discussed. Resume pending choices or edits at their current step rather than repeating discovery.
+1. For each user group, identify what starts the feature flow, the main decisions and actions, and what users need to verify at completion. Check whether permissions or the outcome change the navigation path.
+2. Compare a dedicated page, a region or state of an existing screen, and a dialog as ways to provide the necessary information and actions. Decide based on whether users need to open or revisit it directly, retain the current information and selection, or confirm a choice separately.
+3. Examine live screens and official help for similar services, along with the target platform's design guidelines. Compare the examples' elements and display conditions with the project's requirements before adopting them.
 
-## Common rules
+## Adapt screens to devices and usage environments
 
-These rules apply to every procedure and are defined here rather than repeated in references.
+Apply this section when supported devices or usage environments change the layout or interaction.
 
-- Classify each claim as **Observed** (directly inspected appearance or interaction), **Source-stated** (an explicit fact in identified material), **Interpretation** (scenario-based analysis), or **Unknown** (missing evidence). Preserve source, screen, state, and relevant viewport or date. A claim's scope cannot exceed its evidence. Search summaries, text or DOM alone, and unopened links do not prove appearance; generated or unverified images do not prove a released UI was observed. Exact CSS values, tokens, and breakpoints need specifications, code, Storybook, or inspected DOM/CSS; screenshot estimates stay tentative.
-- Distinguish **confirmed preferences and dislikes** (explicit choice and scope), **unresolved choices**, **hypotheses**, **tentative defaults or implementation proposals**, and **validated rules** (current running UI evidence, checked conditions, confirmed visual judgment, and scope). A build, handoff, old screenshot, or liked mockup does not validate running UI, behavior, accessibility, or implementation values. Do not replace approved choices with defaults. Silence is neither approval nor rejection.
-- Show appearance through viewable images or running screens, never ASCII or text wireframes. Missing evidence leaves only the affected conclusion incomplete. Report mockup inspection, implementation input, running UI validation, and shared-rule validation separately. Claim improvements only with measurements and a comparison baseline.
-- Derive distinctive composition from the scenario and domain content while preserving familiar interactions and accessibility conventions. References inform strategies, not a collection of colors, fonts, corners, and shadows to combine. Explain final rules without relying on service names.
-- Exclude SaaS design from theme candidates and mockup directions unless explicitly requested. A subscription model or business audience is not that request; ordinary controls are not prohibited merely because SaaS services also use them.
-- Define the foundation needed for current screens; expand only for actual scenarios. Do not build a complete token hierarchy, every component variant, a reference-storage service, or extra validation screens in advance. Preserve required functionality in refinements.
-- Create and revise standalone HTML mockup files within the requested destination and permissions. Leave production application files, tokens, themes, components, and tests unchanged. Do not add a feedback server, agent bridge, browser extension, or review controls inside the mockup. Service controls and necessary user help remain part of the service.
+- Identify the scenarios users need to complete in each supported environment. Check which interaction steps change with window size, orientation, fold state, or input method.
+- Set information priorities, available actions, navigation, and transitions for each environment. For example, decide whether to show a list and its details together and how users return from the details to the list. If features differ across environments, state which scenarios users can complete in each and explain the differences.
+- Specify which selections, input values, and scroll positions to preserve when the window resizes, the device posture changes, or users return to the previous screen.
 
-## Optional design agent
+## Define each screen's UI elements
 
-Create a design agent only when explicitly requested; use one if no count is specified, subject to the host's limits. Give it the scenario, confirmed choices, avoided characteristics, and a bounded design responsibility. Its suggestions do not approve a direction or authorize production edits. If delegation is unavailable, report that limitation rather than claiming an agent was created.
+When reviewing a specific element, apply only the steps that affect the requested decision.
 
-## Read only the needed sections
+1. **Identify each element's role and what its actions affect.** Identify what users should see first, what values they enter, where they navigate, and what actions they take and outcomes they see. Specify whether each action applies to a field, item, settings group, or the entire screen.
+2. **Specify display conditions and states.** Identify which inputs or selections reveal or enable other elements and when changes take effect. Specify what users see and can do when loading, empty results, failures, or permission restrictions affect their next action.
+3. **Choose components.** Compare candidates by the element's role, input format, number of options, need to compare options side by side, when changes take effect, the device's input methods, and accessibility requirements.
+4. **Specify visual treatment and accessibility information.** Use the design system and the relative priority of information and actions to choose labels, icons, backgrounds, borders, and state indicators. Specify the accessible name and role of each interactive element and the states to expose to assistive technologies. Verify that the implementation exposes this information when reviewing it.
+5. **Group and order elements.** Place elements that users need together, such as a control and what it affects or an option and the field it reveals, in the same group. Arrange them so reading order and keyboard focus order reflect how the information relates and how users act on it. Verify focus order with a keyboard on the running screen.
+6. **Lay out the screen.** Choose a format such as a table or list based on what users need to compare and how items relate. Place the groups and decide which regions appear together and which require a screen transition. Use the same requirements to compare alternative layouts by what appears first, where the main actions sit, and how states are shown.
 
-Read the common rules and the selected section in full, including its subsections. Follow linked sections only when their stated condition applies; do not load whole reference files by default. Continue from the available next action without restarting discovery.
+## Review whether UI copy is needed
 
-- New or changed direction: establish the basis above, then [theme research and comparison](references/research.md#decide-whether-research-is-needed) and [questions that need a response](references/decisions.md#decide-whether-a-question-is-necessary).
-- External examples: [strategy discovery](references/research.md#discover-relevant-strategies), then [screen inspection](references/research.md#inspect-the-actual-screen) and [strategy analysis](references/research.md#analyze-compare-and-apply). Direct inspection alone needs only the inspection section.
-- Short reply or resumed comparison: [continuation](references/decisions.md#continue-from-available-context), [response interpretation](references/decisions.md#request-and-interpret-a-choice), and [round accounting](references/decisions.md#count-rounds-and-stop-exploration).
-- HTML mockup: [current foundation](references/implementation.md#establish-the-current-screens-foundation) and [generation and direct inspection](references/implementation.md#generate-and-inspect-a-mockup).
-- Element selection help: [external selection and copying](references/implementation.md#select-an-element-outside-the-mockup).
-- Copied XPath and a change request: [request interpretation](references/decisions.md#interpret-an-xpath-change-request), then [target verification and revision](references/implementation.md#revise-from-a-copied-full-xpath). Keep selection and copying outside the service HTML.
-- Implementation input: [validation conditions](references/implementation.md#define-validation-conditions) and [handoff](references/implementation.md#prepare-implementation-input). Read the foundation only if current rules are missing or changing.
-- Post-change UI check: [current evidence and scope](references/validation.md#establish-the-evidence-and-scope), [screen checks](references/validation.md#inspect-four-aspects-of-the-screen), and [differences and reuse](references/validation.md#resolve-differences-and-validate-reuse). Read [system completion](references/validation.md#distinguish-screen-validation-from-initial-system-completion) only when assessing a design system.
+- Identify information users would miss without the copy, such as what an action does, the expected input format, the current state, or why an error occurred and how to resolve it.
+- Omit guidance that repeats the screen title, labels, control names, or existing state indicators. Retain labels and instructions needed for input.
+- Show copy only when its state or condition applies. For example, place the cause and remedy for an input error near the relevant field and associate the message with that field.
 
-## Return enough context to continue
+## Set panel typography and spacing
 
-Return the changed decisions or evidence, affected scope, unresolved conditions, exact pending question and allowed reply, and next action with its needed input. Do not repeat an available unchanged result. Keep candidate identifiers and viewable material, choice states and reasons when stated, completed or pending rounds, and approved extensions available when relevant.
+- Propose font sizes, weights, and line heights based on the hierarchy and reading order of titles, body text, labels, and supporting information.
+- Specify spacing between related elements, spacing between groups, and padding inside the panel.
+- Name the project's typography and spacing tokens to use. If no standard exists and numeric values are needed, propose values and specify when they apply. Check whether wrapping or clipping makes content hard to read or controls hard to use with long copy, enlarged text, or at the narrowest supported screen width.
 
-If prior context is absent or compressed, reconstruct the available goal, scenario, thesis, constraints, strategies and evidence, confirmed choices, proposals, conflicts, inspected targets and conditions, and round state needed for the next action. Request only missing information; do not claim to restore unavailable context. This is not a fixed schema or storage requirement. Do not save project-specific choices into this skill or claim unsaved context is persistent.
+## Review the service's visual style
+
+Compare colors, typography, and spacing in running screens or mockups with the brand guidelines or design system. Check whether elements with the same role use a consistent visual treatment across screens.
+
+## Derive design rules from reference sites and images
+
+Apply this section when asked to derive design rules from reference materials or assess whether those rules fit the project.
+
+### What each source can establish
+
+- **Images.** Inspect layout, alignment, visual hierarchy, relative sizes, and spacing. Compare recurring treatments and differences across the states shown in multiple images. Mark transition triggers, original CSS values, and design tokens as unverified from images alone.
+- **Live sites.** Record the screen, viewport size, state, and interactions tested. Inspect computed styles in the browser. Check applied style rules and variable definitions for source declarations and design tokens. Mark behavior on inaccessible screens or in states you could not reproduce as unverified.
+- **Source design files.** Inspect accessible layer properties, spacing, components, variables, and prototype behavior. Check whether those designs were implemented and how they behave using the running site or its code.
+
+### Handle unknowns and propose rules
+
+1. If missing information about a rule's applicability or values prevents a comparison, state what needs to be verified and request the materials needed to verify it.
+2. If the available information supports a comparison or further materials are unavailable, present options within the limits of the evidence. For each option, explain the evidence, reasoning, assumptions, and conditions for use.
+3. Distinguish observed features from proposed rules. For each rule, specify where it applies, under what conditions, any exceptions, and which screens and states to check after implementation.
+
+## Report proposals and findings
+
+- Distinguish what you verified in existing screens or materials from the additions, changes, or removals you propose. For each proposal, state when it applies and identify the requirements, observations, official guidance, or examples that support it.
+- If unverified information could change a conclusion, specify what information is needed and which proposals it affects.
+
+## Review content layout in slides and documents
+
+Apply this section only when asked to review or propose a content layout for slides or a document.
+
+1. Identify the audience, reading purpose, and viewing conditions. For slides, determine whether readers will follow a presentation or read on their own. For documents, determine whether readers will read in sequence or look up specific information.
+2. Distinguish what readers need first, what they need to compare, and what belongs in supporting explanations. Consult official guidance and examples for the same medium and purpose to examine heading hierarchy, page and paragraph divisions, and the placement of tables and figures.
+3. For slides, propose how much information to include on each slide and where to place titles, body text, and charts. For documents, propose a heading hierarchy, page and paragraph structure, and placement for tables, figures, and their explanations. Check that the hierarchy is apparent in both the visual reading order and the navigation order provided to assistive technologies.
