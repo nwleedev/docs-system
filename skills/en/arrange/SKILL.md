@@ -7,7 +7,11 @@ description: Identify a document’s purpose, research how its content should be
 
 Use this skill only when explicitly invoked. Organize a loosely structured draft around the purpose it serves.
 
-Read the document and establish its role in the project. For a standalone text, use the text itself, the supplied explanation, and any provided files to establish its purpose. Identify the intended readers and research what information they need and in what order. Focus on the content and its sequence rather than the document’s visual format.
+Identify the document type, purpose, and intended use within the project. Examine the user's request, the document's own text, its references, and any excerpts as distinct sources of evidence. Ground the assessment in specific evidence from those sources.
+
+If more than one interpretation is plausible, explain each interpretation and the evidence for it. Select an interpretation only when the evidence supports the choice. If the evidence is insufficient or conflicts, recheck the request and the project context. Explain what the available evidence establishes and what still needs to be confirmed. Present options when a choice is needed.
+
+Once the purpose is clear, identify the intended readers and research what content the document should include, which elements are required, and how to order them. For a standalone text, use the text itself, the supplied explanation, and any provided reference files. Limit structural recommendations to the content and its sequence.
 
 Give explicit project requirements priority. Then use the document’s purpose to decide which required and recommended elements belong in the structure. If project-specific guidance conflicts with a general recommendation, explain the conflict and present the options. Before rearranging the text, explain the document’s role, identify its essential content, and give an example of the proposed structure.
 

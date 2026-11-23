@@ -1,6 +1,6 @@
 # Design documents
 
-This directory holds requirements, research findings, approved decisions, and plans by topic. AI agents review, investigate, plan, and verify within the scope of the request. Record approved decisions, create documents only when requested, and report changes to existing documents.
+This directory holds requirements, research findings, approved decisions, and execution plans by topic. Review, investigate, plan, and verify within the scope of the request. Create documents when creation falls within that scope and report edits to existing documents.
 
 ## Files for each topic
 
@@ -20,11 +20,9 @@ Record each topic's requirements in its `requirements.md`. Reuse the topic direc
 
 ## `requirements.md` records the desired result and constraints
 
-For a review request, leave files untouched. Explain what is missing from the requirements or where different interpretations are possible.
+Create `requirements.md` if no requirements document exists or the user requests a separate one. When revising an existing document, edit only the requested parts. If the user asks for an empty file, leave it empty.
 
-When asked to draft or revise requirements, first check for an existing document on the same topic. Create a file if no such document exists or if the user explicitly asks for a separate one. Otherwise edit only the requested parts of the existing document. If the user asks for an empty file, leave it empty.
-
-Describe when and how the user can observe that the requirement is met. Include any constraints that must still hold. Record an open question when the answer would change the outcome.
+For each requirement, record the usage scenario and inputs, the expected behavior or deliverable, what to change and which constraints to preserve, and the observable result and pass criteria for verification. Give each requirement a heading or identifier so the plan can reference it. Record an open question if its answer would change the outcome, what must change, a constraint, or a completion criterion. If a plan already exists, identify the affected steps. Update the requirements after the user decides.
 
 ### Examples
 
@@ -47,14 +45,20 @@ Create a decision record when an approved choice affects what later steps involv
 
 - **Redesigning the home screen of Oregon's traffic management system.** Even a home screen change required testing and deploying the entire system, so regional traffic management centers waited a long time for the changes they needed. The Oregon Department of Transportation and the development team at Oregon State University chose to divide the system into services they could deploy independently. They started with the home screen.
 
-## `plan.md` records the order of steps and how to check completion
+## `plan.md` records the order of steps, completion criteria, and progress
 
-Create `plan.md` when the desired outcome is settled and the order of steps needs to be consulted during execution. Link to the entries in `requirements.md` on which the plan is based. Identify what each step changes and what result it should produce. If a later step depends on that result, explain why and order the steps accordingly. Describe how to verify each step and how to check that the full set of requirements is met at the end.
+Create or update `plan.md` when the request includes maintaining a written plan. Summarize the intended outcome and constraints at the top. Link to the relevant entries in `requirements.md` and any recorded decisions that the plan follows. Record the following for each step.
 
-If the implementation method is uncertain, explain what you need to find out before you can plan the next step. Record open decisions alongside the steps that depend on them and plan independent steps first. After carrying out the plan at the user's request, record what you verified and what remains.
+- The requirement the step follows, what to change, and what work to perform
+- The deliverable or verification result needed from a prior step and the deliverable this step should produce
+- The verification method and pass criteria
+- The current completion status, actual verification results and evidence, and remaining work or conditions for resuming
+- For a pending step, the user decision or investigation result needed and what would allow you to confirm the step
 
-If requirements change, or new evidence makes the planned order or method unworkable, pause the affected steps. If the desired result changes, wait for confirmation of the change and permission to revise the requirements. Then update `requirements.md` first and the plan second. If only the method changes, record the evidence and update the order and checks for the affected steps. Unaffected steps can continue within the scope of the request.
+Update progress after verifying a step or when execution stops. Mark steps complete only when they meet their pass criteria. Record the final verification result for each requirement and constraint covered by the request.
+
+When the implementation approach changes, record why and identify the affected steps and checks. Mark a requirements change as pending if it still needs a user decision. Once the change is confirmed, update `requirements.md` if you have permission to edit it, then update the plan.
 
 ### Example
 
-- **Implementing a screen after prototype review and tool selection.** The user tries the prototype and decides which changes should be included. The implementation tools can be chosen independently of that review. Once both steps are complete, implement the screen and verify that it includes the agreed changes.
+- **Implementing a screen after prototype review and tool selection.** Mark screen implementation as pending while changes to the prototype are still undecided. Plan tool selection if it can proceed independently. Confirm the implementation step once the changes and tools are settled, then verify the screen behavior for each agreed change.

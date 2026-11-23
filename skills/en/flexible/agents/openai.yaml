@@ -1,4 +1,4 @@
 interface:
   display_name: "Flexible"
-  short_description: "Review requirements, order steps, and set completion criteria."
-  default_prompt: "Use $flexible to review the requirements. Describe the steps needed to meet them, in order. If anything is undecided, explain what needs to be confirmed and why."
+  short_description: "Clarify requirements and track execution plans and verification results."
+  default_prompt: "Use $flexible to review whether the requirements specify the intended outcome, what to change, which constraints to preserve, and the completion criteria. For each open decision, state the question and explain what behavior or condition depends on the answer."
