@@ -26,8 +26,11 @@ The generated `SKILL.md` contains only the `name` and `description` fields. The 
 
 - When asked to reorganize instructions, identify how the rules relate. Present dependent actions in sequence. If behavior depends on the input or type of request, explain what to do in each case. Make clear where shared rules and individual exceptions apply.
 - Use the supplied content. If a rule appears to be missing, propose it separately.
-- You may add headings or split or combine sentences and lists to fit the structure. Preserve the original terminology, tone, and sentence endings where possible, and refine wording where the context requires it. Preserve existing metadata, commands, file paths, and quotations.
+- You may add headings or split or combine sentences and lists to fit the structure. Preserve the original terminology, tone, and sentence endings where possible. Preserve existing metadata, commands, file paths, and quotations.
 - Preserve scope, conditions, exceptions, and priority. Make clear what is required, recommended, permitted, or prohibited and when each instruction applies.
 - Consolidate repeated instructions only when both meaning and scope match. If rules conflict, propose criteria for resolving the conflict separately.
 - When asked to apply changes, edit only the specified files. When asked for a draft, return the rewritten text.
-- Compare the original and rewritten instructions to verify that their meaning is intact. To avoid bias from the AI’s own interpretation, make this comparison without running the skill being rewritten.
+- Review the instructions after revising them.
+  1. Remove explanations and wording only if the required actions and decision criteria stay the same. Apply the consolidation rule above to repeated instructions.
+  2. If different readings change what an instruction applies to, when it applies, or what action it calls for, use the original text and the revision request to make those details explicit. If the intended meaning remains unclear, identify what needs clarification and suggest possible wording.
+  3. Compare the original and revised instructions without running the skill being revised. Verify that the requested changes are in place. Outside the requested scope, check that each instruction retains its meaning, scope, conditions, exceptions, and priority, and still states what is required, recommended, permitted, or prohibited.
