@@ -14,7 +14,7 @@ Write so readers can identify what a phrase refers to and decide what to do next
 - Review all text that will be saved or shared together as a unit. This can include documents, filenames, interface text and the subject and body of a commit. Include temporary files if they will be shared or if the user asks to review them.
 - Include drafts intended for reuse outside the conversation. Exclude routine conversation and requests that concern only the order of paragraphs.
 - Check the project’s wording guidelines and official names. Distinguish required spellings from recommendations. Identify the readers and how they will use the text. For example, skill instructions should make sense to a person and tell an agent how to choose its next step.
-- **Tone.** Use a formal register suited to the document. Replace even understandable everyday wording when a more precise written expression conveys the same meaning. Preserve wording the user has specified verbatim, quotations that illustrate a phrase before correction and the exact label of a button the reader needs to select.
+- **Tone.** Use a formal register suited to the document. Replace even understandable everyday wording when a more precise written expression conveys the same meaning. Preserve wording specified for verbatim use, quotations that illustrate a phrase before correction and the exact label of a button the reader needs to select.
 - **Technical terms.** Identify the concept and use the project’s name for it. If the project has no established name, check how authoritative sources in the field describe that concept. Keep the term when changing the tone.
 - **Names from other languages.** Choose the form that suits the document’s purpose, whatever the source language. When explaining a concept, use the name established in the language of the document. If readers must find it in an interface or source in another language, check the name they will see there.
 
@@ -30,7 +30,7 @@ Write so readers can identify what a phrase refers to and decide what to do next
 ### Identify the object, conditions and authority
 
 - **Buttons and names.** If a button labeled `Send` only saves a draft, rename it `Save draft`. Interface text should describe the current state and the next action. For an API, check the specification for the conditions of a call and the response on failure. Explain any follow-up the caller needs to perform.
-- **Pronouns.** In “Export the draft and its comments. Archive it.” check whether the reader should archive the draft or the exported file. If the source identifies the file, write “Archive the exported file.” If the evidence is insufficient, ask which item to archive.
+- **Pronouns.** In “Export the draft and its comments. Archive it.” check whether the reader should archive the draft or the exported file. If the source identifies the file, write “Archive the exported file.” If the evidence is insufficient, ask in the reply which item to archive.
 - **Conditions and permission.** In “With permission, you may edit and save the draft.” both actions are optional and require permission. Rewriting the second action as “Save the draft.” loses that condition and turns an option into a command. Check that the condition still applies to both actions. In English, also check the placement of `only`. It can restrict who may act or which actions are permitted.
 - **Review and approval.** If the review record confirms only that feedback was incorporated, report that fact. Before claiming that deployment was approved, confirm what was to be deployed and that approval was granted.
 - **Events and effects.** If a record establishes only that one event followed another, report their order. Claims that a change had an effect, or that it had none, both need evidence.
@@ -55,7 +55,7 @@ Omit commas that the reader does not need to understand the sentence. Give indep
 ### 문장에 생략된 주체와 조건
 
 - **주어와 서술어.** “이 안내서가 가입을 승인한다”에서 안내서가 설명하는 내용과 실제 승인 절차를 구별한다. 문서의 역할만 확인됐으면 “이 안내서는 가입 승인 절차를 설명한다”로 작성한다. 승인 주체를 명시할 필요가 있으면 승인 기록에서 담당자를 확인한다.
-- **능동문과 피동문.** “검토 후 승인한다”에는 주어가 생략되어 있으므로 이 문구만으로 검토자의 승인 권한을 판단할 수 없다. 기록에서 검토자와 승인자를 식별해 문장에 명시한다. 승인자를 확인할 수 없으면 사용자에게 승인 주체를 질문한다. 능동문과 피동문이 모두 가능하면 두 문구를 작성해 비교한다. 자동 저장을 설명할 때는 “편집기가 초안을 자동으로 저장합니다”, 저장 완료 상태를 표시할 때는 “초안이 저장되었습니다”가 적절하다.
+- **능동문과 피동문.** “검토 후 승인한다”에는 주어가 생략되어 있으므로 이 문구만으로 검토자의 승인 권한을 판단할 수 없다. 기록에서 검토자와 승인자를 식별해 문장에 명시한다. 승인자를 확인할 수 없으면 답변에서 누가 승인할 수 있는지 묻는다. 능동문과 피동문이 모두 가능하면 두 문구를 작성해 비교한다. 자동 저장을 설명할 때는 “편집기가 초안을 자동으로 저장합니다”, 저장 완료 상태를 표시할 때는 “초안이 저장되었습니다”가 적절하다.
 - **조건이 적용되는 행동.** “승인되면 게시하고 백업한다”는 두 행동 모두에 승인이 필요하다는 뜻으로 해석될 수 있다. 게시에만 승인이 필요하고 백업은 매일 실행한다면 “승인되면 게시한다. 백업은 매일 실행한다”로 작성한다. 둘 다 승인이 필요하면 “승인 후에만 게시와 백업을 실행한다”로 명시한다.
 - **‘부터’와 ‘까지’.** “월요일부터 금요일까지 신청을 접수한다”는 확인된 접수 기간을 전달한다. “접수부터 심사까지 담당한다”는 책임 범위를 명시하는 표현이므로 실제 담당 업무에 심사가 포함되는지 확인한다.
 
