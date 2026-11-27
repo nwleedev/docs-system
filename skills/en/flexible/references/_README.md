@@ -20,14 +20,14 @@ Record each topic's requirements in its `requirements.md`. Reuse the topic direc
 
 ## `requirements.md` records the desired result and constraints
 
-Create `requirements.md` if no requirements document exists or the user requests a separate one. When revising an existing document, edit only the requested parts. If the user asks for an empty file, leave it empty.
+Create `requirements.md` if no requirements document exists or the request calls for a separate one. When revising an existing document, edit only the requested parts. If the request calls for an empty file, leave it empty.
 
-For each requirement, record the usage scenario and inputs, the expected behavior or deliverable, what to change and which constraints to preserve, and the observable result and pass criteria for verification. Give each requirement a heading or identifier so the plan can reference it. Record an open question if its answer would change the outcome, what must change, a constraint, or a completion criterion. If a plan already exists, identify the affected steps. Update the requirements after the user decides.
+For each requirement, record the usage scenario and inputs, what should happen and what result or deliverable is needed, and what to change and which constraints to preserve. Specify which results or deliverables to check and what counts as passing verification. Give each requirement a heading or identifier so the plan can reference it. Record an open question if its answer would change the outcome, what must change, a constraint, or a completion criterion. If a plan already exists, identify the affected steps. Update the requirements once the decision is confirmed.
 
 ### Examples
 
 - **Checking that comments are disabled.** An administrator turns off comments and opens an existing post. The comments area displays a notice that comments are disabled. Previously posted comments are hidden on that screen.
-- **An open question about flood repairs.** If a home floods, is it enough for the homeowner to compare quotes from several providers? Should the homeowner also be able to request an immediate visit without waiting for quotes?
+- **An open question about flood repairs.** If a home floods, is it enough to compare quotes from several providers? Should the service accept requests for an immediate visit before the quotes arrive?
 
 ## `references/*.md` records research for later use
 
@@ -35,7 +35,7 @@ Write a research note when the findings will be needed for later planning or rev
 
 ### Example
 
-- **Test sales of LEGO architecture sets.** At some Chicago stores, customers bought the architecture sets even though they cost more than other sets with the same number of pieces. The test sales leave open whether buyers in other regions would pay the same price.
+- **Test sales of LEGO architecture sets.** At some Chicago stores, the architecture sets sold even though they cost more than other sets with the same number of pieces. The test sales leave open whether the sets would sell for the same price in other regions.
 
 ## `decisions/*.md` records approved choices and their rationale
 
@@ -53,12 +53,12 @@ Create or update `plan.md` when the request includes maintaining a written plan.
 - The deliverable or verification result needed from a prior step and the deliverable this step should produce
 - The verification method and pass criteria
 - The current completion status, actual verification results and evidence, and remaining work or conditions for resuming
-- For a pending step, the user decision or investigation result needed and what would allow you to confirm the step
+- For a pending step, the decision or investigation result needed and what would allow you to confirm the step
 
 Update progress after verifying a step or when execution stops. Mark steps complete only when they meet their pass criteria. Record the final verification result for each requirement and constraint covered by the request.
 
-When the implementation approach changes, record why and identify the affected steps and checks. Mark a requirements change as pending if it still needs a user decision. Once the change is confirmed, update `requirements.md` if you have permission to edit it, then update the plan.
+When the implementation approach changes, record why and identify the affected steps and checks. Mark a requirements change as pending if it still needs a decision. Once the change is confirmed, update `requirements.md` if you have permission to edit it, then update the plan.
 
 ### Example
 
-- **Implementing a screen after prototype review and tool selection.** Mark screen implementation as pending while changes to the prototype are still undecided. Plan tool selection if it can proceed independently. Confirm the implementation step once the changes and tools are settled, then verify the screen behavior for each agreed change.
+- **Implementing a screen after prototype review and tool selection.** Mark screen implementation as pending while changes to the prototype are still undecided. Plan tool selection if it can proceed independently. Confirm the implementation step once the changes and tools are settled. For each agreed change, verify what the screen displays and what happens after each interaction.
