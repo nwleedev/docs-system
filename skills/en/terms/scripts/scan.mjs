@@ -1105,7 +1105,7 @@ async function runSelfTest() {
   );
 
   const sixSentences =
-    "변환기는 날짜를 검사한다. 값이 비었는지 확인한다. 형식을 비교한다. 오류를 기록한다. 오류가 있으면 파일을 만들지 않는다. 모든 값이 맞으면 저장한다.";
+    "변환 스크립트는 날짜를 검사한다. 값이 비었는지 확인한다. 형식을 비교한다. 오류를 기록한다. 오류가 있으면 파일을 만들지 않는다. 모든 값이 맞으면 저장한다.";
   const sevenSentences =
     `${sixSentences} 저장이 끝나면 처리한 행 수를 기록한다.`;
   const multiTopic =

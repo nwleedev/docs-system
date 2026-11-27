@@ -328,7 +328,7 @@ const ruleDefinitions = [
     message: "허용하는 입력, 제공하는 기능 또는 책임 범위가 구체적인지 확인합니다.",
     queries: ["무엇을 사용할 수 있게 합니까?", "지원하지 않는 조건도 예측할 수 있습니까?"],
     negatives: ["여러 형식을 안정적으로 지원합니다."],
-    positives: ["이 변환기는 JSON과 CSV 입력을 지원합니다."],
+    positives: ["이 변환 스크립트는 JSON과 CSV 입력을 지원합니다."],
   },
   {
     id: "ko.guarantee",
