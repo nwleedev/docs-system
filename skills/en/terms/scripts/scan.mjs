@@ -76,8 +76,8 @@ const GIT_OUTPUT_BYTES = 8 * 1024 * 1024;
 const SELF_TEST_TIMEOUT_MS = 10_000;
 const SELF_TEST_OUTPUT_BYTES = 1024 * 1024;
 const HELP_TEXT = [
-  "Find expressions and long paragraphs to review in Korean text.",
-  "Read each match in context to decide whether to revise the wording or split the paragraph.",
+  "Report the locations of registered expressions and paragraphs that meet the sentence-count threshold in Korean text.",
+  "Read the sentences around each warning to decide whether to revise the wording or split the paragraph.",
   "",
   "Run these commands from the terms skill directory (the folder containing SKILL.md).",
   "Usage:",
@@ -95,7 +95,7 @@ const HELP_TEXT = [
   "  --self-test           Run the scanner's built-in checks.",
   "  --help                Print this help to standard output and exit.",
   "",
-  "Choose one of the forms shown above.",
+  "Use one command form shown above.",
   "",
 ].join("\n");
 /** @type {ReadonlySet<string>} */

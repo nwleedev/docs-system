@@ -76,8 +76,8 @@ const GIT_OUTPUT_BYTES = 8 * 1024 * 1024;
 const SELF_TEST_TIMEOUT_MS = 10_000;
 const SELF_TEST_OUTPUT_BYTES = 1024 * 1024;
 const HELP_TEXT = [
-  "한국어 글에서 검토할 표현과 긴 문단을 찾습니다.",
-  "경고가 표시되면 앞뒤 문장을 읽고 표현을 고치거나 문단을 나눌 필요가 있는지 판단하세요.",
+  "한국어 텍스트에서 등록된 표현과 문장 수가 기준 이상인 문단의 위치를 출력합니다.",
+  "경고 위치의 앞뒤 문장을 읽고 표현을 교정하거나 문단을 나눌지 판단합니다.",
   "",
   "아래 명령은 SKILL.md가 있는 terms 스킬 폴더에서 실행합니다.",
   "Usage:",
@@ -88,14 +88,14 @@ const HELP_TEXT = [
   "  node scripts/scan.mjs --help",
   "",
   "Options:",
-  "  --changed <repo>      Git 저장소에서 변경된 텍스트 파일을 검사합니다.",
+  "  --changed <repo>      Git 저장소에서 변경되었거나 아직 추적되지 않는 텍스트 파일을 검사합니다.",
   "  --file <path>         지정한 파일을 검사합니다. 여러 파일은 --file을 파일마다 지정합니다.",
-  "  --stdin               stdin에서 입력 하나를 읽습니다. --source-name과 함께 사용합니다.",
-  "  --source-name <name>  stdin으로 읽은 입력의 식별자를 정합니다. --stdin에만 사용합니다.",
-  "  --self-test           유지보수용 자체 검사를 실행합니다.",
-  "  --help                이 설명을 표준 출력에 쓰고 종료합니다.",
+  "  --stdin               표준 입력에서 텍스트 한 건을 읽습니다. --source-name과 함께 사용합니다.",
+  "  --source-name <name>  표준 입력에서 읽은 텍스트의 식별자를 지정합니다. --stdin에만 사용합니다.",
+  "  --self-test           검사기에 포함된 자체 검사를 실행합니다.",
+  "  --help                도움말을 표준 출력에 기록하고 종료합니다.",
   "",
-  "위 호출형 중 하나만 사용합니다. --source-name은 --stdin과 함께 사용합니다.",
+  "위에 표시된 명령 형식 중 하나만 사용합니다. --source-name은 --stdin과 함께 사용합니다.",
   "",
 ].join("\n");
 /** @type {ReadonlySet<string>} */
