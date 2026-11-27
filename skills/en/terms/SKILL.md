@@ -30,11 +30,10 @@ Write so readers can identify what a phrase refers to and decide what to do next
 
 ### Identify the object, conditions and authority
 
-- **Buttons and names.** If a button labeled `Send` only saves a draft, rename it `Save draft`. Interface text should describe the current state and the next action. For an API, check the specification for the conditions of a call and the response on failure. Explain any follow-up the caller needs to perform.
+- **Buttons and names.** When asked to revise the button label itself, propose a name that describes what the button does. For example, if a button labeled `Send` only saves a draft, propose `Save draft`.
 - **Pronouns.** In “Export the draft and its comments. Archive it.” check whether the reader should archive the draft or the exported file. If the source identifies the file, write “Archive the exported file.” If the evidence is insufficient, ask in the reply which item to archive.
-- **Conditions and permission.** In “With permission, you may edit and save the draft.” both actions are optional and require permission. Rewriting the second action as “Save the draft.” loses that condition and turns an option into a command. Check that the condition still applies to both actions. In English, also check the placement of `only`. It can restrict who may act or which actions are permitted.
+- **Conditions and permission.** In “With permission, you may edit and save the draft.” both actions are optional and require permission. Rewriting the second action as “Save the draft.” loses that condition and turns an option into a command. Check that the condition still applies to both actions.
 - **Review and approval.** If the review record confirms only that feedback was incorporated, report that fact. Before claiming that deployment was approved, confirm what was to be deployed and that approval was granted.
-- **Events and effects.** If a record establishes only that one event followed another, report their order. Claims that a change had an effect, or that it had none, both need evidence.
 
 ### State what the reader needs to do
 

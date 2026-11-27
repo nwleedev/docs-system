@@ -688,6 +688,23 @@ const ruleDefinitions = [
     ],
   },
   {
+    id: "ko.fix",
+    mode: "word",
+    terms: [{ lemma: "고치다", pos: "verb" }],
+    expressions: ["고치다"],
+    message: "문서의 작성 규칙과 용도에 맞춰 무엇을 어떻게 수정하는지 명시할 수 있는지 확인합니다.",
+    queries: [
+      "문구 교정, 값 정정, 결함 수정, 장비 수리 중 무엇을 뜻합니까?",
+      "변경 대상과 수정할 내용을 구체적으로 설명할 수 있습니까?",
+    ],
+    negatives: ["문구를 고친다."],
+    positives: [
+      "설치 안내의 옵션 이름을 실제 명령과 일치하도록 수정한다.",
+      "거래 명세의 잘못된 날짜를 정정한다.",
+      "고장 난 전원 장치를 수리한다.",
+    ],
+  },
+  {
     id: "ko.notify",
     mode: "word",
     terms: [{ lemma: "알리다", pos: "verb" }],
